@@ -269,7 +269,7 @@ public OnPluginStart()
 	{
 		HookConVarChange(g_hCvar_Sound[i], ConVarChanged);
 	}
-	AutoExecConfig(true, "js_ljstats");
+	AutoExecConfig(true, "timer/timer-ljstats");
 	CreateTopMenu();
 	if(g_bLateLoaded)
 	{

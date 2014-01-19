@@ -94,7 +94,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	AutoExecConfig_SetFile("timer-rankings_top_only");
+	AutoExecConfig_SetFile("timer/timer-rankings_top_only");
 
 	LoadPhysics();
 	LoadTimerSettings();

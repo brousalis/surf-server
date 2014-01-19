@@ -137,7 +137,7 @@ public OnPluginStart()
 	
 	RegAdminCmd("sm_resetcheckpoints", Admin_ResetCheckpoints, ADMIN_LEVEL, "Resets all checkpoints for given player with / without given map.");
 	
-	AutoExecConfig(true, "sm_cpmod");
+	AutoExecConfig(true, "timer/timer-cpmod");
 }
 
 public OnLibraryAdded(const String:name[])

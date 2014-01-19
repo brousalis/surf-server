@@ -135,7 +135,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public OnPluginStart()
 {
-	AutoExecConfig_SetFile("timer-rankings");
+	AutoExecConfig_SetFile("timer/timer-rankings");
 
 	LoadPhysics();
 	LoadTimerSettings();
