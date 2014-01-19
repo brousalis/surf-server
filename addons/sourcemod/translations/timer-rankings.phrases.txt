@@ -1,0 +1,267 @@
+"Phrases"
+{
+	"Prefix_Chat"
+	{
+		"#format"	""
+		"en"		"{green}[Timer] Rankings: {default}"
+	}
+	"Prefix_Hint"
+	{
+		"#format"	""
+		"en"		"[Timer] Rankings: "
+	}
+	"Advertisement"
+	{
+		"#format"	""
+		"en"		"Check the global ranks with !top10, !rank. Check the map worth with !points. Check the list of ranks with !chatranks."
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Phrase_Loading"
+	{
+		"#format"	""
+		"en"		"Your rank information is still loading; please wait!"
+	}
+	"Phrase_Rank_Not_Enough"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"You must have at least {1} points to be eligible for rankings. You currently have {2}."
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Phrase_Rank_Global"
+	{
+		"#format"	"{1:N},{2:d},{3:d},{4:d}"
+		"en"		"{1} is rank {2} of {3} with {4} points!"
+	}
+	"Phrase_Rank_Player"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"You are currently rank {1} of {2} with {3} points!"
+	}
+	"Phrase_Rank_Top"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"Rank {1} of {2}"
+	}
+	"Phrase_Rank_None"
+	{
+		"#format"	""
+		"en"		"There is not enough information to determine rankings; please try again later!"
+	}
+	"Phrase_Rank_Remaining"
+	{
+		"#format"	"{1:d}"
+		"en"		"You will unlock the next rank level in {1} points!"
+	}
+	"Phrase_Next_None"
+	{
+		"#format"	""
+		"en"		"There are no players ahead of you!"
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Menu_Title_Next"
+	{
+		"#format"	"{1:d}"
+		"en"		"[Timer] Ranking\n- Next {1} Players:"
+	}
+	"Menu_Next_Option"
+	{
+		"#format"	"{1:s},{2:d},{3:d}"
+		"en"		"(#{3}) {1}, {2} Points"
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Menu_Title_Top"
+	{
+		"#format"	"{1:d}"
+		"en"		"[Timer] Ranking\n- Top {1} Players:"
+	}
+	"Menu_Top_Option"
+	{
+		"#format"	"{1:s},{2:d},{3:d}"
+		"en"		"(#{3}) {1}, {2} Points"
+	}
+	"Menu_Option_Selected"
+	{
+		"#format"	""
+		"en"		"[*] "
+	}
+	"Menu_Option_Empty"
+	{
+		"#format"	""
+		"en"		"[  ] "
+	}
+	"Menu_Title_Cookie"
+	{
+		"#format"	""
+		"en"		"[Timer] Ranking\n- Position Settings:"
+	}
+	"Menu_Cookie_Option_Tag_Default"
+	{
+		"#format"	""
+		"en"		"Scoreboard Tag (When Available)"
+	}
+	"Menu_Cookie_Option_Tag"
+	{
+		"#format"	"{1:s}"
+		"en"		"Scoreboard Tag"
+	}
+	"Menu_Cookie_Option_Chat_Default"
+	{
+		"#format"	""
+		"en"		"Chat Tag (When Available)"
+	}
+	"Menu_Cookie_Option_Chat"
+	{
+		"#format"	"{1:s}"
+		"en"		"Chat Tag"
+	}
+	"Menu_Cookie_Option_Text_Default"
+	{
+		"#format"	""
+		"en"		"Modified Text Color (When Available)"
+	}
+	"Menu_Cookie_Option_Text"
+	{
+		"#format"	""
+		"en"		"Modified Text Color"
+	}
+	"Menu_Cookie_Option_Stars_Default"
+	{
+		"#format"	""
+		"en"		"Scoreboard Stars (When Available)"
+	}
+	"Menu_Cookie_Option_Stars"
+	{
+		"#format"	""
+		"en"		"Scoreboard Stars"
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Menu_Title_Info"
+	{
+		"#format"	""
+		"en"		"[Timer] Ranking\n- Rank Positions:"
+	}
+	"Phrase_Info_Rank_Points"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"{2}: Requires at least {1} points."
+	}
+	"Phrase_Info_Rank_Rank"
+	{
+		"#format"	"{1:d},{2:d},{3:s}"
+		"en"		"{3}: Available to ranks {1} through {2}."
+	}
+	"Phrase_Info_Rank_Display_Tag"
+	{
+		"#format"	"{1:s}"
+		"en"		"  - Scoreboard Tag: {1}"
+	}
+	"Phrase_Info_Rank_Display_Chat"
+	{
+		"#format"	"{1:s},{2:N}"
+		"en"		"  - Chat Tag: {1}{2}"
+	}
+	"Phrase_Info_Rank_Display_Text"
+	{
+		"#format"	"{1:s}"
+		"en"		"  - {1}Chat Color"
+	}
+	"Phrase_Info_Rank_Display_Stars"
+	{
+		"#format"	"{1:d}"
+		"en"		"  - Scoreboard Stars: x{1}"
+	}
+	"Phrase_Info_Rank_Remaining"
+	{
+		"#format"	"{1:d}"
+		"en"		"- You will reach this position in {1} points."
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Phrase_Complete_Round"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"You received {1} point for completing {2}."
+	}
+	"Phrase_Complete_Round_Points"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"You received {1} points for finishing {2}."
+	}
+	"Phrase_Complete_Round_Already_Multiple"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"You did not receive any points for finishing {2} as you've beaten it at least {1} times!"
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *	
+	"Phrase_Points_Per_Map"
+	{
+		"#format"	"{1:d}"
+		"en"		"This map is worth {1} point(s)!"
+	}		
+	"Phrase_Map_Worth_Exceeded"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"This map is worth {1} point(s)! You will not receive points for completion as you've beaten this map {2}/{3} time(s)!"
+	}		
+	"Phrase_Map_Worth_Remaining"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"This map is worth {1} point(s)! You may complete this map {2}/{3} more time(s) for points."
+	}
+	"Phrase_Complete_Round_Exceeded"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"You received 0 points for completing the map as you've beaten it {1}/{2} time(s) already!"
+	}
+	"Phrase_Complete_Round_Remaining"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"You received {1} points for completing the map; You may beat it {2}/{3} more time(s) for points."
+	}
+	"Phrase_Complete_Round_Last"
+	{
+		"#format"	"{1:d}"
+		"en"		"You received {1} points for completing the map; You may no longer gain points from this map."
+	}	
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	//v1.0.5e
+	"Menu_Core_Title"
+	{
+		"#format"	""
+		"en"		"[Timer] Rankings"
+	}
+	"Menu_Settings_Title"
+	{
+		"#format"	""
+		"en"		"[Timer] Rankings\n- Features:"
+	}
+	"Menu_Settings_Option_Cookie"
+	{
+		"#format"	""
+		"en"		"Position Settings"
+	}
+	"Menu_Settings_Option_Top"
+	{
+		"#format"	""
+		"en"		"View Top Players"
+	}
+	"Menu_Settings_Option_Next"
+	{
+		"#format"	""
+		"en"		"View Next Players"
+	}
+	"Menu_Settings_Option_Rank"
+	{
+		"#format"	""
+		"en"		"View Rank"
+	}
+	"Menu_Settings_Option_Worth"
+	{
+		"#format"	""
+		"en"		"View Map Worth"
+	}
+	"Menu_Settings_Option_Positions"
+	{
+		"#format"	""
+		"en"		"View Positions"
+	}
+}

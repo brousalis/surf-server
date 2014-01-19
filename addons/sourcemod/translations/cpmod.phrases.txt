@@ -1,0 +1,252 @@
+﻿"Phrases"
+{
+	"PluginDisabled"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] Plugin disabled."
+		"fr"        "{1}[{2}cP{3} Mod] Plugin désactivé."
+		"de"        "{1}[{2}cP{3} Mod] Plugin deaktiviert."
+		"ru"        "{1}[{2}cP{3} Mod] Плагин отключен."
+	}	
+	"Cleared"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] cPs cleared."
+		"fr"        "{1}[{2}cP{3} Mod] cPs effacé."
+		"de"        "{1}[{2}cP{3} Mod] cPs gelцscht."
+		"ru"        "{1}[{2}cP{3} Mod] cPs очищены."
+	}
+	"CpPanelInAccess"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] Another panel is allready opened! Please wait..."
+		"fr"        "{1}[{2}cP{3} Mod] Un autre panneau est deja ouvert! S'il vous plaît attendre..."
+		"de"        "{1}[{2}cP{3} Mod] Ein anderes Panel ist bereits offen! Bitte warten..."
+		"ru"        "{1}[{2}cP{3} Mod] Другая панель уже открыта! Пожалуйста подождите..."
+	}
+	"CheckpointRestored"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:c}"
+		"en"        "{1}[{2}cP{3} Mod] cp restored. Type {4}!tele{5} to teleport."
+		"fr"        "{1}[{2}cP{3} Mod] cp restaurée. Tapez {4}!tele{5} pour se téléporter."
+		"de"        "{1}[{2}cP{3} Mod] cp wiederhergestellt. Gib {4}!tele{5} ein um zu teleportieren."
+		"ru"        "{1}[{2}cP{3} Mod] cp восстановлены. Напишите {4}!tele{5} чтобы телепортироваться."
+	}
+	"TimerDisabled"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] Timer disabled."
+		"fr"        "{1}[{2}cP{3} Mod] Timer désactivé."
+		"de"        "{1}[{2}cP{3} Mod] Timer deaktiviert."
+		"ru"        "{1}[{2}cP{3} Mod] Таймер отключен."
+	}
+	"TimerActiveProtection"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:c}"
+		"en"        "{1}[{2}cP{3} Mod] Timer active. Action not allowed! Type{4} !stop{5} to quit."
+		"fr"        "{1}[{2}cP{3} Mod] Timer actif. L'action pas autorisé! Type{4} !stop{5} pour cesser de fumer."
+		"de"        "{1}[{2}cP{3} Mod] Timer aktiv. Aktion nicht erlaubt! Gib{4} !stop{5} zum Beenden ein."
+		"ru"        "{1}[{2}cP{3} Mod] Таймер запущен.действие не допускается.Напишите{4} !stop{5} для остановки таймера."
+	}
+	"TimerStarted"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] Timer started."
+		"fr"        "{1}[{2}cP{3} Mod] Timer commencé."
+		"de"        "{1}[{2}cP{3} Mod] Timer gestartet."
+		"ru"        "{1}[{2}cP{3} Mod] Таймер запущен."
+	}
+	"TimerStopped"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:c}"
+		"en"        "{1}[{2}cP{3} Mod] Timer stopped. Type {4}!restart{5} to activate it!"
+		"fr"        "{1}[{2}cP{3} Mod] Timer arrêté. Type {4}!restart{5} pour l'activer!"
+		"de"        "{1}[{2}cP{3} Mod] Timer gestoppt. Gib {4}!restart{5} ein um ihn zu aktivieren!"
+		"ru"        "{1}[{2}cP{3} Mod] Таймер остановлен. Напишите {4}!restart{5} что бы активировать таймер!"
+	}
+	"TimerRestarted"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] Timer restarted."
+		"fr"        "{1}[{2}cP{3} Mod] Timer redémarré."
+		"de"        "{1}[{2}cP{3} Mod] Timer neu gestartet."
+		"ru"        "{1}[{2}cP{3} Mod] Таймер перезапущен."
+	}
+		"TimerRecord"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:s},{6:c},{7:c},{8:s},{9:c}"
+		"en"        "{1}[{2}cP{3} Mod] {4}{5}{6} scored a new record ({7}{8}{9})!"
+		"fr"        "{1}[{2}cP{3} Mod] {4}{5}{6} a marqué un nouveau record ({7}{8}{9}) sur le rang!"
+		"de"        "{1}[{2}cP{3} Mod] {4}{5}{6} hat einen neuen Rekord ({7}{8}{9}) auf Rang!"
+		"ru"        "{1}[{2}cP{3} Mod] {4}{5}{6} установил новый рекорд ({7}{8}{9}) от ранга!"
+	}
+	"TimerFinished"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:s},{6:c},{7:c},{8:c}"
+		"en"        "{1}[{2}cP{3} Mod] You finished the map ({4}{5}{6})! Type {7}!restart{8} to retry."
+		"fr"        "{1}[{2}cP{3} Mod] Vous avez terminé la carte ({4}{5}{6})! Tapez {7}!restart{8} à réessayer."
+		"de"        "{1}[{2}cP{3} Mod] Du hast die Map geschafft ({4}{5}{6})! Schreib {7}!restart{8} um es erneut zu versuchen."
+		"ru"        "{1}[{2}cP{3} Mod] Вы на финише карты ({4}{5}{6})! Напишите {7}!restart{8} что бы повторить попытку."
+	}
+	"BlockingEnabled"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:c}"
+		"en"        "{1}[{2}cP{3} Mod] Blocking has been enabled. Type {4}!block{5} to switch."
+		"fr"        "{1}[{2}cP{3} Mod] Blocage a été activée. Tapez {4}!block{5} pour basculer."
+		"de"        "{1}[{2}cP{3} Mod] Blocken wurde deaktiviert. Gib {4}!block{5} ein um zu wechseln."
+		"ru"        "{1}[{2}cP{3} Mod] Блокировка была включена. Напишите {4}!block{5} для переключения"
+	}
+	"BlockingDisabled"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:c}"
+		"en"        "{1}[{2}cP{3} Mod] Blocking has been disabled. Type {4}!block{5} to switch."
+		"fr"        "{1}[{2}cP{3} Mod] Blocage a été désactivé. Tapez {4}!block{5} pour basculer."
+		"de"        "{1}[{2}cP{3} Mod] Blocken wurde deaktiviert. Gib {4}!block{5} ein um zu wechseln."
+		"ru"        "{1}[{2}cP{3} Mod] Блокировка была выключена. Напишите {4}!block{5} для переключения."
+	}
+	"NoblockDisabled"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] NoBlock has been disabled..."
+		"fr"        "{1}[{2}cP{3} Mod] NoBlock a été désactivé..."
+		"de"        "{1}[{2}cP{3} Mod] NoBlock wurde deaktiviert..."
+		"ru"        "{1}[{2}cP{3} Mod] Noblock был отключен..."
+	}
+	"PlayerHidden"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:c}"
+		"en"        "{1}[{2}cP{3} Mod] Players are now hidden. Type {4}!hide{5} to switch."
+		"fr"        "{1}[{2}cP{3} Mod] Les joueurs sont désormais cachés. Tapez {4}!hide{5} pour basculer."
+		"de"        "{1}[{2}cP{3} Mod] Spieler sind jetzt versteckt. Gib {4}!hide{5} ein um zu wechseln."
+		"ru"        "{1}[{2}cP{3} Mod] Игроки теперь скрыты. Напишите {4}!hide{5} для переключения"
+	}
+	"PlayerVisible"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:c}"
+		"en"        "{1}[{2}cP{3} Mod] Players are now visible. Type {4}!hide{5} to switch."
+		"fr"        "{1}[{2}cP{3} Mod] Les joueurs sont désormais visibles.. Tapez {4}!hide{5} pour basculer."
+		"de"        "{1}[{2}cP{3} Mod] Spieler sind jetzt sichtbar. Gib {4}!hide{5} ein um zu wechseln."
+		"ru"        "{1}[{2}cP{3} Mod] Игроки теперь видны. Напишите {4}!hide{5} для переключения"
+	}
+	"HidingDisabled"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] Hiding has been disabled..."
+		"fr"        "{1}[{2}cP{3} Mod] Hiding a été désactivé..."
+		"de"        "{1}[{2}cP{3} Mod] Hiding wurde deaktiviert..."
+		"ru"        "{1}[{2}cP{3} Mod] Hiding был отключен..."
+	}
+	"WeaponGiven"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:s}"
+		"en"        "{1}[{2}cP{3} Mod] You have been given a {4}."
+		"fr"        "{1}[{2}cP{3} Mod] Vous avez reçu un {4}."
+		"de"        "{1}[{2}cP{3} Mod] Dir wurde eine {4} gegeben."
+		"ru"        "{1}[{2}cP{3} Mod] Вы получили {4}."
+	}
+	"WeaponLimit"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:s}"
+		"en"        "{1}[{2}cP{3} Mod] No more {4} for you!"
+		"fr"        "{1}[{2}cP{3} Mod] N {4} plus pour vous!"
+		"de"        "{1}[{2}cP{3} Mod] Keine weiteren {4} für dich!"
+		"ru"        "{1}[{2}cP{3} Mod] Нет больше {4} для вас!"
+	}
+	"GravityNormal"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:c}"
+		"en"        "{1}[{2}cP{3} Mod] Normal gravity. Type {4}!lowgrav{5} to switch."
+		"fr"        "{1}[{2}cP{3} Mod] Gravité normale. Type {4}!lowgrav{5} pour basculer."
+		"de"        "{1}[{2}cP{3} Mod] Normale Schwerkraft. Gib {4}!lowgrav{5} ein um zu wechseln."
+		"ru"        "{1}[{2}cP{3} Mod] Нормальная гравитация. Напишите {4}!lowgrav{5} для перключения."
+	}
+	"GravityLow"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:c}"
+		"en"        "{1}[{2}cP{3} Mod] Low gravity. Type {4}!normalgrav{5} to switch."
+		"fr"        "{1}[{2}cP{3} Mod] Diminution de la gravité. Type {4}!normalgrav{5} pour basculer."
+		"de"        "{1}[{2}cP{3} Mod] Geringe Schwerkraft. Gib {4}!normalgrav{5} ein um zu wechseln."
+		"ru"        "{1}[{2}cP{3} Mod] Низкая гравитация. Напишите {4}!normalgrav{5} для переключения."
+	}
+	"GravityDisabled"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] Gravity manipulation has been disabled..."
+		"fr"        "{1}[{2}cP{3} Mod] Manipulation de la gravité a été désactivé..."
+		"de"        "{1}[{2}cP{3} Mod] Schwerkraftmanipulation wurde deaktiviert..."
+		"ru"        "{1}[{2}cP{3} Mod] Управление гравитацией отключено"
+	}
+	"CpSaved"
+
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:i}{6:i}{7:c}"
+		"en"        "{1}[{2}cP{3} Mod] cP {4}{5} / {6}{7} saved."
+		"fr"        "{1}[{2}cP{3} Mod] cP {4}{5} / {6}{7} sauvé."
+		"de"        "{1}[{2}cP{3} Mod] cP {4}{5} / {6}{7} gespeichert."
+		"ru"        "{1}[{2}cP{3} Mod] cP {4}{5} / {6}{7} сохранен."
+	}
+	"NotOnGround"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] Not supported while in the air..."
+		"fr"        "{1}[{2}cP{3} Mod] Non pris en charge dans les avions..."
+		"de"        "{1}[{2}cP{3} Mod] Nicht möglich solange in der Luft..."
+		"ru"        "{1}[{2}cP{3} Mod] Не поддерживается сохранение в воздухе..."
+	}
+	"CpLimit"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:c}"
+		"en"        "{1}[{2}cP{3} Mod] cPLimit reached! Type {4}!clear{5} to reset."
+		"fr"        "{1}[{2}cP{3} Mod] cPLimit atteint! Type {4}!clear{5} pour réinitialiser."
+		"de"        "{1}[{2}cP{3} Mod] cPLimit erreicht! Gib {4}!clear{5} fьr einen Reset ein."
+		"ru"        "{1}[{2}cP{3} Mod] cPLimit достигнут! Напишите {4}!clear{5} для удаления cP."
+	}
+	"CpNotFound"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] Sorry, no cPs found."
+		"fr"        "{1}[{2}cP{3} Mod] Désolé, aucun cPs trouvés."
+		"de"        "{1}[{2}cP{3} Mod] Entschuldigung, keine cPs gefunden."
+		"ru"        "{1}[{2}cP{3} Mod] К сожалению, cP не найдены"
+	}
+	"CpTeleported"
+	{
+		"#format"   "{1:c},{2:c},{3:c},{4:c},{5:i}{6:i}{7:c}"
+		"en"        "{1}[{2}cP{3} Mod] You have been teleported to cP {4}{5} / {6}{7}."
+		"fr"        "{1}[{2}cP{3} Mod] Vous avez été téléporté au cP {4}{5} / {6}{7}."
+		"de"        "{1}[{2}cP{3} Mod] Du wurdest zu cP {4}{5} / {6}{7} teleportiert."
+		"ru"        "{1}[{2}cP{3} Mod] Вы были телепортированы на cP {4}{5} / {6}{7}."
+	}
+	"NotAuthorized"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] You do not have access to this command."
+		"fr"        "{1}[{2}cP{3} Mod] Vous n'avez pas accès à cette commande."
+		"de"        "{1}[{2}cP{3} Mod] Du hast keinen Zugang zu diesem Befehl."
+		"ru"        "{1}[{2}cP{3} Mod] Вы не имеете доступа к этой команде."
+	}
+	"CordsNotSet"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] Maptimer activated, but no coordinates found."
+		"fr"        "{1}[{2}cP{3} Mod] Maptimer activé, mais pas de coordonnées trouvées."
+		"de"        "{1}[{2}cP{3} Mod] Maptimer aktiviert aber keine Koordinaten gesetzt."
+		"ru"        "{1}[{2}cP{3} Mod] Maptimer активирован, но точки начала и конца таймера не найдены."
+	}
+	"StartSet"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] Start coordinate set."
+		"fr"        "{1}[{2}cP{3} Mod] Commencer coordonner ensemble."
+		"de"        "{1}[{2}cP{3} Mod] Startkoordinate gesetzt."
+		"ru"        "{1}[{2}cP{3} Mod] Координаты старта установлены."
+	}
+	"EndSet"
+	{
+		"#format"   "{1:c},{2:c},{3:c}"
+		"en"        "{1}[{2}cP{3} Mod] End coordinate set."
+		"fr"        "{1}[{2}cP{3} Mod] Fin de coordonner ensemble."
+		"de"        "{1}[{2}cP{3} Mod] Endtkoordinate gesetzt."
+		"ru"        "{1}[{2}cP{3} Mod] Координаты конца установлены."
+	}
+}

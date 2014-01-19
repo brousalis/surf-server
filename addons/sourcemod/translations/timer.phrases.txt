@@ -1,0 +1,480 @@
+"Phrases"
+{
+	"Force Mode"
+	{
+		"en"			 "You need to pick a mode first! Type !bhop into chat and choose wise."
+	}
+	
+	"Round Finish"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:d}"
+		"en"			"{1} has finished the map in {2} and {4} jumps."
+	}
+	
+	"Round Finish Without Jumps"
+	{
+		"#format"		"{1:s},{2:s},{3:s}"
+		"en"			"{1} has finished the map in {2}."
+	}
+	
+	"Round Finish Difficulty"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:s},{5:d}"
+		"en"			 "{1} has finished the map in {2} ({4}) and {5} jumps."
+	}
+	
+	"Round Finish Difficulty Without Jumps"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:s}"
+		"en"			 "{1} has finished the map in {2} ({4})!"
+	}
+	"Bonus Round Finish"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:d}"
+		"en"			"{1} has finished the bonus map in {2} and {4} jumps."
+	}
+	
+	"Bonus Round Finish Without Jumps"
+	{
+		"#format"		"{1:s},{2:s},{3:s}"
+		"en"			"{1} has finished the bonus map in {2}."
+	}
+	
+	"Bonus Round Finish Difficulty"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:s},{5:d}"
+		"en"			"{1} has finished the bonus map in {2} ({4}) and {5} jumps."
+	}
+	
+	"Bonus Round Finish Difficulty Without Jumps"
+	{
+		"#format"		 "{1:s},{2:s},{3:s},{4:s}"
+		"en"			 "{1} has finished the bonus map in {2} ({4})!"
+	}
+	
+	"Short Round Finish"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:d}"
+		"en"			"{1} has finished the short map in {2} and {4} jumps."
+	}
+	
+	"Short Round Finish Without Jumps"
+	{
+		"#format"		"{1:s},{2:s},{3:s}"
+		"en"			"{1} has finished the short map in {2}."
+	}
+	
+	"Short Round Finish Difficulty"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:s},{5:d}"
+		"en"			"{1} has finished the short map in {2} ({4}) and {5} jumps."
+	}
+	
+	"Short Round Finish Difficulty Without Jumps"
+	{
+		"#format"		 "{1:s},{2:s},{3:s},{4:s}"
+		"en"			 "{1} has finished the short map in {2} ({4})!"
+	}
+	
+	"Point Select Panel"
+	{
+		"#format"		"{1:s}"
+		"en"			"Please stand in the {1} point of the zone,\nand click Mouse2."
+	}
+	
+	"Tier"
+	{
+		"en"			"Tier"
+	}
+	
+	"Cancel"
+	{
+		"en"			"Cancel"
+	}
+	
+	"Please wait"
+	{
+		"en"			"Please wait..."
+	}
+
+	"FIRST"
+	{
+		"en"			"FIRST"
+	}
+	
+	"SECOND"
+	{
+		"en"			"SECOND"
+	}
+	
+	"Map Zone Delete"
+	{
+		"en"			"Map zone deleted successfully."
+	}
+	
+	"Level"
+	{
+		"en"			"Level"
+	}
+	
+	"Bonus Level"
+	{
+		"en"			"Bonus Level"
+	}
+	
+	"Time"
+	{
+		"en"			"Time"
+	}
+	
+	"Jumps"
+	{
+		"en"			"Jumps"
+	}
+	
+	"HUD Speed"
+	{
+		"en"			"Speed"
+	}
+
+	"HUD Best Times"
+	{
+		"en"			"Best Times"
+	}
+	
+	"HUD Difficulty"
+	{
+		"en"			"Mode"
+	}
+
+	"Rank"
+	{
+		"en"			"Rank"
+	}
+	
+	"No target"
+	{
+		"en"			"No target found."
+	}
+	
+	"Physics Difficulty"
+	{
+		"en"			"Bhop Difficulty"
+	}
+	
+	"World Record Menu Title"
+	{
+		"#format"		"{1:s}"
+		"en"			"World Records for {1}"
+	}
+	
+	"Bonus World Record Menu Title"
+	{
+		"#format"		"{1:s}"
+		"en"			"Bonus World Records for {1}"
+	}
+	
+	"Short World Record Menu Title"
+	{
+		"#format"		"{1:s}"
+		"en"			"Short World Records for {1}"
+	}
+	
+	"World Record Loading"
+	{
+		"en"			"World Record is still loading; try again in a few moments."
+	}
+	
+	"Bonus World Record Loading"
+	{
+		"en"			"Bonus World Record is still loading; try again in a few moments."
+	}
+	
+	"Short World Record Loading"
+	{
+		"en"			"Short World Record is still loading; try again in a few moments."
+	}
+	
+	"No Records"
+	{
+		"en"			"There are no records."
+	}
+	
+	"No Difficulty Records"
+	{
+		"en"			"There are no records for this difficulty."
+	}
+	
+	"Record Info"
+	{
+		"en"			"Record Info"
+	}
+	
+	"Player Name"
+	{
+		"en"			"Player Name"
+	}
+	
+	"Rank"
+	{
+		"en"			"Rank"
+	}
+
+	"Toggle visibilty"
+	{
+		"en"			"Toggled players visibility."
+	}
+
+	"Timer Management"
+	{
+		"en"			"Timer Management"
+	}
+
+	"Delete Map Records"
+	{
+		"en"			"Delete all records of this map"
+	}
+	
+	"Delete All Map Zones"
+	{
+		"en"			"Delete all map zones"
+	}
+
+	"Delete Player Record"
+	{
+		"en"			"Delete record"
+	}
+
+	"Add Map Zone"
+	{
+		"en"			"Add map zone"
+	}
+
+	"Delete Map Zone"
+	{
+		"en"			"Delete map zone"
+	}
+	
+	"Select zone type"
+	{
+		"en"			"Select zone type:"
+	}
+	
+	"Pause Info"
+	{
+		"en"			"Timer paused. Type !resume to restore your timer."
+	}
+	
+	"Start"
+	{
+		"en"			"Start"
+	}
+	
+	"End"
+	{
+		"en"			"End"
+	}
+	
+	"Glitch1"
+	{
+		"en"			"Stop Timer"
+	}
+	
+	"Glitch2"
+	{
+		"en"			"Restart Timer"
+	}
+	
+	"Glitch3"
+	{
+		"en"			"Tele Player Last Checkpoint"
+	}
+	
+	"Glitch4"
+	{
+		"en"			"Tele Player Next Checkpoint"
+	}
+	
+	"BonusStart"
+	{
+		"en"			"Bonus Start"
+	}
+	
+	"BonusEnd"
+	{
+		"en"			"Bonus End"
+	}
+	
+	"Enable NoBlock"
+	{
+		"en"			"Enable NoBlock"
+	}
+	
+	"Disable NoBlock"
+	{
+		"en"			"Disable NoBlock"
+	}
+	
+	"Speed Limit"
+	{
+		"en"			"Speed Limit"
+	}
+	
+	"Player Clip"
+	{
+		"en"			"Player Clip"
+	}
+	
+	"Longjump"
+	{
+		"en"			"Longjump"
+	}
+	
+	"Booster"
+	{
+		"en"			"Booster"
+	}
+	
+	"Full Booster"
+	{
+		"en"			"Full Booster"
+	}
+	
+	"Arena"
+	{
+		"en"			"Arena"
+	}
+	
+	"Bounce Back"
+	{
+		"en"			"Bounce Back"
+	}
+	
+	"Jail"
+	{
+		"en"			"Jail"
+	}
+	
+	"Lift"
+	{
+		"en"			"Lift"
+	}
+	
+	"Bullet Time"
+	{
+		"en"			"Bullet Time"
+	}
+	
+	"No Gravity Overwrite"
+	{
+		"en"			"No Gravity Overwrite"
+	}
+	
+	"NPC Next"
+	{
+		"en"			"NPC Next"
+	}
+	
+	"NPC Next Double"
+	{
+		"en"			"NPC Next Double"
+	}
+	
+	"No Boost"
+	{
+		"en"			"No Boost"
+	}
+	
+	"Restart Normal Timer"
+	{
+		"en"			"Restart Normal Timer"
+	}
+	
+	"Restart Bonus Timer"
+	{
+		"en"			"Restart Bonus Timer"
+	}
+	
+	"Short End"
+	{
+		"en"			"Short End"
+	}
+	
+	"Choose Player"
+	{
+		"en"			"Choose Player:"
+	}
+	
+	"Delete Records"
+	{
+		"en"			"Delete Records:"
+	}
+	
+	"Custom FPS"
+	{
+		"en"			"You have been switched to FPSMAX mode, if you like to play in NORMAL set fps_max to 300."
+	}
+	
+	"Tier Limit"
+	{
+		"en"			"You only receive points for the first 2 times you complete a tier 1 or 2 map."
+	}
+	
+	"Cheater Finish"
+	{
+		"en"			"Your record will not be stored for cheating, visit our homepage to request a unban!"
+	}
+	
+	"Owned"
+	{
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1} has beaten {2} at a challenge to the death!"
+	}
+	
+	"Coop Win"
+	{
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1} and {2} have finished as a team!"
+	}
+	
+	"Coop Fail"
+	{
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1} has canceled coop with {2}!"
+	}
+	
+	"Adminmode Enabled"
+	{
+		"en"			"Zoneadminmode enabled."
+	}
+	
+	"Adminmode Disabled"
+	{
+		"en"			"Zoneadminmode disabled."
+	}
+	
+	"Zones Reloaded"
+	{
+		"en"			"Zones reloaded."
+	}
+	
+	"No Target"
+	{
+		"en"			"No target."
+	}
+	
+	"Not Alive"
+	{
+		"en"			"You need to be alive to use this command."
+	}
+	
+	"Hide Enabled"
+	{
+		"en"			"Hide other players enabled."
+	}
+	
+	"Hide Disabled"
+	{
+		"en"			"Hide other players disabled."
+	}
+}
