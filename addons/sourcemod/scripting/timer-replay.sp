@@ -4,6 +4,7 @@
 #include <sdktools>
 #include <cstrike>
 #include <smlib>
+#include <setname>
 #include <timer>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
@@ -218,7 +219,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			new String:buffer[128];
 			Format(buffer, sizeof(buffer), "%s [%s]", name, timestring);
 			
-			SetClientInfo(client, "name", buffer);
+			CS_SetClientName(client, buffer);
 			
 			Timer_Start(client);
 			new Float:fOrigin[3];
@@ -369,7 +370,7 @@ public Action:SaveRecording(Handle:timer, any:client)
 		new Handle:hFile;
 		new Float:fBuffer[3];
 		
-		BuildPath(Path_SM, sPath, sizeof(sPath), "data/replay/%s.rec", sMapName);
+		BuildPath(Path_SM, sPath, sizeof(sPath), "data/replay/%s.txt", sMapName);
 
 		hFile = OpenFile(sPath, "w");
 		if(hFile == INVALID_HANDLE)
@@ -476,7 +477,7 @@ public LoadReplays()
 	new  Handle:hFile = INVALID_HANDLE;
 	new iLength, iPart, Float:fBuffer[3];
 
-	BuildPath(Path_SM, sPath, sizeof(sPath), "data/replay/%s.rec", sMapName);
+	BuildPath(Path_SM, sPath, sizeof(sPath), "data/replay/%s.txt", sMapName);
 	hFile = OpenFile(sPath, "r");
 	if(hFile != INVALID_HANDLE)
 	{			
@@ -632,7 +633,8 @@ public DodgyFix()
 		new String:buffer[64];
 		Format(buffer, sizeof(buffer), "%s [%s]", name, timestring);
 		
-		SetClientInfo(iBot, "name", buffer);
+		CS_SetClientName(iBot, buffer);
+		
 		SetEntityRenderColor(iBot, 0, 0, 255, 50);
 		g_iPlayerRecords[iBot] = -1;
 		g_iBotMimicsRecord[iBot] = 0;
