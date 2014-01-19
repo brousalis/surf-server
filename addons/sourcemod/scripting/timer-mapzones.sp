@@ -292,7 +292,7 @@ public OnClientPutInServer(client)
 
 public OnGameFrame()
 {
-	for (new client = 1; client <= GetMaxClients(); client++)
+	for (new client = 1; client <= MaxClients; client++)
 	{
 		if(!IsClientInGame(client))
 			continue;
@@ -1428,7 +1428,7 @@ ConnectSQL()
 	}
 	else
 	{
-		Timer_LogError("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
+		SetFailState("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
 	}
 }
 
@@ -1436,7 +1436,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 {
 	if (g_reconnectCounter >= 5)
 	{
-		Timer_LogError("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
+		SetFailState("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
 		return;
 	}
 	
@@ -2802,7 +2802,7 @@ GetZoneEntityCount()
 {
 	new count;
 	
-	for (new i = GetMaxClients(); i <= 2047; i++)
+	for (new i = MaxClients; i <= 2047; i++)
 	{
 		if(!IsValidEntity(i)) continue;
 		
@@ -2821,7 +2821,7 @@ GetZoneEntityCount()
 
 DeleteAllZoneEntitys()
 {
-	for (new i = GetMaxClients(); i <= 2047; i++)
+	for (new i = MaxClients; i <= 2047; i++)
 	{
 		g_MapZoneDrawDelayTimer[i] = INVALID_HANDLE;
 		g_MapZoneEntityZID[i] = -1;
@@ -2854,7 +2854,7 @@ DeleteAllZoneEntitys()
 		}
 		
 		
-		for (new client = 1; client <= GetMaxClients(); client++)
+		for (new client = 1; client <= MaxClients; client++)
 		{
 			g_bZone[i][client] = false;
 		}
@@ -4101,7 +4101,7 @@ public Action:Command_TeleMe(client, args)
 		new iCount = 0;
 		
 		//show rest
-		for (new i = 1; i <= GetMaxClients(); i++)
+		for (new i = 1; i <= MaxClients; i++)
 		{
 			if(client == i)
 			{

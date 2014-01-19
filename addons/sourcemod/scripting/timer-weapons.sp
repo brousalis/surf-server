@@ -338,7 +338,7 @@ public Action:Timer_CleanUp(Handle:timer)
 {
 	new maxent = GetMaxEntities(), String:weapon[64];
 	
-	for (new i=1;i<GetMaxClients();i++)
+	for (new i=1;i<MaxClients;i++)
 	{
 		if ( !IsClientInGame(i) ) continue;
 		if ( !IsPlayerAlive(i) ) continue;
@@ -346,7 +346,7 @@ public Action:Timer_CleanUp(Handle:timer)
 		SetEntData( i, g_iAccount, MAX_CASH );
 	}
 	
-	for (new i=GetMaxClients();i<maxent;i++)
+	for (new i=MaxClients;i<maxent;i++)
 	{
 		if ( g_MapEntity[i] ) continue;
 		if ( !IsValidEdict(i) ) continue;
@@ -363,7 +363,7 @@ public Action:Timer_CleanUp(Handle:timer)
 stock ValidateMapWeapons()
 {
 	new maxent = GetMaxEntities();
-	for (new i = GetMaxClients(); i < maxent; i++)
+	for (new i = MaxClients; i < maxent; i++)
 	{
 		g_MapEntity[i] = false;
 		

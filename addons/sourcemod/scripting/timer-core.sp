@@ -389,14 +389,14 @@ public Action:Event_PlayerJump(Handle:event, const String:name[], bool:dontBroad
 public Action:Event_StopTimer(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(0 < client <= GetMaxClients()) if (IsClientInGame(client)) StopTimer(client, false);
+	if(0 < client <= MaxClients) if (IsClientInGame(client)) StopTimer(client, false);
 	return Plugin_Continue;
 }
 
 public Action:Event_StopTimerPaused(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(0 < client <= GetMaxClients()) if (IsClientInGame(client)) StopTimer(client);
+	if(0 < client <= MaxClients) if (IsClientInGame(client)) StopTimer(client);
 	return Plugin_Continue;
 }
 
@@ -404,7 +404,7 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
-	if(0 < client <= GetMaxClients())
+	if(0 < client <= MaxClients)
 	{
 		if(IsClientInGame(client))
 			StopTimer(client);
@@ -1024,7 +1024,6 @@ ConnectSQL()
 	}
     else
 	{
-		Timer_LogError("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
 		SetFailState("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
 	}
 }
@@ -1033,7 +1032,6 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 {
 	if (g_reconnectCounter >= 5)
 	{
-		Timer_LogError("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
 		SetFailState("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
 		return;
 	}

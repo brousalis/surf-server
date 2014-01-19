@@ -49,7 +49,7 @@ public Action:Command_Info(client, args)
 
 CreateInfoMenu(client)
 {
-	if(0 < client < GetMaxClients())
+	if(0 < client < MaxClients)
 	{
 		new Handle:menu = CreateMenu(MenuHandler_Info);
 
@@ -89,7 +89,7 @@ public MenuHandler_Info(Handle:menu, MenuAction:action, client, itemNum)
 
 CreateInfoDetailMenu(client, mode)
 {
-	if(0 < client < GetMaxClients())
+	if(0 < client < MaxClients)
 	{
 		new Handle:menu = CreateMenu(MenuHandler_InfoDetail);
 

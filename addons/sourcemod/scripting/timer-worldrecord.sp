@@ -1041,7 +1041,7 @@ ConnectSQL(bool:refreshCache)
 	}
     else
 	{
-		if(g_timerLogging) Timer_LogError("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
+		SetFailState("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
 	}
 }
 
@@ -1049,7 +1049,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 {
 	if (g_reconnectCounter >= 5)
 	{
-		if(g_timerLogging) Timer_LogError("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
+		SetFailState("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
 		return;
 	}
 
@@ -1081,7 +1081,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 
 CreateRankedWRMenu(client)
 {
-	if(0 < client < GetMaxClients())
+	if(0 < client < MaxClients)
 	{
 		new Handle:menu = CreateMenu(MenuHandler_RankedWR);
 
@@ -1152,7 +1152,7 @@ public MenuHandler_RankedWR(Handle:menu, MenuAction:action, client, itemNum)
 
 CreateRankedBWRMenu(client)
 {
-	if(0 < client < GetMaxClients())
+	if(0 < client < MaxClients)
 	{
 		new Handle:menu = CreateMenu(MenuHandler_RankedBWR);
 
@@ -1223,7 +1223,7 @@ public MenuHandler_RankedBWR(Handle:menu, MenuAction:action, client, itemNum)
 
 CreateRankedSWRMenu(client)
 {
-	if(0 < client < GetMaxClients())
+	if(0 < client < MaxClients)
 	{
 		new Handle:menu = CreateMenu(MenuHandler_RankedSWR);
 

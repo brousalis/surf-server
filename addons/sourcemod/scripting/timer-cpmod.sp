@@ -17,7 +17,7 @@
 // nothing to change over here //
 //-----------------------------//
 //...
-#define VERSION "2.1.0"
+#define VERSION "2.1.2"
 
 #define YELLOW 0x01
 #define TEAMCOLOR 0x02
@@ -269,7 +269,7 @@ public OnMapStart()
 // executed on end of map //
 //------------------------//
 public OnMapEnd(){
-	new max = GetMaxClients();
+	new max = MaxClients;
 	//for all of the players
 	for(new i = 0; i <= max; i++){
 		//if client valid

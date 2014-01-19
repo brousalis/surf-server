@@ -793,7 +793,7 @@ stock GetAimOrigin(client, Float:hOrigin[3])
 
 public bool:TraceEntityFilterPlayer(entity, contentsMask) 
 {
-    return entity > GetMaxClients();
+    return entity > MaxClients;
 }
 stock GetBeamEndOrigin(Float:fOrigin[3], Float:vAngles[3], Float:distance, Float:result[3])
 {

@@ -511,7 +511,7 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
-	if(0 < client <= GetMaxClients())
+	if(0 < client <= MaxClients)
 	{
 		if(IsFakeClient(client))
 			return;
@@ -911,7 +911,7 @@ public Action:Command_Difficulty(client, args)
 
 CreatePhysicsMenu(client, MCategory:category)
 {
-	if(0 < client < GetMaxClients() && g_Settings[MultimodeEnable])
+	if(0 < client < MaxClients && g_Settings[MultimodeEnable])
 	{
 		new Handle:menu = CreateMenu(MenuHandler_Physics);
 
@@ -1016,7 +1016,7 @@ public MenuHandler_Physics(Handle:menu, MenuAction:action, client, itemNum)
 
 CreateDifficultyMenu(client)
 {
-	if(0 < client < GetMaxClients() && g_Settings[MultimodeEnable])
+	if(0 < client < MaxClients && g_Settings[MultimodeEnable])
 	{
 		if(g_ModeCountEnabled > 0)
 		{
@@ -1123,7 +1123,7 @@ CreateSettingsMenu(client)
 //ASDFASFWDGEWRG
 public MenuHandler_Settings(Handle:menu, MenuAction:action, client, itemNum)
 {
-	if(0 < client < GetMaxClients())
+	if(0 < client < MaxClients)
 	{
 		if (action == MenuAction_End) 
 		{
@@ -1211,7 +1211,7 @@ CreateCustomMenu(client)
 
 public MenuHandler_Custom(Handle:menu, MenuAction:action, client, itemNum)
 {
-	if(0 < client < GetMaxClients())
+	if(0 < client < MaxClients)
 	{
 		if (action == MenuAction_End) 
 		{

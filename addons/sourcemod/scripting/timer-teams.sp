@@ -271,7 +271,7 @@ Menu_SelectChallengeMate(client)
 	
 	new iCount = 0;
 	
-	for (new i = 1; i <= GetMaxClients(); i++)
+	for (new i = 1; i <= MaxClients; i++)
 	{
 		if(!Client_IsValid(i))
 		{
@@ -476,7 +476,7 @@ public Action:Command_Coop(client, args)
 	new iCount = 0;
 	
 	//show rest
-	for (new i = 1; i <= GetMaxClients(); i++)
+	for (new i = 1; i <= MaxClients; i++)
 	{
 		if(!IsClientInGame(i))
 		{
