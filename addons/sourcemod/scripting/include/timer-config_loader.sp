@@ -56,6 +56,8 @@ enum TimerSettings
 	bool:AllowMultipleShortEnd,
 	bool:AllowMultipleBonusStart,
 	bool:AllowMultipleBonusEnd,
+	String:NPC_Path[32],
+	String:NPC_Double_Path[32],
 	
 	//HUD
 	HUDUseMVPStars,
@@ -311,6 +313,9 @@ bool:LoadTimerSettings()
 			g_Settings[AllowMultipleShortEnd] = bool:KvGetNum(hKv, "allow_multiple_shortend", 0);
 			g_Settings[AllowMultipleBonusStart] = bool:KvGetNum(hKv, "allow_multiple_bonusstart", 0);
 			g_Settings[AllowMultipleBonusEnd] = bool:KvGetNum(hKv, "allow_multiple_bonusend", 0);
+			
+			KvGetString(hKv, "npc_model", g_Settings[NPC_Path], 32);
+			KvGetString(hKv, "npc_double_model", g_Settings[NPC_Double_Path], 32);
 		}
 		else if(StrEqual(sSectionName, "Hud"))
 		{

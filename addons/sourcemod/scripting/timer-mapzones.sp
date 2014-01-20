@@ -345,7 +345,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			
 			g_mapZoneEditors[client][Step] = 3;
 			
-			DisplaySelectZoneTypeMenu(client);
+			DisplaySelectZoneTypeMenu(client, 0);
 			
 			return Plugin_Handled;
 		}		
@@ -832,7 +832,7 @@ public EndTouchTrigger(const String:output[], caller, activator, Float:delay)
 	if(Timer_GetForceMode() && !Timer_GetPickedMode(client))
 	{
 		FakeClientCommand(client, "sm_restart");
-		FakeClientCommand(client, "sm_bhop");
+		FakeClientCommand(client, "sm_style");
 		CPrintToChat(client, PLUGIN_PREFIX, "Force Mode");
 	}
 	
@@ -1697,61 +1697,85 @@ public Action:ChangeStep(Handle:timer, any:serial)
 	DisplaySelectPointMenu(client, 2);
 }
 
-DisplaySelectZoneTypeMenu(client)
+DisplaySelectZoneTypeMenu(client, category)
 {
 	new Handle:menu = CreateMenu(ZoneTypeSelect);
 	SetMenuTitle(menu, "%T", "Select zone type", client);
 	
-	AddMenuItem(menu, "level", "Level");
-	AddMenuItem(menu, "start", "Start");
-	AddMenuItem(menu, "end", "End");
-	
-	AddMenuItem(menu, "bonuslevel", "Bonus Level");
-	AddMenuItem(menu, "bonusstart", "Bonus Start");
-	AddMenuItem(menu, "bonusend", "Bonus End");
-	
-	AddMenuItem(menu, "stop", "Stop");
-	AddMenuItem(menu, "restart", "Restart");
-	AddMenuItem(menu, "reset", "Reset");
-	AddMenuItem(menu, "restart_normal", "Restart Normal Timer");
-	AddMenuItem(menu, "restart_bonus", "Restart Bonus Timer");
-	
-	AddMenuItem(menu, "short_end", "Short End");
-	AddMenuItem(menu, "last", "Teleport Last");
-	AddMenuItem(menu, "next", "Teleport Next");
-	
-	AddMenuItem(menu, "limit", "Speed Limit");
-	
-	AddMenuItem(menu, "booster", "Booster");
-	AddMenuItem(menu, "fullbooster", "Fullbooster");
-	
-	AddMenuItem(menu, "up", "Push Up");
-	AddMenuItem(menu, "down", "Push Down");
-	AddMenuItem(menu, "north", "Push North");
-	AddMenuItem(menu, "south", "Push South");
-	AddMenuItem(menu, "east", "Push East");
-	AddMenuItem(menu, "west", "Push West");
-	AddMenuItem(menu, "hover", "Hover");
-	
-	AddMenuItem(menu, "nogravity", "No Gravity verwrite");
-	AddMenuItem(menu, "noboost", "Disable Style Boost");
-	AddMenuItem(menu, "block", "Toggle Noblock");
-	
-	AddMenuItem(menu, "noauto", "Disable Auto Bhop");
-	AddMenuItem(menu, "auto", "Enable Auto Bhop");
-	
-	AddMenuItem(menu, "npc_next", "NPC Teleporter");
-	AddMenuItem(menu, "npc_next_double", "NPC Double Teleporter");
-	
-	AddMenuItem(menu, "longjump", "Long Jump Stats");
-	AddMenuItem(menu, "arena", "PvP Arena");
-	AddMenuItem(menu, "jail", "Jail");
-	AddMenuItem(menu, "bullettime", "Bullettime");
-	
-	AddMenuItem(menu, "freestyle", "Freestyle Zone");
-	
-	//AddMenuItem(menu, "clip", "Clip");
-	//AddMenuItem(menu, "bounceback", "Bounce Back");
+	if(category == 0)
+	{
+		AddMenuItem(menu, "cat_timer", "Timer");
+		AddMenuItem(menu, "cat_timer_bonus", "Timer (Bonus)");
+		AddMenuItem(menu, "cat_timer_other", "Timer (Other)");
+		AddMenuItem(menu, "cat_physics", "Physics");
+		AddMenuItem(menu, "cat_teleport", "Teleport");
+		AddMenuItem(menu, "cat_control", "Control");
+		AddMenuItem(menu, "cat_speed", "Speed");
+		AddMenuItem(menu, "cat_other", "Other");
+	}
+	else if(category == 1)
+	{
+		AddMenuItem(menu, "level", "Level");
+		AddMenuItem(menu, "start", "Start");
+		AddMenuItem(menu, "end", "End");
+		AddMenuItem(menu, "short_end", "Short End");
+	}
+	else if(category == 2)
+	{
+		AddMenuItem(menu, "bonuslevel", "Bonus Level");
+		AddMenuItem(menu, "bonusstart", "Bonus Start");
+		AddMenuItem(menu, "bonusend", "Bonus End");
+	}
+	else if(category == 3)
+	{
+		AddMenuItem(menu, "stop", "Stop");
+		AddMenuItem(menu, "restart", "Restart");
+		AddMenuItem(menu, "reset", "Reset");
+		AddMenuItem(menu, "restart_normal", "Restart Normal Timer");
+		AddMenuItem(menu, "restart_bonus", "Restart Bonus Timer");
+	}
+	else if(category == 4)
+	{
+		AddMenuItem(menu, "auto", "Enable Auto Bhop");
+		AddMenuItem(menu, "noauto", "Disable Auto Bhop");
+		AddMenuItem(menu, "nogravity", "No Gravity verwrite");
+		AddMenuItem(menu, "noboost", "Disable Style Boost");
+		AddMenuItem(menu, "block", "Toggle Noblock");
+	}
+	else if(category == 5)
+	{
+		AddMenuItem(menu, "last", "Teleport Last");
+		AddMenuItem(menu, "next", "Teleport Next");
+		AddMenuItem(menu, "npc_next", "NPC Teleporter");
+		AddMenuItem(menu, "npc_next_double", "NPC Double Teleporter");
+	}
+	else if(category == 6)
+	{
+		AddMenuItem(menu, "freestyle", "Freestyle");
+		AddMenuItem(menu, "up", "Push Up");
+		AddMenuItem(menu, "down", "Push Down");
+		AddMenuItem(menu, "north", "Push North");
+		AddMenuItem(menu, "south", "Push South");
+		AddMenuItem(menu, "east", "Push East");
+		AddMenuItem(menu, "west", "Push West");
+		AddMenuItem(menu, "hover", "Hover");
+	}
+	else if(category == 7)
+	{
+		AddMenuItem(menu, "limit", "Speed Limit");
+		
+		AddMenuItem(menu, "booster", "Booster");
+		AddMenuItem(menu, "fullbooster", "Fullbooster");
+	}
+	else if(category == 8)
+	{
+		AddMenuItem(menu, "longjump", "Long Jump Stats");
+		AddMenuItem(menu, "arena", "PvP Arena");
+		AddMenuItem(menu, "jail", "Jail");
+		AddMenuItem(menu, "bullettime", "Bullettime");
+		//AddMenuItem(menu, "clip", "Clip");
+		//AddMenuItem(menu, "bounceback", "Bounce Back");
+	}
 	
 	SetMenuExitButton(menu, true);
 	DisplayMenu(menu, client, 360);
@@ -1770,8 +1794,40 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			new LvlID;
 			new bool:valid = false;
 			new MapZoneType:zonetype;
-			
-			if(StrEqual(info, "start"))
+		
+			if(StrEqual(info, "cat_timer"))
+			{
+				DisplaySelectZoneTypeMenu(client, 1);
+			}
+			else if(StrEqual(info, "cat_bonus_timer"))
+			{
+				DisplaySelectZoneTypeMenu(client, 2);
+			}
+			else if(StrEqual(info, "cat_timer_other"))
+			{
+				DisplaySelectZoneTypeMenu(client, 3);
+			}
+			else if(StrEqual(info, "cat_physics"))
+			{
+				DisplaySelectZoneTypeMenu(client, 4);
+			}
+			else if(StrEqual(info, "cat_teleport"))
+			{
+				DisplaySelectZoneTypeMenu(client, 5);
+			}
+			else if(StrEqual(info, "cat_control"))
+			{
+				DisplaySelectZoneTypeMenu(client, 6);
+			}
+			else if(StrEqual(info, "cat_speed"))
+			{
+				DisplaySelectZoneTypeMenu(client, 7);
+			}
+			else if(StrEqual(info, "cat_other"))
+			{
+				DisplaySelectZoneTypeMenu(client, 8);
+			}
+			else if(StrEqual(info, "start"))
 			{
 				zonetype = ZtStart;
 				ZoneName = "Start";
@@ -2977,12 +3033,21 @@ SpawnZoneEntitys(zone)
 		vecDestination[1] = g_mapZones[zone][Point2][1];
 		vecDestination[2] = g_mapZones[zone][Point2][2];
 		
-		PrecacheModel("models/player/ct_gign.mdl", true);
+		new String:ModePath[256];
+		if(g_mapZones[zone][Type] == ZtNPC_Next)
+		{
+			PrecacheModel(g_Settings[NPC_Path], true);
+			Format(ModePath, sizeof(ModePath), "%s", g_Settings[NPC_Path]);
+		}
+		else if(g_mapZones[zone][Type] == ZtNPC_Next_Double)
+		{
+			PrecacheModel(g_Settings[NPC_Double_Path], true);
+			Format(ModePath, sizeof(ModePath), "%s", g_Settings[NPC_Double_Path]);
+		}
 		
 		new String:EntName[256];
 		Format(EntName, sizeof(EntName), "#DHC_NPC_%d", g_mapZones[zone][Id]);
 		
-		new String:ModePath[] = "models/player/ct_gign.mdl";
 		new String:Classname[] = "prop_physics_override";
 		
 		new entity1 = CreateEntityByName(Classname);

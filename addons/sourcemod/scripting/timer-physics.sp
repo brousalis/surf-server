@@ -29,6 +29,7 @@ new bool:g_timerRankings = false;
 //new bool:g_timerWeapons = false;
 //new bool:g_timerWorldRecord = false;
 
+new Handle:g_OnClientMaxJumpHeight;
 
 new iPrevButtons[MAXPLAYERS+1];
 new Float:fCheckTime[MAXPLAYERS+1];
@@ -237,6 +238,8 @@ public OnPluginStart()
 	//g_timerTeams = LibraryExists("timer-teams");
 	//g_timerWeapons = LibraryExists("timer-weapons");
 	//g_timerWorldRecord = LibraryExists("timer-worldrecord");
+	
+	g_OnClientMaxJumpHeight = CreateGlobalForward("OnClientMaxJumpHeight", ET_Event, Param_Cell,Param_Cell);
 	
 	if(g_bLateLoaded) 
 	{
@@ -649,9 +652,10 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	
 	if(g_fCord_Old[client][2] > g_fCord_New[client][2] && GainHeight)
 	{
-		//PrintToChat(client, "Jumped height max reached: %f units", g_fCord_Old[client][2]-g_fJumpLastCord[client][2]);
-		
-		new ForwardMaxJumpHeight;
+		Call_StartForward(g_OnClientMaxJumpHeight);
+		Call_PushCell(client);
+		Call_PushCell(g_fCord_Old[client][2]-g_fJumpLastCord[client][2]);
+		Call_Finish();
 	}
 		
 	if(!onground && !Client_IsOnLadder(client))
@@ -662,7 +666,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			{
 				if (!(buttons & IN_FORWARD))
 				{
-					StopPlayer(client);
+					abuse = true;
 				}
 			}
 			
@@ -705,7 +709,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				{
 					if (GetClientMovingDirection(client) > 0.45)
 					{
-						StopPlayer(client);
+						abuse = true;
 					}
 				}
 				//forward
@@ -713,7 +717,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				{
 					if (GetClientMovingDirection(client) < -0.45)
 					{
-						StopPlayer(client);
+						abuse = true;
 					}
 				}
 			}
@@ -749,7 +753,6 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	
 	if(abuse)
 	{
-		//StopPlayer(client);
 		Block_MovementControl(client);
 	}
 	else if(g_timerMapzones) if(!Timer_IsPlayerTouchingZoneType(client, ZtPushEast)

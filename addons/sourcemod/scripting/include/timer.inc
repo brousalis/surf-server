@@ -5,7 +5,7 @@
 
 #pragma semicolon 1
 
-#define PL_VERSION		"2.1.0"
+#define PL_VERSION		"2.1.1"
 
 /*** SETTINGS ***/
 
@@ -20,10 +20,16 @@
 
 /*** DON'T CHANGE ***/
 
-//Specmodes
 #define TRACK_NORMAL 				0
 #define TRACK_BONUS 				1
 #define TRACK_SHORT 				2
+
+//Team modes
+#define TEAMMODE_NONE					0
+#define TEAMMODE_CHALLENGE				1
+#define TEAMMODE_COOP					2
+#define TEAMMODE_RACE					3
+#define TEAMMODE_TRIKZ					4
 
 //Colors Includes
 #if defined LEGACY_COLORS
@@ -48,43 +54,35 @@
 #define MAX_CASH 16000
 
 //Specmodes
-#define SPECMODE_NONE 				0
-#define SPECMODE_FIRSTPERSON 		4
-#define SPECMODE_3RDPERSON 			5
-#define SPECMODE_FREELOOK	 		6
+#define SPECMODE_NONE 					0
+#define SPECMODE_FIRSTPERSON 			4
+#define SPECMODE_3RDPERSON 				5
+#define SPECMODE_FREELOOK	 			6
 
 //Start commands
-#define SCMD_START					0
-#define SCMD_RESTART				1
-#define SCMD_BONUSSTART				2
+#define SCMD_START						0
+#define SCMD_RESTART					1
+#define SCMD_BONUSSTART					2
 
-//Team modes
-#define TEAMMODE_NONE				0
-#define TEAMMODE_CHALLENGE			1
-#define TEAMMODE_COOP				2
-#define TEAMMODE_RACE				3
+//Func_ Flags
+#define SF_BUTTON_DONTMOVE				(1<<0)		//dont move when fired (func_button)
+#define SF_BUTTON_TOUCH_ACTIVATES		(1<<8)		//button fires when touched (func_button)
+#define SF_DOOR_PTOUCH					(1<<10)		//player touch opens (func_door)
 
-//Func_Door Flags
-#define SF_BUTTON_DONTMOVE			(1<<0)		//dont move when fired
-#define SF_BUTTON_TOUCH_ACTIVATES	(1<<8)		//button fires when touched
-
-//Func_Button Flags
-#define SF_DOOR_PTOUCH				(1<<10)		//player touch opens
-
-
-#define STAMINA_DISABLED		-1.0
-#define STAMINA_FULL			0.0
-
-#define COLLISION_GROUP_DEBRIS_TRIGGER 2
-#define COLLISION_GROUP_PLAYER 5
-#define COLLISION_GROUP_PUSHAWAY 17
+//Jump Stamina, can reduce landing speed loss and increase max jump high to engine limit
+#define STAMINA_DISABLED				-1.0
+#define STAMINA_FULL					0.0
 
 #define MAX_FILE_LEN 128
 
-#define	DAMAGE_NO				0
-#define DAMAGE_EVENTS_ONLY		1		// Call damage functions, but don't modify health
-#define	DAMAGE_YES				2
-#define	DAMAGE_AIM				3
+#define	DAMAGE_NO						0
+#define DAMAGE_EVENTS_ONLY				1				// Call damage functions, but don't modify health
+#define	DAMAGE_YES						2
+#define	DAMAGE_AIM						3
+
+#define COLLISION_GROUP_DEBRIS_TRIGGER	2		//Noblock
+#define COLLISION_GROUP_PLAYER			5		//Block
+#define COLLISION_GROUP_PUSHAWAY		17		//Push away collision
 
 enum FX
 {
@@ -106,7 +104,7 @@ enum FX
 	FxHologram,					// kRenderFxDistort + distance fade
 	FxExplode,					// Scale up really big!
 	FxGlowShell,				// Glowing Shell
-	FxClampMinScale,		// Keep this sprite from getting very small (SPRITES only!)
+	FxClampMinScale,			// Keep this sprite from getting very small (SPRITES only!)
 	FxEnvRain,					// for environmental rendermode, make rain
 	FxEnvSnow,					// for environmental rendermode, make snow
 	FxSpotlight,
@@ -119,14 +117,14 @@ enum Render
 	Normal = 0, 				// src
 	TransColor, 				// c*a+dest*(1-a)
 	TransTexture,				// src*a+dest*(1-a)
-	Glow,								// src*a+dest -- No Z buffer checks -- Fixed size in screen space
+	Glow,						// src*a+dest -- No Z buffer checks -- Fixed size in screen space
 	TransAlpha,					// src*srca+dest*(1-srca)
-	TransAdd,						// src*a+dest
-	Environmental,			// not drawn, used for environmental effects
-	TransAddFrameBlend,	// use a fractional frame value to blend between animation frames
-	TransAlphaAdd,			// src + dest*(1-a)
+	TransAdd,					// src*a+dest
+	Environmental,				// not drawn, used for environmental effects
+	TransAddFrameBlend,			// use a fractional frame value to blend between animation frames
+	TransAlphaAdd,				// src + dest*(1-a)
 	WorldGlow,					// Same as kRenderGlow but not fixed size in screen space
-	None,								// Don't render.
+	None,						// Don't render.
 }
 
 enum VelocityOverride {
@@ -231,6 +229,8 @@ forward OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentra
 
 forward OnClientStartTouchZoneType(client, MapZoneType:type);
 forward OnClientEndTouchZoneType(client, MapZoneType:type);
+
+forward OnClientMaxJumpHeight(client, Float:height);
 
 forward OnCoopStart(player1,player2);
 forward OnCoopConfirm(player1,player2);
