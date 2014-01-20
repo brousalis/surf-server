@@ -380,6 +380,10 @@ public Timer_SetNTVOpt()
 	MarkNativeAsOptional("Timer_GetRecordTimeInfo");
 	MarkNativeAsOptional("Timer_GetRecordSpeedInfo");
 	MarkNativeAsOptional("Timer_GetRecordStrafeJumpInfo");
+	MarkNativeAsOptional("Timer_GetReplayPath");
+	MarkNativeAsOptional("Timer_GetRecordCustom1");
+	MarkNativeAsOptional("Timer_GetRecordCustom2");
+	MarkNativeAsOptional("Timer_GetRecordCustom3");
 	
 	MarkNativeAsOptional("Timer_GetStrafeCount");
 	MarkNativeAsOptional("Timer_GetBoostedStrafeCount");
