@@ -126,6 +126,10 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Timer_GetRecordSpeedInfo", Native_GetRecordSpeedInfo);
 	CreateNative("Timer_GetRecordStrafeJumpInfo", Native_GetRecordStrafeJumpInfo);
 	CreateNative("Timer_GetRecordTimeInfo", Native_GetRecordTimeInfo);
+	CreateNative("Timer_GetReplayPath", Native_GetReplayPath);
+	CreateNative("Timer_GetRecordCustom1", Native_GetCustom1);
+	CreateNative("Timer_GetRecordCustom2", Native_GetCustom2);
+	CreateNative("Timer_GetRecordCustom3", Native_GetCustom3);
 
 	return APLRes_Success;
 }
@@ -1797,3 +1801,89 @@ public Native_GetRecordStrafeJumpInfo(Handle:plugin, numParams)
 
 	return true;
 }
+
+public Native_GetReplayPath(Handle:plugin, numParams)
+{
+	new mode = GetNativeCell(1);
+	new bonus = GetNativeCell(2);
+	new rank = GetNativeCell(3);
+	new nlen = GetNativeCell(5); 
+	
+	if (nlen <= 0)
+		return false;
+
+	if(rank > 0 && bonus >= 0)
+	{
+		new String:buffer[nlen];
+		Format(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][ReplayPath]);
+		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+			return true;
+	}
+	
+	return false;
+}
+
+public Native_GetCustom1(Handle:plugin, numParams)
+{
+	new mode = GetNativeCell(1);
+	new bonus = GetNativeCell(2);
+	new rank = GetNativeCell(3);
+	new nlen = GetNativeCell(5); 
+	
+	if (nlen <= 0)
+		return false;
+
+	if(rank > 0 && bonus >= 0)
+	{
+		new String:buffer[nlen];
+		Format(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom1]);
+		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+			return true;
+	}
+	
+	return false;
+}
+
+public Native_GetCustom2(Handle:plugin, numParams)
+{
+	new mode = GetNativeCell(1);
+	new bonus = GetNativeCell(2);
+	new rank = GetNativeCell(3);
+	new nlen = GetNativeCell(5); 
+	
+	if (nlen <= 0)
+		return false;
+
+	if(rank > 0 && bonus >= 0)
+	{
+		new String:buffer[nlen];
+		Format(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom2]);
+		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+			return true;
+	}
+	
+	return false;
+}
+
+
+public Native_GetCustom3(Handle:plugin, numParams)
+{
+	new mode = GetNativeCell(1);
+	new bonus = GetNativeCell(2);
+	new rank = GetNativeCell(3);
+	new nlen = GetNativeCell(5); 
+	
+	if (nlen <= 0)
+		return false;
+
+	if(rank > 0 && bonus >= 0)
+	{
+		new String:buffer[nlen];
+		Format(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom3]);
+		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+			return true;
+	}
+	
+	return false;
+}
+
