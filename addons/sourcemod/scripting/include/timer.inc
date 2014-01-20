@@ -5,10 +5,27 @@
 
 #pragma semicolon 1
 
-#define PL_VERSION "2.0.6"
+#define PL_VERSION		"2.1.0"
 
+/*** SETTINGS ***/
+
+//Uncomment this to use colors.inc and disable morecolors.inc
 //#define LEGACY_COLORS "CS:GO Color Support"
 
+//Max number of styles (default 32 ID:0-31)
+#define MAX_MODES	32
+
+//Max. number of door/button based bhop blocks handled in a map
+#define MAX_BHOPBLOCKS	1024
+
+/*** DON'T CHANGE ***/
+
+//Specmodes
+#define TRACK_NORMAL 				0
+#define TRACK_BONUS 				1
+#define TRACK_SHORT 				2
+
+//Colors Includes
 #if defined LEGACY_COLORS
 #include <colors>			//https://forums.alliedmods.net/showpost.php?p=1883578&postcount=311
 #define PLUGIN_PREFIX " {lightred}[{green}Timer{lightred}] %t"
@@ -54,12 +71,9 @@
 //Func_Button Flags
 #define SF_DOOR_PTOUCH				(1<<10)		//player touch opens
 
-#define MAX_MODES 32
 
-#define MAX_BHOPBLOCKS	1024	//max. number of door/button based bhop blocks handled in a map
-
-#define STAMINA_DISABLED	-1.0
-#define STAMINA_FULL	0.0
+#define STAMINA_DISABLED		-1.0
+#define STAMINA_FULL			0.0
 
 #define COLLISION_GROUP_DEBRIS_TRIGGER 2
 #define COLLISION_GROUP_PLAYER 5
@@ -68,7 +82,7 @@
 #define MAX_FILE_LEN 128
 
 #define	DAMAGE_NO				0
-#define DAMAGE_EVENTS_ONLY	1		// Call damage functions, but don't modify health
+#define DAMAGE_EVENTS_ONLY		1		// Call damage functions, but don't modify health
 #define	DAMAGE_YES				2
 #define	DAMAGE_AIM				3
 

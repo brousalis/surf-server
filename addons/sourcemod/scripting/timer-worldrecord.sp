@@ -10,7 +10,8 @@
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
-#define MAX_CACHE 5000
+//Max. number of records per style to cache
+#define MAX_CACHE 1000
 
 /**
  * Global Enums
@@ -19,10 +20,13 @@ enum RecordCache
 {
 	Id,
 	String:Name[32],
+	String:Auth[32],
+	
 	Float:Time,
 	String:TimeString[16],
 	String:Date[32],
-	RecordPhysicsDifficulty,
+	
+	Style,
 	Jumps,
 	Float:JumpAcc,
 	Strafes,
@@ -30,10 +34,24 @@ enum RecordCache
 	Float:AvgSpeed,
 	Float:MaxSpeed,
 	Float:FinishSpeed,
+	
 	Flashbangcount,
+	
+	LevelProcess,
+	
 	CurrentRank,
+	//LastSeenRank,
+	//BestRank,
+	
 	FinishCount,
-	String:Auth[32],
+	//PersonalRecordCount,
+	
+	String:ReplayPath[32],
+	
+	String:Custom1[32],
+	String:Custom2[32],
+	String:Custom3[32],
+	
 	bool:Ignored
 }
 
@@ -762,26 +780,30 @@ RefreshCache()
 			if(g_Physics[mode][ModeCategory] != MCategory_Ranked)
 				continue;
 			
+			new bonus;
+			
 			g_cacheLoaded[mode][0] = false;
 			decl String:query[2048];
-			Format(query, sizeof(query), "SELECT m.id, m.auth, m.time, MAX(m.jumps) jumps, m.physicsdifficulty, m.name, m.date, m.finishcount, m.rank, m.jumpacc, m.finishspeed, m.maxspeed, m.avgspeed, m.strafes, m.strafeacc FROM round AS m INNER JOIN (SELECT MIN(n.time) time, n.auth FROM round n WHERE n.map = '%s' AND n.physicsdifficulty = %d AND n.bonus = '0' GROUP BY n.auth) AS j ON (j.time = m.time AND j.auth = m.auth) WHERE m.map = '%s' AND m.physicsdifficulty = %d GROUP BY m.auth ORDER BY m.time ASC LIMIT 0, %d", g_currentMap, mode, g_currentMap, mode, MAX_CACHE);	
+			Format(query, sizeof(query), "SELECT m.id, m.auth, m.time, MAX(m.jumps) jumps, m.physicsdifficulty, m.name, m.date, m.finishcount, m.levelprocess, m.rank, m.jumpacc, m.finishspeed, m.maxspeed, m.avgspeed, m.strafes, m.strafeacc, m.replaypath, m.custom1, m.custom2, m.custom3 FROM round AS m INNER JOIN (SELECT MIN(n.time) time, n.auth FROM round n WHERE n.map = '%s' AND n.physicsdifficulty = %d AND n.bonus = '%d' GROUP BY n.auth) AS j ON (j.time = m.time AND j.auth = m.auth) WHERE m.map = '%s' AND m.physicsdifficulty = %d GROUP BY m.auth ORDER BY m.time ASC LIMIT 0, %d", g_currentMap, bonus, mode, g_currentMap, mode, MAX_CACHE);	
 			
 			SQL_TQuery(g_hSQL, RefreshCacheCallback, query, mode, DBPrio_Low);
 			
 			if(g_Settings[BonusWrEnable])
 			{
+				bonus = 1;
 				g_cacheLoaded[mode][1] = false;
 				decl String:queryb[2048];
-				Format(queryb, sizeof(queryb), "SELECT m.id, m.auth, m.time, MAX(m.jumps) jumps, m.physicsdifficulty, m.name, m.date, m.finishcount, m.rank, m.jumpacc, m.finishspeed, m.maxspeed, m.avgspeed, m.strafes, m.strafeacc FROM round AS m INNER JOIN (SELECT MIN(n.time) time, n.auth FROM round n WHERE n.map = '%s' AND n.physicsdifficulty = %d AND n.bonus = '1' GROUP BY n.auth) AS j ON (j.time = m.time AND j.auth = m.auth) WHERE m.map = '%s' AND m.physicsdifficulty = %d GROUP BY m.auth ORDER BY m.time ASC LIMIT 0, %d", g_currentMap, mode, g_currentMap, mode, MAX_CACHE);	
+				Format(query, sizeof(query), "SELECT m.id, m.auth, m.time, MAX(m.jumps) jumps, m.physicsdifficulty, m.name, m.date, m.finishcount, m.levelprocess, m.rank, m.jumpacc, m.finishspeed, m.maxspeed, m.avgspeed, m.strafes, m.strafeacc, m.replaypath, m.custom1, m.custom2, m.custom3 FROM round AS m INNER JOIN (SELECT MIN(n.time) time, n.auth FROM round n WHERE n.map = '%s' AND n.physicsdifficulty = %d AND n.bonus = '%d' GROUP BY n.auth) AS j ON (j.time = m.time AND j.auth = m.auth) WHERE m.map = '%s' AND m.physicsdifficulty = %d GROUP BY m.auth ORDER BY m.time ASC LIMIT 0, %d", g_currentMap, bonus, mode, g_currentMap, mode, MAX_CACHE);	
 				
 				SQL_TQuery(g_hSQL, RefreshBonusCacheCallback, queryb, mode, DBPrio_Low);
 			}
 			
 			if(g_Settings[ShortWrEnable])
 			{
+				bonus = 2;
 				g_cacheLoaded[mode][2] = false;
 				decl String:queryc[2048];
-				Format(queryc, sizeof(queryc), "SELECT m.id, m.auth, m.time, MAX(m.jumps) jumps, m.physicsdifficulty, m.name, m.date, m.finishcount, m.rank, m.jumpacc, m.finishspeed, m.maxspeed, m.avgspeed, m.strafes, m.strafeacc FROM round AS m INNER JOIN (SELECT MIN(n.time) time, n.auth FROM round n WHERE n.map = '%s' AND n.physicsdifficulty = %d AND n.bonus = '2' GROUP BY n.auth) AS j ON (j.time = m.time AND j.auth = m.auth) WHERE m.map = '%s' AND m.physicsdifficulty = %d GROUP BY m.auth ORDER BY m.time ASC LIMIT 0, %d", g_currentMap, mode, g_currentMap, mode, MAX_CACHE);	
+				Format(query, sizeof(query), "SELECT m.id, m.auth, m.time, MAX(m.jumps) jumps, m.physicsdifficulty, m.name, m.date, m.finishcount, m.levelprocess, m.rank, m.jumpacc, m.finishspeed, m.maxspeed, m.avgspeed, m.strafes, m.strafeacc, m.replaypath, m.custom1, m.custom2, m.custom3 FROM round AS m INNER JOIN (SELECT MIN(n.time) time, n.auth FROM round n WHERE n.map = '%s' AND n.physicsdifficulty = %d AND n.bonus = '%d' GROUP BY n.auth) AS j ON (j.time = m.time AND j.auth = m.auth) WHERE m.map = '%s' AND m.physicsdifficulty = %d GROUP BY m.auth ORDER BY m.time ASC LIMIT 0, %d", g_currentMap, bonus, mode, g_currentMap, mode, MAX_CACHE);		
 				
 				SQL_TQuery(g_hSQL, RefreshShortCacheCallback, queryc, mode, DBPrio_Low);
 			}
@@ -812,7 +834,7 @@ ClearCache()
 				
 				g_cache[mode][bonus][cache][Time] = 0.0;
 				g_cache[mode][bonus][cache][FinishCount] = 0;
-				g_cache[mode][bonus][cache][RecordPhysicsDifficulty] = 0;
+				g_cache[mode][bonus][cache][Style] = 0;
 				g_cache[mode][bonus][cache][CurrentRank] = 0;
 				g_cache[mode][bonus][cache][Jumps] = 0;
 				g_cache[mode][bonus][cache][JumpAcc] = 0.0;
@@ -827,6 +849,42 @@ ClearCache()
 	}
 }
 
+CollectCache(bonus, any:mode, Handle:hndl)
+{
+	g_cacheCount[mode][bonus] = 0;
+		
+	while (SQL_FetchRow(hndl))
+	{
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Id] = SQL_FetchInt(hndl, 0);
+		SQL_FetchString(hndl, 1, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Auth], 32);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Time] = SQL_FetchFloat(hndl, 2);
+		Timer_SecondsToTime(SQL_FetchFloat(hndl, 2), g_cache[mode][bonus][g_cacheCount[mode][bonus]][TimeString], 16, 2);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Jumps] = SQL_FetchInt(hndl, 3);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Style] = SQL_FetchInt(hndl, 4);
+		SQL_FetchString(hndl, 5, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Name], 32);
+		SQL_FetchString(hndl, 6, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Date], 32);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][FinishCount] = SQL_FetchInt(hndl, 7);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][CurrentRank] = SQL_FetchInt(hndl, 8);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][JumpAcc] = SQL_FetchFloat(hndl, 9);
+		
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][FinishSpeed] = SQL_FetchFloat(hndl, 10);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][MaxSpeed] = SQL_FetchFloat(hndl, 11);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][AvgSpeed] = SQL_FetchFloat(hndl, 12);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Strafes] = SQL_FetchInt(hndl, 13);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][StrafeAcc] = SQL_FetchFloat(hndl, 14);
+		SQL_FetchString(hndl, 15, g_cache[mode][bonus][g_cacheCount[mode][bonus]][ReplayPath], 32);
+		SQL_FetchString(hndl, 16, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom1], 32);
+		SQL_FetchString(hndl, 17, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom2], 32);
+		SQL_FetchString(hndl, 18, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom3], 32);
+		
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Ignored] = false;
+		
+		g_cacheCount[mode][bonus]++;
+	}
+		
+	g_cacheLoaded[mode][bonus] = true;
+}
+
 public RefreshCacheCallback(Handle:owner, Handle:hndl, const String:error[], any:mode)
 {
 	if (hndl == INVALID_HANDLE)
@@ -835,34 +893,7 @@ public RefreshCacheCallback(Handle:owner, Handle:hndl, const String:error[], any
 		return;
 	}
 	
-	g_cacheCount[mode][0] = 0;
-		
-	while (SQL_FetchRow(hndl))
-	{
-		g_cache[mode][0][g_cacheCount[mode][0]][Id] = SQL_FetchInt(hndl, 0);
-		SQL_FetchString(hndl, 1, g_cache[mode][0][g_cacheCount[mode][0]][Auth], 32);
-		g_cache[mode][0][g_cacheCount[mode][0]][Time] = SQL_FetchFloat(hndl, 2);
-		Timer_SecondsToTime(SQL_FetchFloat(hndl, 2), g_cache[mode][0][g_cacheCount[mode][0]][TimeString], 16, 2);
-		g_cache[mode][0][g_cacheCount[mode][0]][Jumps] = SQL_FetchInt(hndl, 3);
-		g_cache[mode][0][g_cacheCount[mode][0]][RecordPhysicsDifficulty] = SQL_FetchInt(hndl, 4);
-		SQL_FetchString(hndl, 5, g_cache[mode][0][g_cacheCount[mode][0]][Name], 32);
-		SQL_FetchString(hndl, 6, g_cache[mode][0][g_cacheCount[mode][0]][Date], 32);
-		g_cache[mode][0][g_cacheCount[mode][0]][FinishCount] = SQL_FetchInt(hndl, 7);
-		g_cache[mode][0][g_cacheCount[mode][0]][CurrentRank] = SQL_FetchInt(hndl, 8);
-		g_cache[mode][0][g_cacheCount[mode][0]][JumpAcc] = SQL_FetchFloat(hndl, 9);
-		
-		g_cache[mode][0][g_cacheCount[mode][0]][FinishSpeed] = SQL_FetchFloat(hndl, 10);
-		g_cache[mode][0][g_cacheCount[mode][0]][MaxSpeed] = SQL_FetchFloat(hndl, 11);
-		g_cache[mode][0][g_cacheCount[mode][0]][AvgSpeed] = SQL_FetchFloat(hndl, 12);
-		g_cache[mode][0][g_cacheCount[mode][0]][Strafes] = SQL_FetchInt(hndl, 13);
-		g_cache[mode][0][g_cacheCount[mode][0]][StrafeAcc] = SQL_FetchFloat(hndl, 14);
-		
-		g_cache[mode][0][g_cacheCount[mode][0]][Ignored] = false;
-		
-		g_cacheCount[mode][0]++;
-	}
-		
-	g_cacheLoaded[mode][0] = true;
+	CollectCache(TRACK_NORMAL, mode, hndl);
 	
 	CreateTimer(3.0, Timer_ReloadBestCache, mode, TIMER_FLAG_NO_MAPCHANGE);
 }
@@ -875,34 +906,7 @@ public RefreshBonusCacheCallback(Handle:owner, Handle:hndl, const String:error[]
 		return;
 	}
 	
-	g_cacheCount[mode][1] = 0;
-		
-	while (SQL_FetchRow(hndl))
-	{
-		g_cache[mode][1][g_cacheCount[mode][1]][Id] = SQL_FetchInt(hndl, 0);
-		SQL_FetchString(hndl, 1, g_cache[mode][1][g_cacheCount[mode][1]][Auth], 32);
-		g_cache[mode][1][g_cacheCount[mode][1]][Time] = SQL_FetchFloat(hndl, 2);
-		Timer_SecondsToTime(SQL_FetchFloat(hndl, 2), g_cache[mode][1][g_cacheCount[mode][1]][TimeString], 16, 2);
-		g_cache[mode][1][g_cacheCount[mode][1]][Jumps] = SQL_FetchInt(hndl, 3);
-		g_cache[mode][1][g_cacheCount[mode][1]][RecordPhysicsDifficulty] = SQL_FetchInt(hndl, 4);
-		SQL_FetchString(hndl, 5, g_cache[mode][1][g_cacheCount[mode][1]][Name], 32);
-		SQL_FetchString(hndl, 6, g_cache[mode][1][g_cacheCount[mode][1]][Date], 32);
-		g_cache[mode][1][g_cacheCount[mode][1]][FinishCount] = SQL_FetchInt(hndl, 7);
-		g_cache[mode][1][g_cacheCount[mode][1]][CurrentRank] = SQL_FetchInt(hndl, 8);
-		g_cache[mode][1][g_cacheCount[mode][1]][JumpAcc] = SQL_FetchFloat(hndl, 9);
-		
-		g_cache[mode][1][g_cacheCount[mode][1]][FinishSpeed] = SQL_FetchFloat(hndl, 10);
-		g_cache[mode][1][g_cacheCount[mode][1]][MaxSpeed] = SQL_FetchFloat(hndl, 11);
-		g_cache[mode][1][g_cacheCount[mode][1]][AvgSpeed] = SQL_FetchFloat(hndl, 12);
-		g_cache[mode][1][g_cacheCount[mode][1]][Strafes] = SQL_FetchInt(hndl, 13);
-		g_cache[mode][1][g_cacheCount[mode][1]][StrafeAcc] = SQL_FetchFloat(hndl, 14);
-		
-		g_cache[mode][1][g_cacheCount[mode][1]][Ignored] = false;
-		
-		g_cacheCount[mode][1]++;
-	}
-		
-	g_cacheLoaded[mode][1] = true;
+	CollectCache(TRACK_SHORT, mode, hndl);
 	
 	CreateTimer(3.0, Timer_ReloadBestBonusCache, mode, TIMER_FLAG_NO_MAPCHANGE);
 }
@@ -915,115 +919,53 @@ public RefreshShortCacheCallback(Handle:owner, Handle:hndl, const String:error[]
 		return;
 	}
 	
-	g_cacheCount[mode][2] = 0;
-		
-	while (SQL_FetchRow(hndl))
-	{
-		g_cache[mode][2][g_cacheCount[mode][2]][Id] = SQL_FetchInt(hndl, 0);
-		SQL_FetchString(hndl, 1, g_cache[mode][2][g_cacheCount[mode][2]][Auth], 32);
-		g_cache[mode][2][g_cacheCount[mode][2]][Time] = SQL_FetchFloat(hndl, 2);
-		Timer_SecondsToTime(SQL_FetchFloat(hndl, 2), g_cache[mode][2][g_cacheCount[mode][2]][TimeString], 16, 2);
-		g_cache[mode][2][g_cacheCount[mode][2]][Jumps] = SQL_FetchInt(hndl, 3);
-		g_cache[mode][2][g_cacheCount[mode][2]][RecordPhysicsDifficulty] = SQL_FetchInt(hndl, 4);
-		SQL_FetchString(hndl, 5, g_cache[mode][2][g_cacheCount[mode][2]][Name], 32);
-		SQL_FetchString(hndl, 6, g_cache[mode][2][g_cacheCount[mode][2]][Date], 32);
-		g_cache[mode][2][g_cacheCount[mode][2]][FinishCount] = SQL_FetchInt(hndl, 7);
-		g_cache[mode][2][g_cacheCount[mode][2]][CurrentRank] = SQL_FetchInt(hndl, 8);
-		g_cache[mode][2][g_cacheCount[mode][2]][JumpAcc] = SQL_FetchFloat(hndl, 9);
-		
-		g_cache[mode][2][g_cacheCount[mode][2]][FinishSpeed] = SQL_FetchFloat(hndl, 10);
-		g_cache[mode][2][g_cacheCount[mode][2]][MaxSpeed] = SQL_FetchFloat(hndl, 11);
-		g_cache[mode][2][g_cacheCount[mode][2]][AvgSpeed] = SQL_FetchFloat(hndl, 12);
-		g_cache[mode][2][g_cacheCount[mode][2]][Strafes] = SQL_FetchInt(hndl, 13);
-		g_cache[mode][2][g_cacheCount[mode][2]][StrafeAcc] = SQL_FetchFloat(hndl, 14);
-		
-		g_cache[mode][2][g_cacheCount[mode][2]][Ignored] = false;
-		
-		g_cacheCount[mode][2]++;
-	}
-		
-	g_cacheLoaded[mode][2] = true;
+	CollectCache(TRACK_SHORT, mode, hndl);
 	
 	CreateTimer(3.0, Timer_ReloadBestShortCache, mode, TIMER_FLAG_NO_MAPCHANGE);
 }
 
-public Action:Timer_ReloadBestCache(Handle:timer, Handle:mode)
+CollectBestCache(bonus, any:mode)
 {
-	g_cachestats[mode][0][RecordStatsCount] = 0;
-	g_cachestats[mode][0][RecordStatsID] = 0;
-	g_cachestats[mode][0][RecordStatsBestTime] = 0.0;
-	Format(g_cachestats[mode][0][RecordStatsName], 32, "");
-	Format(g_cachestats[mode][0][RecordStatsBestTimeString], 32, "");
+	g_cachestats[mode][bonus][RecordStatsCount] = 0;
+	g_cachestats[mode][bonus][RecordStatsID] = 0;
+	g_cachestats[mode][bonus][RecordStatsBestTime] = 0.0;
+	Format(g_cachestats[mode][bonus][RecordStatsName], 32, "");
+	Format(g_cachestats[mode][bonus][RecordStatsBestTimeString], 32, "");
 	
-	for (new i = 0; i < g_cacheCount[mode][0]; i++)
+	for (new i = 0; i < g_cacheCount[mode][bonus]; i++)
 	{
-		if(g_cache[mode][0][i][Time] <= 0.0)
+		if(g_cache[mode][bonus][i][Time] <= 0.0)
 			continue;
 		
-		g_cachestats[mode][0][RecordStatsCount]++;
+		g_cachestats[mode][bonus][RecordStatsCount]++;
 		
-		if(g_cachestats[mode][0][RecordStatsBestTime] == 0.0 || g_cachestats[mode][0][RecordStatsBestTime] > g_cache[mode][0][i][Time])
+		if(g_cachestats[mode][bonus][RecordStatsBestTime] == 0.0 || g_cachestats[mode][bonus][RecordStatsBestTime] > g_cache[mode][bonus][i][Time])
 		{
-			g_cachestats[mode][0][RecordStatsID] = g_cache[mode][0][i][Id];
-			g_cachestats[mode][0][RecordStatsBestTime] = g_cache[mode][0][i][Time];
-			Format(g_cachestats[mode][0][RecordStatsBestTimeString], 32, "%s", g_cache[mode][0][i][TimeString]);
-			Format(g_cachestats[mode][0][RecordStatsName], 32, "%s", g_cache[mode][0][i][Name]);
+			g_cachestats[mode][bonus][RecordStatsID] = g_cache[mode][bonus][i][Id];
+			g_cachestats[mode][bonus][RecordStatsBestTime] = g_cache[mode][bonus][i][Time];
+			Format(g_cachestats[mode][bonus][RecordStatsBestTimeString], 32, "%s", g_cache[mode][bonus][i][TimeString]);
+			Format(g_cachestats[mode][bonus][RecordStatsName], 32, "%s", g_cache[mode][bonus][i][Name]);
 		}
 	}
+}
+
+public Action:Timer_ReloadBestCache(Handle:timer, Handle:mode)
+{
+	CollectBestCache(TRACK_NORMAL, mode);
 	
 	return Plugin_Stop;
 }
 
 public Action:Timer_ReloadBestBonusCache(Handle:timer, Handle:mode)
 {
-	g_cachestats[mode][1][RecordStatsCount] = 0;
-	g_cachestats[mode][1][RecordStatsID] = 0;
-	g_cachestats[mode][1][RecordStatsBestTime] = 0.0;
-	Format(g_cachestats[mode][1][RecordStatsName], 32, "");
-	Format(g_cachestats[mode][1][RecordStatsBestTimeString], 32, "");
-	
-	for (new i = 0; i < g_cacheCount[mode][1]; i++)
-	{
-		if(g_cache[mode][1][i][Time] <= 0.0)
-			continue;
-		
-		g_cachestats[mode][1][RecordStatsCount]++;
-		
-		if(g_cachestats[mode][1][RecordStatsBestTime] == 0.0 || g_cachestats[mode][1][RecordStatsBestTime] > g_cache[mode][1][i][Time])
-		{
-			g_cachestats[mode][1][RecordStatsID] = g_cache[mode][1][i][Id];
-			g_cachestats[mode][1][RecordStatsBestTime] = g_cache[mode][1][i][Time];
-			Format(g_cachestats[mode][1][RecordStatsBestTimeString], 32, "%s", g_cache[mode][1][i][TimeString]);
-			Format(g_cachestats[mode][1][RecordStatsName], 32, "%s", g_cache[mode][1][i][Name]);
-		}
-	}
+	CollectBestCache(TRACK_BONUS, mode);
 	
 	return Plugin_Stop;
 }
 
 public Action:Timer_ReloadBestShortCache(Handle:timer, Handle:mode)
 {
-	g_cachestats[mode][2][RecordStatsCount] = 0;
-	g_cachestats[mode][2][RecordStatsID] = 0;
-	g_cachestats[mode][2][RecordStatsBestTime] = 0.0;
-	Format(g_cachestats[mode][2][RecordStatsName], 32, "");
-	Format(g_cachestats[mode][2][RecordStatsBestTimeString], 32, "");
-	
-	for (new i = 0; i < g_cacheCount[mode][2]; i++)
-	{
-		if(g_cache[mode][2][i][Time] <= 0.0)
-			continue;
-		
-		g_cachestats[mode][2][RecordStatsCount]++;
-		
-		if(g_cachestats[mode][2][RecordStatsBestTime] == 0.0 || g_cachestats[mode][2][RecordStatsBestTime] > g_cache[mode][2][i][Time])
-		{
-			g_cachestats[mode][2][RecordStatsID] = g_cache[mode][2][i][Id];
-			g_cachestats[mode][2][RecordStatsBestTime] = g_cache[mode][2][i][Time];
-			Format(g_cachestats[mode][2][RecordStatsBestTimeString], 32, "%s", g_cache[mode][2][i][TimeString]);
-			Format(g_cachestats[mode][2][RecordStatsName], 32, "%s", g_cache[mode][2][i][Name]);
-		}
-	}
+	CollectBestCache(TRACK_SHORT, mode);
 	
 	return Plugin_Stop;
 }

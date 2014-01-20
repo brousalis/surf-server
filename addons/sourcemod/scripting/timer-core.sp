@@ -1062,12 +1062,15 @@ public db_createTables(String:driver[16])
 	if (StrEqual(driver, "mysql", false))
 	{
 		SQL_FastQuery(g_hSQL, "SET NAMES  'utf8'");
-		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `round` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` int(11) NOT NULL, `jumpacc` float NOT NULL, `strafes` int(11) NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `finishspeed` float NOT NULL, `flashbangcount` int(11) NOT NULL, `rank` int(11) NOT NULL, `replaypath` varchar(32) NOT NULL, `finishcount` int(11) NOT NULL, `physicsdifficulty` int(11) NOT NULL, `name` varchar(64) CHARACTER SET utf8 NOT NULL, `fpsmax` int(11) NOT NULL, `bonus` int(11) NOT NULL, PRIMARY KEY (`id`), date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
+		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `round` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` int(11) NOT NULL, `jumpacc` float NOT NULL, `strafes` int(11) NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `finishspeed` float NOT NULL, `flashbangcount` int(11) NOT NULL, `rank` int(11) NOT NULL, `replaypath` varchar(32) NOT NULL, `custom1` varchar(32) NOT NULL, `custom2` varchar(32) NOT NULL, `custom3` varchar(32) NOT NULL, `finishcount` int(11) NOT NULL, `levelprocess` int(11) NOT NULL, `physicsdifficulty` int(11) NOT NULL, `name` varchar(64) CHARACTER SET utf8 NOT NULL, `fpsmax` int(11) NOT NULL, `bonus` int(11) NOT NULL, PRIMARY KEY (`id`), date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 	}
+	
 	else if (StrEqual(driver, "sqlite", false))
 	{
-		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `round` (`id` INTEGER PRIMARY KEY, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` INTEGER NOT NULL, `jumpacc` float NOT NULL, `strafes` INTEGER NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `flashbangcount` INTEGER NOT NULL, `rank` INTEGER NOT NULL, `replaypath` varchar(32) NOT NULL, `finishcount` INTEGER NOT NULL, `physicsdifficulty` INTEGER NOT NULL, `name` varchar(64) NOT NULL, `fpsmax` INTEGER NOT NULL), `bonus` INTEGER NOT NULL, date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
+		SetFailState("Timer ERROR: SqLite is not supported, please check you databases.cfg and use MySQL driver");
+		//SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `round` (`id` INTEGER PRIMARY KEY, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` INTEGER NOT NULL, `jumpacc` float NOT NULL, `strafes` INTEGER NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `flashbangcount` INTEGER NOT NULL, `rank` INTEGER NOT NULL, `replaypath` varchar(32) NOT NULL, `finishcount` INTEGER NOT NULL, `physicsdifficulty` INTEGER NOT NULL, `name` varchar(64) NOT NULL, `fpsmax` INTEGER NOT NULL), `bonus` INTEGER NOT NULL, date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 	}
+	
 
 	SQL_UnlockDatabase(g_hSQL);
 }
