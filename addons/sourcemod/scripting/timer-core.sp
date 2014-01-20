@@ -93,6 +93,7 @@ new Handle:g_timerFirstRecordForward;
 new Handle:g_timerRecordForward;
 
 new g_iVelocity;
+new GameMod:mod;
 
 public Plugin:myinfo =
 {
@@ -143,6 +144,9 @@ public OnPluginStart()
 	LoadTimerSettings();
 	
 	CreateConVar("timer_version", PL_VERSION, "Timer Version", FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
+	
+	RegConsoleCmd("sm_credits", Command_Credits);
+	mod = GetGameMod();
 	
 	g_timerStartedForward = CreateGlobalForward("OnTimerStarted", ET_Event, Param_Cell);
 	g_timerStoppedForward = CreateGlobalForward("OnTimerStopped", ET_Event, Param_Cell);
@@ -1266,3 +1270,238 @@ stock GetClientAbsVelocity(client, Float:vecVelocity[3])
 		vecVelocity[x] = GetEntDataFloat(client, g_iVelocity + (x*4));
 	}
 }
+
+// CREDITS
+public Action:Command_Credits(client, args)
+{
+	CreditsPanel(client);
+	
+	return Plugin_Handled;
+}
+
+public CreditsPanel(client)
+{
+	new Handle:panel = CreatePanel();
+	SetPanelTitle(panel, "- DMT|Timer Credits -");
+	
+	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 8);
+	else SetPanelCurrentKey(panel, 9);
+	
+	DrawPanelText(panel, "     -- Page 1/4 --");
+	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "Zipcore - Creator and Main Coder of plugin");
+	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "Alongub - Old Timer Core");
+	DrawPanelText(panel, "Shavit - Added new features and supported plugin");
+	DrawPanelText(panel, "Paduh - Rankings system");
+	DrawPanelText(panel, "Das D - Chatrank, Player Info, Timer Info, Chatextension");
+	DrawPanelText(panel, "DaFox - MultiPlayer Bunny Hops");
+	DrawPanelText(panel, "Peace-Maker - Bot Mimic 2, Backwards and more");
+	DrawPanelText(panel, " ");
+	DrawPanelItem(panel, "- Next -");
+	DrawPanelItem(panel, "- Exit -");
+	SendPanelToClient(panel, client, CreditsHandler1, MENU_TIME_FOREVER);
+
+	CloseHandle(panel);
+}
+
+public CreditsHandler1 (Handle:menu, MenuAction:action,param1, param2)
+{
+    if ( action == MenuAction_Select )
+    {
+		if(mod == MOD_CSGO) 
+		{
+			switch (param2)
+			{
+				case 8:
+				{
+					CreditsPanel2(param1);
+				}
+			}
+		}
+		else
+		{
+			switch (param2)
+			{
+				case 9:
+				{
+					CreditsPanel2(param1);
+				}
+			}
+		}
+    }
+}
+
+public CreditsPanel2(client)
+{
+	new Handle:panel = CreatePanel();
+	SetPanelTitle(panel, "- DMT|Timer Credits -");
+	
+	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 7);
+	else SetPanelCurrentKey(panel, 8);
+	
+	DrawPanelText(panel, "     -- Page 2/4 --");
+	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "0wn3r - Many small improvements");
+	DrawPanelText(panel, "Justshoot - LJ Stats");
+	DrawPanelText(panel, "DieterM75 - Checkpoint System");
+	DrawPanelText(panel, "Skippy - Trigger Hooks");
+	DrawPanelText(panel, "GoD-Tony - AutoTrigger Detection");
+	DrawPanelText(panel, "Miu - Strafe Stats");
+	DrawPanelText(panel, "Inami - Macrodox Detection");
+	DrawPanelText(panel, " ");
+	DrawPanelItem(panel, "- Back -");
+	DrawPanelItem(panel, "- Next -");
+	DrawPanelItem(panel, "- Exit -");
+	SendPanelToClient(panel, client, CreditsHandler2, MENU_TIME_FOREVER);
+
+	CloseHandle(panel);
+}
+
+public CreditsHandler2 (Handle:menu, MenuAction:action,param1, param2)
+{
+    if ( action == MenuAction_Select )
+    {
+		if(mod == MOD_CSGO) 
+		{
+			switch (param2)
+			{
+				case 7:
+				{
+					CreditsPanel(param1);
+				}
+				case 8:
+				{
+					CreditsPanel3(param1);
+				}
+			}
+		}
+		else
+		{
+			switch (param2)
+			{
+				case 8:
+				{
+					CreditsPanel(param1);
+				}
+				case 9:
+				{
+					CreditsPanel3(param1);
+				}
+			}
+		}
+    }
+}
+
+public CreditsPanel3(client)
+{
+	new Handle:panel = CreatePanel();
+	SetPanelTitle(panel, "- DMT|Timer Credits -");
+	
+	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 7);
+	else SetPanelCurrentKey(panel, 8);
+	
+	DrawPanelText(panel, "     -- Page 3/4 --");
+	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "SMAC Team - Trigger Detection");
+	DrawPanelText(panel, "Jason Bourne - Challenge, Custom-HUD");
+	DrawPanelText(panel, " ");
+	DrawPanelText(panel, " ");
+	DrawPanelText(panel, " ");
+	DrawPanelText(panel, " ");
+	DrawPanelText(panel, " ");
+	DrawPanelText(panel, " ");
+	DrawPanelItem(panel, "- Back -");
+	DrawPanelItem(panel, "- Next -");
+	DrawPanelItem(panel, "- Exit -");
+	SendPanelToClient(panel, client, CreditsHandler3, MENU_TIME_FOREVER);
+
+	CloseHandle(panel);
+}
+
+public CreditsHandler3 (Handle:menu, MenuAction:action,param1, param2)
+{
+    if ( action == MenuAction_Select )
+    {
+		if(mod == MOD_CSGO) 
+		{
+			switch (param2)
+			{
+				case 7:
+				{
+					CreditsPanel2(param1);
+				}
+				case 8:
+				{
+					CreditsPanel4(param1);
+				}
+			}
+		}
+		else
+		{
+			switch (param2)
+			{
+				case 8:
+				{
+					CreditsPanel2(param1);
+				}
+				case 9:
+				{
+					CreditsPanel4(param1);
+				}
+			}
+		}
+    }
+}
+
+public CreditsPanel4(client)
+{
+	new Handle:panel = CreatePanel();
+	SetPanelTitle(panel, "- DMT|Timer Credits -");
+	
+	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 7);
+	else SetPanelCurrentKey(panel, 8);
+	
+	DrawPanelText(panel, "     -- Page 4/4 --");
+	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "   ---- Special Thanks ----");
+	DrawPanelText(panel, "AlliedModders, .#IsKulT, Jacky, Shadow[DK],");
+	DrawPanelText(panel, "Korki, Joy, Blackpanther, Popping-Fresh,");
+	DrawPanelText(panel, "Dirthy Secret, KackEinKrug, Blackout, Cru,");
+	DrawPanelText(panel, "Shadow, Schoschy, Extan, cREANy0,");
+	DrawPanelText(panel, "Kolapsicle, DevilHunterMultigaming, ");
+	DrawPanelText(panel, "and many others");
+	DrawPanelText(panel, " ");
+	DrawPanelItem(panel, "- Back -");
+	DrawPanelItem(panel, "- Next -", ITEMDRAW_SPACER);
+	DrawPanelItem(panel, "- Exit -");
+	SendPanelToClient(panel, client, CreditsHandler4, MENU_TIME_FOREVER);
+
+	CloseHandle(panel);
+}
+
+public CreditsHandler4 (Handle:menu, MenuAction:action,param1, param2)
+{
+    if ( action == MenuAction_Select )
+    {
+		if(mod == MOD_CSGO) 
+		{
+			switch (param2)
+			{
+				case 7:
+				{
+					CreditsPanel3(param1);
+				}
+			}
+		}
+		else
+		{
+			switch (param2)
+			{
+				case 8:
+				{
+					CreditsPanel3(param1);
+				}
+			}
+		}
+    }

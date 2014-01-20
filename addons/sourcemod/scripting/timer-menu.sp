@@ -52,7 +52,7 @@ public Action:Command_HelpMenu(client, args)
 public HelpPanel(client)
 {
 	new Handle:panel = CreatePanel();
-	SetPanelTitle(panel, "- DMT|Timer by Zipcore -");
+	SetPanelTitle(panel, "- DMT|Timer Help Menu - \nby Zipcore");
 	
 	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 8);
 	else SetPanelCurrentKey(panel, 9);
@@ -117,7 +117,7 @@ public PanelHandler1 (Handle:menu, MenuAction:action,param1, param2)
 public HelpPanel2(client)
 {
 	new Handle:panel = CreatePanel();
-	SetPanelTitle(panel, "- DMT|Timer by Zipcore -");
+	SetPanelTitle(panel, "- DMT|Timer Help Menu - \nby Zipcore");
 	
 	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 7);
 	else SetPanelCurrentKey(panel, 8);
@@ -125,12 +125,41 @@ public HelpPanel2(client)
 	DrawPanelText(panel, "         -- Page 2/4 --");
 	DrawPanelText(panel, " ");
 	DrawPanelText(panel, "!spectate - Go to spectators");
-	DrawPanelText(panel, "!stage - Teleport to any Stage");
-	DrawPanelText(panel, "!stage <number> - Teleport to a stage (not finished)");
-	DrawPanelText(panel, "!tpto - Teleport to another player");
+	if(g_Settings[LevelTeleportEnable])
+	{
+		DrawPanelText(panel, "!stage - Teleport to any Stage");
+		DrawPanelText(panel, "!stage <number> - Teleport to a stage (not finished)");
+	}
+	else
+	{
+		DrawPanelText(panel, "!stage - Server Disabled");
+		DrawPanelText(panel, "!stage <number> - Server Disabled");
+	}
+	if(g_Settings[PlayerTeleportEnable])
+	{
+		DrawPanelText(panel, "!tpto - Teleport to another player");
+	}
+	else
+	{
+		DrawPanelText(panel, "!tpto - Server Disabled");
+	}
 	DrawPanelText(panel, "!hide - Hide other players");
-	DrawPanelText(panel, "!noclipme - Turn On/Off noclip mode");
-	DrawPanelText(panel, "!hud - Customize your HUD");
+	if(g_Settings[NoclipEnable])
+	{
+		DrawPanelText(panel, "!noclipme - Turn On/Off noclip mode");
+	}
+	else
+	{
+		DrawPanelText(panel, "!noclipme - Server Disabled");
+	}
+	if(PluginEnabled("timer-hud.smx"))
+	{
+		DrawPanelText(panel, "!hud - Customize your HUD");
+	}
+	else
+	{
+		DrawPanelText(panel, "!hud - Server Disabled");
+	}
 	DrawPanelText(panel, " ");
 	DrawPanelItem(panel, "- Back -");
 	DrawPanelItem(panel, "- Next -");
@@ -179,16 +208,39 @@ public PanelHandler2 (Handle:menu, MenuAction:action,param1, param2)
 public HelpPanel3(client)
 {
 	new Handle:panel = CreatePanel();
-	SetPanelTitle(panel, "- DMT|Timer by Zipcore -");
+	SetPanelTitle(panel, "- DMT|Timer Help Menu - \nby Zipcore");
 	
 	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 7);
 	else SetPanelCurrentKey(panel, 8);
 	
 	DrawPanelText(panel, "         -- Page 3/4 --");
 	DrawPanelText(panel, " ");
-	DrawPanelText(panel, "!challenge - Challenge another player [Steal points] (not finished)");
-	DrawPanelText(panel, "!coop - Do it together [Extra points] (not finished)");
-	DrawPanelText(panel, "!race - Displays race manager [Extra points] (not finished)");
+	if(g_Settings[ChallengeEnable])
+	{
+		DrawPanelText(panel, "!challenge - Challenge another player [Steal points] (not finished)");
+	}
+	else
+	{
+		DrawPanelText(panel, "!challenge - Server Disabled");
+	}
+	
+	if(g_Settings[CoopEnable])
+	{
+		DrawPanelText(panel, "!coop - Do it together [Extra points] (not finished)");
+	}
+	else
+	{
+		DrawPanelText(panel, "!coop - Server Disabled");
+	}
+	
+	if(g_Settings[RaceEnable])
+	{
+		DrawPanelText(panel, "!race - Displays race manager [Extra points] (not finished)");
+	}
+	else
+	{
+		DrawPanelText(panel, "!race - Server Disabled");
+	}
 	DrawPanelText(panel, "!rank - Displays your rank");
 	DrawPanelText(panel, "!top - Displays top10 of this map");
 	DrawPanelText(panel, "!mtop <mapname> - Displays a maps top10 (not finished)");
@@ -254,8 +306,15 @@ public HelpPanel4(client)
 	DrawPanelText(panel, "!viewranks - View all ranks (not finished)");
 	DrawPanelText(panel, "!viewrecords - View all records (not finished)");
 	DrawPanelText(panel, "!playerinfo <partial playername> - Displays Playerinfos [WEB] (not finished)");
-	DrawPanelText(panel, "!styleinfo - Displays Styleinfo");
-	DrawPanelText(panel, "!credits - Displays Credits (not finished)");
+	if(PluginEnabled("timer-physicsinfo.smx"))
+	{
+		DrawPanelText(panel, "!styleinfo - Displays Styleinfo");
+	}
+	else
+	{
+		DrawPanelText(panel, "!styleinfo - Server Disabled");
+	}
+	DrawPanelText(panel, "!credits - Displays Credits");
 	DrawPanelText(panel, " ");
 	DrawPanelItem(panel, "- Back -");
 	DrawPanelItem(panel, "- Next -", ITEMDRAW_SPACER);
@@ -296,15 +355,26 @@ Menu(client)
 	if (0 < client < MaxClients)
 	{
 		new Handle:menu = CreateMenu(Handle_Menu);
-		
-		SetMenuTitle(menu, "[DMT] Dynamic Mutimode Timer - Main Menu\nby Zipcore");
-		
-		AddMenuItem(menu, "mode", "Change Style");
-		AddMenuItem(menu, "info", "Mode Settings Info");
-		AddMenuItem(menu, "challenge", "Challenge");
-		AddMenuItem(menu, "tele", "Teleport Menu");
+		SetMenuTitle(menu, "DMT|Timer - Main Menu \nby Zipcore");		
+			
+		AddMenuItem(menu, "mode", "Change Style");			
+		if(PluginEnabled("timer-physicsinfo.smx"))
+		{
+			AddMenuItem(menu, "info", "Mode Settings Info");
+		}
+		if(g_Settings[ChallengeEnable])
+		{
+			AddMenuItem(menu, "challenge", "Challenge");
+		}
+		if(PluginEnabled("timer-cpmod.smx") || g_Settings[LevelTeleportEnable] || g_Settings[PlayerTeleportEnable])
+		{
+			AddMenuItem(menu, "tele", "Teleport Menu");
+		}
 		AddMenuItem(menu, "wrm", "World Record Menu");
-		AddMenuItem(menu, "hud", "Custom HUD Settings");
+		if(PluginEnabled("timer-hud.smx"))
+		{
+			AddMenuItem(menu, "hud", "Custom HUD Settings");
+		}
 		AddMenuItem(menu, "credits", "Credits");
 		
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
@@ -345,27 +415,7 @@ public Handle_Menu(Handle:menu, MenuAction:action, client, itemNum)
 			}
 			else if(StrEqual(info, "credits"))
 			{
-				FakeClientCommand(client, "sm_menu");
-				
-				CPrintToChat(client, "{lightred}<-----------------{lightred}Credits:{olive}----------------->");
-				CPrintToChat(client, "{olive}<------------------------------------------>");
-				CPrintToChat(client, "{olive}<----->{lightred}This plugins is made by Zipcore{olive}<---->");
-				CPrintToChat(client, "{olive}<------------------------------------------>");
-				CPrintToChat(client, "{olive}<------------->{lightred}Special Thanks{olive}<------------->");
-				CPrintToChat(client, "{lightred}Alongub: Old Timer Core");
-				CPrintToChat(client, "{lightred}Justshoot: LongJump Stats");
-				CPrintToChat(client, "{lightred}Peace-Maker: Backwards, Bot Mimic/Replay");
-				CPrintToChat(client, "{lightred}Das D: Chatrank, Playerinfo");
-				CPrintToChat(client, "{olive}<--------------{yellow}More Sourcecode{olive}------------->");
-				CPrintToChat(client, "{lightred}Jason Bourne: Challenge, Custom-HUD");
-				CPrintToChat(client, "{lightred}Skippy: Trigger Hooks");
-				CPrintToChat(client, "{lightred}DaFox: Multi Bhop");
-				CPrintToChat(client, "{lightred}DieterM75: CP-Mod");
-				CPrintToChat(client, "{lightred}GoD-Tony: AutoTrigger");
-				CPrintToChat(client, "{olive}<--------------{lightred}Also Thanks To:{olive}------------>");
-				CPrintToChat(client, "{lightred}Also thanks to AlliedModders, Shadow, Schoschy,");
-				CPrintToChat(client, "{lightred}Extan, cREANy0, Joy, Blackpanther, Popping-Fresh,");
-				CPrintToChat(client, "{lightred}Kolapsicle and many others I can't list here!");
+				FakeClientCommand(client, "sm_credits");
 			}
 		}
 	}
@@ -424,9 +474,18 @@ TeleportMenu(client)
 				
 		SetMenuTitle(menu, "Teleport Menu");
 		
-		AddMenuItem(menu, "teleme", "Teleport to Player");
-		AddMenuItem(menu, "levels", "Teleport to Level");
-		AddMenuItem(menu, "checkpoint", "Teleport to Checkpoint ");
+		if(g_Settings[PlayerTeleportEnable])
+		{
+			AddMenuItem(menu, "teleme", "Teleport to Player");
+		}
+		if(g_Settings[LevelTeleportEnable])
+		{
+			AddMenuItem(menu, "levels", "Teleport to Level");
+		}
+		if(PluginEnabled("timer-cpmod.smx"))
+		{
+			AddMenuItem(menu, "checkpoint", "Teleport to Checkpoint");
+		}
 		AddMenuItem(menu, "main", "Back");
 		
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
@@ -461,9 +520,13 @@ public Handle_TeleportMenu(Handle:menu, MenuAction:action, client, itemNum)
 	}
 }
 
-public Action:Command_MapInfo(client, args)
+bool:PluginEnabled(const String:pluginNane[])
 {
-	MapInfoMenu(client);
-	
-	return Plugin_Handled;
+	decl String: pluginPath[PLATFORM_MAX_PATH + 1];
+	BuildPath(Path_SM, pluginPath, sizeof(pluginPath), "plugins/%s", pluginNane);
+	if(FileExists(pluginPath))
+	{
+		return true;
+	}
+	return false;
 }
