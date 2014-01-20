@@ -5,7 +5,7 @@
 
 #pragma semicolon 1
 
-#define PL_VERSION		"2.1.1"
+#define PL_VERSION		"2.1.2"
 
 /*** SETTINGS ***/
 
@@ -293,6 +293,10 @@ native Timer_GetRecordDate(mode, bonus, rank, String:date[], length);
 native Timer_GetRecordTimeInfo(mode, bonus, rank, &Float:time, String:timestring[], length);
 native Timer_GetRecordSpeedInfo(mode, bonus, rank, &Float:avgspeed, &Float:maxspeed, &Float:finishspeed);
 native Timer_GetRecordStrafeJumpInfo(mode, bonus, rank, &strafes, &Float:strafeacc, &jumps, &Float:jumpacc);
+native Timer_GetReplayPath(mode, bonus, rank, String:replay_path[], length);
+native Timer_GetRecordCustom1(mode, bonus, rank, String:custom1[], length);
+native Timer_GetRecordCustom2(mode, bonus, rank, String:custom2[], length);
+native Timer_GetRecordCustom3(mode, bonus, rank, String:custom3[], length);
 
 native Timer_GetStrafeCount(client);
 native Timer_GetBoostedStrafeCount(client);
