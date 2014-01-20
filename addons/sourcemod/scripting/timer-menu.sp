@@ -20,7 +20,8 @@ public OnPluginStart()
 	LoadTimerSettings();
 	
 	RegConsoleCmd("sm_menu", Command_Menu);	
-	RegConsoleCmd("sm_timer", Command_Timer);
+	RegConsoleCmd("sm_timer", Command_HelpMenu);
+	RegConsoleCmd("sm_help", Command_HelpMenu);
 	
 	mod = GetGameMod();
 }
@@ -40,7 +41,7 @@ public Action:Command_Menu(client, args)
 	return Plugin_Handled;
 }
 
-public Action:Command_Timer(client, args)
+public Action:Command_HelpMenu(client, args)
 {
 	HelpPanel(client);
 	
