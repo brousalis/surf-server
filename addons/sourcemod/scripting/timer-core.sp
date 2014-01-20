@@ -1505,3 +1505,4 @@ public CreditsHandler4 (Handle:menu, MenuAction:action,param1, param2)
 			}
 		}
     }
+}
