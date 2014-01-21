@@ -3859,7 +3859,7 @@ public Action:Command_Stuck(client, args)
 	if(!IsPlayerAlive(client)) 
 		return Plugin_Handled;
 	
-	if(Timer_GetStatus(client))
+	if(Timer_GetStatus(client) && g_Settings[StuckPenaltyTime] > 0)
 	{
 		Timer_AddPenaltyTime(client, g_Settings[StuckPenaltyTime]);
 		CPrintToChatAll("%s %N used !stuck and got %ds penalty time.", PLUGIN_PREFIX2, client, g_Settings[StuckPenaltyTime]);
