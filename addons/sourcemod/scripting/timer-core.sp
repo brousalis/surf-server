@@ -2,17 +2,11 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <sdkhooks>
-#include <loghelper>
 #include <smlib>
-#include <smlib/arrays>
-
+#include <timer>
 #include <timer-logging>
 #include <timer-config_loader.sp>
 #include <timer-stocks>
-
-#undef REQUIRE_PLUGIN
-#include <timer>
 
 #define MAX_FILE_LEN 128
 
@@ -309,7 +303,7 @@ public OnClientAuthorized(client, const String:auth[])
 	{
 		if(Client_IsValid(client) && !IsFakeClient(client) && g_hSQL != INVALID_HANDLE)
 		{
-			new String:name[32];
+			new String:name[MAX_NAME_LENGTH];
 			GetClientName(client, name, sizeof(name));
 			
 			decl String:safeName[2 * strlen(name) + 1];

@@ -1,4 +1,7 @@
+#pragma semicolon 1
+
 #include <sourcemod>
+#include <timer>
 #include <timer-config_loader.sp>
 
 public Plugin:myinfo = 
@@ -27,7 +30,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	new String:buffer[512];
 	decl String:auth[32];
 	GetClientAuthString(client, auth, sizeof(auth));
-	decl String:name[128];
+	decl String:name[MAX_NAME_LENGTH];
 	GetClientName(client, name, sizeof(name));
 	
 	Format(buffer, sizeof(buffer), "%s", g_Physics[mode][ModeOnFinishExec]);

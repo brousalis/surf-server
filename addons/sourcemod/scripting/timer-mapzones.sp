@@ -6,7 +6,6 @@
 #include <cstrike>
 #include <adminmenu>
 #include <smlib>
-#include <smlib/arrays>
 #include <timer>
 #include <timer-logging>
 #include <timer-stocks>

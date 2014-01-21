@@ -334,6 +334,22 @@ native Timer_ResetAccuracy(client);
 native Timer_GetCoopStatus(client);
 native Timer_GetChallengeStatus(client);
 
+native Timer_AddScripter(client);
+native Timer_IsScripter(client);
+
+
+
+public SharedPlugin:__pl_timer = 
+{
+	name = "timer",
+	file = "timer-core.smx",
+#if defined REQUIRE_PLUGIN
+	required = 1,
+#else
+	required = 0,
+#endif
+};
+
 public Timer_SetNTVOpt()
 {
 	MarkNativeAsOptional("Timer_Start");
@@ -423,4 +439,9 @@ public Timer_SetNTVOpt()
 	MarkNativeAsOptional("Ranking_AddPoints");
 	MarkNativeAsOptional("Ranking_RemovePoints");
 	MarkNativeAsOptional("Ranking_SavePoints");
+
+	MarkNativeAsOptional("Timer_AddScripter");
+	MarkNativeAsOptional("Timer_IsScripter");
+
 }
+

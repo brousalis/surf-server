@@ -3,8 +3,6 @@
 #include <sourcemod>
 #include <adminmenu>
 
-#include <sdkhooks> // prevent compile error
-
 #include <timer>
 #include <timer-logging>
 #include <timer-stocks>

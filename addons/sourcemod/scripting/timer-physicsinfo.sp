@@ -1,13 +1,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
-#include <adminmenu>
-#include <cstrike>
-#include <sdktools>
-#include <sdkhooks>
-#include <smlib>
 #include <timer>
-#include <timer-logging>
 #include <timer-config_loader.sp>
 
 public Plugin:myinfo =

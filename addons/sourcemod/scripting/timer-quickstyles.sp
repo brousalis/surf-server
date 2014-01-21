@@ -1,11 +1,6 @@
 #pragma semicolon 1
 
 #include <sourcemod>
-#include <adminmenu>
-#include <cstrike>
-#include <sdktools>
-#include <sdkhooks>
-#include <smlib>
 
 #include <timer>
 #include <timer-logging>
@@ -24,9 +19,6 @@ public Plugin:myinfo =
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
 	RegPluginLibrary("timer-quickstyles");
-	
-	AddCommandListener(Client_Say, "say");
-	AddCommandListener(Client_Say, "say_team");
 
 	return APLRes_Success;
 }
@@ -34,6 +26,9 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 public OnPluginStart()
 {
 	LoadPhysics();
+
+	AddCommandListener(Client_Say, "say");
+	AddCommandListener(Client_Say, "say_team");
 }
 
 public OnMapStart()

@@ -1,7 +1,6 @@
 #pragma semicolon 1
 
 #include <sourcemod>
-#include <adminmenu>
 #include <cstrike>
 #include <sdktools>
 #include <sdkhooks>
@@ -218,7 +217,7 @@ public Action:Command_Drop(client, const String:command[], argc)
 				if(weapon > 0)
 				{
 					RemovePlayerItem(client, weapon);
-					RemoveEdict(weapon);
+					AcceptEntityInput(weapon, "kill");
 				}
 			}
 		}
@@ -289,7 +288,7 @@ stock RemovePlayerWeapons(client)
 			if(iWeapon > 0)
 			{
 				RemovePlayerItem(client, iWeapon);
-				RemoveEdict(iWeapon);
+				AcceptEntityInput(iWeapon, "kill");
 			}
 		}
 	}
@@ -303,7 +302,7 @@ stock RemovePlayerKnife(client)
 		if(iWeapon > 0)
 		{
 			RemovePlayerItem(client, iWeapon);
-			RemoveEdict(iWeapon);
+			AcceptEntityInput(iWeapon, "kill");
 		}
 	}
 }
@@ -316,7 +315,7 @@ stock RemovePlayerPrimary(client)
 		if(iWeapon > 0)
 		{
 			RemovePlayerItem(client, iWeapon);
-			RemoveEdict(iWeapon);
+			AcceptEntityInput(iWeapon, "kill");
 		}
 	}
 }
@@ -329,7 +328,7 @@ stock RemovePlayerSecondary(client)
 		if(iWeapon > 0)
 		{
 			RemovePlayerItem(client, iWeapon);
-			RemoveEdict(iWeapon);
+			AcceptEntityInput(iWeapon, "kill");
 		}
 	}
 }
@@ -354,7 +353,7 @@ public Action:Timer_CleanUp(Handle:timer)
 		
 		GetEdictClassname(i, weapon, sizeof(weapon));
 		if (( StrContains(weapon, "weapon_") != -1 || StrContains(weapon, "item_") != -1 ) && GetEntDataEnt2(i, g_WeaponParent) == -1)
-			RemoveEdict(i);
+			AcceptEntityInput(i, "kill");
 	}
 	
 	return Plugin_Continue;

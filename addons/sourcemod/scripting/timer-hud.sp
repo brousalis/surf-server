@@ -5,12 +5,12 @@
 #include <cstrike>
 #include <clientprefs>
 #include <smlib>
+#include <timer>
 #include <timer-logging>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
 #undef REQUIRE_PLUGIN
-#include <timer>
 #include <js_ljstats>
 
 #define THINK_INTERVAL 			1.0

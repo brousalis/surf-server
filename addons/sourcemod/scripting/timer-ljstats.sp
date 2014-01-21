@@ -1,4 +1,6 @@
-#define VERSION "1.2.7"
+#pragma semicolon 1
+
+#define VERSION "1.2.12"
 
 public Plugin:myinfo = {
 	name = "JS_LJstats",
@@ -13,7 +15,6 @@ public Plugin:myinfo = {
 #include <js_ljstats>
 #include <jsfunction>
 #include <smlib>
-#include <smlib/arrays>
 
 #include <timer-logging>
 #include <timer-config_loader.sp>

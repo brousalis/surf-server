@@ -1,7 +1,6 @@
 #pragma semicolon 1
 
 #include <sourcemod>
-#include <sdkhooks> // prevent compile errors
 
 #include <timer>
 #include <timer-logging>

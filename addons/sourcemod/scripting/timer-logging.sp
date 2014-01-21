@@ -1,3 +1,5 @@
+#pragma semicolon 1
+
 #include <timer>
 #include <timer-logging>
 

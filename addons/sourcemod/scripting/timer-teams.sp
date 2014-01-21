@@ -6,12 +6,12 @@
 #include <cstrike>
 #include <smlib>
 
+
+#include <timer>
 #include <timer-logging>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
-#undef REQUIRE_PLUGIN
-#include <timer>
 
 new String:g_currentMap[64];
 

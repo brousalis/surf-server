@@ -7,12 +7,12 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <smlib>
+#include <timer>
 #include <timer-logging>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
 #undef REQUIRE_PLUGIN
-#include <timer>
 #include <js_ljstats>
 
 new bool:g_timer = false;
