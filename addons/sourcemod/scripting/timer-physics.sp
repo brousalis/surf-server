@@ -686,6 +686,30 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
+			if(g_Physics[mode][ModePreventPlusleft])
+			{
+				if (buttons & IN_LEFT) //Can't disable
+				{
+					if(Timer_GetStatus(client) > 0)
+					{
+						CPrintToChat(client, "%s +left is disabled for this mode.", PLUGIN_PREFIX2);
+						Timer_Reset(client);
+					}
+				}
+			}
+			
+			if(g_Physics[mode][ModePreventPlusright])
+			{
+				if (buttons & IN_RIGHT) //Can't disable 
+				{
+					if(Timer_GetStatus(client) > 0)
+					{
+						CPrintToChat(client, "%s +right is disabled for this mode.", PLUGIN_PREFIX2);
+						Timer_Reset(client);
+					}
+				}
+			}
+			
 			if(g_Physics[mode][ModePreventMoveforward])
 			{
 				if (buttons & IN_FORWARD || vel[0] > 0)

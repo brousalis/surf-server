@@ -193,6 +193,8 @@ enum PhysicModes
 	//Buttons
 	bool:ModePreventMoveleft,
 	bool:ModePreventMoveright,
+	bool:ModePreventPlusleft,
+	bool:ModePreventPlusright,
 	bool:ModePreventMoveforward,
 	bool:ModePreventMoveback,
 	bool:ModePreventLeft,
@@ -501,6 +503,8 @@ LoadPhysics()
 			g_Physics[g_ModeCount][ModeBlockMovementDirection] = KvGetNum(hKv, "block_direction", 0);
 			g_Physics[g_ModeCount][ModePreventMoveleft] = bool:KvGetNum(hKv, "prevent_moveleft", 0);
 			g_Physics[g_ModeCount][ModePreventMoveright] = bool:KvGetNum(hKv, "prevent_moveright", 0);
+			g_Physics[g_ModeCount][ModePreventPlusleft] = bool:KvGetNum(hKv, "prevent_plusleft", 0);
+			g_Physics[g_ModeCount][ModePreventPlusright] = bool:KvGetNum(hKv, "prevent_plusright", 0);
 			g_Physics[g_ModeCount][ModePreventLeft] = bool:KvGetNum(hKv, "prevent_left", 0);
 			g_Physics[g_ModeCount][ModePreventRight] = bool:KvGetNum(hKv, "prevent_right", 0);
 			g_Physics[g_ModeCount][ModePreventMoveback] = bool:KvGetNum(hKv, "prevent_back", 0);
