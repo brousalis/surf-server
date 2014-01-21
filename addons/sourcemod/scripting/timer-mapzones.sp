@@ -2525,7 +2525,7 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 		fLeftBottomFront[0] = fFrom[0];
 		fLeftBottomFront[1] = fFrom[1];
 		if(flat)
-			fLeftBottomFront[2] = fTo[2]-6;
+			fLeftBottomFront[2] = fTo[2]-g_Settings[ZoneBeamHeight];
 		else
 			fLeftBottomFront[2] = fTo[2];
 		
@@ -2533,7 +2533,7 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 		fRightBottomFront[0] = fTo[0];
 		fRightBottomFront[1] = fFrom[1];
 		if(flat)
-			fRightBottomFront[2] = fTo[2]-6;
+			fRightBottomFront[2] = fTo[2]-g_Settings[ZoneBeamHeight];
 		else
 			fRightBottomFront[2] = fTo[2];
 		
@@ -2542,7 +2542,7 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 		fLeftBottomBack[0] = fFrom[0];
 		fLeftBottomBack[1] = fTo[1];
 		if(flat)
-			fLeftBottomBack[2] = fTo[2]-6;
+			fLeftBottomBack[2] = fTo[2]-g_Settings[ZoneBeamHeight];
 		else
 			fLeftBottomBack[2] = fTo[2];
 		
@@ -2550,7 +2550,7 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 		fRightBottomBack[0] = fTo[0];
 		fRightBottomBack[1] = fTo[1];
 		if(flat)
-			fRightBottomBack[2] = fTo[2]-6;
+			fRightBottomBack[2] = fTo[2]-g_Settings[ZoneBeamHeight];
 		else
 			fRightBottomBack[2] = fTo[2];
 		
@@ -2559,7 +2559,7 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 		lefttopfront[0] = fFrom[0];
 		lefttopfront[1] = fFrom[1];
 		if(flat)
-			lefttopfront[2] = fFrom[2]+6;
+			lefttopfront[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
 		else
 			lefttopfront[2] = fFrom[2];
 		//lefttopfront[2] = fFrom[2]+100;
@@ -2567,7 +2567,7 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 		righttopfront[0] = fTo[0];
 		righttopfront[1] = fFrom[1];
 		if(flat)
-			righttopfront[2] = fFrom[2]+6;
+			righttopfront[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
 		else
 			righttopfront[2] = fFrom[2];
 		//righttopfront[2] = fFrom[2]+100;
@@ -2577,7 +2577,7 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 		fLeftTopBack[0] = fFrom[0];
 		fLeftTopBack[1] = fTo[1];
 		if(flat)
-			fLeftTopBack[2] = fFrom[2]+6;
+			fLeftTopBack[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
 		else
 			fLeftTopBack[2] = fFrom[2];
 		//fLeftTopBack[2] = fFrom[2]+100;
@@ -2585,30 +2585,30 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 		fRightTopBack[0] = fTo[0];
 		fRightTopBack[1] = fTo[1];
 		if(flat)
-			fRightTopBack[2] = fFrom[2]+6;
+			fRightTopBack[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
 		else
 		fRightTopBack[2] = fFrom[2];
 		//fRightTopBack[2] = fFrom[2]+100;
 		
 		//create the box
-		TE_SetupBeamPoints(lefttopfront,righttopfront,precache_laser,0,0,0,fLife,1.0,1.0,10,0.0,color,0);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(lefttopfront,fLeftTopBack,precache_laser,0,0,0,fLife,1.0,1.0,10,0.0,color,0);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(fRightTopBack,fLeftTopBack,precache_laser,0,0,0,fLife,1.0,1.0,10,0.0,color,0);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(fRightTopBack,righttopfront,precache_laser,0,0,0,fLife,1.0,1.0,10,0.0,color,0);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(lefttopfront,righttopfront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,10,0.0,color,0);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(lefttopfront,fLeftTopBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,10,0.0,color,0);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fRightTopBack,fLeftTopBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,10,0.0,color,0);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fRightTopBack,righttopfront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,10,0.0,color,0);TE_SendToAll(0.0);
 		
 		if(!flat)
 		{
-			TE_SetupBeamPoints(fLeftBottomFront,fRightBottomFront,precache_laser,0,0,0,fLife,1.0,1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fLeftBottomFront,fLeftBottomBack,precache_laser,0,0,0,fLife,1.0,1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fLeftBottomFront,lefttopfront,precache_laser,0,0,0,fLife,1.0,1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftBottomFront,fRightBottomFront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftBottomFront,fLeftBottomBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftBottomFront,lefttopfront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
 			
 			
-			TE_SetupBeamPoints(fRightBottomBack,fLeftBottomBack,precache_laser,0,0,0,fLife,1.0,1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fRightBottomBack,fRightBottomFront,precache_laser,0,0,0,fLife,1.0,1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fRightBottomBack,fRightTopBack,precache_laser,0,0,0,fLife,1.0,1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightBottomBack,fLeftBottomBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightBottomBack,fRightBottomFront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightBottomBack,fRightTopBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
 			
-			TE_SetupBeamPoints(fRightBottomFront,righttopfront,precache_laser,0,0,0,fLife,1.0,1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fLeftBottomBack,fLeftTopBack,precache_laser,0,0,0,fLife,1.0,1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightBottomFront,righttopfront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftBottomBack,fLeftTopBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
 		}
 	}
 }
@@ -3861,8 +3861,8 @@ public Action:Command_Stuck(client, args)
 	
 	if(Timer_GetStatus(client))
 	{
-		Timer_AddPenaltyTime(client, 10.0);
-		CPrintToChatAll("%s %N used !stuck and got 10s penalty time.", PLUGIN_PREFIX2, client);
+		Timer_AddPenaltyTime(client, g_Settings[StuckPenaltyTime]);
+		CPrintToChatAll("%s %N used !stuck and got %ds penalty time.", PLUGIN_PREFIX2, client, g_Settings[StuckPenaltyTime]);
 	}
 	
 	TeleLastCheckpoint(client);

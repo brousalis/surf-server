@@ -46,11 +46,11 @@ enum TimerSettings
 	bool:NoblockEnable,
 	bool:ZoneEffects,
 	bool:NPCConfirm,
-	Float:ZoneResize,
 	bool:LevelTeleportEnable,
 	bool:TeleportOnSpawn,
 	bool:TeleportOnRestart,
 	bool:StuckEnable,
+	Float:StuckPenaltyTime,
 	bool:AllowMultipleStart,
 	bool:AllowMultipleEnd,
 	bool:AllowMultipleShortEnd,
@@ -58,6 +58,9 @@ enum TimerSettings
 	bool:AllowMultipleBonusEnd,
 	String:NPC_Path[32],
 	String:NPC_Double_Path[32],
+	Float:ZoneBeamHeight,
+	Float:ZoneBeamThickness,
+	Float:ZoneResize,
 	
 	//HUD
 	HUDUseMVPStars,
@@ -305,15 +308,17 @@ bool:LoadTimerSettings()
 			g_Settings[NPCConfirm] = bool:KvGetNum(hKv, "npc_confirm", 1);
 			g_Settings[TeleportOnSpawn] = bool:KvGetNum(hKv, "teleport_onspawn", 1);
 			g_Settings[TeleportOnRestart] = bool:KvGetNum(hKv, "teleport_onrestart", 1);
-			g_Settings[ZoneResize] = KvGetFloat(hKv, "trigger_resize", 16.0);
 			g_Settings[LevelTeleportEnable] = bool:KvGetNum(hKv, "level_teleport_enable", 1);
 			g_Settings[StuckEnable] = bool:KvGetNum(hKv, "stuck_enable", 1);
+			g_Settings[StuckPenaltyTime] = KvGetFloat(hKv, "stuck_penalty_time", 10.0);
 			g_Settings[AllowMultipleStart] = bool:KvGetNum(hKv, "allow_multiple_start", 0);
 			g_Settings[AllowMultipleEnd] = bool:KvGetNum(hKv, "allow_multiple_end", 0);
 			g_Settings[AllowMultipleShortEnd] = bool:KvGetNum(hKv, "allow_multiple_shortend", 0);
 			g_Settings[AllowMultipleBonusStart] = bool:KvGetNum(hKv, "allow_multiple_bonusstart", 0);
 			g_Settings[AllowMultipleBonusEnd] = bool:KvGetNum(hKv, "allow_multiple_bonusend", 0);
-			
+			g_Settings[ZoneResize] = KvGetFloat(hKv, "trigger_resize", 16.0);
+			g_Settings[ZoneBeamHeight] = KvGetFloat(hKv, "beam_height", 0.0);
+			g_Settings[ZoneBeamThickness] = KvGetFloat(hKv, "beam_thickness", 1.0);
 			KvGetString(hKv, "npc_model", g_Settings[NPC_Path], 32);
 			KvGetString(hKv, "npc_double_model", g_Settings[NPC_Double_Path], 32);
 		}
