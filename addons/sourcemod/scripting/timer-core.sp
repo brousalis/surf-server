@@ -10,19 +10,10 @@
 
 #define MAX_FILE_LEN 128
 
-//new bool:g_timerMapzones = false;
-//new bool:g_timerCpMod = false;
-//new bool:g_timerLjStats = false;
-//new bool:g_timerLogging = false;
-//new bool:g_timerLogging = false;
-//new bool:g_timerMapTier = false;
+
 new bool:g_timerPhysics = false;
-//new bool:g_timerRankings = false;
-//new bool:g_timerRankingsTopOnly = false;
-//new bool:g_timerScripterDB = false;
 new bool:g_timerStrafes = false;
 new bool:g_timerTeams = false;
-//new bool:g_timerWeapons = false;
 new bool:g_timerWorldRecord = false;
 
 /** 
@@ -170,58 +161,18 @@ public OnPluginStart()
 	
 	AutoExecConfig(true, "timer/timer-core");
 	
-	//g_timerMapzones = LibraryExists("timer-mapzones");
-	//g_timerCpMod = LibraryExists("timer-cpmod");
-	//g_timerLjStats = LibraryExists("timer-ljstats");
-	//g_timerLogging = LibraryExists("timer-logging");
-	//g_timerMapTier = LibraryExists("timer-maptier");
-	//g_timerRankings = LibraryExists("timer-rankings");
-	//g_timerRankingsTopOnly = LibraryExists("timer-rankings_top_only");
+
 	g_timerPhysics = LibraryExists("timer-physics");
-	//g_timerScripterDB = LibraryExists("timer-scripter_db");
 	g_timerStrafes = LibraryExists("timer-strafes");
 	g_timerTeams = LibraryExists("timer-teams");
-	//g_timerWeapons = LibraryExists("timer-weapons");
 	g_timerWorldRecord = LibraryExists("timer-worldrecord");
 }
 
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "timer-mapzones"))
-	{
-		//g_timerMapzones = true;
-	}		
-	else if (StrEqual(name, "timer-cpmod"))
-	{
-		//g_timerCpMod = true;
-	}	
-	else if (StrEqual(name, "timer-ljstats"))
-	{
-		//g_timerLjStats = true;
-	}	
-	else if (StrEqual(name, "timer-logging"))
-	{
-		//g_timerLogging = true;
-	}	
-	else if (StrEqual(name, "timer-maptier"))
-	{
-		//g_timerMapTier = true;
-	}	
-	else if (StrEqual(name, "timer-rankings"))
-	{
-		//g_timerRankings = true;
-	}		
-	else if (StrEqual(name, "timer-rankings_top_only"))
-	{
-		//g_timerRankingsTopOnly = true;
-	}
-	else if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = true;
-	}
-	else if (StrEqual(name, "timer-scripter_db"))
-	{
-		//g_timerScripterDB = true;
 	}
 	else if (StrEqual(name, "timer-strafes"))
 	{
@@ -231,10 +182,6 @@ public OnLibraryAdded(const String:name[])
 	{
 		g_timerTeams = true;
 	}
-	else if (StrEqual(name, "timer-weapons"))
-	{
-		//g_timerWeapons = true;
-	}
 	else if (StrEqual(name, "timer-worldrecord"))
 	{
 		g_timerWorldRecord = true;
@@ -243,42 +190,11 @@ public OnLibraryAdded(const String:name[])
 
 public OnLibraryRemoved(const String:name[])
 {	
-	if (StrEqual(name, "timer-mapzones"))
-	{
-		//g_timerMapzones = false;
-	}		
-	else if (StrEqual(name, "timer-cpmod"))
-	{
-		//g_timerCpMod = false;
-	}	
-	else if (StrEqual(name, "timer-ljstats"))
-	{
-		//g_timerLjStats = false;
-	}	
-	else if (StrEqual(name, "timer-logging"))
-	{
-		//g_timerLogging = false;
-	}	
-	else if (StrEqual(name, "timer-maptier"))
-	{
-		//g_timerMapTier = false;
-	}	
-	else if (StrEqual(name, "timer-rankings"))
-	{
-		//g_timerRankings = false;
-	}		
-	else if (StrEqual(name, "timer-rankings_top_only"))
-	{
-		//g_timerRankingsTopOnly = false;
-	}
-	else if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = false;
 	}
-	else if (StrEqual(name, "timer-scripter_db"))
-	{
-		//g_timerScripterDB = false;
-	}
+
 	else if (StrEqual(name, "timer-strafes"))
 	{
 		g_timerStrafes = false;
@@ -286,10 +202,6 @@ public OnLibraryRemoved(const String:name[])
 	else if (StrEqual(name, "timer-teams"))
 	{
 		g_timerTeams = false;
-	}
-	else if (StrEqual(name, "timer-weapons"))
-	{
-		//g_timerWeapons = false;
 	}
 	else if (StrEqual(name, "timer-worldrecord"))
 	{

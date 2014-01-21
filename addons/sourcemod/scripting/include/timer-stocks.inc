@@ -1,3 +1,8 @@
+#if defined _timer_stocks_included
+ #endinput
+#endif
+#define _timer_stocks_included
+
 #if !defined DMG_GENERIC
 
 #define DMG_GENERIC			0			// generic damage was done

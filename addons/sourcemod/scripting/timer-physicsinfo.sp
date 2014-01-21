@@ -13,13 +13,6 @@ public Plugin:myinfo =
     url         = "zipcore#googlemail.com"
 };
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
-{
-	RegPluginLibrary("timer-physicsinfo");
-
-	return APLRes_Success;
-}
-
 public OnPluginStart()
 {
 	RegConsoleCmd("sm_styleinfo", Command_Info);
