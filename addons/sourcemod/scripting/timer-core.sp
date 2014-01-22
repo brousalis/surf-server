@@ -545,7 +545,7 @@ bool:ResumeTimer(client)
 		Array_Copy(g_timers[mate][PauseLastAngles], angles2, 3);
 
 		new Float:velocity2[3];
-		Array_Copy(g_timers[mate][PauseLastVelocity], angles2, 3);
+		Array_Copy(g_timers[mate][PauseLastVelocity], velocity2, 3);
 
 		if(IsClientInGame(mate)) TeleportEntity(mate, origin2, angles2, velocity2);
 	}
@@ -557,7 +557,7 @@ bool:ResumeTimer(client)
 	Array_Copy(g_timers[client][PauseLastAngles], angles, 3);
 
 	new Float:velocity[3];
-	Array_Copy(g_timers[client][PauseLastVelocity], angles, 3);
+	Array_Copy(g_timers[client][PauseLastVelocity], velocity, 3);
 
 	TeleportEntity(client, origin, angles, velocity);
 	
