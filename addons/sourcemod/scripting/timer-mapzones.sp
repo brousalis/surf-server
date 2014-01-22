@@ -31,8 +31,6 @@ new bool:g_timerLjStats = false;
 
 new g_ioffsCollisionGroup;
 
-new bool:g_bHooked;
-
 enum MapZoneEditor
 {
 	Step,
@@ -55,7 +53,6 @@ new Handle:g_hSQL;
 new adminmode = 0;
 new bool:g_bZonesLoaded = false;
 
-new bool:g_bHide[MAXPLAYERS+1] = {false, ...};
 new bool:g_bHurt[MAXPLAYERS+1] = {false, ...};
 new bool:g_bZone[2048][MAXPLAYERS+1];
 
@@ -147,8 +144,6 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Timer_SetClientLevel", Native_SetClientLevel);
 	CreateNative("Timer_SetIgnoreEndTouchStart", Native_SetIgnoreEndTouchStart);
 	CreateNative("Timer_IsPlayerTouchingZoneType", Native_IsPlayerTouchingZoneType);
-	CreateNative("Timer_SetClientHide", Native_SetClientHide);
-	CreateNative("Timer_GetClientHide", Native_GetClientHide);
 	CreateNative("Timer_GetMapzoneCount", Native_GetMapzoneCount);
 	CreateNative("Timer_ClientTeleportLevel", Native_ClientTeleportLevel);
 	
@@ -236,7 +231,6 @@ public OnPluginStart()
 	
 	RegConsoleCmd("sm_teleme", Command_TeleMe);
 	RegConsoleCmd("sm_tpto", Command_TeleMe);
-	RegConsoleCmd("sm_hide", Command_Hide);
 	
 	if(g_Settings[RestartEnable])
 	{
@@ -263,7 +257,6 @@ public OnPluginStart()
 	
 	HookEvent("player_team", Event_OnPlayerTeam);
 	
-	AddTempEntHook("Shotgun Shot", CSS_Hook_ShotgunShot);
 	AddNormalSoundHook(Hook_NormalSound);
 	
 	g_ioffsCollisionGroup = FindSendPropOffs("CBaseEntity", "m_CollisionGroup");
@@ -283,9 +276,6 @@ public Action:Event_OnPlayerTeam(Handle:event, const String:name[], bool:dontBro
 
 public OnClientPutInServer(client)
 {
-	g_bHide[client] = false;
-	
-	SDKHook(client, SDKHook_SetTransmit, Hook_SetTransmit);
 	SDKHook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage);
 }
 
@@ -1202,13 +1192,11 @@ public Action:CheckEntitysLoaded(Handle:timer)
 public OnClientDisconnect_Post(client)
 {
 	Timer_SetClientTeammate(client, 0, 1);
-	g_bHide[client] = false;
 	g_bHurt[client] = false;
 	g_iIgnoreEndTouchStart[client] = 0;
 	g_iTargetNPC[client] = 0;
 	Timer_Resume(client);
 	Timer_Stop(client, false);
-	CheckHooks();
 }
 
 public Action:CS_OnTerminateRound(&Float:delay, &CSRoundEndReason:reason)
@@ -1237,7 +1225,6 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	g_clientLevel[client] = 0;
 	g_clientTeammate[client] = 0;
 	Timer_SetClientTeammate(client, 0, 1);
-	g_bHide[client] = false;
 	g_bHurt[client] = false;
 	g_iIgnoreEndTouchStart[client] = 0;
 	g_iTargetNPC[client] = 0;
@@ -4230,41 +4217,6 @@ public MenuHandlerTeleMe(Handle:menu, MenuAction:action, client, param2)
 	}
 }
 
-public Action:Command_Hide(client, args)
-{
-	if(g_bHide[client])
-	{
-		g_bHide[client] = false;
-		CPrintToChat(client, PLUGIN_PREFIX, "Hide Disabled");
-	}
-	else if(GetClientTeam(client) > 1)
-	{
-		g_bHide[client] = true;
-		CPrintToChat(client, PLUGIN_PREFIX, "Hide Enabled");
-	}
-	
-	CheckHooks();
-	
-	return Plugin_Handled;
-}
-
-CheckHooks()
-{
-	new bool:bShouldHook = false;
-	
-	for (new i = 1; i <= MaxClients; i++)
-	{
-		if (g_bHide[i])
-		{
-			bShouldHook = true;
-			break;
-		}
-	}
-	
-	// Fake (un)hook because toggling actual hooks will cause server instability.
-	g_bHooked = bShouldHook;
-}
-
 public Native_AddMapZone(Handle:plugin, numParams)
 {
 	decl String:map[32];
@@ -4338,21 +4290,6 @@ public Native_SetClientLevel(Handle:plugin, numParams)
 	new client = GetNativeCell(1);
 	new level = GetNativeCell(2);
 	g_clientLevel[client] = level;
-}
-
-public Native_GetClientHide(Handle:plugin, numParams)
-{
-	new client = GetNativeCell(1);
-	if(g_bHide[client]) return 1;
-	else return 0;
-}
-
-public Native_SetClientHide(Handle:plugin, numParams)
-{
-	new client = GetNativeCell(1);
-	new bool:hide = GetNativeCell(2);
-	if(hide) g_bHide[client] = true;
-	else g_bHide[client] = false;
 }
 
 public Native_GetClientTeammate(Handle:plugin, numParams)
@@ -4505,25 +4442,6 @@ stock SetPush(entity)
 	SetEntData(entity, g_ioffsCollisionGroup, COLLISION_GROUP_PUSHAWAY, 4, true);
 }
 
-public Action:Hook_SetTransmit(entity, client)
-{
-	if(client == entity)
-		return Plugin_Continue;
-	
-	if(!g_bHide[client])
-		return Plugin_Continue;
-	
-	new mate = Timer_GetClientTeammate(client);
-	if(mate > 0 && mate == entity) return Plugin_Continue;
-	
-	if(0 < entity <= MaxClients)
-	{
-		return Plugin_Handled;
-	}
-	
-	return Plugin_Continue;
-}
-
 public Action:Hook_NormalSound(clients[64], &numClients, String:sample[PLATFORM_MAX_PATH], &entity, &channel, &Float:volume, &level, &pitch, &flags)
 {
 	if (StrContains(sample, "door") != -1)
@@ -4532,70 +4450,7 @@ public Action:Hook_NormalSound(clients[64], &numClients, String:sample[PLATFORM_
 	if (StrContains(sample, "button") != -1)
 		return Plugin_Stop;
 	
-	// Ignore non-weapon sounds.
-	if (!g_bHooked || !(strncmp(sample, "weapon", 7) == 0 || strncmp(sample[1], "weapon", 7) == 0 || strncmp(sample[1], "reload", 7) == 0))
-		return Plugin_Continue;
-	
-	decl i, j;
-	
-	for (i = 0; i < numClients; i++)
-	{
-		// Remove the client from the array.
-		for (j = i; j < numClients-1; j++)
-		{
-			clients[j] = clients[j+1];
-		}
-		
-		numClients--;
-		i--;
-	}
-	
-	return (numClients > 0) ? Plugin_Changed : Plugin_Stop;
-}
-
-public Action:CSS_Hook_ShotgunShot(const String:te_name[], const Players[], numClients, Float:delay)
-{
-	if (!g_bHooked)
-		return Plugin_Continue;
-	
-	// Check which clients need to be excluded.
-	decl newClients[MaxClients], client, i;
-	new newTotal = 0;
-	
-	for (i = 0; i < numClients; i++)
-	{
-		client = Players[i];
-		
-		if (!g_bHide[client])
-		{
-			//newClients[newTotal++] = client;
-		}
-	}
-	
-	// No clients were excluded.
-	if (newTotal == numClients)
-		return Plugin_Continue;
-	
-	// All clients were excluded and there is no need to broadcast.
-	else if (newTotal == 0)
-		return Plugin_Stop;
-	
-	// Re-broadcast to clients that still need it.
-	decl Float:vTemp[3];
-	TE_Start("Shotgun Shot");
-	TE_ReadVector("m_vecOrigin", vTemp);
-	TE_WriteVector("m_vecOrigin", vTemp);
-	TE_WriteFloat("m_vecAngles[0]", TE_ReadFloat("m_vecAngles[0]"));
-	TE_WriteFloat("m_vecAngles[1]", TE_ReadFloat("m_vecAngles[1]"));
-	TE_WriteNum("m_iWeaponID", TE_ReadNum("m_iWeaponID"));
-	TE_WriteNum("m_iMode", TE_ReadNum("m_iMode"));
-	TE_WriteNum("m_iSeed", TE_ReadNum("m_iSeed"));
-	TE_WriteNum("m_iPlayer", TE_ReadNum("m_iPlayer"));
-	TE_WriteFloat("m_fInaccuracy", TE_ReadFloat("m_fInaccuracy"));
-	TE_WriteFloat("m_fSpread", TE_ReadFloat("m_fSpread"));
-	TE_Send(newClients, newTotal, delay);
-	
-	return Plugin_Stop;
+	return Plugin_Continue;
 }
 
 public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype)
@@ -4605,19 +4460,13 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 		return Plugin_Continue;
 	}
 	
-	if(!attacker && g_Settings[Godmode])
+	if(!attacker)
 	{
 		return Plugin_Handled;
 	}
 	
 	if(victim > 0 && victim <= MaxClients)
 	{
-		if(GetGameMod() == MOD_CSS)
-		{
-			SetEntPropVector(victim, Prop_Send, "m_vecPunchAngle", NULL_VECTOR);
-			SetEntPropVector(victim, Prop_Send, "m_vecPunchAngleVel", NULL_VECTOR);
-		}
-		
 		new mode = Timer_GetMode(victim);
 		
 		//Style allows falldamage and worlddamage
@@ -4634,6 +4483,12 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 			{
 				return Plugin_Continue;
 			}
+		}
+		
+		if(GetGameMod() == MOD_CSS)
+		{
+			SetEntPropVector(victim, Prop_Send, "m_vecPunchAngle", NULL_VECTOR);
+			SetEntPropVector(victim, Prop_Send, "m_vecPunchAngleVel", NULL_VECTOR);
 		}
 	}
 	
