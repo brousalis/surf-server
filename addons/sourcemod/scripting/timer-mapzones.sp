@@ -229,9 +229,6 @@ public OnPluginStart()
 	RegConsoleCmd("sm_levels", Command_Levels);
 	RegConsoleCmd("sm_stage", Command_Levels);
 	
-	RegConsoleCmd("sm_teleme", Command_TeleMe);
-	RegConsoleCmd("sm_tpto", Command_TeleMe);
-	
 	if(g_Settings[RestartEnable])
 	{
 		RegConsoleCmd("sm_restart", Command_Restart);
@@ -4137,82 +4134,6 @@ public MenuHandlerLevels(Handle:menu, MenuAction:action, client, param2)
 			Timer_Reset(client);
 			
 			Tele_Zone(client, zone);
-		}
-	}
-}
-
-public Action:Command_TeleMe(client, args)
-{
-	if(IsPlayerAlive(client) && g_Settings[PlayerTeleportEnable])
-	{
-		new Handle:menu = CreateMenu(MenuHandlerTeleMe);
-		SetMenuTitle(menu, "Teammate Select");
-		//new bool:isadmin = Client_IsAdmin(client);
-		
-		new iCount = 0;
-		
-		//show rest
-		for (new i = 1; i <= MaxClients; i++)
-		{
-			if(client == i)
-			{
-				continue;
-			}
-			if(!IsClientInGame(i))
-			{
-				continue;
-			}
-			if(IsFakeClient(i))
-			{
-				continue;
-			}
-			if(!IsPlayerAlive(i))
-			{
-				continue;
-			}
-			
-			new String:name2[32];
-			Format(name2, sizeof(name2), "%N Stage: %d", i, g_clientLevel[i]-1);
-			new String:zone2[32];
-			Format(zone2,sizeof(zone2),"%d", i);
-			AddMenuItem(menu, zone2, name2);
-			iCount++;
-		}
-		
-		if(iCount > 0)
-		{
-			SetMenuExitButton(menu, true);
-			DisplayMenu(menu, client, 20);
-		}
-		else PrintToChat(client, PLUGIN_PREFIX, "No Target");
-	}
-	else
-	{
-		PrintToChat(client, PLUGIN_PREFIX, "Not Alive");
-	}
-	
-	return Plugin_Handled;
-}
-
-public MenuHandlerTeleMe(Handle:menu, MenuAction:action, client, param2)
-{
-	if (action == MenuAction_Select)
-	{
-		decl String:info[100], String:info2[100];
-		new bool:found = GetMenuItem(menu, param2, info, sizeof(info), _, info2, sizeof(info2));
-		new target = StringToInt(info);
-		if(found)
-		{
-			if(IsPlayerAlive(client) && IsPlayerAlive(target))
-			{
-				new Float:origin[3], Float:angles[3];
-				GetClientAbsOrigin(target, origin);
-				GetClientAbsAngles(target, angles);
-				
-				Timer_Reset(client);
-				
-				TeleportEntity(client, origin, angles, NULL_VECTOR);
-			}
 		}
 	}
 }

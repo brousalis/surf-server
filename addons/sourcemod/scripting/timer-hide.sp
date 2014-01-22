@@ -14,7 +14,7 @@ new bool:g_bHide[MAXPLAYERS+1] = {false, ...};
 public Plugin:myinfo =
 {
 	name        = "[Timer] Hide",
-	author      = "Zipcore, Credits: Alongub",
+	author      = "Zipcore, Credits: exvel",
 	description = "Hide players component for [Timer]",
 	version     = PL_VERSION,
 	url         = "zipcore#googlemail.com"
