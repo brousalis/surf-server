@@ -4086,26 +4086,28 @@ public Action:Command_Levels(client, args)
 	
 	if(!g_Settings[LevelTeleportEnable])
 		return Plugin_Handled;
+
+	decl String:slevel[64];
+	GetCmdArg(1, slevel, sizeof(slevel));
+	new level = StringToInt(slevel);
+	
+	if(level > 0)
+	{
+		if(g_timer) Timer_Reset(client);
+		Tele_Level(client, level);
+		return Plugin_Handled;
+	}
 	
 	new Handle:menu = CreateMenu(MenuHandlerLevels);
 	SetMenuTitle(menu, "Stage Teleport Selection");
 	
 	for (new zone = 0; zone < g_mapZonesCount; zone++)
 	{
-		if(isadmin && adminmode == 1)
-		{
-			
-		}
-		else
+		if(!(isadmin && adminmode == 1))
 		{
 			if(g_mapZones[zone][Level_Id] < 1)
 			{
 				continue;
-			}
-			
-			if(g_mapZones[zone][Level_Id] >= 999 && Timer_GetMapFinishCount(client) < 1)
-			{
-				//fcontinue;
 			}
 		}
 		
@@ -4131,8 +4133,7 @@ public MenuHandlerLevels(Handle:menu, MenuAction:action, client, param2)
 		new zone = StringToInt(info);
 		if(found)
 		{
-			Timer_Reset(client);
-			
+			if(g_timer) Timer_Reset(client);
 			Tele_Zone(client, zone);
 		}
 	}
