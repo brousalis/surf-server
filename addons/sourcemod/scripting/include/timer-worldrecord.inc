@@ -3,13 +3,6 @@
 #endif
 #define _timer_worldrecord_included
 
-
-forward OnTimerWorldRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerPersonalRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerTop10Record(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerFirstRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-
 /* Natives */
 native Timer_ForceReloadCache();
 native Timer_GetCurrentRank(client, bool:update, bonus);

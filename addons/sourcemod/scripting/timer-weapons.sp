@@ -120,9 +120,7 @@ public Action:OnWeaponCanUse(client, weapon)
 
 public Action:Timer_RestockClientAmmo(Handle:timer, any:client)
 {
-	if(!IsClientInGame(client))
-		return Plugin_Stop;
-	if(IsFakeClient(client))
+	if(!IsClientInGame(client) || IsFakeClient(client))
 		return Plugin_Stop;
 	
 	new weaponIndex, dataIndex, ammoOffset;
@@ -168,7 +166,7 @@ public OnMapStart()
 
 public OnClientPutInServer(client) 
 {
-	SDKHook(client, SDKHook_PostThinkPost, Hook_PostThinkPost);
+	if(g_Settings[BuyzoneEverywhere]) SDKHook(client, SDKHook_PostThinkPost, Hook_PostThinkPost);
 }
 
 public Hook_PostThinkPost(entity)
@@ -198,7 +196,7 @@ public Action:Command_Drop(client, const String:command[], argc)
 {
 	if(g_Settings[AllowKnifeDrop])
 	{
-		if(IsClientConnected(client) && IsClientInGame(client) && IsPlayerAlive(client))
+		if(IsClientInGame(client) && IsPlayerAlive(client))
 		{
 			new String:playerWeapon[32];
 			GetClientWeapon(client, playerWeapon, sizeof(playerWeapon));
@@ -220,7 +218,7 @@ public Action:Command_Drop(client, const String:command[], argc)
 
 public Action:CS_OnCSWeaponDrop(client, weaponIndex)
 {
-	if (IsValidEntity(weaponIndex))
+	if (IsValidEntity(weaponIndex) && IsValidEdict(weaponIndex))
 	{
 		SetEntData(weaponIndex, g_Collision, 1, 4, true);
 		if(0 < client && IsClientInGame(client)) Weapon_SetOwner(weaponIndex, client);
@@ -229,7 +227,7 @@ public Action:CS_OnCSWeaponDrop(client, weaponIndex)
 
 public Action:Command_Knife(client, args) 
 {
-	if(IsClientConnected(client) && IsClientInGame(client) && IsPlayerAlive(client))
+	if(IsClientInGame(client) && IsPlayerAlive(client))
 	{
 		RemovePlayerKnife(client);
 		Client_GiveWeapon(client, "weapon_knife", true);
@@ -240,7 +238,7 @@ public Action:Command_Knife(client, args)
 
 public Action:Command_Scout(client, args) 
 {
-	if(IsClientConnected(client) && IsClientInGame(client) && IsPlayerAlive(client))
+	if(IsClientInGame(client) && IsPlayerAlive(client))
 	{
 		RemovePlayerPrimary(client);
 		Client_GiveWeapon(client, "weapon_scout", true);
@@ -251,7 +249,7 @@ public Action:Command_Scout(client, args)
 
 public Action:Command_Usp(client, args) 
 {
-	if(IsClientConnected(client) && IsClientInGame(client) && IsPlayerAlive(client))
+	if(IsClientInGame(client) && IsPlayerAlive(client))
 	{
 		RemovePlayerSecondary(client);
 		Client_GiveWeapon(client, "weapon_usp", true);
@@ -262,7 +260,7 @@ public Action:Command_Usp(client, args)
 
 public Action:Command_Glock(client, args) 
 {
-	if(IsClientConnected(client) && IsClientInGame(client) && IsPlayerAlive(client))
+	if(IsClientInGame(client) && IsPlayerAlive(client))
 	{
 		RemovePlayerSecondary(client);
 		Client_GiveWeapon(client, "weapon_glock", true);
@@ -332,17 +330,14 @@ public Action:Timer_CleanUp(Handle:timer)
 	
 	for (new i=1;i<MaxClients;i++)
 	{
-		if ( !IsClientInGame(i) ) continue;
-		if ( !IsPlayerAlive(i) ) continue;
-		
+		if (!IsClientInGame(i) || !IsPlayerAlive(i)) continue;
+
 		SetEntData( i, g_iAccount, MAX_CASH );
 	}
 	
 	for (new i=MaxClients;i<maxent;i++)
 	{
-		if ( g_MapEntity[i] ) continue;
-		if ( !IsValidEdict(i) ) continue;
-		if ( !IsValidEntity(i) ) continue;
+		if (g_MapEntity[i] || !IsValidEdict(i) || !IsValidEntity(i)) continue;
 		
 		GetEdictClassname(i, weapon, sizeof(weapon));
 		if (( StrContains(weapon, "weapon_") != -1 || StrContains(weapon, "item_") != -1 ) && GetEntDataEnt2(i, g_WeaponParent) == -1)
@@ -359,9 +354,7 @@ stock ValidateMapWeapons()
 	{
 		g_MapEntity[i] = false;
 		
-		if ( !g_Settings[KeepMapWeapons] ) continue;
-		if ( !IsValidEdict(i) ) continue;
-		if ( !IsValidEntity(i) ) continue;
+		if (!g_Settings[KeepMapWeapons] || !IsValidEdict(i) || !IsValidEntity(i)) continue;
 		
 		g_MapEntity[i] = true;
 	}

@@ -132,7 +132,7 @@ LoadMapTier()
 	if (g_hSQL != INVALID_HANDLE)
 	{
 		decl String:query[128];
-		Format(query, sizeof(query), "SELECT tier FROM maptier WHERE map = '%s'", g_currentMap);
+		Format(query, sizeof(query), "SELECT tier, stagecount FROM maptier WHERE map = '%s'", g_currentMap);
 		SQL_TQuery(g_hSQL, LoadTierCallback, query, _, DBPrio_Normal);   
 	}
 }	
@@ -148,22 +148,16 @@ public LoadTierCallback(Handle:owner, Handle:hndl, const String:error[], any:dat
 	while (SQL_FetchRow(hndl))
 	{
 		g_maptier = SQL_FetchInt(hndl, 0);
+		g_stagecount = SQL_FetchInt(hndl, 1);
 	}
 	
-	CreateTimer(1.0, Timer_InsertMapTier, _, TIMER_FLAG_NO_MAPCHANGE);
-}
-
-public Action:Timer_InsertMapTier(Handle:timer)
-{
-	if(g_maptier == 0)
+	if (g_maptier == 0 && g_stagecount == 0)
 	{
 		decl String:query[128];
-		Format(query, sizeof(query), "INSERT INTO maptier (map, tier) VALUES ('%s','1');", g_currentMap);
+		Format(query, sizeof(query), "INSERT INTO maptier (map, tier, stagecount) VALUES ('%s','1', '1');", g_currentMap);
 
 		SQL_TQuery(g_hSQL, InsertTierCallback, query, _, DBPrio_Normal);
 	}
-	
-	return Plugin_Stop;
 }
 
 public InsertTierCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
@@ -246,7 +240,7 @@ public Native_SetMapTier(Handle:plugin, numParams)
 
 public Native_GetStageCount(Handle:plugin, numParams)
 {
-	return g_maptier;
+	return g_stagecount;
 }
 
 public Native_SetStageCount(Handle:plugin, numParams)

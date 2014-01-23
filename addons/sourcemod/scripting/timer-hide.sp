@@ -10,7 +10,7 @@
 #undef REQUIRE_PLUGIN
 #include <timer-teams>
 
-new bool:g_timerMapzones = false;
+new bool:g_timerTeams = false;
 
 new bool:g_bHooked;
 new bool:g_bHide[MAXPLAYERS+1] = {false, ...};
@@ -27,7 +27,7 @@ public Plugin:myinfo =
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
 	RegPluginLibrary("timer-hide");
-	g_timerMapzones = LibraryExists("timer-mapzones");
+	g_timerTeams = LibraryExists("timer-teams");
 	
 	CreateNative("Timer_SetClientHide", Native_SetClientHide);
 	CreateNative("Timer_GetClientHide", Native_GetClientHide);
@@ -45,17 +45,17 @@ public OnPluginStart()
 
 public OnLibraryAdded(const String:name[])
 {
-	if(StrEqual(name, "timer-mapzones"))
+	if(StrEqual(name, "timer-teams"))
 	{
-		g_timerMapzones = true;
+		g_timerTeams = true;
 	}
 }
 
 public OnLibraryRemoved(const String:name[])
 {	
-	if(StrEqual(name, "timer-mapzones"))
+	if(StrEqual(name, "timer-teams"))
 	{
-		g_timerMapzones = false;
+		g_timerTeams = false;
 	}
 }
 
@@ -190,7 +190,10 @@ public Action:Hook_SetTransmit(entity, client)
 		return Plugin_Continue;
 	
 	new mate;
-	if(g_timerMapzones) mate = Timer_GetClientTeammate(client);
+	if(g_timerTeams) 
+	{	
+		mate = Timer_GetClientTeammate(client);
+	}
 	
 	//Don't hide mates
 	if(mate > 0 && mate == entity)
@@ -207,14 +210,10 @@ public Action:Hook_SetTransmit(entity, client)
 
 public Native_GetClientHide(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_bHide[client];
-
+	return g_bHide[GetNativeCell(1)];
 }
 
 public Native_SetClientHide(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	new bool:hide = GetNativeCell(2);
-	g_bHide[client] = hide;
+	g_bHide[GetNativeCell(1)] = bool:GetNativeCell(2);
 }

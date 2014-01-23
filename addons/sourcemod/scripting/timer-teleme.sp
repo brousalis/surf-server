@@ -5,8 +5,10 @@
 #include <cstrike>
 #include <smlib>
 #include <timer>
-#include <timer-mapzones>
 #include <timer-config_loader.sp>
+
+#undef REQUIRE_PLUGIN
+#include <timer-mapzones>
 
 new bool:g_timerMapzones = false;
 

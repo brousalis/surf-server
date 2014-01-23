@@ -161,6 +161,12 @@ forward OnTimerRestart(client);
 forward OnTimerPaused(client);
 forward OnTimerResumed(client);
 
+forward OnTimerWorldRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
+forward OnTimerPersonalRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
+forward OnTimerTop10Record(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
+forward OnTimerFirstRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
+forward OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
+
 native bool:Timer_Reset(client);
 native bool:Timer_Start(client);
 native bool:Timer_Stop(client, bool:stopPaused = true);

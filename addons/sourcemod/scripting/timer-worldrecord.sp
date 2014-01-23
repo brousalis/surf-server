@@ -85,9 +85,7 @@ new g_wrMenuMode[MAXPLAYERS+1];
 new g_iAdminSelectedMode[MAXPLAYERS+1];
 new g_iAdminSelectedBonus[MAXPLAYERS+1];
 
-new bool:g_timer = false;
 new bool:g_timerPhysics = false;
-new bool:g_timerLogging = false;
 
 public Plugin:myinfo =
 {
@@ -129,9 +127,7 @@ public OnPluginStart()
 	
 	ConnectSQL(true);
 	
-	g_timer = LibraryExists("timer");
 	g_timerPhysics = LibraryExists("timer-physics");
-	g_timerLogging = LibraryExists("timer-logging");
 	
 	LoadTranslations("timer.phrases");
 	
@@ -167,34 +163,18 @@ public OnPluginStart()
 
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = true;
-	}
-	else if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = true;
-	}	
-	else if (StrEqual(name, "timer-logging"))
-	{
-		g_timerLogging = true;
 	}	
 }
 
 public OnLibraryRemoved(const String:name[])
 {	
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = false;
-	}
-	else if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = false;
-	}	
-	else if (StrEqual(name, "timer-logging"))
-	{
-		g_timerLogging = false;
-	}	
+	}
 	else if (StrEqual(name, "adminmenu"))
 	{
 		hTopMenu = INVALID_HANDLE;
@@ -277,11 +257,9 @@ public Action:Command_PersonalRecord(client, args)
 	}
 	else
 	{
-		new mode;
-		if(g_timer) mode = Timer_GetMode(client);
+		new mode = Timer_GetMode(client);
 		
-		new bonus;
-		if(g_timer) bonus = Timer_GetBonus(client);
+		new bonus = Timer_GetBonus(client);
 		
 		decl String:auth[32];
 		GetClientAuthString(target, auth, sizeof(auth));
@@ -386,7 +364,7 @@ public DeleteRecordsCallback(Handle:owner, Handle:hndl, const String:error[], an
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		if(g_timerLogging) Timer_LogError("SQL Error on DeleteRecord: %s", error);
+		Timer_LogError("SQL Error on DeleteRecord: %s", error);
 		return;
 	}
 
@@ -651,7 +629,7 @@ public DeletePlayersRecordCallback(Handle:owner, Handle:hndl, const String:error
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		if(g_timerLogging) Timer_LogError("SQL Error on DeletePlayerRecord: %s", error);
+		Timer_LogError("SQL Error on DeletePlayerRecord: %s", error);
 		return;
 	}
 	
@@ -791,7 +769,7 @@ public RefreshCacheCallback(Handle:owner, Handle:hndl, const String:error[], any
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		if(g_timerLogging) Timer_LogError("SQL Error on RefreshCache: %s", error);
+		Timer_LogError("SQL Error on RefreshCache: %s", error);
 		return;
 	}
 	
@@ -804,7 +782,7 @@ public RefreshBonusCacheCallback(Handle:owner, Handle:hndl, const String:error[]
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		if(g_timerLogging) Timer_LogError("SQL Error on RefreshBonusCache: %s", error);
+		Timer_LogError("SQL Error on RefreshBonusCache: %s", error);
 		return;
 	}
 	
@@ -817,7 +795,7 @@ public RefreshShortCacheCallback(Handle:owner, Handle:hndl, const String:error[]
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		if(g_timerLogging) Timer_LogError("SQL Error on RefreshShortCache: %s", error);
+		Timer_LogError("SQL Error on RefreshShortCache: %s", error);
 		return;
 	}
 	
@@ -899,7 +877,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 
 	if (hndl == INVALID_HANDLE)
 	{
-		if(g_timerLogging) Timer_LogError("Connection to SQL database has failed, Reason: %s", error);
+		Timer_LogError("Connection to SQL database has failed, Reason: %s", error);
 		
 		g_reconnectCounter++;
 		ConnectSQL(data);
@@ -1391,7 +1369,7 @@ public CreateDeleteMenuCallback(Handle:owner, Handle:hndl, const String:error[],
 {	
 	if (hndl == INVALID_HANDLE)
 	{
-		if(g_timerLogging) Timer_LogError("SQL Error on CreateDeleteMenu: %s", error);
+		Timer_LogError("SQL Error on CreateDeleteMenu: %s", error);
 		return;
 	}
 
@@ -1459,7 +1437,7 @@ public DeleteRecordCallback(Handle:owner, Handle:hndl, const String:error[], any
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		if(g_timerLogging) Timer_LogError("SQL Error on DeleteRecord: %s", error);
+		Timer_LogError("SQL Error on DeleteRecord: %s", error);
 		return;
 	}
 }
