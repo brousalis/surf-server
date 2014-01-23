@@ -85,10 +85,10 @@ new Float:g_fKickTime[MAXPLAYERS + 1];
 public Plugin:myinfo =
 {
 	name        = "[Timer] Rankings Top Only",
-	author      = "Zipcore",
-	description = "Checks another servers points DB to kick low ranked players.",
+	author      = "TwistedPanda, Zipcore",
+	description = "[Timer] Checks another servers points DB to kick low ranked players.",
 	version     = PL_VERSION,
-	url         = "zipcore#googlemail.com"
+	url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnPluginStart()

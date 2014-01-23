@@ -6,23 +6,25 @@
 #include <cstrike>
 #include <smlib>
 
-
 #include <timer>
+#include <timer-teams>
+#include <timer-mapzones>
 #include <timer-logging>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
-
 new String:g_currentMap[64];
 
-new bool:g_bClientChallenge[MAXPLAYERS+1];
-new g_iChallengeCountdown[MAXPLAYERS+1];
+new g_clientTeammate[MAXPLAYERS+1]=0;
 
 new bool:g_bClientCoop[MAXPLAYERS+1];
 new g_iCoopCountdown[MAXPLAYERS+1];
 
+new bool:g_bClientChallenge[MAXPLAYERS+1];
+new g_iChallengeCountdown[MAXPLAYERS+1];
 new g_iBet[MAXPLAYERS+1];
 new g_iBalance[MAXPLAYERS+1];
+
 new Float:g_fIgnoreTime[MAXPLAYERS+1];
 new Float:g_fStartTime[MAXPLAYERS+1];
 
@@ -45,9 +47,9 @@ public Plugin:myinfo =
 {
     name        = "[Timer] Teams",
     author      = "Zipcore, Jason Bourne",
-    description = "Challenge mode for [Timer]",
+    description = "[Timer] Team manager",
     version     = PL_VERSION,
-    url         = "zipcore#googlemail.com, jason@immersion-networks.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -56,6 +58,9 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Timer_GetChallengeStatus", Native_GetChallengeStatus);
 	CreateNative("Timer_GetCoopStatus", Native_GetCoopStatus);
 	
+	CreateNative("Timer_GetClientTeammate", Native_GetClientTeammate);
+	CreateNative("Timer_SetClientTeammate", Native_SetClientTeammate);
+	
 	return APLRes_Success;
 }
 
@@ -63,7 +68,6 @@ public OnPluginStart()
 {
 	LoadPhysics();
 	LoadTimerSettings();
-	Timer_SetNTVOpt();
 	
 	LoadTranslations("timer.phrases");
 
@@ -100,6 +104,7 @@ public OnMapStart()
 	
 	for (new i = 1; i <= MaxClients; i++)
 	{
+		g_clientTeammate[i] = 0;
 		g_iBalance[i] = 0;
 		g_fIgnoreTime[i] = 0.0;
 		g_fStartTime[i] = 0.0;
@@ -149,9 +154,10 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
+	
+	g_clientTeammate[client] = 0;
 	g_bClientChallenge[client] = false;
 	g_bClientCoop[client] = false;
-	
 	g_fIgnoreTime[client] = 0.0;
 }
 
@@ -807,6 +813,42 @@ ForceEnd(client)
 		else if (g_bClientCoop[client])
 		{
 			EndCoop(client,1);
+		}
+	}
+}
+
+public Native_GetClientTeammate(Handle:plugin, numParams)
+{
+	new client = GetNativeCell(1);
+	return g_clientTeammate[client];
+}
+
+public Native_SetClientTeammate(Handle:plugin, numParams)
+{
+	new client = GetNativeCell(1);
+	new mate = GetNativeCell(2);
+	new bool:teleport = bool:GetNativeCell(2);
+	
+	if(0 < client)
+	{
+		new oldcmate = g_clientTeammate[client];
+		new oldmmate = g_clientTeammate[mate];
+		g_clientTeammate[oldcmate] = 0;
+		g_clientTeammate[oldmmate] = 0;
+		g_clientTeammate[client] = 0;
+		g_clientTeammate[mate] = 0;
+		if(0 < mate)
+		{
+			g_clientTeammate[client] = mate;
+			g_clientTeammate[mate] = client;
+		}
+		
+		if(teleport)
+		{
+			Timer_ClientTeleportLevel(oldcmate, 1);
+			Timer_ClientTeleportLevel(oldmmate, 1);
+			Timer_ClientTeleportLevel(client, 1);
+			Timer_ClientTeleportLevel(mate, 1);
 		}
 	}
 }

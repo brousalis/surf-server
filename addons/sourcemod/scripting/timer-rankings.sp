@@ -112,9 +112,9 @@ public Plugin:myinfo =
 {
 	name        = "[Timer] Rankings",
 	author      = "Panduh (AlliedMods: thetwistedpanda), Zipcore",
-	description = "An advanced ranking component designed for servers running alongub's [Timer] plugin, providing competitive ranking",
+	description = "[Timer] An advanced ranking component providing competitive ranking",
 	version     = PL_VERSION,
-	url         = "zipcore#googlemail.com"
+	url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)

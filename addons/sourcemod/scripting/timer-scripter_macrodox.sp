@@ -4,16 +4,17 @@
 #include <sdktools>
 
 #include <timer>
+#include <timer-mapzones>
 #include <timer-logging>
 #include <timer-config_loader.sp>
 
 public Plugin:myinfo =
 {
-	name		= "[Timer] macrodox",
-	author		= "Jason Bourne, Credit:aspi",
-	description	= "macrodox component for [Timer]",
+	name		= "[Timer] Macrodox",
+	author		= "Zipcore, Jason Bourne, aspi",
+	description	= "[Timer] Macrodox detection",
 	version		= PL_VERSION,
-	url			= "http://SourceGN.com"
+	url			= "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 

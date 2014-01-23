@@ -4,7 +4,10 @@
 #include <sdkhooks>
 #include <cstrike>
 #include <smlib>
+
+#undef REQUIRE_PLUGIN
 #include <timer>
+#include <timer-teams>
 
 new bool:g_timerMapzones = false;
 
@@ -14,10 +17,10 @@ new bool:g_bHide[MAXPLAYERS+1] = {false, ...};
 public Plugin:myinfo =
 {
 	name        = "[Timer] Hide",
-	author      = "Zipcore, Credits: exvel",
+	author      = "Zipcore, exvel",
 	description = "Hide players component for [Timer]",
 	version     = PL_VERSION,
-	url         = "zipcore#googlemail.com"
+	url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)

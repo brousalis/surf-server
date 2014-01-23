@@ -93,9 +93,9 @@ public Plugin:myinfo =
 {
     name        = "[Timer] World Record",
     author      = "Zipcore, Credits: Alongub",
-    description = "World Record component for [Timer]",
+    description = "[Timer] Player ranking by finish time",
     version     = PL_VERSION,
-    url         = "zipcore#googlemail.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -386,7 +386,7 @@ public DeleteRecordsCallback(Handle:owner, Handle:hndl, const String:error[], an
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on DeleteRecord: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on DeleteRecord: %s", error);
 		return;
 	}
 
@@ -651,7 +651,7 @@ public DeletePlayersRecordCallback(Handle:owner, Handle:hndl, const String:error
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on DeletePlayerRecord: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on DeletePlayerRecord: %s", error);
 		return;
 	}
 	
@@ -791,7 +791,7 @@ public RefreshCacheCallback(Handle:owner, Handle:hndl, const String:error[], any
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on RefreshCache: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on RefreshCache: %s", error);
 		return;
 	}
 	
@@ -804,7 +804,7 @@ public RefreshBonusCacheCallback(Handle:owner, Handle:hndl, const String:error[]
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on RefreshBonusCache: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on RefreshBonusCache: %s", error);
 		return;
 	}
 	
@@ -817,7 +817,7 @@ public RefreshShortCacheCallback(Handle:owner, Handle:hndl, const String:error[]
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on RefreshShortCache: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on RefreshShortCache: %s", error);
 		return;
 	}
 	
@@ -899,7 +899,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("Connection to SQL database has failed, Reason: %s", error);
+		if(g_timerLogging) Timer_LogError("Connection to SQL database has failed, Reason: %s", error);
 		
 		g_reconnectCounter++;
 		ConnectSQL(data);
@@ -1391,7 +1391,7 @@ public CreateDeleteMenuCallback(Handle:owner, Handle:hndl, const String:error[],
 {	
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on CreateDeleteMenu: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on CreateDeleteMenu: %s", error);
 		return;
 	}
 
@@ -1459,7 +1459,7 @@ public DeleteRecordCallback(Handle:owner, Handle:hndl, const String:error[], any
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on DeleteRecord: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on DeleteRecord: %s", error);
 		return;
 	}
 }

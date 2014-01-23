@@ -5,12 +5,14 @@
 #include <cstrike>
 #include <clientprefs>
 #include <smlib>
-#include <timer>
-#include <timer-logging>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
 #undef REQUIRE_PLUGIN
+#include <timer>
+#include <timer-logging>
+#include <timer-mapzones>
+#include <timer-teams>
 #include <js_ljstats>
 
 #define THINK_INTERVAL 			1.0
@@ -91,10 +93,10 @@ new hudSettings[Hud][MAXPLAYERS+1];
 public Plugin:myinfo =
 {
     name        = "[Timer] HUD",
-    author      = "Zipcore, Credits: Alongub",
-    description = "HUD component for [Timer]",
+    author      = "Zipcore, Alongub",
+    description = "[Timer] Player HUD with optional details to show and cookie support",
     version     = PL_VERSION,
-    url         = "zipcore#googlemail.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnPluginStart()
@@ -109,7 +111,6 @@ public OnPluginStart()
 	
 	LoadPhysics();
 	LoadTimerSettings();
-	Timer_SetNTVOpt();
 	
 	LoadTranslations("timer.phrases");
 	

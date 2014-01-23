@@ -11,9 +11,9 @@ public Plugin:myinfo =
 {
     name        = "[Timer] Quickstyle Commands",
     author      = "Zipcore",
-    description = "Quickstyles component for [Timer]",
+    description = "[Timer] Change style with quick commands without style selection",
     version     = PL_VERSION,
-    url         = "zipcore#googlemail.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -54,7 +54,13 @@ public Action:Client_Say(client, const String:sCommand[], argc)
 			continue;
 		if(StrEqual(g_Physics[i][ModeQuickCommand], sFirstArg))
 		{
-			Timer_SetMode(client, i);
+			if(g_Physics[i][ModeEnable])
+			{
+				Timer_SetMode(client, i);
+			}
+			else
+				PrintToChat(client, "Style disabled by server!");
+			
 			return Plugin_Handled;
 		}
 	}

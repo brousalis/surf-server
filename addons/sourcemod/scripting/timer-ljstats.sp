@@ -1,15 +1,5 @@
 #pragma semicolon 1
 
-#define VERSION "1.2.12"
-
-public Plugin:myinfo = {
-	name = "JS_LJstats",
-	author = "justshoot, zipcore",
-	description = "Jump stats",
-	version = VERSION,
-	url = "jsbhop@gmail.com, zipcore#googlemail.com"
-};
-
 #include <sdkhooks>
 #include <sdktools>
 #include <js_ljstats>
@@ -24,6 +14,14 @@ public Plugin:myinfo = {
 
 #define LJDELAY 1.0
 #define ELSEDELAY 0.1
+
+public Plugin:myinfo = {
+	name = "[Timer] LJstats",
+	author = "justshoot, Zipcore",
+	description = "Jump stats",
+	version = PL_VERSION,
+	url = "forums.alliedmods.net/showthread.php?p=2074699"
+};
 
 enum JumpType (+=1)
 {
@@ -224,7 +222,7 @@ public Native_SetInValidJump(Handle:plugin, numParams)
 }
 public OnPluginStart()
 {
-	CreateConVar("ljstats_version",VERSION,"Long Jump Stats - justshoot", FCVAR_PLUGIN|FCVAR_NOTIFY);
+	CreateConVar("ljstats_version", PL_VERSION, "Long Jump Stats - justshoot", FCVAR_PLUGIN|FCVAR_NOTIFY);
 	RegAdminCmd("sm_ljadm", Command_ljadm, ADMFLAG_ROOT, "Delete Record");
 	RegConsoleCmd("sm_lj", Command_ljmode, "Record Jump Stats");
 	RegConsoleCmd("sm_ljblock", Command_ljblock, "Register Destination");

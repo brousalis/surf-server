@@ -12,9 +12,9 @@ public Plugin:myinfo =
 {
     name        = "[Timer] FPSCheck",
     author      = "Zipcore",
-    description = "fps_max check component for [Timer]",
+    description = "[Timer] Checks fps_max violation for styles",
     version     = PL_VERSION,
-    url         = "zipcore#googlemail.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnPluginStart()

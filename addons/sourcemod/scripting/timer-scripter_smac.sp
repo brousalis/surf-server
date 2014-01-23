@@ -3,6 +3,7 @@
 #include <sourcemod>
 
 #include <timer>
+#include <timer-mapzones>
 #include <timer-logging>
 #include <timer-config_loader.sp>
 
@@ -13,10 +14,10 @@ new g_iDetections[MAXPLAYERS+1];
 public Plugin:myinfo =
 {
 name        = "[Timer] AutoTrigger Detection",
-author      = "Jason Bourne",
-description = "AutoTrigger Detection component for [Timer]",
+author      = "Zipcore, Jason Bourne",
+description = "[Timer] AutoTrigger detection (SMAC)",
 version     = PL_VERSION,
-url         = "http://SourceGN.com"
+url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnPluginStart()

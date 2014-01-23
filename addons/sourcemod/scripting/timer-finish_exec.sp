@@ -6,11 +6,11 @@
 
 public Plugin:myinfo = 
 {
-	name = "Timer: Finish Exec",
+	name = "[Timer] Finish Exec",
 	author = "Zipcore",
-	description = "Execute a command on new player record",
+	description = "[Timer] Execute a command on new player record (style based)",
 	version = "1.0",
-	url = "zipcre#googlemail.com"
+	url = "forums.alliedmods.net/showthread.php?p=2074699"
 }
 
 public OnPluginStart()

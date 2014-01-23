@@ -6,6 +6,7 @@
 #include <smlib>
 #include <setname>
 #include <timer>
+#include <timer-mapzones>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
@@ -25,9 +26,9 @@ public Plugin:myinfo =
 {
 	name 		= "[Timer] Reply Bot",
 	author 		= "Zipcore, Jason Bourne",
-	description = "Replay Bot component for [Timer]",
+	description = "[Timer] Replay BOT (alpha)",
 	version 	= PL_VERSION,
-	url 		= "zipcore#googlemail.com"
+	url 		= "forums.alliedmods.net/showthread.php?p=2074699"
 }
 
 public OnPluginStart()

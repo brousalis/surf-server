@@ -5,6 +5,7 @@
 #include <cstrike>
 #include <smlib>
 #include <timer>
+#include <timer-mapzones>
 #include <timer-config_loader.sp>
 
 new bool:g_timer = false;
@@ -14,9 +15,9 @@ public Plugin:myinfo =
 {
 	name        = "[Timer] TeleMe",
 	author      = "Zipcore",
-	description = "Teleport player to other players component for [Timer]",
+	description = "[Timer] Player 2 player teleporting",
 	version     = PL_VERSION,
-	url         = "zipcore#googlemail.com"
+	url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnPluginStart()

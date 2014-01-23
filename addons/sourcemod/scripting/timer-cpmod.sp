@@ -1,7 +1,11 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+
+#undef REQUIRE_PLUGIN
 #include <timer>
+#include <timer-teams>
+#include <timer-mapzones>
 
 #undef REQUIRE_EXTENSIONS
 #include <cstrike>

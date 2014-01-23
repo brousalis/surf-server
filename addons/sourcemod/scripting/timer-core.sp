@@ -4,12 +4,15 @@
 #include <sdktools>
 #include <smlib>
 #include <timer>
-#include <timer-logging>
 #include <timer-config_loader.sp>
 #include <timer-stocks>
 
-#define MAX_FILE_LEN 128
+#undef REQUIRE_PLUGIN
+#include <timer-logging>
+#include <timer-mapzones>
+#include <timer-teams>
 
+#define MAX_FILE_LEN 128
 
 new bool:g_timerPhysics = false;
 new bool:g_timerStrafes = false;

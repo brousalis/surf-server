@@ -8,9 +8,9 @@ public Plugin:myinfo =
 {
     name        = "[Timer] Physicsinfo",
     author      = "Zipcore",
-    description = "Physicsinfo component for [Timer]",
+    description = "[Timer] Show details for all styles",
     version     = PL_VERSION,
-    url         = "zipcore#googlemail.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnPluginStart()

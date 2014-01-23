@@ -18,9 +18,9 @@ public Plugin:myinfo =
 {
     name        = "[Timer] Map Tier System",
     author      = "Zipcore",
-    description = "World Record component for [Timer]",
+    description = "[Timer] Map tier system",
     version     = PL_VERSION,
-    url         = "zipcore#googlemail.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)

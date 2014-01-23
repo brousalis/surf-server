@@ -46,11 +46,11 @@ new const g_AmmoData[NUM_WEAPONS][2] = {
 
 public Plugin:myinfo =
 {
-    name        = "[Timer] Weapon System",
+    name        = "[Timer] Weapons",
     author      = "Zipcore",
-    description = "Weapon component for [Timer]",
+    description = "[Timer] Weapons manager",
     version     = PL_VERSION,
-    url         = "zipcore#googlemail.com"
+    url         = "v"
 };
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)

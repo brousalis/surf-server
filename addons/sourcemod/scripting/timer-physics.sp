@@ -8,6 +8,7 @@
 #include <sdkhooks>
 #include <smlib>
 #include <timer>
+#include <timer-mapzones>
 #include <timer-logging>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
@@ -133,10 +134,10 @@ new Float:g_DrugAngles[20] = {0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 20.0, 15.0, 10.0
 public Plugin:myinfo =
 {
     name        = "[Timer] Physics",
-    author      = "Zipcore, Credits: Alongub",
-    description = "Physics component for [Timer]",
+    author      = "Zipcore, Alongub",
+    description = "[Timer] Dynamic style/physic system",
     version     = PL_VERSION,
-    url         = "zipcore#googlemail.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -162,7 +163,6 @@ public OnPluginStart()
 {
 	LoadPhysics();
 	LoadTimerSettings();
-	Timer_SetNTVOpt();
 	
 	new Handle:hGameConf = INVALID_HANDLE;
 	hGameConf = LoadGameConfigFile("sdkhooks.games");

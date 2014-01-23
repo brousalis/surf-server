@@ -142,48 +142,6 @@ enum MCategory {
 	MCategory_Practise
 }
 
-enum MapZoneType
-{
-    ZtStart,
-    ZtEnd,
-    ZtStop,
-    ZtRestart,
-    ZtLast,
-    ZtNext,
-	ZtLevel,
-    ZtBonusStart,
-    ZtBonusEnd,
-    ZtBonusLevel,
-    ZtNPC_Next,
-	ZtBlock,
-	ZtLimitSpeed,
-	ZtPlayerClip, //buggy
-	ZtLongjump,
-	ZtBooster,
-	ZtFullBooster,
-	ZtArena,
-	ZtBounceBack, //buggy
-	ZtJail,
-	ZtPushUp,
-	ZtBulletTime,
-	ZtNoGravityOverwrite,
-	ZtNPC_Next_Double,
-	ZtNoBoost,
-	ZtRestartNormalTimer,
-	ZtRestartBonusTimer,
-	ZtShortEnd,
-	ZtPushNorth,
-	ZtPushSouth,
-	ZtPushWest,
-	ZtPushEast,
-	ZtPushDown,
-	ZtAuto,
-	ZtNoAuto,
-	ZtHover,
-	ZtReset,
-	ZtFreeStyle
-}
-
 enum MapZone
 {
     Id,
@@ -194,24 +152,6 @@ enum MapZone
     Level_Id,
 	String:zName[32],
 	NPC
-}
-
-enum
-{
-	MODE_NORMAL = 0,
-	MODE_SIDEWAYS,
-	MODE_EASY,
-	MODE_AUTO,
-	MODE_ONLYW,
-	MODE_BACKWARDS,
-	MODE_AUTO_NOBOOST,
-	MODE_THIRDPERSON,
-	MODE_FPSMAX,
-	MODE_LOWGRAV,
-	MODE_SKITTLES,
-	MODE_MULTIHOP,
-	MODE_NOHOP,
-	MODE_CUSTOM
 }
 
 forward OnTimerStarted(client);
@@ -227,20 +167,7 @@ forward OnTimerTop10Record(client, bonus, mode, Float:time, Float:lasttime, curr
 forward OnTimerFirstRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
 forward OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
 
-forward OnClientStartTouchZoneType(client, MapZoneType:type);
-forward OnClientEndTouchZoneType(client, MapZoneType:type);
-
 forward OnClientMaxJumpHeight(client, Float:height);
-
-forward OnCoopStart(player1,player2);
-forward OnCoopConfirm(player1,player2);
-forward OnCoopWin(player1,player2);
-forward OnCoopForceEnd(player1,player2);
-
-forward OnChallengeStart(client,mate);
-forward OnChallengeConfirm(client,mate);
-forward OnChallengeWin(winner,loser);
-forward OnChallengeForceEnd(winner,loser);
 
 native bool:Timer_Reset(client);
 native bool:Timer_Start(client);
@@ -255,10 +182,6 @@ native bool:Timer_GetClientTimer(client, &enabled, &Float:time, &jumps, &fpsmax)
 
 native Timer_FinishRound(client, const String:map[], Float:time, jumps, physicsDifficulty, fpsmax, bonus);
 
-native Timer_ClientTeleportLevel(client, level);
-native Timer_GetClientLevel(client);
-native Timer_GetClientLevelID(client);
-native Timer_SetClientLevel(client, level);
 native Timer_GetStatus(client);
 native Timer_GetPauseStatus(client);
 native Timer_GetBonus(client);
@@ -267,8 +190,6 @@ native Timer_GetMapFinishBonusCount(client);
 native Timer_SetBonus(client, newmode);
 native Timer_GetMode(client);
 native Timer_IsModeRanked(mode);
-native Timer_GetClientTeammate(client);
-native Timer_SetClientTeammate(client, mate, teleport);
 native Timer_SetMode(client, newmode);
 native Timer_GetTier();
 native Timer_SetTier(tier);
@@ -287,7 +208,6 @@ native Timer_GetCacheMapName(String:name[], length);
 
 native Timer_GetDifficultyRank(client, bonus, mode);
 native Timer_GetRecordHolderName(mode, bonus, rank, String:name[], length);
-native Timer_GetLevelName(id, String:name[], length);
 native Timer_GetFinishCount(mode, bonus, rank);
 native Timer_GetRecordDate(mode, bonus, rank, String:date[], length);
 native Timer_GetRecordTimeInfo(mode, bonus, rank, &Float:time, String:timestring[], length);
@@ -317,9 +237,6 @@ native Ranking_SavePoints(client);
 
 native Timer_GetClientHide(client);
 native Timer_SetClientHide(client, hide);
-native Timer_SetIgnoreEndTouchStart(client, ignore);
-native Timer_IsPlayerTouchingZoneType(client, MapZoneType:type);
-native Timer_GetMapzoneCount(MapZoneType:type);
 
 native Timer_GetScripter(client);
 native Timer_GetPickedMode(client);
@@ -331,17 +248,12 @@ native Timer_GetMaxSpeed(client, &Float:maxspeed);
 native Timer_GetAvgSpeed(client, &Float:avgspeed);
 native Timer_ResetAccuracy(client);
 
-native Timer_GetCoopStatus(client);
-native Timer_GetChallengeStatus(client);
-
 native Timer_AddScripter(client);
 native Timer_IsScripter(client);
 
-
-
-public SharedPlugin:__pl_timer = 
+public SharedPlugin:__pl_timer_core = 
 {
-	name = "timer",
+	name = "timer-core",
 	file = "timer-core.smx",
 #if defined REQUIRE_PLUGIN
 	required = 1,
@@ -350,7 +262,7 @@ public SharedPlugin:__pl_timer =
 #endif
 };
 
-public Timer_SetNTVOpt()
+public __pl_timer_core_SetNTVOpt()
 {
 	MarkNativeAsOptional("Timer_Start");
 	MarkNativeAsOptional("Timer_Stop");
@@ -365,9 +277,6 @@ public Timer_SetNTVOpt()
 
 	MarkNativeAsOptional("Timer_FinishRound");
 
-	MarkNativeAsOptional("Timer_GetClientLevel");
-	MarkNativeAsOptional("Timer_GetClientLevelID");
-	MarkNativeAsOptional("Timer_SetClientLevel");
 	MarkNativeAsOptional("Timer_GetStatus");
 	MarkNativeAsOptional("Timer_GetBonus");
 	MarkNativeAsOptional("Timer_GetMapFinishCount");
@@ -375,8 +284,6 @@ public Timer_SetNTVOpt()
 	MarkNativeAsOptional("Timer_SetBonus");
 	MarkNativeAsOptional("Timer_GetMode");
 	MarkNativeAsOptional("Timer_IsModeRanked");
-	MarkNativeAsOptional("Timer_GetClientTeammate");
-	MarkNativeAsOptional("Timer_SetClientTeammate");
 	MarkNativeAsOptional("Timer_SetMode");
 	MarkNativeAsOptional("Timer_GetTier");
 	MarkNativeAsOptional("Timer_SetTier");
@@ -390,7 +297,6 @@ public Timer_SetNTVOpt()
 	MarkNativeAsOptional("Timer_GetRankID");
 	MarkNativeAsOptional("Timer_GetDifficultyRank");
 	MarkNativeAsOptional("Timer_GetRecordHolderName");
-	MarkNativeAsOptional("Timer_GetLevelName");
 	MarkNativeAsOptional("Timer_GetFinishCount");
 	MarkNativeAsOptional("Timer_GetRecordDate");
 	MarkNativeAsOptional("Timer_GetRecordTimeInfo");
@@ -411,14 +317,8 @@ public Timer_SetNTVOpt()
 	MarkNativeAsOptional("Timer_SetPoints");
 	MarkNativeAsOptional("Timer_RemovePoints");
 
-	MarkNativeAsOptional("Timer_GetPointsChallengeWin");
-	MarkNativeAsOptional("Timer_GetPointsChallengeLoose");
-
 	MarkNativeAsOptional("Timer_GetClientHide");
 	MarkNativeAsOptional("Timer_SetClientHide");
-	MarkNativeAsOptional("Timer_SetIgnoreEndTouchStart");
-	MarkNativeAsOptional("Timer_IsPlayerTouchingZoneType");
-	MarkNativeAsOptional("Timer_GetMapzoneCount");
 	
 	MarkNativeAsOptional("Timer_GetScripter");
 	MarkNativeAsOptional("Timer_GetPickedMode");
@@ -429,9 +329,6 @@ public Timer_SetNTVOpt()
 	MarkNativeAsOptional("Timer_GetMaxSpeed");
 	MarkNativeAsOptional("Timer_GetAvgSpeed");
 	MarkNativeAsOptional("Timer_ResetAccuracy");
-	
-	MarkNativeAsOptional("Timer_GetCoopStatus");
-	MarkNativeAsOptional("Timer_GetChallengeStatus");
 	
 	MarkNativeAsOptional("Ranking_GetPoints");
 	MarkNativeAsOptional("Ranking_GetPointRank");
@@ -444,4 +341,3 @@ public Timer_SetNTVOpt()
 	MarkNativeAsOptional("Timer_IsScripter");
 
 }
-

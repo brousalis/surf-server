@@ -29,10 +29,10 @@ new String:SND_TIMER_PERSONALBEST[MAX_FILE_LEN];
 public Plugin:myinfo =
 {
     name        = "[Timer] Sounds",
-    author      = "Zipcore && Jason BOurne",
-    description = "Sound component for [Timer]",
+    author      = "Zipcore, Jason Bourne",
+    description = "[Timer] Sounds for timer events",
     version     = PL_VERSION,
-    url         = "http://sourcegn.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnPluginStart()

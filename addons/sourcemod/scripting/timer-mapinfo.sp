@@ -2,15 +2,16 @@
 
 #include <sourcemod>
 #include <timer>
+#include <timer-mapzones>
 #include <timer-config_loader.sp>
 
 public Plugin:myinfo =
 {
     name        = "[Timer] MapInfo",
     author      = "Zipcore",
-    description = "Mapinfo menu component for [Timer]",
+    description = "[Timer] Shows details about a map",
     version     = PL_VERSION,
-    url         = "zipcore#googlemail.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 new String:g_sCurrentMap[PLATFORM_MAX_PATH];

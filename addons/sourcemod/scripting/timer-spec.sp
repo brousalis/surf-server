@@ -8,10 +8,10 @@
 
 public Plugin:myinfo ={
     name        = "[Timer] Spectate",
-    author      = "Jason Bourne",
-    description = "afk/spec quick commands component for [Timer]",
+    author      = "Zipcore, Jason Bourne",
+    description = "[Timer] Provides afk commands",
     version     = PL_VERSION,
-    url         = "http://SourceGN.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnPluginStart()

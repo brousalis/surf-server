@@ -15,9 +15,9 @@ public Plugin:myinfo =
 {
 	name = "[Timer] Finish Message",
 	author = "Zipcore",
-	description = "",
+	description = "[Timer] Finish message for CS:GO",
 	version = "1.0",
-	url = "zipcore#googlemail.com"
+	url = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnPluginStart()

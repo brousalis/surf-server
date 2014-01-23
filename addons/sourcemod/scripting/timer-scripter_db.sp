@@ -21,10 +21,10 @@ new Handle:hTopMenu = INVALID_HANDLE;
 public Plugin:myinfo =
 {
     name        = "[Timer] Scripter-DB System",
-    author      = "Zipcore && Jason Bourne",
-    description = "Scripter-DB component for [Timer]",
+    author      = "Zipcore, Jason Bourne",
+    description = "[Timer] Scripter DB system to block auto bhop scripters for auto styles",
     version     = PL_VERSION,
-    url         = "http://SourceGN.com"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnLibraryRemoved(const String:name[])
@@ -470,7 +470,7 @@ public Action:Command_ReloadScripters(client, argc)
 	{
 		if (Timer_IsScripter(client))
 		{
-			Timer_SetMode(client, MODE_AUTO);
+			Timer_SetMode(client, g_ModeDefault);
 			PrintToChat(client, "[ScripterDB] You are not allowed to play ranked modes except AUTO! Visit our forums to request an unban.");
 		}
 	}	

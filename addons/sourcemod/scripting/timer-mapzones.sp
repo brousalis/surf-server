@@ -1,5 +1,4 @@
 #pragma semicolon 1
-
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
@@ -7,6 +6,8 @@
 #include <adminmenu>
 #include <smlib>
 #include <timer>
+#include <timer-mapzones>
+#include <timer-teams>
 #include <timer-logging>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
@@ -16,18 +17,7 @@
 
 new bool:g_timer = false;
 new bool:g_timerPhysics = false;
-//new bool:g_timerMapzones = false;
-//new bool:g_timerCpMod = false;
 new bool:g_timerLjStats = false;
-//new bool:g_timerLogging = false;
-//new bool:g_timerMapTier = false;
-//new bool:g_timerRankings = false;
-//new bool:g_timerRankingsTopOnly = false;
-//new bool:g_timerScripterDB = false;
-//new bool:g_timerStrafes = false;
-//new bool:g_timerTeams = false;
-//new bool:g_timerWeapons = false;
-//new bool:g_timerWorldRecord = false;
 
 new g_ioffsCollisionGroup;
 
@@ -120,7 +110,7 @@ new g_mapZoneEditors[MAXPLAYERS+1][MapZoneEditor];
 new precache_laser;
 
 new g_clientLevel[MAXPLAYERS+1]=0;
-new g_clientTeammate[MAXPLAYERS+1]=0;
+
 new Handle:g_OnClientStartTouchZoneType;
 new Handle:g_OnClientEndTouchZoneType;
 
@@ -128,9 +118,9 @@ public Plugin:myinfo =
 {
 	name        = "[Timer] MapZones",
 	author      = "Zipcore, Credits: Alongub",
-	description = "Map Zones component for [Timer]",
+	description = "[Timer] MapZones manager with trigger_multiple hooks",
 	version     = PL_VERSION,
-	url         = "zipcore#googlemail.com"
+	url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -139,8 +129,6 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Timer_GetClientLevel", Native_GetClientLevel);
 	CreateNative("Timer_GetClientLevelID", Native_GetClientLevelID);
 	CreateNative("Timer_GetLevelName", Native_GetLevelName);
-	CreateNative("Timer_GetClientTeammate", Native_GetClientTeammate);
-	CreateNative("Timer_SetClientTeammate", Native_SetClientTeammate);
 	CreateNative("Timer_SetClientLevel", Native_SetClientLevel);
 	CreateNative("Timer_SetIgnoreEndTouchStart", Native_SetIgnoreEndTouchStart);
 	CreateNative("Timer_IsPlayerTouchingZoneType", Native_IsPlayerTouchingZoneType);
@@ -157,18 +145,7 @@ public OnPluginStart()
 	
 	g_timer = LibraryExists("timer");
 	g_timerPhysics = LibraryExists("timer-physics");
-	//g_timerMapzones = LibraryExists("timer-mapzones");
-	//g_timerCpMod = LibraryExists("timer-cpmod");
 	g_timerLjStats = LibraryExists("timer-ljstats");
-	//g_timerLogging = LibraryExists("timer-logging");
-	//g_timerMapTier = LibraryExists("timer-maptier");
-	//g_timerRankings = LibraryExists("timer-rankings");
-	//g_timerRankingsTopOnly = LibraryExists("timer-rankings_top_only");
-	//g_timerScripterDB = LibraryExists("timer-scripter_db");
-	//g_timerStrafes = LibraryExists("timer-strafes");
-	//g_timerTeams = LibraryExists("timer-teams");
-	//g_timerWeapons = LibraryExists("timer-weapons");
-	//g_timerWorldRecord = LibraryExists("timer-worldrecord");
 	
 	FindCollisionGroup();
 	
@@ -959,54 +936,10 @@ public OnLibraryAdded(const String:name[])
 	else if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = true;
-	}	
-	else if (StrEqual(name, "timer-mapzones"))
-	{
-		//g_timerMapzones = true;
-	}		
-	else if (StrEqual(name, "timer-cpmod"))
-	{
-		//g_timerCpMod = true;
-	}	
+	}
 	else if (StrEqual(name, "timer-ljstats"))
 	{
 		g_timerLjStats = true;
-	}	
-	else if (StrEqual(name, "timer-logging"))
-	{
-		//g_timerLogging = true;
-	}	
-	else if (StrEqual(name, "timer-maptier"))
-	{
-		//g_timerMapTier = true;
-	}	
-	else if (StrEqual(name, "timer-rankings"))
-	{
-		//g_timerRankings = true;
-	}		
-	else if (StrEqual(name, "timer-rankings_top_only"))
-	{
-		//g_timerRankingsTopOnly = true;
-	}
-	else if (StrEqual(name, "timer-scripter_db"))
-	{
-		//g_timerScripterDB = true;
-	}
-	else if (StrEqual(name, "timer-strafes"))
-	{
-		//g_timerStrafes = true;
-	}
-	else if (StrEqual(name, "timer-teams"))
-	{
-		//g_timerTeams = true;
-	}
-	else if (StrEqual(name, "timer-weapons"))
-	{
-		//g_timerWeapons = true;
-	}
-	else if (StrEqual(name, "timer-worldrecord"))
-	{
-		//g_timerWorldRecord = true;
 	}
 }
 
@@ -1019,54 +952,10 @@ public OnLibraryRemoved(const String:name[])
 	else if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = false;
-	}	
-	else if (StrEqual(name, "timer-mapzones"))
-	{
-		//g_timerMapzones = false;
-	}		
-	else if (StrEqual(name, "timer-cpmod"))
-	{
-		//g_timerCpMod = false;
-	}	
+	}
 	else if (StrEqual(name, "timer-ljstats"))
 	{
 		g_timerLjStats = false;
-	}	
-	else if (StrEqual(name, "timer-logging"))
-	{
-		//g_timerLogging = false;
-	}	
-	else if (StrEqual(name, "timer-maptier"))
-	{
-		//g_timerMapTier = false;
-	}	
-	else if (StrEqual(name, "timer-rankings"))
-	{
-		//g_timerRankings = false;
-	}		
-	else if (StrEqual(name, "timer-rankings_top_only"))
-	{
-		//g_timerRankingsTopOnly = false;
-	}
-	else if (StrEqual(name, "timer-scripter_db"))
-	{
-		//g_timerScripterDB = false;
-	}
-	else if (StrEqual(name, "timer-strafes"))
-	{
-		//g_timerStrafes = false;
-	}
-	else if (StrEqual(name, "timer-teams"))
-	{
-		//g_timerTeams = false;
-	}
-	else if (StrEqual(name, "timer-weapons"))
-	{
-		//g_timerWeapons = false;
-	}
-	else if (StrEqual(name, "timer-worldrecord"))
-	{
-		//g_timerWorldRecord = false;
 	}
 	else if (StrEqual(name, "adminmenu"))
 	{
@@ -1157,7 +1046,6 @@ public OnMapStart()
 	for (new i = 1; i < MAXPLAYERS; i++)
 	{
 		g_clientLevel[i] = 0;
-		g_clientTeammate[i] = 0;
 	}
 	for (new i = 0; i < 2047; i++)
 	{
@@ -1220,7 +1108,6 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
 	g_clientLevel[client] = 0;
-	g_clientTeammate[client] = 0;
 	Timer_SetClientTeammate(client, 0, 1);
 	g_bHurt[client] = false;
 	g_iIgnoreEndTouchStart[client] = 0;
@@ -4212,42 +4099,6 @@ public Native_SetClientLevel(Handle:plugin, numParams)
 	new client = GetNativeCell(1);
 	new level = GetNativeCell(2);
 	g_clientLevel[client] = level;
-}
-
-public Native_GetClientTeammate(Handle:plugin, numParams)
-{
-	new client = GetNativeCell(1);
-	return g_clientTeammate[client];
-}
-
-public Native_SetClientTeammate(Handle:plugin, numParams)
-{
-	new client = GetNativeCell(1);
-	new mate = GetNativeCell(2);
-	new bool:teleport = bool:GetNativeCell(2);
-	
-	if(0 < client)
-	{
-		new oldcmate = g_clientTeammate[client];
-		new oldmmate = g_clientTeammate[mate];
-		g_clientTeammate[oldcmate] = 0;
-		g_clientTeammate[oldmmate] = 0;
-		g_clientTeammate[client] = 0;
-		g_clientTeammate[mate] = 0;
-		if(0 < mate)
-		{
-			g_clientTeammate[client] = mate;
-			g_clientTeammate[mate] = client;
-		}
-		
-		if(teleport)
-		{
-			Tele_Level(oldcmate, 1);
-			Tele_Level(oldmmate, 1);
-			Tele_Level(client, 1);
-			Tele_Level(mate, 1);
-		}
-	}
 }
 
 public Native_SetIgnoreEndTouchStart(Handle:plugin, numParams)
