@@ -2,6 +2,7 @@
 #include <sdktools>
 #include <smlib/arrays>
 #include <timer>
+#include <timer-strafes>
 #include <timer-mapzones>
 
 #define MAX_STRAFES 5000
@@ -26,7 +27,7 @@ public Plugin:myinfo =
 	name = "[Timer] Strafe Stats",
 	author = "Zipcore, Miu",
 	description = "[Timer] Strafe stats collection core",
-	version = "1.0",
+	version = PL_VERSION,
 	url = "forums.alliedmods.net/showthread.php?p=2074699"
 }
 

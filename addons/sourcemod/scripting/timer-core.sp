@@ -4,13 +4,17 @@
 #include <sdktools>
 #include <smlib>
 #include <timer>
+#include <timer-logging>
 #include <timer-config_loader.sp>
 #include <timer-stocks>
 
 #undef REQUIRE_PLUGIN
-#include <timer-logging>
 #include <timer-mapzones>
 #include <timer-teams>
+#include <timer-physics>
+#include <timer-strafes>
+#include <timer-worldrecord>
+#include <timer-scripter_db>
 
 #define MAX_FILE_LEN 128
 
@@ -620,7 +624,7 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 		Timer_Log(Timer_LogLevelWarning, "Detected illegal record by %N on %s [time:%.2f|mode:%d|bonus:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, mode, bonus, jumps, auth);
 		return;
 	}
-	if (Timer_GetScripter(client))
+	if (Timer_IsScripter(client))
 	{
 		Timer_Log(Timer_LogLevelWarning, "Detected scripter record by %N on %s [time:%.2f|mode:%d|bonus:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, mode, bonus, jumps, auth);
 		return;

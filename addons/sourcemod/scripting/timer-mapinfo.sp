@@ -3,6 +3,7 @@
 #include <sourcemod>
 #include <timer>
 #include <timer-mapzones>
+#include <timer-maptier>
 #include <timer-config_loader.sp>
 
 public Plugin:myinfo =

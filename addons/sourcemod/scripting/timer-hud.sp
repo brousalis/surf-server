@@ -5,14 +5,18 @@
 #include <cstrike>
 #include <clientprefs>
 #include <smlib>
+#include <timer>
+#include <timer-logging>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
 #undef REQUIRE_PLUGIN
-#include <timer>
-#include <timer-logging>
 #include <timer-mapzones>
 #include <timer-teams>
+#include <timer-maptier>
+#include <timer-rankings>
+#include <timer-worldrecord>
+#include <timer-physics>
 #include <js_ljstats>
 
 #define THINK_INTERVAL 			1.0
@@ -49,7 +53,6 @@ new String:g_currentMap[64];
 new Handle:g_cvarTimeLimit	= INVALID_HANDLE;
 
 //module check
-new bool:g_timer = false;
 new bool:g_timerPhysics = false;
 new bool:g_timerMapzones = false;
 new bool:g_timerLjStats = false;
@@ -101,7 +104,6 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	g_timer = LibraryExists("timer");
 	g_timerPhysics = LibraryExists("timer-physics");
 	g_timerMapzones = LibraryExists("timer-mapzones");
 	g_timerLjStats = LibraryExists("timer-ljstats");
@@ -157,11 +159,7 @@ public OnPluginStart()
 
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = true;
-	}
-	else if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = true;
 	}	
@@ -189,11 +187,7 @@ public OnLibraryAdded(const String:name[])
 
 public OnLibraryRemoved(const String:name[])
 {	
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = false;
-	}
-	else if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = false;
 	}	
@@ -1207,10 +1201,6 @@ public Action:HUDTimer_CSS(Handle:timer)
 
 UpdateHUD_CSS(client)
 {
-	//Check for Timer-Core
-	if(!g_timer)
-		return;	
-	
 	if(!IsClientInGame(client))
 	{
 		return;
@@ -1282,7 +1272,7 @@ UpdateHUD_CSS(client)
 	new Float:RecordTime;
 	new RankTotal;
 	
-	if(g_timer) Timer_GetClientTimer(iClientToShow, enabled, time, jumps, fpsmax);
+	Timer_GetClientTimer(iClientToShow, enabled, time, jumps, fpsmax);
 	
 	new mode;	
 	if(g_timerPhysics) mode = Timer_GetMode(iClientToShow);	
@@ -1762,10 +1752,6 @@ public Action:HUDTimer_CSGO(Handle:timer)
 
 UpdateHUD_CSGO(client)
 {
-	//Check for Timer-Core
-	if(!g_timer)
-		return;	
-	
 	if(!IsClientInGame(client))
 	{
 		return;
@@ -1986,7 +1972,7 @@ UpdateHUD_CSGO(client)
 		if(hudSettings[Time][client]) Format(centerText, sizeof(centerText), "%s | ", centerText);
 	}
 	
-	if(hudSettings[Time][client] && g_timer) 
+	if(hudSettings[Time][client]) 
 	{
 		if(Timer_GetPauseStatus(iClientToShow))
 		{

@@ -16,13 +16,6 @@ public Plugin:myinfo =
     url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
-{
-	RegPluginLibrary("timer-quickstyles");
-
-	return APLRes_Success;
-}
-
 public OnPluginStart()
 {
 	LoadPhysics();

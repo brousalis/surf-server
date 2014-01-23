@@ -4,9 +4,10 @@
 #include <sdkhooks>
 #include <cstrike>
 #include <smlib>
+#include <timer>
+#include <timer-hide>
 
 #undef REQUIRE_PLUGIN
-#include <timer>
 #include <timer-teams>
 
 new bool:g_timerMapzones = false;
@@ -207,14 +208,13 @@ public Action:Hook_SetTransmit(entity, client)
 public Native_GetClientHide(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
-	if(g_bHide[client]) return 1;
-	else return 0;
+	return g_bHide[client];
+
 }
 
 public Native_SetClientHide(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
 	new bool:hide = GetNativeCell(2);
-	if(hide) g_bHide[client] = true;
-	else g_bHide[client] = false;
+	g_bHide[client] = hide;
 }

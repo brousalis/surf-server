@@ -4,10 +4,15 @@
 #include <basecomm>
 #include <timer>
 #include <timer-logging>
+#include <timer-rankings>
 #include <clientprefs>
 #include <timer-config_loader.sp>
 #include <autoexecconfig>	//https://github.com/Impact123/AutoExecConfig
 
+#undef REQUIRE_PLUGIN
+#include <timer-maptier>
+#include <timer-physics>
+#include <timer-worldrecord>
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * *
 //Defines

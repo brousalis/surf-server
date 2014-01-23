@@ -4,6 +4,7 @@
 
 #include <timer>
 #include <timer-logging>
+#include <timer-maptier>
 #include <timer-stocks>
 
 new Handle:g_hSQL;

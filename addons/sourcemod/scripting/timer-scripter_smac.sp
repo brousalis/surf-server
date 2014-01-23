@@ -5,6 +5,7 @@
 #include <timer>
 #include <timer-mapzones>
 #include <timer-logging>
+#include <timer-scripter_db>
 #include <timer-config_loader.sp>
 
 #define TRIGGER_DETECTIONS 12

@@ -7,15 +7,16 @@
 #include <smlib>
 #include <timer>
 #include <timer-mapzones>
-#include <timer-teams>
 #include <timer-logging>
 #include <timer-stocks>
+#include <timer-teams>
 #include <timer-config_loader.sp>
 
 #undef REQUIRE_PLUGIN
 #include <js_ljstats>
+#include <timer-physics>
+#include <timer-hide>
 
-new bool:g_timer = false;
 new bool:g_timerPhysics = false;
 new bool:g_timerLjStats = false;
 
@@ -143,14 +144,11 @@ public OnPluginStart()
 	LoadPhysics();
 	LoadTimerSettings();
 	
-	g_timer = LibraryExists("timer");
+
 	g_timerPhysics = LibraryExists("timer-physics");
 	g_timerLjStats = LibraryExists("timer-ljstats");
 	
 	FindCollisionGroup();
-	
-	g_timer = LibraryExists("timer");
-	g_timerPhysics = LibraryExists("timer-physics");
 	
 	g_startMapZoneColor = CreateConVar("timer_startcolor", "0 255 0 255", "The color of the start map zone.");
 	g_endMapZoneColor = CreateConVar("timer_endcolor", "255 0 0 255", "The color of the end map zone.");
@@ -363,8 +361,6 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 //public Action:StartTouchTrigger(caller, activator)
 public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
 {
-	if(!g_timer)
-		return;
 	if(!g_timerPhysics)
 		return;
 	if(!g_bZonesLoaded)
@@ -738,8 +734,6 @@ public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
 //public Action:EndTouchTrigger(caller, activator)
 public EndTouchTrigger(const String:output[], caller, activator, Float:delay)
 {
-	if(!g_timer)
-		return;
 	if(!g_timerPhysics)
 		return;
 	if(!g_bZonesLoaded)
@@ -929,11 +923,7 @@ public CacheSounds()
 
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = true;
-	}
-	else if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = true;
 	}
@@ -945,11 +935,7 @@ public OnLibraryAdded(const String:name[])
 
 public OnLibraryRemoved(const String:name[])
 {	
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = false;
-	}
-	else if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = false;
 	}
@@ -2240,8 +2226,6 @@ public bool:TraceASDF(entity, mask, any:data)
 
 StopPreSpeed(client)
 {
-	if(!g_timer)
-		return;
 	if(!g_timerPhysics)
 		return;
 	if(!g_bZonesLoaded)
@@ -3980,7 +3964,7 @@ public Action:Command_Levels(client, args)
 	
 	if(level > 0)
 	{
-		if(g_timer) Timer_Reset(client);
+		Timer_Reset(client);
 		Tele_Level(client, level);
 		return Plugin_Handled;
 	}
@@ -4020,7 +4004,7 @@ public MenuHandlerLevels(Handle:menu, MenuAction:action, client, param2)
 		new zone = StringToInt(info);
 		if(found)
 		{
-			if(g_timer) Timer_Reset(client);
+			Timer_Reset(client);
 			Tele_Zone(client, zone);
 		}
 	}

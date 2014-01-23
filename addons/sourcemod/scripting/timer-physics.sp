@@ -8,18 +8,18 @@
 #include <sdkhooks>
 #include <smlib>
 #include <timer>
-#include <timer-mapzones>
 #include <timer-logging>
 #include <timer-stocks>
+#include <timer-physics>
 #include <timer-config_loader.sp>
 
 #undef REQUIRE_PLUGIN
 #include <js_ljstats>
+#include <timer-rankings>
+#include <timer-mapzones>
 
-new bool:g_timer = false;
 new bool:g_timerMapzones = false;
 new bool:g_timerLjStats = false;
-new bool:g_timerLogging = false;
 new bool:g_timerRankings = false;
 
 
@@ -63,7 +63,6 @@ new bool:g_bAutoDisable[MAXPLAYERS+1] = {false, ...};
 new bool:g_bAuto[MAXPLAYERS+1] = {false, ...};
 new Float:g_fBoost[MAXPLAYERS+1] = {0.0, ...};
 
-new bool:g_bScripter[MAXPLAYERS+1] = {false, ...};
 new bool:g_bPickedMode[MAXPLAYERS+1] = {false, ...};
 
 new bool:g_bCustomAuto[MAXPLAYERS+1] = {false, ...};
@@ -71,10 +70,6 @@ new bool:g_bCustomBoost[MAXPLAYERS+1] = {false, ...};
 new bool:g_bCustomFullStamina[MAXPLAYERS+1] = {false, ...};
 new bool:g_bCustomLowGravity[MAXPLAYERS+1] = {false, ...};
 
-new g_iDetections[MAXPLAYERS+1];
-
-//Timer
-new Handle:g_DrugTimers[MAXPLAYERS+1];
 
 //Func_Door list
 new g_iBhopDoorList[MAX_BHOPBLOCKS];
@@ -126,11 +121,6 @@ new g_iButtonOffs_spawnflags = -1;
 //SDK Stuff
 new Handle:g_hSDK_Touch = INVALID_HANDLE;
 
-// UserMessageId for Fade.
-new UserMsg:g_FadeUserMsgId;
-
-new Float:g_DrugAngles[20] = {0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 20.0, 15.0, 10.0, 5.0, 0.0, -5.0, -10.0, -15.0, -20.0, -25.0, -20.0, -15.0, -10.0, -5.0};
-
 public Plugin:myinfo =
 {
     name        = "[Timer] Physics",
@@ -144,7 +134,6 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
 	RegPluginLibrary("timer-physics");
 	
-	CreateNative("Timer_GetScripter", Native_GetScripter);
 	CreateNative("Timer_GetForceMode", Native_GetForceMode);
 	CreateNative("Timer_GetPickedMode", Native_GetPickedMode);
 	CreateNative("Timer_ApplyPhysics", Native_ApplyPhysics);
@@ -175,7 +164,6 @@ public OnPluginStart()
 	LoadTranslations("timer.phrases");
 	
 	HookEvent("round_start",Event_RoundStart,EventHookMode_PostNoCopy);
-	HookEvent("round_end", Event_RoundEnd, EventHookMode_PostNoCopy);
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_jump", Event_PlayerJump);
@@ -196,10 +184,6 @@ public OnPluginStart()
 	GetConVarString(g_hPlattformColor, buffer, sizeof(buffer));
 	ParseColor(buffer, g_PlattformColor);
 	
-	CreateTimer(4.0, Timer_DecreaseCount, _, TIMER_REPEAT);
-	
-	g_FadeUserMsgId = GetUserMessageId("Fade");
-	
 	StartPrepSDKCall(SDKCall_Entity);
 	PrepSDKCall_SetFromConf(hGameConf,SDKConf_Virtual,"Touch");
 	PrepSDKCall_AddParameter(SDKType_CBaseEntity,SDKPass_Pointer);
@@ -218,10 +202,8 @@ public OnPluginStart()
 	g_iOffs_vecMaxs = FindSendPropInfo("CBaseEntity","m_vecMaxs");
 	g_iOffs_Velocity = FindSendPropOffs("CBasePlayer", "m_vecVelocity[0]");
 	
-	g_timer = LibraryExists("timer");
 	g_timerMapzones = LibraryExists("timer-mapzones");
 	g_timerLjStats = LibraryExists("timer-ljstats");
-	g_timerLogging = LibraryExists("timer-logging");
 	g_timerRankings = LibraryExists("timer-rankings");
 
 	
@@ -235,21 +217,13 @@ public OnPluginStart()
 
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = true;
-	}
-	else if (StrEqual(name, "timer-mapzones"))
+	if (StrEqual(name, "timer-mapzones"))
 	{
 		g_timerMapzones = true;
 	}		
 	else if (StrEqual(name, "timer-ljstats"))
 	{
 		g_timerLjStats = true;
-	}	
-	else if (StrEqual(name, "timer-logging"))
-	{
-		g_timerLogging = true;
 	}	
 	else if (StrEqual(name, "timer-rankings"))
 	{
@@ -259,22 +233,14 @@ public OnLibraryAdded(const String:name[])
 
 public OnLibraryRemoved(const String:name[])
 {	
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = false;
-	}	
-	else if (StrEqual(name, "timer-mapzones"))
+	if (StrEqual(name, "timer-mapzones"))
 	{
 		g_timerMapzones = false;
 	}		
 	else if (StrEqual(name, "timer-ljstats"))
 	{
 		g_timerLjStats = false;
-	}	
-	else if (StrEqual(name, "timer-logging"))
-	{
-		g_timerLogging = false;
-	}	
+	}		
 	else if (StrEqual(name, "timer-rankings"))
 	{
 		g_timerRankings = false;
@@ -362,12 +328,6 @@ stock ResetStats(client)
 	g_iCommandCount[client] = 0;
 }
 
-public OnClientDisconnect_Post(client)
-{
-	g_iDetections[client] = 0;
-	g_bScripter[client] = false;
-}
-
 Teleport(client, bhop, mode)
 {
 	
@@ -423,13 +383,6 @@ public OnMapEnd()
 
 	g_iBhopDoorCount = 0;
 	g_iBhopButtonCount = 0;
-	
-	KillAllDrugs();
-}
-
-public Action:Event_RoundEnd(Handle:event,const String:name[],bool:dontBroadcast)
-{
-	KillAllDrugs();
 }
 
 public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
@@ -446,12 +399,12 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 		
 		g_bPickedMode[client] = false;
 		
-		if(g_ModeDefault == -1 && g_timerLogging) Timer_LogError("PhysicsCFG: No default mode found");
+		if(g_ModeDefault == -1) Timer_LogError("PhysicsCFG: No default mode found");
 		else Timer_SetMode(client, g_ModeDefault);	
 		
 		ApplyDifficulty(client);
 		
-		if(g_timer) Timer_SetBonus(client, 0);
+		Timer_SetBonus(client, 0);
 
 		if (g_Settings[StyleMenuOnSpawn])
 		{
@@ -1254,7 +1207,7 @@ ApplyDifficulty(client)
 		}
 		
 		//stop timer
-		if(g_timer) Timer_Stop(client);
+		Timer_Stop(client);
 		
 		//stop him
 		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, Float:{0.0,0.0,-100.0});
@@ -1275,11 +1228,11 @@ ApplyDifficulty(client)
 		//skittles
 		if(g_Physics[mode][ModeDrugs])
 		{
-			PerformDrug(client, 1);
+			ServerCommand("sm_drug #%d 1", GetClientUserId(client));
 		}
 		else
 		{
-			PerformDrug(client, 0);
+			ServerCommand("sm_drug #%d 0", GetClientUserId(client));
 		}
 		
 		if(StrEqual(g_Physics[mode][ModeDesc], ""))
@@ -1291,19 +1244,13 @@ ApplyDifficulty(client)
 			CPrintToChat(client, "%s %s", PLUGIN_PREFIX2, g_Physics[mode][ModeDesc]);
 		}
 		
-		if(g_Settings[TeleportOnStyleChanged] && g_timer)
+		if(g_Settings[TeleportOnStyleChanged])
 		{
 			if(Timer_GetBonus(client) == 1)
 				FakeClientCommand(client, "sm_b");
 			else FakeClientCommand(client, "sm_start");
 		}
 	}
-}
-
-public Native_GetScripter(Handle:plugin, numParams)
-{
-	new client = GetNativeCell(1);
-	return g_bScripter[client];
 }
 
 public Native_GetPickedMode(Handle:plugin, numParams)
@@ -1376,152 +1323,6 @@ stock SetThirdPersonView(client, bool:third)
 		SetEntProp(client, Prop_Send, "m_iObserverMode", 0);
 		SetEntProp(client, Prop_Send, "m_bDrawViewmodel", 1);
 	}
-}
-
-CreateDrug(client)
-{
-	g_DrugTimers[client] = CreateTimer(1.0, Timer_Drug, client, TIMER_REPEAT);	
-}
-
-KillDrug(client)
-{
-	KillDrugTimer(client);
-	
-	new Float:pos[3];
-	GetClientAbsOrigin(client, pos);
-	new Float:angs[3];
-	GetClientEyeAngles(client, angs);
-	
-	angs[2] = 0.0;
-	
-	TeleportEntity(client, pos, angs, NULL_VECTOR);	
-	
-	new clients[2];
-	clients[0] = client;	
-	
-	new Handle:message = StartMessageEx(g_FadeUserMsgId, clients, 1);
-	BfWriteShort(message, 1536);
-	BfWriteShort(message, 1536);
-	BfWriteShort(message, (0x0001 | 0x0010));
-	BfWriteByte(message, 0);
-	BfWriteByte(message, 0);
-	BfWriteByte(message, 0);
-	BfWriteByte(message, 0);
-	EndMessage();	
-}
-
-KillDrugTimer(client)
-{
-	KillTimer(g_DrugTimers[client]);
-	g_DrugTimers[client] = INVALID_HANDLE;	
-}
-
-KillAllDrugs()
-{
-	for (new i = 1; i <= MaxClients; i++)
-	{
-		if(IsClientConnected(i) && IsClientSourceTV(i))
-			continue;
-		
-		if (g_DrugTimers[i] != INVALID_HANDLE)
-		{
-			if(IsClientInGame(i))
-			{
-				KillDrug(i);
-			}
-			else
-			{
-				KillDrugTimer(i);
-			}
-		}
-	}
-}
-
-PerformDrug(target, toggle)
-{
-	switch (toggle)
-	{
-		case (2):
-		{
-			if (g_DrugTimers[target] == INVALID_HANDLE)
-			{
-				CreateDrug(target);
-			}
-			else
-			{
-				KillDrug(target);
-			}			
-		}
-
-		case (1):
-		{
-			if (g_DrugTimers[target] == INVALID_HANDLE)
-			{
-				CreateDrug(target);
-			}			
-		}
-		
-		case (0):
-		{
-			if (g_DrugTimers[target] != INVALID_HANDLE)
-			{
-				KillDrug(target);
-			}			
-		}
-	}
-}
-
-public Action:Timer_DecreaseCount(Handle:timer)
-{
-	for (new i = 1; i <= MaxClients; i++)
-	{
-		g_iDetections[i]--;
-	}
-
-	return Plugin_Continue;
-}
-
-public Action:Timer_Drug(Handle:timer, any:client)
-{
-	if (!IsClientInGame(client))
-	{
-		KillDrugTimer(client);
-
-		return Plugin_Handled;
-	}
-	
-	if (!IsPlayerAlive(client))
-	{
-		KillDrug(client);
-		
-		return Plugin_Handled;
-	}
-	
-	new Float:pos[3];
-	GetClientAbsOrigin(client, pos);
-	
-	new Float:angs[3];
-	GetClientEyeAngles(client, angs);
-	
-	angs[2] = g_DrugAngles[GetRandomInt(0,100) % 20];
-	
-	TeleportEntity(client, pos, angs, NULL_VECTOR);
-	
-	new clients[2];
-	clients[0] = client;	
-	
-	new Handle:message = StartMessageEx(g_FadeUserMsgId, clients, 1);
-	BfWriteShort(message, 255);
-	BfWriteShort(message, 255);
-	BfWriteShort(message, (0x0002));
-	BfWriteByte(message, GetRandomInt(0,255));
-	BfWriteByte(message, GetRandomInt(0,255));
-	BfWriteByte(message, GetRandomInt(0,255));
-	BfWriteByte(message, 128);
-	
-	EndMessage();	
-		
-	return Plugin_Handled;
 }
 
 public Entity_Touch(bhop,client) 
@@ -1659,7 +1460,7 @@ FindBhopBlocks()
 {
 	if(g_Settings[MultiBhopEnable])
 	{
-		if(g_timerLogging) Timer_LogDebug("Start searching bhop blocks");
+		Timer_LogDebug("Start searching bhop blocks");
 		
 		decl Float:startpos[3], Float:endpos[3], Float:mins[3], Float:maxs[3], tele;
 		new ent = -1;
@@ -1739,7 +1540,7 @@ FindBhopBlocks()
 			}
 		}
 		
-		if(g_timerLogging) Timer_LogDebug("Got %d buttons and %d doors", g_iBhopButtonCount, g_iBhopDoorCount);
+		Timer_LogDebug("Got %d buttons and %d doors", g_iBhopButtonCount, g_iBhopDoorCount);
 
 		AlterBhopBlocks(false);
 	}
@@ -2117,7 +1918,7 @@ public Action:Timer_CheckNoClip(Handle:timer)
 			//has player noclip?
 			if(GetEntProp(client, Prop_Send, "movetype", 1) == 8)
 			{
-				if(g_timer) Timer_Stop(client, false);
+				Timer_Stop(client, false);
 				ResetBhopAvoid(client);
 				ResetBhopCollect(client);
 			}

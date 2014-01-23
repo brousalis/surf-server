@@ -7,7 +7,10 @@
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
-new bool:g_timer = false;
+#undef REQUIRE_PLUGIN
+#include <timer-physics>
+#include <timer-worldrecord>
+
 new bool:g_timerPhysics = false;
 new bool:g_timerWorldRecord = false;
 
@@ -25,18 +28,13 @@ public OnPluginStart()
 	LoadPhysics();
 	LoadTimerSettings();
 	
-	g_timer = LibraryExists("timer");
 	g_timerPhysics = LibraryExists("timer-physics");
 	g_timerWorldRecord = LibraryExists("timer-worldrecord");
 }
 
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = true;
-	}
-	else if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = true;
 	}	
@@ -48,11 +46,7 @@ public OnLibraryAdded(const String:name[])
 
 public OnLibraryRemoved(const String:name[])
 {	
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = false;
-	}
-	else if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = false;
 	}	
@@ -98,7 +92,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	new jumps = 0;
 	new fpsmax;
 
-	if(g_timer) Timer_GetClientTimer(client, enabled, time, jumps, fpsmax);
+	Timer_GetClientTimer(client, enabled, time, jumps, fpsmax);
 	
 	if(g_timerWorldRecord) 
 	{

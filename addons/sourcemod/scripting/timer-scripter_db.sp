@@ -5,6 +5,7 @@
 
 #include <timer>
 #include <timer-logging>
+#include <timer-scripter_db>
 #include <timer-config_loader.sp>
 
 #define SQLITE__ 0

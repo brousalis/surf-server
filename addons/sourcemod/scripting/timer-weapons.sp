@@ -50,15 +50,8 @@ public Plugin:myinfo =
     author      = "Zipcore",
     description = "[Timer] Weapons manager",
     version     = PL_VERSION,
-    url         = "v"
+    url         = "forums.alliedmods.net/showthread.php?p=2074699"
 };
-
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
-{
-	RegPluginLibrary("timer-weapons");
-
-	return APLRes_Success;
-}
 
 public OnPluginStart()
 {

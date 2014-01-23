@@ -6,7 +6,11 @@
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
-new bool:g_timer = false;
+#undef REQUIRE_PLUGIN
+#include <timer-physics>
+#include <timer-worldrecord>
+#include <timer-strafes>
+
 new bool:g_timerPhysics = false;
 new bool:g_timerStrafes = false;
 new bool:g_timerWorldRecord = false;
@@ -16,13 +20,12 @@ public Plugin:myinfo =
 	name = "[Timer] Finish Message",
 	author = "Zipcore",
 	description = "[Timer] Finish message for CS:GO",
-	version = "1.0",
+	version = PL_VERSION,
 	url = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnPluginStart()
 {
-	g_timer = LibraryExists("timer");
 	g_timerPhysics = LibraryExists("timer-physics");
 	g_timerStrafes = LibraryExists("timer-strafes");
 	g_timerWorldRecord = LibraryExists("timer-worldrecord");
@@ -33,11 +36,8 @@ public OnPluginStart()
 
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = true;
-	}
-	else if (StrEqual(name, "timer-physics"))
+
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = true;
 	}	
@@ -53,11 +53,7 @@ public OnLibraryAdded(const String:name[])
 
 public OnLibraryRemoved(const String:name[])
 {	
-	if (StrEqual(name, "timer"))
-	{
-		g_timer = false;
-	}
-	else if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = false;
 	}	
@@ -110,7 +106,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	new jumps = 0;
 	new fpsmax;
 
-	if(g_timer) Timer_GetClientTimer(client, enabled, time, jumps, fpsmax);
+	Timer_GetClientTimer(client, enabled, time, jumps, fpsmax);
 	
 	if(g_timerWorldRecord) 
 	{

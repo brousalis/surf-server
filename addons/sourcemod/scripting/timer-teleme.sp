@@ -8,7 +8,6 @@
 #include <timer-mapzones>
 #include <timer-config_loader.sp>
 
-new bool:g_timer = false;
 new bool:g_timerMapzones = false;
 
 public Plugin:myinfo =
@@ -25,7 +24,6 @@ public OnPluginStart()
 	LoadPhysics();
 	LoadTimerSettings();
 	
-	g_timer = LibraryExists("timer");
 	g_timerMapzones = LibraryExists("timer-mapzones");
 	
 	RegConsoleCmd("sm_teleme", Command_TeleMe);
@@ -34,10 +32,6 @@ public OnPluginStart()
 
 public OnLibraryAdded(const String:name[])
 {
-	if(StrEqual(name, "timer"))
-	{
-		g_timer = true;
-	}
 	if(StrEqual(name, "timer-mapzones"))
 	{
 		g_timerMapzones = true;
@@ -46,10 +40,6 @@ public OnLibraryAdded(const String:name[])
 
 public OnLibraryRemoved(const String:name[])
 {	
-	if(StrEqual(name, "timer"))
-	{
-		g_timer = false;
-	}
 	if(StrEqual(name, "timer-mapzones"))
 	{
 		g_timerMapzones = false;
@@ -81,19 +71,7 @@ public Action:Command_TeleMe(client, args)
 		//show rest
 		for (new i = 1; i <= MaxClients; i++)
 		{
-			if(client == i)
-			{
-				continue;
-			}
-			if(!IsClientInGame(i))
-			{
-				continue;
-			}
-			if(IsFakeClient(i))
-			{
-				continue;
-			}
-			if(!IsPlayerAlive(i))
+			if(client == i || !IsClientInGame(i) || IsFakeClient(i) || !IsPlayerAlive(i))
 			{
 				continue;
 			}
@@ -140,7 +118,7 @@ public MenuHandlerTeleMe(Handle:menu, MenuAction:action, client, param2)
 				GetClientAbsOrigin(target, origin);
 				GetClientAbsAngles(target, angles);
 				
-				if(g_timer) Timer_Reset(client);
+				Timer_Reset(client);
 				
 				TeleportEntity(client, origin, angles, NULL_VECTOR);
 			}

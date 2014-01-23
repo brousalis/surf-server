@@ -161,14 +161,6 @@ forward OnTimerRestart(client);
 forward OnTimerPaused(client);
 forward OnTimerResumed(client);
 
-forward OnTimerWorldRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerPersonalRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerTop10Record(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerFirstRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-
-forward OnClientMaxJumpHeight(client, Float:height);
-
 native bool:Timer_Reset(client);
 native bool:Timer_Start(client);
 native bool:Timer_Stop(client, bool:stopPaused = true);
@@ -191,69 +183,10 @@ native Timer_SetBonus(client, newmode);
 native Timer_GetMode(client);
 native Timer_IsModeRanked(mode);
 native Timer_SetMode(client, newmode);
-native Timer_GetTier();
-native Timer_SetTier(tier);
-native Timer_GetStageCount();
-native Timer_SetStageCount(stagecount);
 
-native Timer_ForceReloadCache();
-native Timer_GetCurrentRank(client, bool:update, bonus);
-native Timer_GetTotalRank(bool:update, bonus);
-native Timer_GetDifficultyRecordTime(mode, bonus, &cacheid, &Float:time, &total);
-native Timer_GetNewPossibleRank(mode, bonus, Float:time);
-native Timer_GetRankID(mode, bonus, rank);
-
-native Timer_SetCacheMapName(String:name[], length);
-native Timer_GetCacheMapName(String:name[], length);
-
-native Timer_GetDifficultyRank(client, bonus, mode);
-native Timer_GetRecordHolderName(mode, bonus, rank, String:name[], length);
-native Timer_GetFinishCount(mode, bonus, rank);
-native Timer_GetRecordDate(mode, bonus, rank, String:date[], length);
-native Timer_GetRecordTimeInfo(mode, bonus, rank, &Float:time, String:timestring[], length);
-native Timer_GetRecordSpeedInfo(mode, bonus, rank, &Float:avgspeed, &Float:maxspeed, &Float:finishspeed);
-native Timer_GetRecordStrafeJumpInfo(mode, bonus, rank, &strafes, &Float:strafeacc, &jumps, &Float:jumpacc);
-native Timer_GetReplayPath(mode, bonus, rank, String:replay_path[], length);
-native Timer_GetRecordCustom1(mode, bonus, rank, String:custom1[], length);
-native Timer_GetRecordCustom2(mode, bonus, rank, String:custom2[], length);
-native Timer_GetRecordCustom3(mode, bonus, rank, String:custom3[], length);
-
-native Timer_GetStrafeCount(client);
-native Timer_GetBoostedStrafeCount(client);
-
-native Timer_GetPoints(client);
-native Timer_GetPointRank(client);
-native Timer_SetPoints(client, points);
-native Timer_AddPoints(client, points);
-native Timer_RemovePoints(client, points);
-native Timer_SavePoints(client);
-
-native Ranking_GetPoints(client);
-native Ranking_GetPointRank(client);
-native Ranking_SetPoints(client, points);
-native Ranking_AddPoints(client, points);
-native Ranking_RemovePoints(client, points);
-native Ranking_SavePoints(client);
-
-native Timer_GetClientHide(client);
-native Timer_SetClientHide(client, hide);
-
-native Timer_GetScripter(client);
-native Timer_GetPickedMode(client);
-native Timer_GetForceMode();
-native Timer_ApplyPhysics(client);
-native Timer_GetJumpAccuracy(client, &Float:percent);
-native Timer_GetCurrentSpeed(client, &Float:speed);
-native Timer_GetMaxSpeed(client, &Float:maxspeed);
-native Timer_GetAvgSpeed(client, &Float:avgspeed);
-native Timer_ResetAccuracy(client);
-
-native Timer_AddScripter(client);
-native Timer_IsScripter(client);
-
-public SharedPlugin:__pl_timer_core = 
+public SharedPlugin:__pl_timer = 
 {
-	name = "timer-core",
+	name = "timer",
 	file = "timer-core.smx",
 #if defined REQUIRE_PLUGIN
 	required = 1,
@@ -262,7 +195,7 @@ public SharedPlugin:__pl_timer_core =
 #endif
 };
 
-public __pl_timer_core_SetNTVOpt()
+public __pl_timer_SetNTVOpt()
 {
 	MarkNativeAsOptional("Timer_Start");
 	MarkNativeAsOptional("Timer_Stop");
@@ -284,60 +217,5 @@ public __pl_timer_core_SetNTVOpt()
 	MarkNativeAsOptional("Timer_SetBonus");
 	MarkNativeAsOptional("Timer_GetMode");
 	MarkNativeAsOptional("Timer_IsModeRanked");
-	MarkNativeAsOptional("Timer_SetMode");
-	MarkNativeAsOptional("Timer_GetTier");
-	MarkNativeAsOptional("Timer_SetTier");
-	MarkNativeAsOptional("Timer_GetStageCount");
-	MarkNativeAsOptional("Timer_SetStageCount");
-	MarkNativeAsOptional("Timer_ForceReloadCache");
-	MarkNativeAsOptional("Timer_GetCurrentRank");
-	MarkNativeAsOptional("Timer_GetTotalRank");
-	MarkNativeAsOptional("Timer_GetDifficultyRecordTime");
-	MarkNativeAsOptional("Timer_GetNewPossibleRank");
-	MarkNativeAsOptional("Timer_GetRankID");
-	MarkNativeAsOptional("Timer_GetDifficultyRank");
-	MarkNativeAsOptional("Timer_GetRecordHolderName");
-	MarkNativeAsOptional("Timer_GetFinishCount");
-	MarkNativeAsOptional("Timer_GetRecordDate");
-	MarkNativeAsOptional("Timer_GetRecordTimeInfo");
-	MarkNativeAsOptional("Timer_GetRecordSpeedInfo");
-	MarkNativeAsOptional("Timer_GetRecordStrafeJumpInfo");
-	MarkNativeAsOptional("Timer_GetReplayPath");
-	MarkNativeAsOptional("Timer_GetRecordCustom1");
-	MarkNativeAsOptional("Timer_GetRecordCustom2");
-	MarkNativeAsOptional("Timer_GetRecordCustom3");
-	
-	MarkNativeAsOptional("Timer_GetStrafeCount");
-	MarkNativeAsOptional("Timer_GetBoostedStrafeCount");
-
-	MarkNativeAsOptional("Timer_GetPoints");
-	MarkNativeAsOptional("Timer_GetPointsRank");
-	MarkNativeAsOptional("Timer_SavePoints");
-	MarkNativeAsOptional("Timer_AddPoints");
-	MarkNativeAsOptional("Timer_SetPoints");
-	MarkNativeAsOptional("Timer_RemovePoints");
-
-	MarkNativeAsOptional("Timer_GetClientHide");
-	MarkNativeAsOptional("Timer_SetClientHide");
-	
-	MarkNativeAsOptional("Timer_GetScripter");
-	MarkNativeAsOptional("Timer_GetPickedMode");
-	MarkNativeAsOptional("Timer_GetForceMode");
-	MarkNativeAsOptional("Timer_ApplyPhysics");
-	MarkNativeAsOptional("Timer_GetJumpAccuracy");
-	MarkNativeAsOptional("Timer_GetCurrentSpeed");
-	MarkNativeAsOptional("Timer_GetMaxSpeed");
-	MarkNativeAsOptional("Timer_GetAvgSpeed");
-	MarkNativeAsOptional("Timer_ResetAccuracy");
-	
-	MarkNativeAsOptional("Ranking_GetPoints");
-	MarkNativeAsOptional("Ranking_GetPointRank");
-	MarkNativeAsOptional("Ranking_SetPoints");
-	MarkNativeAsOptional("Ranking_AddPoints");
-	MarkNativeAsOptional("Ranking_RemovePoints");
-	MarkNativeAsOptional("Ranking_SavePoints");
-
-	MarkNativeAsOptional("Timer_AddScripter");
-	MarkNativeAsOptional("Timer_IsScripter");
-
+	MarkNativeAsOptional("Timer_SetMode");	
 }

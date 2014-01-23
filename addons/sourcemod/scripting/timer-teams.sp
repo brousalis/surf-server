@@ -5,13 +5,15 @@
 #include <sdkhooks>
 #include <cstrike>
 #include <smlib>
-
 #include <timer>
 #include <timer-teams>
+
 #include <timer-mapzones>
+#include <timer-rankings>
 #include <timer-logging>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
+#include <timer-hide>
 
 new String:g_currentMap[64];
 
