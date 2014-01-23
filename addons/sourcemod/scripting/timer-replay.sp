@@ -7,6 +7,7 @@
 #include <setname>
 #include <timer>
 #include <timer-mapzones>
+#include <timer-worldrecord>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 

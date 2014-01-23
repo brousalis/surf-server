@@ -4033,18 +4033,12 @@ public Native_AddMapZone(Handle:plugin, numParams)
 
 public Native_ClientTeleportLevel(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	new level = GetNativeCell(1);
-	
-	Tele_Level(client, level);
-	
-	return true;
+	Tele_Level(GetNativeCell(1), GetNativeCell(2));
 }
 
 public Native_GetClientLevel(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_clientLevel[client];
+	return g_clientLevel[GetNativeCell(1)];
 }
 
 public Native_GetClientLevelID(Handle:plugin, numParams)
@@ -4080,16 +4074,12 @@ public Native_GetLevelName(Handle:plugin, numParams)
 
 public Native_SetClientLevel(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	new level = GetNativeCell(2);
-	g_clientLevel[client] = level;
+	g_clientLevel[GetNativeCell(1)] = GetNativeCell(2);
 }
 
 public Native_SetIgnoreEndTouchStart(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	new ignore = GetNativeCell(2);
-	g_iIgnoreEndTouchStart[client] = ignore;
+	g_iIgnoreEndTouchStart[GetNativeCell(1)] = GetNativeCell(2);
 }
 
 public OnEntityCreated(entity, const String:classname[])

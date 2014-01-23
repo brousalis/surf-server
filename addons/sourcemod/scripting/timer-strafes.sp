@@ -42,14 +42,12 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public Native_GetStrafeCount(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_PlayerStates[client][nStrafesReal];
+	return g_PlayerStates[GetNativeCell(1)][nStrafesReal];
 }
 
 public Native_GetBoostedStrafeCount(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_PlayerStates[client][nStrafesBoosted];
+	return g_PlayerStates[GetNativeCell(1)][nStrafesBoosted];
 }
 
 public OnClientPutInServer(client)

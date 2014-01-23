@@ -1082,27 +1082,22 @@ public Native_ForceClearCacheBest(Handle:plugin, numParams)
 
 public Native_SetBonus(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	new newmode = GetNativeCell(2);
-	g_timers[client][Bonus] = newmode;
+	g_timers[GetNativeCell(1)][Bonus] = GetNativeCell(2);
 }
 
 public Native_GetBonus(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_timers[client][Bonus];
+	return g_timers[GetNativeCell(1)][Bonus];
 }
 
 public Native_GetMapFinishCount(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_timers[client][FinishCount];
+	return g_timers[GetNativeCell(1)][FinishCount];
 }
 
 public Native_GetMapFinishBonusCount(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_timers[client][BonusFinishCount];
+	return g_timers[GetNativeCell(1)][BonusFinishCount];
 }
 
 public Native_SetMode(Handle:plugin, numParams)
@@ -1116,15 +1111,13 @@ public Native_SetMode(Handle:plugin, numParams)
 
 public Native_AddPenaltyTime(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
 	new Float:penaltytime = GetNativeCell(2);
-	return TimerPenalty(client, penaltytime);
+	return TimerPenalty(GetNativeCell(1), penaltytime);
 }
 
 public Native_GetMode(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_timers[client][CurrentMode];
+	return g_timers[GetNativeCell(1)][CurrentMode];
 }
 
 public Native_GetStatus(Handle:plugin, numParams)
@@ -1135,15 +1128,12 @@ public Native_GetStatus(Handle:plugin, numParams)
 
 public Native_GetPauseStatus(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return (g_timers[client][IsPaused]);
+	return (g_timers[GetNativeCell(1)][IsPaused]);
 }
 
 public Native_IsModeRanked(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	
-	return (g_Physics[mode][ModeCategory] == MCategory_Ranked);
+	return (g_Physics[GetNativeCell(1)][ModeCategory] == MCategory_Ranked);
 }
 
 public Native_GetTotalRank(Handle:plugin, numParams)

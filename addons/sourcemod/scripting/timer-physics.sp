@@ -1255,29 +1255,22 @@ ApplyDifficulty(client)
 
 public Native_GetPickedMode(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_bPickedMode[client];
+	return g_bPickedMode[GetNativeCell(1)];
 }
 
 public Native_GetJumpAccuracy(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	SetNativeCellRef(2, g_fJumpAccuracy[client]);
-	return true;
+	SetNativeCellRef(2, g_fJumpAccuracy[GetNativeCell(1)]);
 }
 
 public Native_GetCurrentSpeed(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	SetNativeCellRef(2, g_fSpeedCurrent[client]);
-	return true;
+	SetNativeCellRef(2, g_fSpeedCurrent[GetNativeCell(1)]);
 }
 
 public Native_GetMaxSpeed(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	SetNativeCellRef(2, g_fSpeedMax[client]);
-	return true;
+	SetNativeCellRef(2, g_fSpeedMax[GetNativeCell(1)]);
 }
 
 public Native_GetAvgSpeed(Handle:plugin, numParams)
@@ -1298,8 +1291,7 @@ public Native_GetForceMode(Handle:plugin, numParams)
 
 public Native_ApplyPhysics(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	ApplyDifficulty(client);
+	ApplyDifficulty(GetNativeCell(1));
 }
 
 public Native_ResetAccuracy(Handle:plugin, numParams)

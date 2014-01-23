@@ -821,8 +821,7 @@ ForceEnd(client)
 
 public Native_GetClientTeammate(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_clientTeammate[client];
+	return g_clientTeammate[GetNativeCell(1)];
 }
 
 public Native_SetClientTeammate(Handle:plugin, numParams)
@@ -857,14 +856,10 @@ public Native_SetClientTeammate(Handle:plugin, numParams)
 
 public Native_GetChallengeStatus(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	if(g_bClientChallenge[client]) return 1;
-	else return 0;
+	return g_bClientChallenge[GetNativeCell(1)];
 }
 
 public Native_GetCoopStatus(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	if(g_bClientCoop[client]) return 1;
-	else return 0;
+	return g_bClientCoop[GetNativeCell(1)];
 }

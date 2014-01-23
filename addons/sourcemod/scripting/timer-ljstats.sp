@@ -201,8 +201,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 }
 public Native_IsClientInLJMode(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_bLJmode[client];
+	return g_bLJmode[GetNativeCell(1)];
 }
 public Native_SetLJMode(Handle:plugin, numParams)
 {
@@ -217,8 +216,7 @@ public Native_SetLJMode(Handle:plugin, numParams)
 }
 public Native_SetInValidJump(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	g_bValidJump[client] = false;
+	g_bValidJump[GetNativeCell(1)] = false;
 }
 public OnPluginStart()
 {

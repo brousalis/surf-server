@@ -112,7 +112,7 @@ public Native_AddScripter(Handle:plugin, numParams)
 	new client = GetNativeCell(1);
 	if (IsClientInGame(client))
 	{
-		if( ! Timer_IsScripter(client) && ! IsFakeClient(client))
+		if(!Timer_IsScripter(client) && !IsFakeClient(client))
 		{
 
 			ShowActivity2(client, "[ScripterDB]", " SERVER banned %N from ranked modes except AUTO [Reason: Scripter].", client);
@@ -434,16 +434,14 @@ public Action:Command_ReloadScripters(client, argc)
 		return Plugin_Handled;
 	}
 
-	new cClients = MaxClients;
-
 	decl String:arg[32],
 		cTargets,
-		targets[cClients],
+		targets[MaxClients],
 		String:target_name[1],
 		bool:tn_is_ml;
 
 	GetCmdArg(1, arg, sizeof(arg));
-	if ((cTargets = ProcessTargetString(arg, client, targets, cClients,
+	if ((cTargets = ProcessTargetString(arg, client, targets, MaxClients,
 		COMMAND_FILTER_NO_IMMUNITY | COMMAND_FILTER_NO_BOTS,
 		target_name, sizeof(target_name), tn_is_ml)) <= 0)
 	{
@@ -479,8 +477,7 @@ public Action:Command_ReloadScripters(client, argc)
  
 public Native_IsScripter(Handle:plugin, numParams)
  {
-	new client = GetNativeCell(1);
-	return (g_iDatabaseId[client] != -1);
+	return (g_iDatabaseId[GetNativeCell(1)] != -1);
  }
  
  

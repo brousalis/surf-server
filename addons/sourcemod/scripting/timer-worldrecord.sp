@@ -1450,7 +1450,6 @@ public Native_ForceReloadCache(Handle:plugin, numParams)
 public Native_GetDifficultyRank(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
-	
 	new bonus = GetNativeCell(2);
 	new mode = GetNativeCell(3);
 	
@@ -1485,7 +1484,6 @@ public Native_GetBestRound(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
 	new mode = GetNativeCell(2);
-	
 	new bonus = GetNativeCell(3);
 	
 	decl String:auth[32];

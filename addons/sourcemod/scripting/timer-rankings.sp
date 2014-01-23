@@ -2641,34 +2641,22 @@ stock GetTotalBonus(total)
 
 public Native_GetPoints(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_iCurrentPoints[client];
+	return g_iCurrentPoints[GetNativeCell(1)];
 }
 
 public Native_GetPointRank(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	return g_iCurrentRank[client];
+	return g_iCurrentRank[GetNativeCell(1)];
 }
 
 public Native_SetPoints(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	new points = GetNativeCell(2);
-	
-	g_iCurrentPoints[client] = points;
-	
-	return true;
+	g_iCurrentPoints[GetNativeCell(1)] = GetNativeCell(2);
 }
 
 public Native_AddPoints(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	new points = GetNativeCell(2);
-	
-	g_iCurrentPoints[client] += points;
-	
-	return true;
+	g_iCurrentPoints[GetNativeCell(1)] += GetNativeCell(2);
 }
 
 public Native_RemovePoints(Handle:plugin, numParams)
@@ -2679,17 +2667,11 @@ public Native_RemovePoints(Handle:plugin, numParams)
 	g_iCurrentPoints[client] -= points;
 	
 	if(g_iCurrentPoints[client] < 0) g_iCurrentPoints[client] = 0;
-	
-	return true;
 }
 
 public Native_SavePoints(Handle:plugin, numParams)
 {
-	new client = GetNativeCell(1);
-	
-	SavePoints(client);
-	
-	return true;
+	SavePoints(GetNativeCell(1));
 }
 
 stock bool:Client_HasAdminFlags(client, flags=ADMFLAG_GENERIC)
