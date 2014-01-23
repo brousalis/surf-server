@@ -5,8 +5,6 @@
 
 /* Natives */
 native Timer_ForceReloadCache();
-native Timer_GetCurrentRank(client, bool:update, bonus);
-native Timer_GetTotalRank(bool:update, bonus);
 native Timer_GetDifficultyRecordTime(mode, bonus, &cacheid, &Float:time, &total);
 native Timer_GetNewPossibleRank(mode, bonus, Float:time);
 native Timer_GetRankID(mode, bonus, rank);
@@ -37,8 +35,6 @@ public SharedPlugin:__pl_timer_worldrecord =
 public __pl_timer_worldrecord_SetNTVOptional() 
 {
 	MarkNativeAsOptional("Timer_ForceReloadCache");
-	MarkNativeAsOptional("Timer_GetCurrentRank");
-	MarkNativeAsOptional("Timer_GetTotalRank");
 	MarkNativeAsOptional("Timer_GetDifficultyRecordTime");
 	MarkNativeAsOptional("Timer_GetNewPossibleRank");
 	MarkNativeAsOptional("Timer_GetRankID");

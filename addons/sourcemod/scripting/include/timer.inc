@@ -180,6 +180,9 @@ native bool:Timer_GetClientTimer(client, &enabled, &Float:time, &jumps, &fpsmax)
 
 native Timer_FinishRound(client, const String:map[], Float:time, jumps, physicsDifficulty, fpsmax, bonus);
 
+native Timer_GetCurrentRank(client, bool:update, bonus);
+native Timer_GetTotalRank(bool:update, bonus);
+
 native Timer_GetStatus(client);
 native Timer_GetPauseStatus(client);
 native Timer_GetBonus(client);
@@ -215,6 +218,8 @@ public __pl_timer_SetNTVOpt()
 	MarkNativeAsOptional("Timer_GetClientTimer");
 
 	MarkNativeAsOptional("Timer_FinishRound");
+	MarkNativeAsOptional("Timer_GetCurrentRank");
+	MarkNativeAsOptional("Timer_GetTotalRank");
 
 	MarkNativeAsOptional("Timer_GetStatus");
 	MarkNativeAsOptional("Timer_GetBonus");
