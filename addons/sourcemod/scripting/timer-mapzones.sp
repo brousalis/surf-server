@@ -16,8 +16,10 @@
 #include <js_ljstats>
 #include <timer-physics>
 #include <timer-hide>
+#include <timer-maptier>
 
 new bool:g_timerPhysics = false;
+new bool:g_timerMapTier = false;
 new bool:g_timerLjStats = false;
 
 new g_ioffsCollisionGroup;
@@ -146,6 +148,7 @@ public OnPluginStart()
 	
 
 	g_timerPhysics = LibraryExists("timer-physics");
+	g_timerMapTier = LibraryExists("timer-maptier");
 	g_timerLjStats = LibraryExists("timer-ljstats");
 	
 	FindCollisionGroup();
@@ -927,6 +930,10 @@ public OnLibraryAdded(const String:name[])
 	{
 		g_timerPhysics = true;
 	}
+	else if (StrEqual(name, "timer-maptier"))
+	{
+		g_timerMapTier = true;
+	}
 	else if (StrEqual(name, "timer-ljstats"))
 	{
 		g_timerLjStats = true;
@@ -938,6 +945,10 @@ public OnLibraryRemoved(const String:name[])
 	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = false;
+	}
+	else if (StrEqual(name, "timer-maptier"))
+	{
+		g_timerMapTier = false;
 	}
 	else if (StrEqual(name, "timer-ljstats"))
 	{
@@ -1169,7 +1180,7 @@ AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:point1
 		decl String:deleteQuery[512];
 		Format(deleteQuery, sizeof(deleteQuery), "DELETE FROM mapzone WHERE map = '%s' AND type = %d;", map, type);
 		
-		//SQL_TQuery(g_hSQL, MapZoneChangedCallback, deleteQuery, _, DBPrio_High);	
+		SQL_TQuery(g_hSQL, MapZoneChangedCallback, deleteQuery, _, DBPrio_High);	
 	}
 	
 	//add new zone
@@ -1216,6 +1227,12 @@ public MapZoneChangedCallback(Handle:owner, Handle:hndl, const String:error[], a
 	{
 		Timer_LogError("SQL Error on AddMapZone: %s", error);
 		return;
+	}
+	
+	if(g_timerMapTier)
+	{
+		Timer_UpdateStageCount(0);
+		Timer_UpdateStageCount(1);
 	}
 	
 	LoadMapZones();

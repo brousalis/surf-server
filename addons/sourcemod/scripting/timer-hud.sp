@@ -1301,7 +1301,7 @@ UpdateHUD_CSS(client)
 	
 	//get maptier
 	new tier = 1;
-	if(g_timerMapTier) tier = Timer_GetTier();
+	if(g_timerMapTier) tier = Timer_GetTier(bonus);
 
 	//get speed
 	new Float:maxspeed;

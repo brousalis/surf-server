@@ -2319,7 +2319,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	if(!g_bLoadedSQL[client] || !g_bAuthed[client] || g_hDatabase == INVALID_HANDLE || g_bInitalizing)
 		return;
 
-	new tier = Timer_GetTier();
+	new tier = Timer_GetTier(bonus);
 	if(bonus != 0) tier = 1;
 	
 	new bool:ranked = bool:Timer_IsModeRanked(mode);
@@ -2407,8 +2407,8 @@ public Action:Command_PointsInfo(client, args)
 
 stock GetMaxRecordPoints(client)
 {
-	new tier = Timer_GetTier();
 	new bonus = Timer_GetBonus(client);
+	new tier = Timer_GetTier(bonus);
 	new mode = Timer_GetMode(client);
 	new total = Timer_GetTotalRank(false, bonus);
 	new currentrank = Timer_GetDifficultyRank(client, bonus, mode);	
@@ -2419,8 +2419,8 @@ stock GetMaxRecordPoints(client)
 
 stock GetMinRecordPoints(client)
 {
-	new tier = Timer_GetTier();
 	new bonus = Timer_GetBonus(client);
+	new tier = Timer_GetTier(bonus);
 	new mode = Timer_GetMode(client);
 	new total = Timer_GetTotalRank(false, bonus);
 	new currentrank = Timer_GetDifficultyRank(client, bonus, mode);	
