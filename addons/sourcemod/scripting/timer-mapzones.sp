@@ -364,8 +364,6 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 //public Action:StartTouchTrigger(caller, activator)
 public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
 {
-	if(!g_timerPhysics)
-		return;
 	if(!g_bZonesLoaded)
 		return;
 	if(g_mapZonesCount < 1)
@@ -737,8 +735,6 @@ public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
 //public Action:EndTouchTrigger(caller, activator)
 public EndTouchTrigger(const String:output[], caller, activator, Float:delay)
 {
-	if(!g_timerPhysics)
-		return;
 	if(!g_bZonesLoaded)
 		return;
 	if(g_mapZonesCount < 1)
