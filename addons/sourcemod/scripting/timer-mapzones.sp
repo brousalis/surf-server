@@ -209,6 +209,8 @@ public OnPluginStart()
 	RegConsoleCmd("sm_levels", Command_Levels);
 	RegConsoleCmd("sm_stage", Command_Levels);
 	
+	RegAdminCmd("sm_zone", Command_AdminZone, ADMFLAG_ROOT);
+	
 	if(g_Settings[RestartEnable])
 	{
 		RegConsoleCmd("sm_restart", Command_Restart);
@@ -3990,10 +3992,44 @@ bool:Client_BonusRestart(client)
 	return true;
 }
 
+public Action:Command_AdminZone(client, args)
+{
+	new Handle:menu = CreateMenu(MenuHandlerAdminZone);
+	SetMenuTitle(menu, "Zone Selection");
+	
+	for (new zone = 0; zone < g_mapZonesCount; zone++)
+	{
+		new String:zone_name[32];
+		Format(zone_name, sizeof(zone_name), "%s", g_mapZones[zone][zName]);
+		
+		new String:zone_id[32];
+		Format(zone_id,sizeof(zone_id), "%d", zone);
+		AddMenuItem(menu, zone_id, zone_name);
+	}
+	
+	SetMenuExitButton(menu, true);
+	DisplayMenu(menu, client, MENU_TIME_FOREVER);
+	
+	return Plugin_Handled;
+}
+
+public MenuHandlerAdminZone(Handle:menu, MenuAction:action, client, param2)
+{
+	if (action == MenuAction_Select)
+	{
+		decl String:info[100], String:info2[100];
+		new bool:found = GetMenuItem(menu, param2, info, sizeof(info), _, info2, sizeof(info2));
+		new zone = StringToInt(info);
+		if(found)
+		{
+			Timer_Reset(client);
+			Tele_Zone(client, zone);
+		}
+	}
+}
+
 public Action:Command_Levels(client, args)
 {
-	new bool:isadmin = Client_IsAdmin(client);
-	
 	if(!g_Settings[LevelTeleportEnable])
 		return Plugin_Handled;
 
@@ -4013,19 +4049,17 @@ public Action:Command_Levels(client, args)
 	
 	for (new zone = 0; zone < g_mapZonesCount; zone++)
 	{
-		if(!(isadmin && adminmode == 1))
+		if(g_mapZones[zone][Level_Id] < 1)
 		{
-			if(g_mapZones[zone][Level_Id] < 1)
-			{
-				continue;
-			}
+			continue;
 		}
 		
-		new String:name2[32];
-		Format(name2, sizeof(name2), "%s", g_mapZones[zone][zName]);
-		new String:zone2[32];
-		Format(zone2,sizeof(zone2),"%d", zone);
-		AddMenuItem(menu, zone2, name2);
+		new String:zone_name[32];
+		Format(zone_name, sizeof(zone_name), "%s", g_mapZones[zone][zName]);
+		
+		new String:zone_id[32];
+		Format(zone_id,sizeof(zone_id), "%d", zone);
+		AddMenuItem(menu, zone_id, zone_name);
 	}
 	
 	SetMenuExitButton(menu, true);
