@@ -4311,7 +4311,7 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 					}
 					else 
 					{
-						RemovePunchAngle(client);
+						RemovePunchAngle(victim);
 						return Plugin_Handled;
 					}
 				}
@@ -4327,7 +4327,7 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 		}
 		else 
 		{
-			RemovePunchAngle(client);
+			RemovePunchAngle(victim);
 			return Plugin_Handled;
 		}
 	}
@@ -4339,7 +4339,7 @@ stock RemovePunchAngle(client)
 {
 	if(GetGameMod() == MOD_CSS)
 	{
-		SetEntPropVector(victim, Prop_Send, "m_vecPunchAngle", NULL_VECTOR);
-		SetEntPropVector(victim, Prop_Send, "m_vecPunchAngleVel", NULL_VECTOR);
+		SetEntPropVector(client, Prop_Send, "m_vecPunchAngle", NULL_VECTOR);
+		SetEntPropVector(client, Prop_Send, "m_vecPunchAngleVel", NULL_VECTOR);
 	}
 }
