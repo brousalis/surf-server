@@ -44,8 +44,8 @@ public OnPluginStart()
 	
 	LoadTranslations("timer.phrases");
 	
-	RegAdminCmd("sm_maptier", Command_MapTier, ADMFLAG_RCON, "sm_maptier");
-	RegAdminCmd("sm_stagecount", Command_StageCount, ADMFLAG_RCON, "sm_stagecount");
+	RegAdminCmd("sm_maptier", Command_MapTier, ADMFLAG_RCON, "sm_maptier [bonus] [tier]");
+	RegAdminCmd("sm_stagecount", Command_StageCount, ADMFLAG_RCON, "sm_stagecount [bonus]");
 	
 	AutoExecConfig(true, "timer-maptier");
 }

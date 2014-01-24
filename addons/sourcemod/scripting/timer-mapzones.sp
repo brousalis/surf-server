@@ -19,6 +19,7 @@
 #include <timer-maptier>
 
 new bool:g_timerPhysics = false;
+new bool:g_timerTeams = false;
 new bool:g_timerMapTier = false;
 new bool:g_timerLjStats = false;
 
@@ -148,6 +149,7 @@ public OnPluginStart()
 	
 
 	g_timerPhysics = LibraryExists("timer-physics");
+	g_timerTeams = LibraryExists("timer-teams");
 	g_timerMapTier = LibraryExists("timer-maptier");
 	g_timerLjStats = LibraryExists("timer-ljstats");
 	
@@ -238,6 +240,50 @@ public OnPluginStart()
 	
 	g_OnClientStartTouchZoneType = CreateGlobalForward("OnClientStartTouchZoneType", ET_Event, Param_Cell,Param_Cell);
 	g_OnClientEndTouchZoneType = CreateGlobalForward("OnClientEndTouchZoneType", ET_Event, Param_Cell,Param_Cell);
+}
+
+public OnLibraryAdded(const String:name[])
+{
+	if (StrEqual(name, "timer-physics"))
+	{
+		g_timerPhysics = true;
+	}
+	else if (StrEqual(name, "timer-teams"))
+	{
+		g_timerTeams = true;
+	}
+	else if (StrEqual(name, "timer-maptier"))
+	{
+		g_timerMapTier = true;
+	}
+	else if (StrEqual(name, "timer-ljstats"))
+	{
+		g_timerLjStats = true;
+	}
+}
+
+public OnLibraryRemoved(const String:name[])
+{	
+	if (StrEqual(name, "timer-physics"))
+	{
+		g_timerPhysics = false;
+	}
+	else if (StrEqual(name, "timer-teams"))
+	{
+		g_timerTeams = false;
+	}
+	else if (StrEqual(name, "timer-maptier"))
+	{
+		g_timerMapTier = false;
+	}
+	else if (StrEqual(name, "timer-ljstats"))
+	{
+		g_timerLjStats = false;
+	}
+	else if (StrEqual(name, "adminmenu"))
+	{
+		hTopMenu = INVALID_HANDLE;
+	}
 }
 
 public Action:Event_OnPlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
@@ -916,44 +962,6 @@ public CacheSounds()
 	
 	GetConVarString(Sound_TimerStart, SND_TIMER_START, sizeof(SND_TIMER_START));
 	PrepareSound(SND_TIMER_START);
-}
-
-
-
-public OnLibraryAdded(const String:name[])
-{
-	if (StrEqual(name, "timer-physics"))
-	{
-		g_timerPhysics = true;
-	}
-	else if (StrEqual(name, "timer-maptier"))
-	{
-		g_timerMapTier = true;
-	}
-	else if (StrEqual(name, "timer-ljstats"))
-	{
-		g_timerLjStats = true;
-	}
-}
-
-public OnLibraryRemoved(const String:name[])
-{	
-	if (StrEqual(name, "timer-physics"))
-	{
-		g_timerPhysics = false;
-	}
-	else if (StrEqual(name, "timer-maptier"))
-	{
-		g_timerMapTier = false;
-	}
-	else if (StrEqual(name, "timer-ljstats"))
-	{
-		g_timerLjStats = false;
-	}
-	else if (StrEqual(name, "adminmenu"))
-	{
-		hTopMenu = INVALID_HANDLE;
-	}
 }
 
 public OnAdminMenuReady(Handle:topmenu)
@@ -3745,10 +3753,16 @@ public Action:Command_Restart(client, args)
 	if(!IsClientInGame(client)) 
 		return Plugin_Handled;
 	
-	if(Timer_GetChallengeStatus(client) == 1 || Timer_GetCoopStatus(client) == 1)
-		ConfirmAbortMenu(client, SCMD_RESTART);
+	if(g_timerTeams)
+	{
+		if(Timer_GetChallengeStatus(client) == 1 || Timer_GetCoopStatus(client) == 1)
+		{
+			ConfirmAbortMenu(client, SCMD_RESTART);
+			return Plugin_Handled;
+		}
+	}
 	
-	else Client_Restart(client);
+	Client_Restart(client);
 	
 	return Plugin_Handled;
 }
@@ -3761,10 +3775,16 @@ public Action:Command_Start(client, args)
 	if(!IsClientInGame(client)) 
 		return Plugin_Handled;
 	
-	if(Timer_GetChallengeStatus(client) == 1 || Timer_GetCoopStatus(client) == 1)
-		ConfirmAbortMenu(client, SCMD_START);
+	if(g_timerTeams)
+	{
+		if(Timer_GetChallengeStatus(client) == 1 || Timer_GetCoopStatus(client) == 1)
+		{
+			ConfirmAbortMenu(client, SCMD_START);
+			return Plugin_Handled;
+		}
+	}
 	
-	else Client_Start(client);
+	Client_Start(client);
 	
 	return Plugin_Handled;
 }
@@ -3777,10 +3797,16 @@ public Action:Command_BonusRestart(client, args)
 	if(!IsClientInGame(client)) 
 		return Plugin_Handled;
 	
-	if(Timer_GetChallengeStatus(client) == 1 || Timer_GetCoopStatus(client) == 1)
-		ConfirmAbortMenu(client, SCMD_BONUSSTART);
+	if(g_timerTeams)
+	{
+		if(Timer_GetChallengeStatus(client) == 1 || Timer_GetCoopStatus(client) == 1)
+		{
+			ConfirmAbortMenu(client, SCMD_BONUSSTART);
+			return Plugin_Handled;
+		}
+	}
 	
-	else Client_BonusRestart(client);
+	Client_BonusRestart(client);
 	
 	return Plugin_Handled;
 }
@@ -4133,7 +4159,7 @@ public Native_GetMapzoneCount(Handle:plugin, numParams)
 	new MapZoneType:type = GetNativeCell(1);
 	
 	new count = 0;
-	
+
 	if(type == ZtLevel || type == ZtBonusLevel)
 	{
 		new LevelID[g_mapZonesCount];

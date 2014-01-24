@@ -55,13 +55,13 @@ MapInfoMenu(client)
 		stages = Timer_GetMapzoneCount(ZtLevel)+1;
 		bonusstages = Timer_GetMapzoneCount(ZtBonusLevel)+1;
 		
-		new tier = Timer_GetTier();
-		
-		Format(buffer, sizeof(buffer), "Tier: %d", tier);
-		AddMenuItem(menu, "tier", buffer);
+		new tier = Timer_GetTier(0);
+		new tier_bonus = Timer_GetTier(1);
 		
 		if(Timer_GetMapzoneCount(ZtStart) > 0)
 		{
+			Format(buffer, sizeof(buffer), "Tier: %d", tier);
+			AddMenuItem(menu, "tier", buffer);
 			if(stages == 1)
 				Format(buffer, sizeof(buffer), "Level: Linear");
 			else
@@ -72,6 +72,8 @@ MapInfoMenu(client)
 		
 		if(Timer_GetMapzoneCount(ZtBonusStart) > 0)
 		{
+			Format(buffer, sizeof(buffer), "Bonus-Tier: %d", tier_bonus);
+			AddMenuItem(menu, "tier_bonus", buffer);
 			if(bonusstages == 1)
 				Format(buffer, sizeof(buffer), "Bonus-Level: Linear");
 			else
