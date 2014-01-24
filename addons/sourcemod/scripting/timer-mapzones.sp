@@ -4275,18 +4275,20 @@ public Action:Hook_NormalSound(clients[64], &numClients, String:sample[PLATFORM_
 
 public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype)
 {
-	if(!g_Settings[Godmode])
+	if(attacker > 0 && attacker <= MaxClients)
 	{
 		return Plugin_Continue;
 	}
 	
-	if(!attacker)
-	{
-		return Plugin_Handled;
-	}
-	
 	if(victim > 0 && victim <= MaxClients)
 	{
+		return Plugin_Continue;
+	}
+
+	new bool:ff = bool:GetConVarInt(FindConVar("mp_fiendlyfire"));
+	
+	if(g_Settings[Godmode])
+	{	
 		new mode = Timer_GetMode(victim);
 		
 		//Style allows falldamage and worlddamage
@@ -4301,16 +4303,43 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 			//Player can hurt each other
 			if(g_bHurt[victim] && g_bHurt[attacker])
 			{
-				return Plugin_Continue;
+				if(GetClientTeam(victim) == GetClientTeam(attacker))
+				{
+					if(ff)
+					{
+						return Plugin_Continue;
+					}
+					else 
+					{
+						RemovePunchAngle(client);
+						return Plugin_Handled;
+					}
+				}
 			}
 		}
-		
-		if(GetGameMod() == MOD_CSS)
+	}
+	
+	if(GetClientTeam(victim) == GetClientTeam(attacker))
+	{
+		if(ff)
 		{
-			SetEntPropVector(victim, Prop_Send, "m_vecPunchAngle", NULL_VECTOR);
-			SetEntPropVector(victim, Prop_Send, "m_vecPunchAngleVel", NULL_VECTOR);
+			return Plugin_Continue;
+		}
+		else 
+		{
+			RemovePunchAngle(client);
+			return Plugin_Handled;
 		}
 	}
 	
 	return Plugin_Handled;
+}
+
+stock RemovePunchAngle(client)
+{
+	if(GetGameMod() == MOD_CSS)
+	{
+		SetEntPropVector(victim, Prop_Send, "m_vecPunchAngle", NULL_VECTOR);
+		SetEntPropVector(victim, Prop_Send, "m_vecPunchAngleVel", NULL_VECTOR);
+	}
 }
