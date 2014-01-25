@@ -640,7 +640,7 @@ public DeletePlayersRecordCallback(Handle:owner, Handle:hndl, const String:error
 
 DeleteMapRecords(const String:map[]) 
 {
-	decl String:query[512];
+	decl String:query[128];
 	Format(query, sizeof(query), "DELETE FROM `round` WHERE map = '%s'", map);	
 
 	SQL_TQuery(g_hSQL, DeleteRecordsCallback, query, _, DBPrio_Normal);
@@ -661,32 +661,26 @@ RefreshCache()
 			if(g_Physics[mode][ModeCategory] != MCategory_Ranked)
 				continue;
 			
-			new bonus;
-			
 			g_cacheLoaded[mode][0] = false;
-			decl String:query[2048];
-			Format(query, sizeof(query), "SELECT m.id, m.auth, m.time, MAX(m.jumps) jumps, m.physicsdifficulty, m.name, m.date, m.finishcount, m.levelprocess, m.rank, m.jumpacc, m.finishspeed, m.maxspeed, m.avgspeed, m.strafes, m.strafeacc, m.replaypath, m.custom1, m.custom2, m.custom3 FROM round AS m INNER JOIN (SELECT MIN(n.time) time, n.auth FROM round n WHERE n.map = '%s' AND n.physicsdifficulty = %d AND n.bonus = '%d' GROUP BY n.auth) AS j ON (j.time = m.time AND j.auth = m.auth) WHERE m.map = '%s' AND m.physicsdifficulty = %d GROUP BY m.auth ORDER BY m.time ASC LIMIT 0, %d", g_currentMap, bonus, mode, g_currentMap, mode, MAX_CACHE);	
+			g_cacheLoaded[mode][1] = false;
+			g_cacheLoaded[mode][2] = false;
+			decl String:query[512];
+			Format(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_NORMAL, MAX_CACHE);	
 			
 			SQL_TQuery(g_hSQL, RefreshCacheCallback, query, mode, DBPrio_Low);
 			
 			if(g_Settings[BonusWrEnable])
 			{
-				bonus = 1;
-				g_cacheLoaded[mode][1] = false;
-				decl String:queryb[2048];
-				Format(query, sizeof(query), "SELECT m.id, m.auth, m.time, MAX(m.jumps) jumps, m.physicsdifficulty, m.name, m.date, m.finishcount, m.levelprocess, m.rank, m.jumpacc, m.finishspeed, m.maxspeed, m.avgspeed, m.strafes, m.strafeacc, m.replaypath, m.custom1, m.custom2, m.custom3 FROM round AS m INNER JOIN (SELECT MIN(n.time) time, n.auth FROM round n WHERE n.map = '%s' AND n.physicsdifficulty = %d AND n.bonus = '%d' GROUP BY n.auth) AS j ON (j.time = m.time AND j.auth = m.auth) WHERE m.map = '%s' AND m.physicsdifficulty = %d GROUP BY m.auth ORDER BY m.time ASC LIMIT 0, %d", g_currentMap, bonus, mode, g_currentMap, mode, MAX_CACHE);	
+				Format(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_BONUS, MAX_CACHE);	
 				
-				SQL_TQuery(g_hSQL, RefreshBonusCacheCallback, queryb, mode, DBPrio_Low);
+				SQL_TQuery(g_hSQL, RefreshBonusCacheCallback, query, mode, DBPrio_Low);
 			}
 			
 			if(g_Settings[ShortWrEnable])
 			{
-				bonus = 2;
-				g_cacheLoaded[mode][2] = false;
-				decl String:queryc[2048];
-				Format(query, sizeof(query), "SELECT m.id, m.auth, m.time, MAX(m.jumps) jumps, m.physicsdifficulty, m.name, m.date, m.finishcount, m.levelprocess, m.rank, m.jumpacc, m.finishspeed, m.maxspeed, m.avgspeed, m.strafes, m.strafeacc, m.replaypath, m.custom1, m.custom2, m.custom3 FROM round AS m INNER JOIN (SELECT MIN(n.time) time, n.auth FROM round n WHERE n.map = '%s' AND n.physicsdifficulty = %d AND n.bonus = '%d' GROUP BY n.auth) AS j ON (j.time = m.time AND j.auth = m.auth) WHERE m.map = '%s' AND m.physicsdifficulty = %d GROUP BY m.auth ORDER BY m.time ASC LIMIT 0, %d", g_currentMap, bonus, mode, g_currentMap, mode, MAX_CACHE);		
+				Format(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_SHORT, MAX_CACHE);	
 				
-				SQL_TQuery(g_hSQL, RefreshShortCacheCallback, queryc, mode, DBPrio_Low);
+				SQL_TQuery(g_hSQL, RefreshShortCacheCallback, query, mode, DBPrio_Low);
 			}
 		}
 	}
@@ -715,6 +709,7 @@ ClearCache()
 				
 				g_cache[mode][bonus][cache][Time] = 0.0;
 				g_cache[mode][bonus][cache][FinishCount] = 0;
+				g_cache[mode][bonus][cache][LevelProcess] = 0;
 				g_cache[mode][bonus][cache][Style] = 0;
 				g_cache[mode][bonus][cache][CurrentRank] = 0;
 				g_cache[mode][bonus][cache][Jumps] = 0;
@@ -745,18 +740,19 @@ CollectCache(bonus, any:mode, Handle:hndl)
 		SQL_FetchString(hndl, 5, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Name], 32);
 		SQL_FetchString(hndl, 6, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Date], 32);
 		g_cache[mode][bonus][g_cacheCount[mode][bonus]][FinishCount] = SQL_FetchInt(hndl, 7);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][CurrentRank] = SQL_FetchInt(hndl, 8);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][JumpAcc] = SQL_FetchFloat(hndl, 9);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][LevelProcess] = SQL_FetchInt(hndl, 8);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][CurrentRank] = SQL_FetchInt(hndl, 9);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][JumpAcc] = SQL_FetchFloat(hndl, 10);
 		
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][FinishSpeed] = SQL_FetchFloat(hndl, 10);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][MaxSpeed] = SQL_FetchFloat(hndl, 11);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][AvgSpeed] = SQL_FetchFloat(hndl, 12);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Strafes] = SQL_FetchInt(hndl, 13);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][StrafeAcc] = SQL_FetchFloat(hndl, 14);
-		SQL_FetchString(hndl, 15, g_cache[mode][bonus][g_cacheCount[mode][bonus]][ReplayPath], 32);
-		SQL_FetchString(hndl, 16, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom1], 32);
-		SQL_FetchString(hndl, 17, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom2], 32);
-		SQL_FetchString(hndl, 18, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom3], 32);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][FinishSpeed] = SQL_FetchFloat(hndl, 11);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][MaxSpeed] = SQL_FetchFloat(hndl, 12);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][AvgSpeed] = SQL_FetchFloat(hndl, 13);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Strafes] = SQL_FetchInt(hndl, 14);
+		g_cache[mode][bonus][g_cacheCount[mode][bonus]][StrafeAcc] = SQL_FetchFloat(hndl, 15);
+		SQL_FetchString(hndl, 16, g_cache[mode][bonus][g_cacheCount[mode][bonus]][ReplayPath], 32);
+		SQL_FetchString(hndl, 17, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom1], 32);
+		SQL_FetchString(hndl, 18, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom2], 32);
+		SQL_FetchString(hndl, 19, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom3], 32);
 		
 		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Ignored] = false;
 		
@@ -764,6 +760,8 @@ CollectCache(bonus, any:mode, Handle:hndl)
 	}
 		
 	g_cacheLoaded[mode][bonus] = true;
+
+	CollectBestCache(bonus, mode);
 }
 
 public RefreshCacheCallback(Handle:owner, Handle:hndl, const String:error[], any:mode)
@@ -775,8 +773,6 @@ public RefreshCacheCallback(Handle:owner, Handle:hndl, const String:error[], any
 	}
 	
 	CollectCache(TRACK_NORMAL, mode, hndl);
-	
-	CreateTimer(3.0, Timer_ReloadBestCache, mode, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public RefreshBonusCacheCallback(Handle:owner, Handle:hndl, const String:error[], any:mode)
@@ -788,8 +784,6 @@ public RefreshBonusCacheCallback(Handle:owner, Handle:hndl, const String:error[]
 	}
 	
 	CollectCache(TRACK_BONUS, mode, hndl);
-	
-	CreateTimer(3.0, Timer_ReloadBestBonusCache, mode, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public RefreshShortCacheCallback(Handle:owner, Handle:hndl, const String:error[], any:mode)
@@ -801,8 +795,6 @@ public RefreshShortCacheCallback(Handle:owner, Handle:hndl, const String:error[]
 	}
 	
 	CollectCache(TRACK_SHORT, mode, hndl);
-	
-	CreateTimer(3.0, Timer_ReloadBestShortCache, mode, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 CollectBestCache(bonus, any:mode)
@@ -828,27 +820,6 @@ CollectBestCache(bonus, any:mode)
 			Format(g_cachestats[mode][bonus][RecordStatsName], 32, "%s", g_cache[mode][bonus][i][Name]);
 		}
 	}
-}
-
-public Action:Timer_ReloadBestCache(Handle:timer, Handle:mode)
-{
-	CollectBestCache(TRACK_NORMAL, mode);
-	
-	return Plugin_Stop;
-}
-
-public Action:Timer_ReloadBestBonusCache(Handle:timer, Handle:mode)
-{
-	CollectBestCache(TRACK_BONUS, mode);
-	
-	return Plugin_Stop;
-}
-
-public Action:Timer_ReloadBestShortCache(Handle:timer, Handle:mode)
-{
-	CollectBestCache(TRACK_SHORT, mode);
-	
-	return Plugin_Stop;
 }
 
 ConnectSQL(bool:refreshCache)

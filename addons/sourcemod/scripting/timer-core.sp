@@ -149,8 +149,13 @@ public OnPluginStart()
 	LoadTranslations("timer.phrases");
 	
 	//RegConsoleCmd("sm_stop", Command_Stop);
-	if(g_Settings[PauseEnable]) RegConsoleCmd("sm_pause", Command_Pause);
-	if(g_Settings[PauseEnable]) RegConsoleCmd("sm_resume", Command_Resume);
+	if(g_Settings[PauseEnable])
+	{ 
+		RegConsoleCmd("sm_pause", Command_Pause);
+		RegConsoleCmd("sm_resume", Command_Resume);
+	}
+
+	RegAdminCmd("sm_droptable", Command_DropTable, ADMFLAG_ROOT);
 	
 	HookEvent("player_jump", Event_PlayerJump);
 	HookEvent("player_death", Event_StopTimer);
@@ -342,6 +347,24 @@ public Action:Command_Resume(client, args)
 		ResumeTimer(client);
 		
 	return Plugin_Handled;
+}
+
+public Action:Command_DropTable(client, args)
+{	
+	decl String:query[64];
+	Format(query, sizeof(query), "DROP TABLE round");
+
+	SQL_TQuery(g_hSQL, DropTable, query, _, DBPrio_Normal);
+	
+	return Plugin_Handled;
+}
+
+public DropTable(Handle:owner, Handle:hndl, const String:error[], any:client)
+{
+	if (hndl == INVALID_HANDLE)
+	{
+		Timer_LogError("SQL Error on DropTable: %s", error);
+	}
 }
 
 public FpsMaxCallback(QueryCookie:cookie, client, ConVarQueryResult:result, const String:cvarName[], const String:cvarValue[])
@@ -630,10 +653,12 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	new RankTotal;
 	
 	//Personal Record
-	new currentrank;	
-	if(g_timerWorldRecord) currentrank = Timer_GetDifficultyRank(client, bonus, mode);	
-	new newrank;
-	if(g_timerWorldRecord) newrank = Timer_GetNewPossibleRank(mode, bonus, time);
+	new currentrank, newrank;	
+	if(g_timerWorldRecord) 
+	{
+		currentrank = Timer_GetDifficultyRank(client, bonus, mode);	
+		newrank = Timer_GetNewPossibleRank(mode, bonus, time);
+	}
 	
 	new Float:LastTime;
 	new Float:LastTimeStatic;
@@ -649,23 +674,27 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	if(g_timerPhysics) Timer_GetJumpAccuracy(client, jumpacc);
 	
 	new strafes, strafes_boosted, Float:strafeacc;
-	if(g_timerStrafes) strafes = Timer_GetStrafeCount(client);
-	if(g_timerStrafes) strafes_boosted = Timer_GetBoostedStrafeCount(client);
-	
-	if(strafes < 1)
+	if(g_timerStrafes) 
 	{
-		strafes = 1;
-	}
+		strafes = Timer_GetStrafeCount(client);
+		strafes_boosted = Timer_GetBoostedStrafeCount(client);
 	
-	strafeacc = 100.0-(100.0*(float(strafes_boosted)/float(strafes)));
+		if(strafes < 1)
+		{
+			strafes = 1;
+		}
+	
+		strafeacc = 100.0-(100.0*(float(strafes_boosted)/float(strafes)));
+	}	
 	
 	//get speed
-	new Float:maxspeed;
-	if(g_timerPhysics) Timer_GetMaxSpeed(client, maxspeed);
-	new Float:currentspeed;
-	Timer_GetCurrentSpeed(client, currentspeed);
-	new Float:avgspeed;
-	if(g_timerPhysics) Timer_GetAvgSpeed(client, avgspeed);
+	new Float:maxspeed, Float:currentspeed, Float:avgspeed;
+	if(g_timerPhysics) 
+	{	
+		Timer_GetMaxSpeed(client, maxspeed);
+		Timer_GetCurrentSpeed(client, currentspeed);
+		Timer_GetAvgSpeed(client, avgspeed);
+	}
 
 	//Player Info
 
@@ -721,36 +750,20 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 		NewPersonalRecord = true;
 	}
 	
-	new oldrecordid;
-	if(g_timerWorldRecord) oldrecordid = Timer_GetRankID(mode, bonus, currentrank);
-	
-	//Delete old record
-	if(!FirstRecord && NewPersonalRecord)
-	{
-		decl String:query[512];
-		Format(query, sizeof(query), "DELETE FROM `round` WHERE id = %d", oldrecordid);	
-
-		SQL_TQuery(g_hSQL, DeleteRecordCallback, query, client, DBPrio_Normal);
-	}
-	
-	new count;
-	if(g_timerWorldRecord) count = Timer_GetFinishCount(mode, bonus, currentrank);
-	count ++;
-	
 	if(FirstRecord || NewPersonalRecord)
 	{
 		//CPrintToChat(client, "%s{blue} Your record has been saved.", PLUGIN_PREFIX2);
 		
 		//Save record
-		decl String:query2[1024];
-		Format(query2, sizeof(query2), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, %d, %d, %f);", map, auth, time, jumps, mode, safeName, fpsmax, bonus, newrank, jumpacc, maxspeed, avgspeed, currentspeed, count, strafes, strafeacc);
+		decl String:query2[2048];
+		Format(query2, sizeof(query2), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, mode, safeName, fpsmax, bonus, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc);
 			
 		SQL_TQuery(g_hSQL, FinishRoundCallback, query2, client, DBPrio_High);
 	}
 	else
 	{
 		decl String:query2[512];
-		Format(query2, sizeof(query2), "UPDATE `round` SET finishcount = %d WHERE id = %d", count, oldrecordid);
+		Format(query2, sizeof(query2), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE name = '%s', finishcount = finishcount + 1;", map, auth, time, jumps, mode, safeName, fpsmax, bonus, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, safeName);
 		SQL_TQuery(g_hSQL, FinishRoundCallback, query2, client, DBPrio_High);
 	}
 	
@@ -919,7 +932,7 @@ public db_createTables(String:driver[16])
 	if (StrEqual(driver, "mysql", false))
 	{
 		SQL_FastQuery(g_hSQL, "SET NAMES  'utf8'");
-		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `round` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` int(11) NOT NULL, `jumpacc` float NOT NULL, `strafes` int(11) NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `finishspeed` float NOT NULL, `flashbangcount` int(11) NOT NULL, `rank` int(11) NOT NULL, `replaypath` varchar(32) NOT NULL, `custom1` varchar(32) NOT NULL, `custom2` varchar(32) NOT NULL, `custom3` varchar(32) NOT NULL, `finishcount` int(11) NOT NULL, `levelprocess` int(11) NOT NULL, `physicsdifficulty` int(11) NOT NULL, `name` varchar(64) CHARACTER SET utf8 NOT NULL, `fpsmax` int(11) NOT NULL, `bonus` int(11) NOT NULL, PRIMARY KEY (`id`), date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
+		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `round` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` int(11) NOT NULL, `physicsdifficulty` int(11) NOT NULL, `bonus` int(11) NOT NULL, `name` varchar(64) NOT NULL, `finishcount` int(11) NOT NULL, `levelprocess` int(11) NOT NULL, `fpsmax` int(11) NOT NULL, `jumpacc` float NOT NULL, `strafes` int(11) NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `finishspeed` float NOT NULL, `flashbangcount` int(11) NOT NULL, `rank` int(11) NOT NULL, `replaypath` varchar(32) NOT NULL, `custom1` varchar(32) NOT NULL, `custom2` varchar(32) NOT NULL, `custom3` varchar(32) NOT NULL, date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `single_record` (`auth`, `map`, `physicsdifficulty`, `bonus`));");
 	}
 	
 	else if (StrEqual(driver, "sqlite", false))
