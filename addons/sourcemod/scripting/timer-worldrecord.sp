@@ -786,7 +786,7 @@ public RefreshBonusCacheCallback(Handle:owner, Handle:hndl, const String:error[]
 		return;
 	}
 	
-	CollectCache(TRACK_SHORT, mode, hndl);
+	CollectCache(TRACK_BONUS, mode, hndl);
 	
 	CreateTimer(3.0, Timer_ReloadBestBonusCache, mode, TIMER_FLAG_NO_MAPCHANGE);
 }

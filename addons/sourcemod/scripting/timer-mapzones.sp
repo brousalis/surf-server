@@ -1470,10 +1470,10 @@ RestartMapZoneEditor(client)
 {
 	g_mapZoneEditors[client][Step] = 0;
 	
-	for (new i = 0; i < 2; i++)
+	for (new i = 0; i < 3; i++)
 		g_mapZoneEditors[client][Point1][i] = 0.0;
 	
-	for (new i = 0; i < 2; i++)
+	for (new i = 0; i < 3; i++)
 		g_mapZoneEditors[client][Point1][i] = 0.0;		
 }
 
@@ -1678,7 +1678,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			{
 				DisplaySelectZoneTypeMenu(client, 1);
 			}
-			else if(StrEqual(info, "cat_bonus_timer"))
+			else if(StrEqual(info, "cat_timer_bonus"))
 			{
 				DisplaySelectZoneTypeMenu(client, 2);
 			}
