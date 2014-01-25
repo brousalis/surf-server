@@ -2410,7 +2410,7 @@ stock GetMaxRecordPoints(client)
 	new bonus = Timer_GetBonus(client);
 	new tier = Timer_GetTier(bonus);
 	new mode = Timer_GetMode(client);
-	new total = Timer_GetTotalRank(false, bonus);
+	new total = Timer_GetDifficultyTotalRank(mode, bonus);
 	new currentrank = Timer_GetDifficultyRank(client, bonus, mode);	
 	new finishcount = Timer_GetFinishCount(mode, bonus, currentrank);
 	
@@ -2422,7 +2422,7 @@ stock GetMinRecordPoints(client)
 	new bonus = Timer_GetBonus(client);
 	new tier = Timer_GetTier(bonus);
 	new mode = Timer_GetMode(client);
-	new total = Timer_GetTotalRank(false, bonus);
+	new total = Timer_GetDifficultyTotalRank(mode, bonus);
 	new currentrank = Timer_GetDifficultyRank(client, bonus, mode);	
 	new finishcount = Timer_GetFinishCount(mode, bonus, currentrank);
 	
