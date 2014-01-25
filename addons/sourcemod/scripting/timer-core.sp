@@ -65,12 +65,6 @@ new g_reconnectCounter = 0;
 
 new g_timers[MAXPLAYERS+1][Timer];
 new g_bestTimeCache[MAXPLAYERS+1][BestTimeCacheEntity];
-new g_iTotalRankCache;
-new g_iTotalRankCacheBonus;
-new g_iTotalRankCacheShort;
-new g_iCurrentRankCache[MAXPLAYERS+1];
-new g_iCurrentRankCacheBonus[MAXPLAYERS+1];
-new g_iCurrentRankCacheShort[MAXPLAYERS+1];
 
 new Handle:g_timerStartedForward;
 new Handle:g_timerStoppedForward;
@@ -121,8 +115,6 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	
 	CreateNative("Timer_GetMapFinishCount", Native_GetMapFinishCount);
 	CreateNative("Timer_GetMapFinishBonusCount", Native_GetMapFinishBonusCount);
-	CreateNative("Timer_GetTotalRank", Native_GetTotalRank);
-	CreateNative("Timer_GetCurrentRank", Native_GetCurrentRank);
 	CreateNative("Timer_ForceClearCacheBest", Native_ForceClearCacheBest);
 	
 	CreateNative("Timer_AddPenaltyTime", Native_AddPenaltyTime);
@@ -868,58 +860,6 @@ public FinishRoundCallback(Handle:owner, Handle:hndl, const String:error[], any:
 	if(g_timerWorldRecord) Timer_ForceReloadCache();
 }
 
-GetTotalRank(const String:map[], bonus)
-{
-	decl String:sQuery[512], String:sError[255];
-	FormatEx(sQuery, sizeof(sQuery), "SELECT m.id, m.auth, m.time, MAX(m.jumps) jumps, m.physicsdifficulty, m.name FROM round AS m INNER JOIN (SELECT MIN(n.time) time, n.auth FROM round n WHERE n.map = '%s' AND n.bonus = '%d' GROUP BY n.physicsdifficulty, n.auth) AS j ON (j.time = m.time AND j.auth = m.auth) WHERE m.map = '%s' AND m.bonus = '%d' GROUP BY m.physicsdifficulty, m.auth", map, bonus, map, bonus);
-
-	SQL_LockDatabase(g_hSQL);
-
-	new Handle:hQuery = SQL_Query(g_hSQL, sQuery);
-
-	if (hQuery == INVALID_HANDLE)
-	{
-		SQL_GetError(g_hSQL, sError, sizeof(sError));
-		Timer_LogError("SQL Error on GetTotalRank: %s", sError);
-		SQL_UnlockDatabase(g_hSQL);
-		return;
-	}
-
-	SQL_UnlockDatabase(g_hSQL);
-
-	if(bonus == 1) g_iTotalRankCacheBonus = SQL_GetRowCount(hQuery);
-	else if(bonus == 2) g_iTotalRankCacheShort = SQL_GetRowCount(hQuery);
-	else g_iTotalRankCache = SQL_GetRowCount(hQuery);
-
-	CloseHandle(hQuery);
-}
-
-GetCurrentRank(client, const String:map[], bonus)
-{
-	decl String:sQuery[512], String:sError[255];
-	FormatEx(sQuery, sizeof(sQuery), "SELECT m.id, m.auth, m.time, MAX(m.jumps) jumps, m.physicsdifficulty, m.name FROM round AS m INNER JOIN (SELECT MIN(n.time) time, n.auth FROM round n WHERE n.map = '%s' AND n.bonus = '%d' AND n.time <= %f GROUP BY n.physicsdifficulty, n.auth) AS j ON (j.time = m.time AND j.auth = m.auth) WHERE m.map = '%s' AND m.bonus = '%d' AND m.time <= %f GROUP BY m.physicsdifficulty, m.auth", map, g_bestTimeCache[client][Time] + 0.0001, map, g_bestTimeCache[client][Time] + 0.0001);
-
-	SQL_LockDatabase(g_hSQL);
-
-	new Handle:hQuery = SQL_Query(g_hSQL, sQuery);
-
-	if (hQuery == INVALID_HANDLE)
-	{
-		SQL_GetError(g_hSQL, sError, sizeof(sError));
-		Timer_LogError("SQL Error on GetCurrentRank: %s", sError);
-		SQL_UnlockDatabase(g_hSQL);
-		return;
-	}
-
-	SQL_UnlockDatabase(g_hSQL);
-
-	if(bonus == 1) g_iCurrentRankCacheBonus[client] = SQL_GetRowCount(hQuery);
-	else if(bonus == 2) g_iCurrentRankCacheShort[client] = SQL_GetRowCount(hQuery);
-	else g_iCurrentRankCache[client] = SQL_GetRowCount(hQuery);
-
-	CloseHandle(hQuery);
-}
-
 Float:CalculateTime(client)
 {
 	if (g_timers[client][Enabled] && g_timers[client][IsPaused])
@@ -1134,33 +1074,6 @@ public Native_GetPauseStatus(Handle:plugin, numParams)
 public Native_IsModeRanked(Handle:plugin, numParams)
 {
 	return (g_Physics[GetNativeCell(1)][ModeCategory] == MCategory_Ranked);
-}
-
-public Native_GetTotalRank(Handle:plugin, numParams)
-{
-	new bool:update = bool:GetNativeCell(1);
-	new bonus = GetNativeCell(2);
-	if (update)
-	{
-		GetTotalRank(g_currentMap, bonus);
-	}
-	if(bonus == 1) return g_iTotalRankCacheBonus;
-	else if(bonus == 1) return g_iTotalRankCacheShort;
-		else return g_iTotalRankCache;
-}
-
-public Native_GetCurrentRank(Handle:plugin, numParams)
-{
-	new client = GetNativeCell(1);
-	new bool:update = bool:GetNativeCell(2);
-	new bonus = GetNativeCell(3);
-	if (update)
-	{
-		GetCurrentRank(client, g_currentMap, bonus);
-	}
-	if(bonus == 1) return g_iCurrentRankCacheBonus[client];
-	else if(bonus == 2) return g_iCurrentRankCacheShort[client];
-		else return g_iCurrentRankCache[client];
 }
 
 /**

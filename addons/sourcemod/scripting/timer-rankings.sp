@@ -2295,7 +2295,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 		if(bonus != 0) tier = 1;
 		
 		new bool:ranked = bool:Timer_IsModeRanked(mode);
-		new total = Timer_GetTotalRank(false, bonus);
+		new total = Timer_GetDifficultyTotalRank(mode, bonus);
 		new finishcount = Timer_GetFinishCount(mode, bonus, currentrank);
 		if(ranked)
 		{
@@ -2326,7 +2326,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	
 	if(ranked)
 	{
-		new total = Timer_GetTotalRank(false, bonus);
+		new total = Timer_GetDifficultyTotalRank(mode, bonus);
 		new finishcount = Timer_GetFinishCount(mode, bonus, currentrank);
 		
 		new iBuffer = GetRecordPoints(lasttime > time, bonus, mode, tier, finishcount, total, currentrank, newrank);

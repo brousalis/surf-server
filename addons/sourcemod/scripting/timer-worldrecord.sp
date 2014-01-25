@@ -103,6 +103,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Timer_ForceReloadCache", Native_ForceReloadCache);
 	CreateNative("Timer_GetDifficultyRecordTime", Native_GetDifficultyRecordTime);
 	CreateNative("Timer_GetDifficultyRank", Native_GetDifficultyRank);
+	CreateNative("Timer_GetDifficultyTotalRank", Native_GetDifficultyTotalRank);
 	CreateNative("Timer_GetBestRound", Native_GetBestRound);
 	CreateNative("Timer_GetNewPossibleRank", Native_GetNewPossibleRank);
 	CreateNative("Timer_GetRankID", Native_GetRankID);
@@ -1466,6 +1467,11 @@ public Native_GetDifficultyRank(Handle:plugin, numParams)
 	}
 	
 	return 0;
+}
+
+public Native_GetDifficultyTotalRank(Handle:plugin, numParams)
+{
+	return g_cacheCount[GetNativeCell(1)][GetNativeCell(2)]; 
 }
 
 public Native_GetDifficultyRecordTime(Handle:plugin, numParams)

@@ -1,9 +1,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
-#include <sdkhooks>
-#include <cstrike>
-#include <smlib>
+#include <sdktools>
 #include <timer>
 #include <timer-config_loader.sp>
 
