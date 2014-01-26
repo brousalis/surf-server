@@ -1014,7 +1014,7 @@ public PrepareSound(String: sound[MAX_FILE_LEN])
 {
 	decl String:fileSound[MAX_FILE_LEN];
 	
-	Format(fileSound, MAX_FILE_LEN, "sound/%s", sound);
+	FormatEx(fileSound, MAX_FILE_LEN, "sound/%s", sound);
 	
 	if (FileExists(fileSound))
 	{
@@ -1166,11 +1166,11 @@ public Action_OnSettingsChange(Handle:cvar, const String:oldvalue[], const Strin
 	else if (cvar == g_freeStyleZoneColor)
 		ParseColor(newvalue, g_freeStyleColor);
 	else if (cvar == Sound_TeleLast)
-		Format(SND_TELE_LAST, sizeof(SND_TELE_LAST) ,"%s", newvalue);
+		FormatEx(SND_TELE_LAST, sizeof(SND_TELE_LAST) ,"%s", newvalue);
 	else if (cvar == Sound_TeleNext)
-		Format(SND_TELE_NEXT, sizeof(SND_TELE_NEXT) ,"%s", newvalue);
+		FormatEx(SND_TELE_NEXT, sizeof(SND_TELE_NEXT) ,"%s", newvalue);
 	else if (cvar == Sound_TimerStart)
-		Format(SND_TIMER_START, sizeof(SND_TIMER_START) ,"%s", newvalue);
+		FormatEx(SND_TIMER_START, sizeof(SND_TIMER_START) ,"%s", newvalue);
 }
 
 AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:point1[3], Float:point2[3])
@@ -1183,14 +1183,14 @@ AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:point1
 	|| (type == ZtBonusEnd && !g_Settings[AllowMultipleBonusEnd])
 	|| (type == ZtShortEnd) && !g_Settings[AllowMultipleShortEnd]))
 	{
-		decl String:deleteQuery[512];
-		Format(deleteQuery, sizeof(deleteQuery), "DELETE FROM mapzone WHERE map = '%s' AND type = %d;", map, type);
+		decl String:deleteQuery[256];
+		FormatEx(deleteQuery, sizeof(deleteQuery), "DELETE FROM mapzone WHERE map = '%s' AND type = %d;", map, type);
 		
 		SQL_TQuery(g_hSQL, MapZoneChangedCallback, deleteQuery, _, DBPrio_High);	
 	}
 	
 	//add new zone
-	Format(query, sizeof(query), "INSERT INTO mapzone (map, type, name, level_id, point1_x, point1_y, point1_z, point2_x, point2_y, point2_z) VALUES ('%s','%d','%s','%d', %f, %f, %f, %f, %f, %f);", map, type, name, level_id, point1[0], point1[1], point1[2], point2[0], point2[1], point2[2]);
+	FormatEx(query, sizeof(query), "INSERT INTO mapzone (map, type, name, level_id, point1_x, point1_y, point1_z, point2_x, point2_y, point2_z) VALUES ('%s','%d','%s','%d', %f, %f, %f, %f, %f, %f);", map, type, name, level_id, point1[0], point1[1], point1[2], point2[0], point2[1], point2[2]);
 	
 	SQL_TQuery(g_hSQL, MapZoneChangedCallback, query, _, DBPrio_Normal);	
 }
@@ -1247,7 +1247,7 @@ public MapZoneChangedCallback(Handle:owner, Handle:hndl, const String:error[], a
 LoadMapZones()
 {
 	decl String:query[512];
-	Format(query, sizeof(query), "SELECT * FROM mapzone WHERE map = '%s' ORDER BY level_id ASC;", g_currentMap);
+	FormatEx(query, sizeof(query), "SELECT * FROM mapzone WHERE map = '%s' ORDER BY level_id ASC;", g_currentMap);
 	//Format(query, sizeof(query), "SELECT * FROM mapzone WHERE map = '%s' ORDER BY type,name * 1;", g_currentMap);
 	SQL_TQuery(g_hSQL, LoadMapZonesCallback, query, _, DBPrio_High);	
 }
@@ -1284,7 +1284,7 @@ public LoadMapZonesCallback(Handle:owner, Handle:hndl, const String:error[], any
 		
 		decl String:ZoneName[32];
 		SQL_FetchString(hndl, 10, ZoneName, sizeof(ZoneName));
-		Format(g_mapZones[g_mapZonesCount][zName], 32, "%s", ZoneName);
+		FormatEx(g_mapZones[g_mapZonesCount][zName], 32, "%s", ZoneName);
 		
 		SpawnZoneEntitys(g_mapZonesCount);
 		
@@ -1375,9 +1375,9 @@ String:buffer[],
 maxlength)
 {
 	if (action == TopMenuAction_DisplayTitle) {
-		Format(buffer, maxlength, "%t", "Timer Management");
+		FormatEx(buffer, maxlength, "%t", "Timer Management");
 	} else if (action == TopMenuAction_DisplayOption) {
-		Format(buffer, maxlength, "%t", "Timer Management");
+		FormatEx(buffer, maxlength, "%t", "Timer Management");
 	}
 }
 
@@ -1389,7 +1389,7 @@ String:buffer[],
 maxlength)
 {
 	if (action == TopMenuAction_DisplayOption) {
-		Format(buffer, maxlength, "%t", "Add Map Zone");
+		FormatEx(buffer, maxlength, "%t", "Add Map Zone");
 	} else if (action == TopMenuAction_SelectOption) {
 		RestartMapZoneEditor(param);
 		g_mapZoneEditors[param][Step] = 1;
@@ -1405,7 +1405,7 @@ String:buffer[],
 maxlength)
 {
 	if (action == TopMenuAction_DisplayOption) {
-		Format(buffer, maxlength, "%t", "Delete Map Zone");
+		FormatEx(buffer, maxlength, "%t", "Delete Map Zone");
 	} else if (action == TopMenuAction_SelectOption) {
 		DeleteMapZone(param);
 	}
@@ -1419,7 +1419,7 @@ String:buffer[],
 maxlength)
 {
 	if (action == TopMenuAction_DisplayOption) {
-		Format(buffer, maxlength, "%t", "Delete All Map Zones");
+		FormatEx(buffer, maxlength, "%t", "Delete All Map Zones");
 	} else if (action == TopMenuAction_SelectOption) 
 	{
 		if(param == 0)
@@ -1486,8 +1486,8 @@ DeleteMapZone(client)
 	{
 		if (IsInsideBox(vec, g_mapZones[zone][Point1][0], g_mapZones[zone][Point1][1], g_mapZones[zone][Point1][2], g_mapZones[zone][Point2][0], g_mapZones[zone][Point2][1], g_mapZones[zone][Point2][2]))
 		{
-			decl String:query[512];
-			Format(query, sizeof(query), "DELETE FROM mapzone WHERE id = %d", g_mapZones[zone][Id]);
+			decl String:query[64];
+			FormatEx(query, sizeof(query), "DELETE FROM mapzone WHERE id = %d", g_mapZones[zone][Id]);
 			
 			SQL_TQuery(g_hSQL, DeleteMapZoneCallback, query, client, DBPrio_Normal);	
 			break;
@@ -1497,8 +1497,8 @@ DeleteMapZone(client)
 
 DeleteAllMapZones(client)
 {
-	decl String:query[512];
-	Format(query, sizeof(query), "DELETE FROM mapzone WHERE map = '%s'", g_currentMap);
+	decl String:query[256];
+	FormatEx(query, sizeof(query), "DELETE FROM mapzone WHERE map = '%s'", g_currentMap);
 	
 	SQL_TQuery(g_hSQL, DeleteMapZoneCallback, query, client, DBPrio_Normal);
 }
@@ -1523,14 +1523,14 @@ DisplaySelectPointMenu(client, n)
 	
 	decl String:message[255];
 	decl String:first[32], String:second[32];
-	Format(first, sizeof(first), "%t", "FIRST");
-	Format(second, sizeof(second), "%t", "SECOND");
+	FormatEx(first, sizeof(first), "%t", "FIRST");
+	FormatEx(second, sizeof(second), "%t", "SECOND");
 	
-	Format(message, sizeof(message), "%t", "Point Select Panel", (n == 1) ? first : second);
+	FormatEx(message, sizeof(message), "%t", "Point Select Panel", (n == 1) ? first : second);
 	
 	DrawPanelItem(panel, message, ITEMDRAW_RAWLINE);
 	
-	Format(message, sizeof(message), "%t", "Cancel");
+	FormatEx(message, sizeof(message), "%t", "Cancel");
 	DrawPanelItem(panel, message);
 	
 	SendPanelToClient(panel, client, PointSelect, 540);
@@ -1542,7 +1542,7 @@ DisplayPleaseWaitMenu(client)
 	new Handle:panel = CreatePanel();
 	
 	decl String:wait[64];
-	Format(wait, sizeof(wait), "%t", "Please wait");
+	FormatEx(wait, sizeof(wait), "%t", "Please wait");
 	DrawPanelItem(panel, wait, ITEMDRAW_RAWLINE);
 	
 	SendPanelToClient(panel, client, PointSelect, 540);
@@ -1762,7 +1762,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				}
 				hcount++;
 				
-				Format(lvlbuffer, sizeof(lvlbuffer), "Stage %d", hcount);
+				FormatEx(lvlbuffer, sizeof(lvlbuffer), "Stage %d", hcount);
 				
 				LvlID = hcount;
 				ZoneName = lvlbuffer;
@@ -1796,7 +1796,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				}
 				hcount++;
 				
-				Format(lvlbuffer, sizeof(lvlbuffer), "Bonus-Stage %d", hcount);
+				FormatEx(lvlbuffer, sizeof(lvlbuffer), "Bonus-Stage %d", hcount);
 				
 				LvlID = hcount;
 				ZoneName = lvlbuffer;
@@ -2076,7 +2076,7 @@ stock CreateNPC(client, step, bool:double = false)
 			
 			hcount++;
 			
-			Format(lvlbuffer, sizeof(lvlbuffer), "Level %d", hcount);
+			FormatEx(lvlbuffer, sizeof(lvlbuffer), "Level %d", hcount);
 			
 			new Float:vec[3];
 			GetClientAbsOrigin(client, vec);
@@ -2855,7 +2855,7 @@ SpawnZoneEntitys(zone)
 				DispatchKeyValue(entity, "OnTrigger", "!activator,IgnitePlayer,,0,-1");
 				
 				new String:EntName[256];
-				Format(EntName, sizeof(EntName), "#DHC_Trigger_%d", g_mapZones[zone][Id]);
+				FormatEx(EntName, sizeof(EntName), "#DHC_Trigger_%d", g_mapZones[zone][Id]);
 				DispatchKeyValue(entity, "targetname", EntName);
 				
 				if(g_mapZones[zone][Type] == ZtBlock) DispatchKeyValue(entity, "Solid", "6"); 
@@ -2914,16 +2914,16 @@ SpawnZoneEntitys(zone)
 		if(g_mapZones[zone][Type] == ZtNPC_Next)
 		{
 			PrecacheModel(g_Settings[NPC_Path], true);
-			Format(ModePath, sizeof(ModePath), "%s", g_Settings[NPC_Path]);
+			FormatEx(ModePath, sizeof(ModePath), "%s", g_Settings[NPC_Path]);
 		}
 		else if(g_mapZones[zone][Type] == ZtNPC_Next_Double)
 		{
 			PrecacheModel(g_Settings[NPC_Double_Path], true);
-			Format(ModePath, sizeof(ModePath), "%s", g_Settings[NPC_Double_Path]);
+			FormatEx(ModePath, sizeof(ModePath), "%s", g_Settings[NPC_Double_Path]);
 		}
 		
-		new String:EntName[256];
-		Format(EntName, sizeof(EntName), "#DHC_NPC_%d", g_mapZones[zone][Id]);
+		decl String:EntName[256];
+		FormatEx(EntName, sizeof(EntName), "#DHC_NPC_%d", g_mapZones[zone][Id]);
 		
 		new String:Classname[] = "prop_physics_override";
 		
@@ -2977,8 +2977,8 @@ SpawnZoneEntitys(zone)
 		
 		PrecacheModel("models/props_junk/trafficcone001a.mdl", true);
 		
-		new String:EntName[256];
-		Format(EntName, sizeof(EntName), "#DHC_Zone_%d", g_mapZones[zone][Id]);
+		decl String:EntName[256];
+		FormatEx(EntName, sizeof(EntName), "#DHC_Zone_%d", g_mapZones[zone][Id]);
 		
 		new String:ModePath[] = "models/props_junk/trafficcone001a.mdl";
 		new String:Classname[] = "prop_physics_override";
@@ -3196,8 +3196,8 @@ public Handle_Menu_NPC_Delete(Handle:menu, MenuAction:action, client, itemNum)
 			{
 				new zone = g_iTargetNPC[client];
 				
-				decl String:query[512];
-				Format(query, sizeof(query), "DELETE FROM mapzone WHERE id = %d", g_mapZones[zone][Id]);
+				decl String:query[64];
+				FormatEx(query, sizeof(query), "DELETE FROM mapzone WHERE id = %d", g_mapZones[zone][Id]);
 				
 				SQL_TQuery(g_hSQL, DeleteMapZoneCallback, query, client, DBPrio_Normal);
 			}
@@ -3666,8 +3666,8 @@ public Action:Command_LevelName(client, args)
 	{
 		decl String:name2[64];
 		GetCmdArg(1,name2,sizeof(name2));
-		decl String:query[512];
-		Format(query, sizeof(query), "UPDATE mapzone SET name = '%s' WHERE id = %d", name2, g_mapZones[g_clientLevel[client]][Id]);
+		decl String:query[256];
+		FormatEx(query, sizeof(query), "UPDATE mapzone SET name = '%s' WHERE id = %d", name2, g_mapZones[g_clientLevel[client]][Id]);
 		SQL_TQuery(g_hSQL, UpdateLevelCallback, query, client, DBPrio_Normal);	
 		PrintToChat(client, "Set LevelName: %s for ZoneID: %d", name2, g_mapZones[g_clientLevel[client]][Id]);
 	}
@@ -3687,7 +3687,7 @@ public Action:Command_LevelID(client, args)
 		GetCmdArg(1, name2, sizeof(name2));
 		
 		decl String:query2[512];
-		Format(query2, sizeof(query2), "UPDATE mapzone SET level_id = '%s' WHERE id = %d", name2, g_mapZones[g_clientLevel[client]][Id]);
+		FormatEx(query2, sizeof(query2), "UPDATE mapzone SET level_id = '%s' WHERE id = %d", name2, g_mapZones[g_clientLevel[client]][Id]);
 		SQL_TQuery(g_hSQL, UpdateLevelCallback, query2, client, DBPrio_Normal);	
 		PrintToChat(client, "Set LevelID: %s for ZoneID: %d", name2, g_mapZones[g_clientLevel[client]][Id]);
 	}
@@ -3707,7 +3707,7 @@ public Action:Command_LevelType(client, args)
 		GetCmdArg(1, name2, sizeof(name2));
 		
 		decl String:query2[512];
-		Format(query2, sizeof(query2), "UPDATE mapzone SET type = '%s' WHERE id = %d", name2, g_mapZones[g_clientLevel[client]][Id]);
+		FormatEx(query2, sizeof(query2), "UPDATE mapzone SET type = '%s' WHERE id = %d", name2, g_mapZones[g_clientLevel[client]][Id]);
 		SQL_TQuery(g_hSQL, UpdateLevelCallback, query2, client, DBPrio_Normal);	
 		PrintToChat(client, "Set Type: %s for ZoneID: %d", name2, g_mapZones[g_clientLevel[client]][Id]);
 	}
@@ -3999,11 +3999,11 @@ public Action:Command_AdminZone(client, args)
 	
 	for (new zone = 0; zone < g_mapZonesCount; zone++)
 	{
-		new String:zone_name[32];
-		Format(zone_name, sizeof(zone_name), "%s", g_mapZones[zone][zName]);
+		decl String:zone_name[32];
+		FormatEx(zone_name, sizeof(zone_name), "%s", g_mapZones[zone][zName]);
 		
-		new String:zone_id[32];
-		Format(zone_id,sizeof(zone_id), "%d", zone);
+		decl String:zone_id[32];
+		FormatEx(zone_id,sizeof(zone_id), "%d", zone);
 		AddMenuItem(menu, zone_id, zone_name);
 	}
 	
@@ -4054,11 +4054,11 @@ public Action:Command_Levels(client, args)
 			continue;
 		}
 		
-		new String:zone_name[32];
-		Format(zone_name, sizeof(zone_name), "%s", g_mapZones[zone][zName]);
+		decl String:zone_name[32];
+		FormatEx(zone_name, sizeof(zone_name), "%s", g_mapZones[zone][zName]);
 		
-		new String:zone_id[32];
-		Format(zone_id,sizeof(zone_id), "%d", zone);
+		decl String:zone_id[32];
+		FormatEx(zone_id,sizeof(zone_id), "%d", zone);
 		AddMenuItem(menu, zone_id, zone_name);
 	}
 	
@@ -4135,8 +4135,8 @@ public Native_GetLevelName(Handle:plugin, numParams)
 	{
 		if(g_mapZones[i][Level_Id] == id)
 		{
-			new String:buffer[nlen];
-			Format(buffer, nlen, "%s", g_mapZones[id][zName]);
+			decl String:buffer[nlen];
+			FormatEx(buffer, nlen, "%s", g_mapZones[id][zName]);
 			if (SetNativeString(2, buffer, nlen, true) == SP_ERROR_NONE)
 				return true;
 		}

@@ -146,7 +146,7 @@ public OnCVarChange(Handle:cvar, const String:oldvalue[], const String:newvalue[
 	}
 	else if(cvar == g_hKickMsg)
 	{
-		Format(g_sKickMsg, sizeof(g_sKickMsg), "%s", newvalue);
+		FormatEx(g_sKickMsg, sizeof(g_sKickMsg), "%s", newvalue);
 	}
 }
 
@@ -214,7 +214,7 @@ public OnClientPostAdminCheck(client)
 		if(!g_bLoadedSQL[client])
 		{
 			decl String:sQuery[192];
-			Format(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
+			FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
 			if(g_iEnabled == 2)
 				PrintToDebug("OnClientPostAdminCheck(%N): Issuing Query `%s`", client, sQuery);
 			SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(client), DBPrio_Low);
@@ -287,7 +287,7 @@ public Action:Timer_LoadRank(Handle:timer, any:userid)
 	
 	decl String:sText[192];
 	
-	Format(sText, sizeof(sText), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
+	FormatEx(sText, sizeof(sText), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
 	if(g_iEnabled == 2)
 		PrintToDebug("Load_Rank(%N): Issuing Query `%s`", client, sText);
 	SQL_TQuery(g_hDatabase, CallBack_Rank, sText, GetClientUserId(client));
@@ -510,7 +510,7 @@ public Action:Timer_AuthClient(Handle:timer, any:userid)
 			if(!g_bLoadedSQL[client])
 			{
 				decl String:sQuery[192];
-				Format(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
+				FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
 				SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(client));
 			}
 		}
@@ -604,11 +604,11 @@ public Action:Timer_PrepareKick(Handle:timer, any:userid)
 		return Plugin_Stop;
 	}
 	
-	new String:sRank[32];
-	Format(sRank, sizeof(sRank), "%d", g_iConnectTopOnly);
+	decl String:sRank[32];
+	FormatEx(sRank, sizeof(sRank), "%d", g_iConnectTopOnly);
 	
-	new String:buffer[512];
-	Format(buffer, sizeof(buffer), "%s", g_sKickMsg);
+	decl String:buffer[512];
+	FormatEx(buffer, sizeof(buffer), "%s", g_sKickMsg);
 	
 	ReplaceString(buffer, sizeof(buffer), "{rank}", sRank, true);
 	

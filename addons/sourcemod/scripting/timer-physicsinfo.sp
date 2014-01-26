@@ -90,7 +90,7 @@ CreateInfoDetailMenu(client, mode)
 		
 		if(g_Physics[mode][ModeIsDefault]) 
 		{
-			Format(bigbuffer, sizeof(bigbuffer), "Default Mode");
+			FormatEx(bigbuffer, sizeof(bigbuffer), "Default Mode");
 			AddMenuItem(menu, buffer, bigbuffer);
 		}
 		
@@ -100,36 +100,36 @@ CreateInfoDetailMenu(client, mode)
 		//Format(bigbuffer, sizeof(bigbuffer), "TagShortName: %s", g_Physics[mode][ModeTagShortName]);
 		//AddMenuItem(menu, buffer, bigbuffer);
 		
-		Format(bigbuffer, sizeof(bigbuffer), "ChatCommand: %s", g_Physics[mode][ModeQuickCommand]);
+		FormatEx(bigbuffer, sizeof(bigbuffer), "ChatCommand: %s", g_Physics[mode][ModeQuickCommand]);
 		AddMenuItem(menu, buffer, bigbuffer);
 		
-		if(g_Physics[mode][ModeCategory] == MCategory_Fun) Format(bigbuffer, sizeof(bigbuffer), "Category: Fun");
-		else if(g_Physics[mode][ModeCategory] == MCategory_Ranked) Format(bigbuffer, sizeof(bigbuffer), "Category: Ranked");
-		else if(g_Physics[mode][ModeCategory] == MCategory_Practise) Format(bigbuffer, sizeof(bigbuffer), "Category: Practise");
-		else Format(bigbuffer, sizeof(bigbuffer), "Category: Unknown");
+		if(g_Physics[mode][ModeCategory] == MCategory_Fun) FormatEx(bigbuffer, sizeof(bigbuffer), "Category: Fun");
+		else if(g_Physics[mode][ModeCategory] == MCategory_Ranked) FormatEx(bigbuffer, sizeof(bigbuffer), "Category: Ranked");
+		else if(g_Physics[mode][ModeCategory] == MCategory_Practise) FormatEx(bigbuffer, sizeof(bigbuffer), "Category: Practise");
+		else FormatEx(bigbuffer, sizeof(bigbuffer), "Category: Unknown");
 		AddMenuItem(menu, buffer, bigbuffer);
 		
-		Format(bigbuffer, sizeof(bigbuffer), "Boost: %.1f", g_Physics[mode][ModeBoost]);
+		FormatEx(bigbuffer, sizeof(bigbuffer), "Boost: %.1f", g_Physics[mode][ModeBoost]);
 		AddMenuItem(menu, buffer, bigbuffer);
 		
-		if(g_Physics[mode][ModeAuto]) Format(bigbuffer, sizeof(bigbuffer), "Auto: Enabled");
-		else Format(bigbuffer, sizeof(bigbuffer), "Auto: Disabled");
+		if(g_Physics[mode][ModeAuto]) FormatEx(bigbuffer, sizeof(bigbuffer), "Auto: Enabled");
+		else FormatEx(bigbuffer, sizeof(bigbuffer), "Auto: Disabled");
 		AddMenuItem(menu, buffer, bigbuffer);
 		
-		Format(bigbuffer, sizeof(bigbuffer), "Stamina: %.1f", g_Physics[mode][ModeStamina]);
+		FormatEx(bigbuffer, sizeof(bigbuffer), "Stamina: %.1f", g_Physics[mode][ModeStamina]);
 		AddMenuItem(menu, buffer, bigbuffer);
 		
-		Format(bigbuffer, sizeof(bigbuffer), "Gravity: x%.1f", g_Physics[mode][ModeGravity]);
+		FormatEx(bigbuffer, sizeof(bigbuffer), "Gravity: x%.1f", g_Physics[mode][ModeGravity]);
 		AddMenuItem(menu, buffer, bigbuffer);
 		
-		if(g_Physics[mode][ModeBlockPreSpeeding] > 0.0) Format(bigbuffer, sizeof(bigbuffer), "PrespeedMax: %.1f", g_Physics[mode][ModeBlockPreSpeeding]);
-		else Format(bigbuffer, sizeof(bigbuffer), "PrespeedMax: Unlimited");
+		if(g_Physics[mode][ModeBlockPreSpeeding] > 0.0) FormatEx(bigbuffer, sizeof(bigbuffer), "PrespeedMax: %.1f", g_Physics[mode][ModeBlockPreSpeeding]);
+		else FormatEx(bigbuffer, sizeof(bigbuffer), "PrespeedMax: Unlimited");
 		AddMenuItem(menu, buffer, bigbuffer);
 		
-		if(g_Physics[mode][ModeMultiBhop] == 0) Format(bigbuffer, sizeof(bigbuffer), "Multimode: Map Default");
-		else if(g_Physics[mode][ModeMultiBhop] == 1) Format(bigbuffer, sizeof(bigbuffer), "Multimode: Multihop");
-		else if(g_Physics[mode][ModeMultiBhop] == 2) Format(bigbuffer, sizeof(bigbuffer), "Multimode: Nohop");
-		else Format(bigbuffer, sizeof(bigbuffer), "Multimode: Unknown");
+		if(g_Physics[mode][ModeMultiBhop] == 0) FormatEx(bigbuffer, sizeof(bigbuffer), "Multimode: Map Default");
+		else if(g_Physics[mode][ModeMultiBhop] == 1) FormatEx(bigbuffer, sizeof(bigbuffer), "Multimode: Multihop");
+		else if(g_Physics[mode][ModeMultiBhop] == 2) FormatEx(bigbuffer, sizeof(bigbuffer), "Multimode: Nohop");
+		else FormatEx(bigbuffer, sizeof(bigbuffer), "Multimode: Unknown");
 		AddMenuItem(menu, buffer, bigbuffer);
 
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);

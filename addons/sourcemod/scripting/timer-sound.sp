@@ -78,7 +78,7 @@ public PrepareSound(String: sound[MAX_FILE_LEN])
 {
 	decl String:fileSound[MAX_FILE_LEN];
 
-	Format(fileSound, MAX_FILE_LEN, "sound/%s", sound);
+	FormatEx(fileSound, MAX_FILE_LEN, "sound/%s", sound);
 
 	if (FileExists(fileSound))
 	{

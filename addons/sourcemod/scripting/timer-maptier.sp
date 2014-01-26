@@ -139,12 +139,12 @@ LoadMapTier()
 	{
 		new bonus; //0=normal
 		decl String:query[128];
-		Format(query, sizeof(query), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND bonus = '%d'", g_currentMap, bonus);
+		FormatEx(query, sizeof(query), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND bonus = '%d'", g_currentMap, bonus);
 		SQL_TQuery(g_hSQL, LoadTierCallback, query, bonus, DBPrio_Normal);   
 		
 		bonus = 1; //1=bonus
 		decl String:query2[128];
-		Format(query2, sizeof(query2), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND bonus = '%d'", g_currentMap, bonus);
+		FormatEx(query2, sizeof(query2), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND bonus = '%d'", g_currentMap, bonus);
 		SQL_TQuery(g_hSQL, LoadTierCallback, query, bonus, DBPrio_Normal); 
 	}
 }	
@@ -166,7 +166,7 @@ public LoadTierCallback(Handle:owner, Handle:hndl, const String:error[], any:bon
 	if (g_maptier[bonus] == 0 && g_stagecount[bonus] == 0)
 	{
 		decl String:query[128];
-		Format(query, sizeof(query), "INSERT INTO maptier (map, bonus, tier, stagecount) VALUES ('%s','%d','1', '1');", g_currentMap, bonus);
+		FormatEx(query, sizeof(query), "INSERT INTO maptier (map, bonus, tier, stagecount) VALUES ('%s','%d','1', '1');", g_currentMap, bonus);
 
 		SQL_TQuery(g_hSQL, InsertTierCallback, query, bonus, DBPrio_Normal);
 	}
@@ -249,7 +249,7 @@ public Native_SetMapTier(Handle:plugin, numParams)
 	new bonus = GetNativeCell(1);
 	new tier = GetNativeCell(2);
 	decl String:query[256];
-	Format(query, sizeof(query), "UPDATE maptier SET tier = '%d' WHERE map = '%s' AND bonus = '%d'", tier, g_currentMap, bonus);
+	FormatEx(query, sizeof(query), "UPDATE maptier SET tier = '%d' WHERE map = '%s' AND bonus = '%d'", tier, g_currentMap, bonus);
 	SQL_TQuery(g_hSQL, UpdateTierCallback, query, bonus, DBPrio_Normal);	
 }
 
@@ -267,7 +267,7 @@ public Native_UpdateStageCount(Handle:plugin, numParams)
 		g_stagecount[bonus] = Timer_GetMapzoneCount(ZtBonusLevel)+1;
 	
 	decl String:query[256];
-	Format(query, sizeof(query), "UPDATE maptier SET stagecount = '%d' WHERE map = '%s' AND bonus = '%d'", g_stagecount[bonus], g_currentMap, bonus);
+	FormatEx(query, sizeof(query), "UPDATE maptier SET stagecount = '%d' WHERE map = '%s' AND bonus = '%d'", g_stagecount[bonus], g_currentMap, bonus);
 	SQL_TQuery(g_hSQL, UpdateStageCountCallback, query, bonus, DBPrio_Normal);
 	
 	return g_stagecount[bonus];

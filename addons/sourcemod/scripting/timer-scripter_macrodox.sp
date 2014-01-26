@@ -208,9 +208,9 @@ GetClientStats(client, String:string[], length)
 {
 	new Float:origin[3];
 	GetEntPropVector(client, Prop_Send, "m_vecOrigin", origin);
-	new String:map[128];
+	decl String:map[128];
 	GetCurrentMap(map, 128);
-	Format(string, length, "%L Avg: %f/%f Perf: %f %s %f %f %f Last: %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i",
+	FormatEx(string, length, "%L Avg: %f/%f Perf: %f %s %f %f %f Last: %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i",
 	client,
 	afAvgJumps[client],
 	afAvgSpeed[client],

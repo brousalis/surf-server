@@ -225,8 +225,8 @@ public OnClientAuthorized(client, const String:auth[])
 			decl String:safeName[2 * strlen(name) + 1];
 			SQL_EscapeString(g_hSQL, name, safeName, 2 * strlen(name) + 1);
 			
-			decl String:query[512];
-			Format(query, sizeof(query), "UPDATE `round` SET name = '%s' WHERE auth = '%s'", safeName, auth);
+			decl String:query[256];
+			FormatEx(query, sizeof(query), "UPDATE `round` SET name = '%s' WHERE auth = '%s'", safeName, auth);
 
 			SQL_TQuery(g_hSQL, UpdateNameCallback, query, _, DBPrio_Normal);
 			
@@ -240,7 +240,7 @@ public PrepareSound(String: sound[MAX_FILE_LEN])
 {
 	decl String:fileSound[MAX_FILE_LEN];
 
-	Format(fileSound, MAX_FILE_LEN, "sound/%s", sound);
+	FormatEx(fileSound, MAX_FILE_LEN, "sound/%s", sound);
 
 	if (FileExists(fileSound))
 	{
@@ -352,7 +352,7 @@ public Action:Command_Resume(client, args)
 public Action:Command_DropTable(client, args)
 {	
 	decl String:query[64];
-	Format(query, sizeof(query), "DROP TABLE round");
+	FormatEx(query, sizeof(query), "DROP TABLE round");
 
 	SQL_TQuery(g_hSQL, DropTable, query, _, DBPrio_Normal);
 	
@@ -713,17 +713,17 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 		{
 			LastTime *= -1.0;
 			Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-			Format(TimeDiff, sizeof(TimeDiff), "+%s", buffer);
+			FormatEx(TimeDiff, sizeof(TimeDiff), "+%s", buffer);
 		}
 		else if(LastTime > 0.0)
 		{
 			Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-			Format(TimeDiff, sizeof(TimeDiff), "-%s", buffer);
+			FormatEx(TimeDiff, sizeof(TimeDiff), "-%s", buffer);
 		}
 		else if(LastTime == 0.0)
 		{
 			Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-			Format(TimeDiff, sizeof(TimeDiff), "%s", buffer);
+			FormatEx(TimeDiff, sizeof(TimeDiff), "%s", buffer);
 		}
 	}
 	else
@@ -732,7 +732,7 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 		FirstRecord = true;
 		LastTime = 0.0;
 		Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-		Format(TimeDiff, sizeof(TimeDiff), "%s", buffer);
+		FormatEx(TimeDiff, sizeof(TimeDiff), "%s", buffer);
 		RankTotal++;
 	}
 
@@ -755,16 +755,16 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 		//CPrintToChat(client, "%s{blue} Your record has been saved.", PLUGIN_PREFIX2);
 		
 		//Save record
-		decl String:query2[2048];
-		Format(query2, sizeof(query2), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, mode, safeName, fpsmax, bonus, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc);
+		decl String:query[2048];
+		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, mode, safeName, fpsmax, bonus, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc);
 			
-		SQL_TQuery(g_hSQL, FinishRoundCallback, query2, client, DBPrio_High);
+		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
 	}
 	else
 	{
-		decl String:query2[512];
-		Format(query2, sizeof(query2), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE name = '%s', finishcount = finishcount + 1;", map, auth, time, jumps, mode, safeName, fpsmax, bonus, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, safeName);
-		SQL_TQuery(g_hSQL, FinishRoundCallback, query2, client, DBPrio_High);
+		decl String:query[512];
+		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE name = '%s', finishcount = finishcount + 1;", map, auth, time, jumps, mode, safeName, fpsmax, bonus, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, safeName);
+		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
 	}
 	
 	/* Forwards */

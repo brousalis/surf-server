@@ -98,7 +98,7 @@ public Action:FPSCheck(Handle:timer, any:client)
 			Timer_Restart(client);
 			
 			decl String:warnstr[128];
-			Format(warnstr, sizeof(warnstr), "%T", "Custom FPS", client);
+			FormatEx(warnstr, sizeof(warnstr), "%T", "Custom FPS", client);
 			PrintToChat(client, PLUGIN_PREFIX, "Custom FPS");
 		}
 	}

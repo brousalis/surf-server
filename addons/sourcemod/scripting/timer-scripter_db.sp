@@ -127,7 +127,7 @@ public Native_AddScripter(Handle:plugin, numParams)
 			String:name2[2*(MAX_NAME_LENGTH)+1];
 			GetClientName(client, name, sizeof(name));
 			SQL_EscapeString(g_hSQL, name, name2, sizeof(name2));
-			Format(query, sizeof(query), SQLQueries[g_DatabaseType][E_QInsert], name2, player_authid, admin_authid);
+			FormatEx(query, sizeof(query), SQLQueries[g_DatabaseType][E_QInsert], name2, player_authid, admin_authid);
 
 			SQL_TQuery(g_hSQL, T_Insert, query, GetClientUserId(client), DBPrio_High);
 		}
@@ -228,7 +228,7 @@ public OnClientAuthorized(client, const String:auth[])
 	if (g_hSQL != INVALID_HANDLE)
 	{
 		decl String:query[255];
-		Format(query, sizeof(query), SQLQueries[g_DatabaseType][E_QConnect], auth);
+		FormatEx(query, sizeof(query), SQLQueries[g_DatabaseType][E_QConnect], auth);
 		SQL_TQuery(g_hSQL, T_ClientConnected, query, GetClientUserId(client));
 	}
 }
@@ -309,7 +309,7 @@ public T_Insert(Handle:owner, Handle:hndl, const String:error[], any:uid_client)
 		decl String:query[255], String:authid[32];
 		GetClientAuthString(client, authid, sizeof(authid));
 
-		Format(query, sizeof(query), SQLQueries[g_DatabaseType][E_QConnect], authid);
+		FormatEx(query, sizeof(query), SQLQueries[g_DatabaseType][E_QConnect], authid);
 		SQL_TQuery(g_hSQL, T_ClientConnected, query, GetClientUserId(client), DBPrio_High);
 	}
 }
@@ -339,7 +339,7 @@ public Action:Command_ScripterID(client, argc)
 		}
 
 		decl String:query[255];
-		Format(query, sizeof(query), SQLQueries[g_DatabaseType][E_QInsert], "unconnected", arg, admin_authid);
+		FormatEx(query, sizeof(query), SQLQueries[g_DatabaseType][E_QInsert], "unconnected", arg, admin_authid);
 		SQL_TQuery(g_hSQL, T_InsertID, query, _, DBPrio_High);
 	}
 
@@ -385,7 +385,7 @@ public Action:Command_UnbanScripter(client, argc)
 			ShowActivity2(client, "[ScripterDB]", "%N unbanned %N from ranked modes.", client, targets[0]);
 
 			decl String:query[255];
-			Format(query, sizeof(query), SQLQueries[g_DatabaseType][E_QDelete], g_iDatabaseId[targets[0]]);
+			FormatEx(query, sizeof(query), SQLQueries[g_DatabaseType][E_QDelete], g_iDatabaseId[targets[0]]);
 
 			SQL_TQuery(g_hSQL, T_NoAction, query);
 
@@ -410,7 +410,7 @@ public OnClientDisconnect(client)
 		GetClientName(client, name, sizeof(name));
 		SQL_EscapeString(g_hSQL, name, name2, sizeof(name2));
 
-		Format(query, sizeof(query), SQLQueries[g_DatabaseType][E_QUpdate], name2, g_iDatabaseId[client], DBPrio_Low);
+		FormatEx(query, sizeof(query), SQLQueries[g_DatabaseType][E_QUpdate], name2, g_iDatabaseId[client], DBPrio_Low);
 		SQL_TQuery(g_hSQL, T_NoAction, query);
 	}
 
@@ -508,7 +508,7 @@ public OnAdminMenuReady(Handle:topmenu)
 public TopMenuHandler(Handle:topmenu, TopMenuAction:action, TopMenuObject:object_id, param, String:buffer[], maxlength)
 {
 	if (action == TopMenuAction_DisplayOption)
-		Format(buffer, maxlength, "Add Scripter");
+		FormatEx(buffer, maxlength, "Add Scripter");
 
 	else if (action == TopMenuAction_SelectOption)
 		ShowScripterMenu(param);
@@ -576,8 +576,8 @@ public AdminMenu_CategoryHandler(Handle:topmenu,
 			maxlength)
 {
 	if (action == TopMenuAction_DisplayTitle) {
-		Format(buffer, maxlength, "%t", "Timer Management");
+		FormatEx(buffer, maxlength, "%t", "Timer Management");
 	} else if (action == TopMenuAction_DisplayOption) {
-		Format(buffer, maxlength, "%t", "Timer Management");
+		FormatEx(buffer, maxlength, "%t", "Timer Management");
 	}
 }

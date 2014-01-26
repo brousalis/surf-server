@@ -82,11 +82,12 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	new bool:NewWorldRecord = false;
 	new bool:FirstRecord = false;
 	
-	new bool:ranked;
-	if(g_timerPhysics) ranked = bool:Timer_IsModeRanked(mode);
-	
-	new Float:jumpacc;
-	if(g_timerPhysics) Timer_GetJumpAccuracy(client, jumpacc);
+	new bool:ranked, Float:jumpacc;
+	if(g_timerPhysics) 
+	{
+		ranked = bool:Timer_IsModeRanked(mode);
+		Timer_GetJumpAccuracy(client, jumpacc);
+	}
 	
 	new bool:enabled = false;
 	new jumps = 0;
@@ -105,17 +106,17 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 			{
 				LastTime *= -1.0;
 				Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-				Format(TimeDiff, sizeof(TimeDiff), "+%s", buffer);
+				FormatEx(TimeDiff, sizeof(TimeDiff), "+%s", buffer);
 			}
 			else if(LastTime > 0.0)
 			{
 				Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-				Format(TimeDiff, sizeof(TimeDiff), "-%s", buffer);
+				FormatEx(TimeDiff, sizeof(TimeDiff), "-%s", buffer);
 			}
 			else if(LastTime == 0.0)
 			{
 				Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-				Format(TimeDiff, sizeof(TimeDiff), "%s", buffer);
+				FormatEx(TimeDiff, sizeof(TimeDiff), "%s", buffer);
 			}
 		}
 		else
@@ -124,26 +125,25 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 			FirstRecord = true;
 			LastTime = 0.0;
 			Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-			Format(TimeDiff, sizeof(TimeDiff), "%s", buffer);
+			FormatEx(TimeDiff, sizeof(TimeDiff), "%s", buffer);
 			RankTotal++;
 		}
 	}
 	
 	decl String:TimeString[32];
-	Format(TimeString, sizeof(TimeString), "");
 	Timer_SecondsToTime(time, TimeString, sizeof(TimeString), 2);
 	
-	decl String:WrName[32];
-	Format(WrName, sizeof(WrName), "");
-	decl String:WrTime[32];
-	Format(WrTime, sizeof(WrTime), "");
+	new String:WrName[32], String:WrTime[32];
 	new Float:wrtime;
 	
-	if(g_timerWorldRecord) Timer_GetRecordTimeInfo(mode, bonus, newrank, wrtime, WrTime, 32);
-	if(g_timerWorldRecord) Timer_GetRecordHolderName(mode, bonus, newrank, WrName, 32);
+	if(g_timerWorldRecord)
+	{
+		Timer_GetRecordTimeInfo(mode, bonus, newrank, wrtime, WrTime, 32);
+		Timer_GetRecordHolderName(mode, bonus, newrank, WrName, 32);
 	
-	/* Get World Record */
-	if(g_timerWorldRecord) Timer_GetDifficultyRecordTime(mode, bonus, RecordId, RecordTime, RankTotal);
+		/* Get World Record */
+		Timer_GetDifficultyRecordTime(mode, bonus, RecordId, RecordTime, RankTotal);
+	}
 	
 	/* Detect Record Type */
 	if(RecordTime == 0.0 || time < RecordTime)
@@ -167,73 +167,61 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	
 	new Float:wrdiff = time-wrtime;
 	
-	decl String:BonusString[32];
+	new String:BonusString[32];
 	
 	if(bonus == 1)
 	{
-		Format(BonusString, sizeof(BonusString), " {green}bonus");
+		FormatEx(BonusString, sizeof(BonusString), " {green}bonus");
 	}
 	else if(bonus == 2)
 	{
-		Format(BonusString, sizeof(BonusString), " {green}short");
+		FormatEx(BonusString, sizeof(BonusString), " {green}short");
 	}	
-	else
-	{
-		//Format(BonusString, sizeof(BonusString), " {green}normal");
-		Format(BonusString, sizeof(BonusString), "");
-	}		
 	
-	decl String:RankString[128];
-	Format(RankString, sizeof(RankString), "");
-	
-	decl String:RankPwndString[128];
-	Format(RankPwndString, sizeof(RankPwndString), "");
+	new String:RankString[128], String:RankPwndString[128];
 
-	decl String:JumpString[128];
+	new String:JumpString[128];
 	new bool:bAll = false;
 	
 	decl String:StyleString[128];
 	if(g_Settings[MultimodeEnable]) 
-		Format(StyleString, sizeof(StyleString), " on {green}%s", g_Physics[mode][ModeName]);
-	else 
-		Format(StyleString, sizeof(StyleString), "");
+		FormatEx(StyleString, sizeof(StyleString), " on {green}%s", g_Physics[mode][ModeName]);
 	
 	if(NewWorldRecord)
 	{
 		bAll = true;
-		Format(RankString, sizeof(RankString), "{magenta}NEW WORLD RECORD");
+		FormatEx(RankString, sizeof(RankString), "{magenta}NEW WORLD RECORD");
 		
 		if(wrtime > 0.0)
 		{
 			if(self)
-				Format(RankPwndString, sizeof(RankPwndString), "{blue}Improved {Red}%s{blue}! {yellow}[%s]{blue} by {yellow}[%.2fs]", "himself", WrTime, wrdiff);
+				FormatEx(RankPwndString, sizeof(RankPwndString), "{blue}Improved {Red}%s{blue}! {yellow}[%s]{blue} by {yellow}[%.2fs]", "himself", WrTime, wrdiff);
 			else
-				Format(RankPwndString, sizeof(RankPwndString), "{blue}Beaten {Red}%s{blue}! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrName, WrTime, wrdiff);
+				FormatEx(RankPwndString, sizeof(RankPwndString), "{blue}Beaten {Red}%s{blue}! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrName, WrTime, wrdiff);
 		}
 	}
 	else if(newrank > 5000)
 	{
-		Format(RankString, sizeof(RankString), "{yellow}#%d+ / %d", newrank, RankTotal);
+		FormatEx(RankString, sizeof(RankString), "{yellow}#%d+ / %d", newrank, RankTotal);
 	}
 	else if(NewPersonalRecord || FirstRecord)
 	{
 		bAll = true;
-		Format(RankString, sizeof(RankString), "{yellow}#%d / %d", newrank, RankTotal);
+		FormatEx(RankString, sizeof(RankString), "{yellow}#%d / %d", newrank, RankTotal);
 		
 		if(newrank < currentrank) Format(RankPwndString, sizeof(RankPwndString), "{blue}Beaten {Red}%s{blue}! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrName, WrTime, wrdiff);
 	}	
 	else if(NewPersonalRecord)
 	{
-		Format(RankString, sizeof(RankString), "{orange}#%d / %d", newrank, RankTotal);
+		FormatEx(RankString, sizeof(RankString), "{orange}#%d / %d", newrank, RankTotal);
 		
-		Format(RankPwndString, sizeof(RankPwndString), "You have improved {red}yourself! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrTime, wrdiff);
+		FormatEx(RankPwndString, sizeof(RankPwndString), "You have improved {red}yourself! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrTime, wrdiff);
 	}
 	
 	if(g_Settings[JumpsEnable])
 	{
 		Format(JumpString, sizeof(JumpString), "{blue} and {yellow}%d jumps [%.2f ⁰⁄₀]", jumps, jumpacc);
 	}
-	else Format(JumpString, sizeof(JumpString), "");
 	
 	if(ranked)
 	{

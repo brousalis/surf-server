@@ -9,7 +9,7 @@ public Plugin:myinfo =
 	name = "[Timer] Finish Exec",
 	author = "Zipcore",
 	description = "[Timer] Execute a command on new player record (style based)",
-	version = "1.0",
+	version = PL_VERSION,
 	url = "forums.alliedmods.net/showthread.php?p=2074699"
 }
 
@@ -33,7 +33,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	decl String:name[MAX_NAME_LENGTH];
 	GetClientName(client, name, sizeof(name));
 	
-	Format(buffer, sizeof(buffer), "%s", g_Physics[mode][ModeOnFinishExec]);
+	FormatEx(buffer, sizeof(buffer), "%s", g_Physics[mode][ModeOnFinishExec]);
 	
 	ReplaceString(buffer, sizeof(buffer), "{steamid}", auth, true);
 	ReplaceString(buffer, sizeof(buffer), "{playername}", name, true);

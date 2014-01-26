@@ -131,7 +131,7 @@ public PrepareSound(String: sound[MAX_FILE_LEN])
 {
 	decl String:fileSound[MAX_FILE_LEN];
 
-	Format(fileSound, MAX_FILE_LEN, "sound/%s", sound);
+	FormatEx(fileSound, MAX_FILE_LEN, "sound/%s", sound);
 
 	if (FileExists(fileSound))
 	{
@@ -147,9 +147,9 @@ public PrepareSound(String: sound[MAX_FILE_LEN])
 public Action_OnSettingsChange(Handle:cvar, const String:oldvalue[], const String:newvalue[])
 {
 	if (cvar == Sound_ChallengeStart)
-		Format(SND_CHALLENGE_START, sizeof(SND_CHALLENGE_START) ,"%s", newvalue);
+		FormatEx(SND_CHALLENGE_START, sizeof(SND_CHALLENGE_START) ,"%s", newvalue);
 	else if (cvar == Sound_TimerOwned)
-		Format(SND_TIMER_OWNED, sizeof(SND_TIMER_OWNED) ,"%s", newvalue);
+		FormatEx(SND_TIMER_OWNED, sizeof(SND_TIMER_OWNED) ,"%s", newvalue);
 }
 
 public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
@@ -240,16 +240,16 @@ public Action:Command_Challenge(client, args)
 		
 		SetMenuTitle(menu, "Select bet [you have %d points]", points);
 		
-		new String:buffer[32];
-		Format(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet1]);
+		decl String:buffer[32];
+		FormatEx(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet1]);
 		AddMenuItem(menu, buffer, buffer);
-		Format(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet2]);
+		FormatEx(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet2]);
 		AddMenuItem(menu, buffer, buffer);
-		Format(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet3]);
+		FormatEx(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet3]);
 		AddMenuItem(menu, buffer, buffer);
-		Format(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet4]);
+		FormatEx(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet4]);
 		AddMenuItem(menu, buffer, buffer);
-		Format(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet5]);
+		FormatEx(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet5]);
 		AddMenuItem(menu, buffer, buffer);
 		
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
@@ -323,10 +323,10 @@ Menu_SelectChallengeMate(client)
 			continue;
 		}
 		
-		new String:name2[32];
-		Format(name2, sizeof(name2), "%N [%d points]", i, points);
-		new String:zone2[32];
-		Format(zone2,sizeof(zone2),"%d", i);
+		decl String:name2[32];
+		FormatEx(name2, sizeof(name2), "%N [%d points]", i, points);
+		decl String:zone2[32];
+		FormatEx(zone2,sizeof(zone2),"%d", i);
 		AddMenuItem(menu, zone2, name2);
 		
 		iCount++;
@@ -360,8 +360,8 @@ public MenuHandlerChallenge(Handle:menu, MenuAction:action, creator, param2)
 				}
 				else SetMenuTitle(menu2, "Confirm Challenge with %N for %d pointss.", creator, g_iBet[creator]);
 			
-				new String:name[32];
-				Format(name, sizeof(name),"%d", creator);
+				decl String:name[32];
+				FormatEx(name, sizeof(name),"%d", creator);
 				AddMenuItem(menu2, name, "Yes");
 				AddMenuItem(menu2, "no", "no");
 			
@@ -503,10 +503,10 @@ public Action:Command_Coop(client, args)
 			continue;
 		}
 		
-		new String:name2[32];
-		Format(name2, sizeof(name2), "%N", i);
-		new String:zone2[32];
-		Format(zone2,sizeof(zone2),"%d", i);
+		decl String:name2[32];
+		FormatEx(name2, sizeof(name2), "%N", i);
+		decl String:zone2[32];
+		FormatEx(zone2,sizeof(zone2),"%d", i);
 		AddMenuItem(menu, zone2, name2);
 		
 		iCount++;
@@ -545,8 +545,8 @@ public MenuHandlerCoop(Handle:menu, MenuAction:action, client, param2)
 					SetMenuTitle(menu2, "Confirm Coop-Modus with %N", client);
 					//new bool:isadmin = Client_IsAdmin(client);
 				
-					new String:xclient[32];
-					Format(xclient, sizeof(xclient),"%d", client);
+					decl String:xclient[32];
+					FormatEx(xclient, sizeof(xclient),"%d", client);
 					AddMenuItem(menu2, xclient, "Yes");
 					AddMenuItem(menu2, "no", "no");
 				
@@ -673,10 +673,10 @@ public Action:EndChallenge(client, force)
 		//We have a winner
 		else if(force == 0)
 		{
-			new String:pname[32], String:pname2[32];	
+			decl String:pname[32], String:pname2[32];	
 			
-			Format(pname, sizeof(pname), "%N", client);
-			Format(pname2, sizeof(pname2), "%N", mate);
+			FormatEx(pname, sizeof(pname), "%N", client);
+			FormatEx(pname2, sizeof(pname2), "%N", mate);
 			
 			//Points
 			Timer_AddPoints(client, g_iBet[client]);
@@ -734,10 +734,10 @@ public Action:EndCoop(client, force)
 	
 	if(g_bClientCoop[client] && g_bClientCoop[mate])
 	{
-		new String:pname[32], String:pname2[32];	
+		decl String:pname[32], String:pname2[32];	
 			
-		Format(pname, sizeof(pname), "%N", client);
-		Format(pname2, sizeof(pname2), "%N", mate);
+		FormatEx(pname, sizeof(pname), "%N", client);
+		FormatEx(pname2, sizeof(pname2), "%N", mate);
 			
 		if (force == 1)
 		{

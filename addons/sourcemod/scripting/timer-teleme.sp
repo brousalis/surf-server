@@ -76,14 +76,14 @@ public Action:Command_TeleMe(client, args)
 				continue;
 			}
 			
-			new String:name2[32];
+			decl String:name2[32];
 			if(g_timerMapzones) 
-				Format(name2, sizeof(name2), "%N Stage: %d", i, Timer_GetClientLevel(i));
+				FormatEx(name2, sizeof(name2), "%N Stage: %d", i, Timer_GetClientLevel(i));
 			else 
-				Format(name2, sizeof(name2), "%N", i);
+				FormatEx(name2, sizeof(name2), "%N", i);
 				
-			new String:zone2[32];
-			Format(zone2,sizeof(zone2),"%d", i);
+			decl String:zone2[32];
+			FormatEx(zone2,sizeof(zone2),"%d", i);
 			AddMenuItem(menu, zone2, name2);
 			iCount++;
 		}

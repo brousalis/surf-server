@@ -225,7 +225,7 @@ public OnPluginStart()
 	if(g_bSettingsMenu)
 	{
 		decl String:sFormat[64];
-		Format(sFormat, sizeof(sFormat), "%T", "Menu_Core_Title", LANG_SERVER);
+		FormatEx(sFormat, sizeof(sFormat), "%T", "Menu_Core_Title", LANG_SERVER);
 		SetCookieMenuItem(Menu_Settings, 0, sFormat);
 	}
 
@@ -241,7 +241,7 @@ public Menu_Settings(client, CookieMenuAction:action, any:info, String:buffer[],
 	switch(action)
 	{
 		case CookieMenuAction_DisplayOption:
-			Format(buffer, maxlen, "%t", "Menu_Core_Title", client);
+			FormatEx(buffer, maxlen, "%t", "Menu_Core_Title", client);
 		case CookieMenuAction_SelectOption:
 			CreateSettingsMenu(client);
 	}
@@ -311,7 +311,7 @@ public OnCVarChange(Handle:cvar, const String:oldvalue[], const String:newvalue[
 	}
 	else if(cvar == g_hKickMsg)
 	{
-		Format(g_sKickMsg, sizeof(g_sKickMsg), "%s", newvalue);
+		FormatEx(g_sKickMsg, sizeof(g_sKickMsg), "%s", newvalue);
 	}
 }
 
@@ -395,7 +395,7 @@ public OnClientPostAdminCheck(client)
 		if(!g_bLoadedSQL[client])
 		{
 			decl String:sQuery[192];
-			Format(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
+			FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
 			if(g_iEnabled == 2)
 				PrintToDebug("OnClientPostAdminCheck(%N): Issuing Query `%s`", client, sQuery);
 			SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(client), DBPrio_Low);
@@ -496,7 +496,7 @@ public Action:Command_Say(client, const String:command[], argc)
 			}
 			case cChatTop:
 			{
-				Format(sText, sizeof(sText), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC LIMIT %d", g_iRequiredPoints, g_iLimitTopPlayers);
+				FormatEx(sText, sizeof(sText), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC LIMIT %d", g_iRequiredPoints, g_iLimitTopPlayers);
 				if(g_iEnabled == 2)
 					PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, sText);
 				SQL_TQuery(g_hDatabase, CallBack_Top, sText, GetClientUserId(client));
@@ -513,7 +513,7 @@ public Action:Command_Say(client, const String:command[], argc)
 					CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Rank_Not_Enough", g_iRequiredPoints, g_iCurrentPoints[client]);
 				else
 				{
-					Format(sText, sizeof(sText), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
+					FormatEx(sText, sizeof(sText), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
 					if(g_iEnabled == 2)
 						PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, sText);
 					SQL_TQuery(g_hDatabase, CallBack_Rank, sText, GetClientUserId(client));
@@ -534,7 +534,7 @@ public Action:Command_Say(client, const String:command[], argc)
 					return Plugin_Handled;
 				}
 
-				Format(sText, sizeof(sText), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d AND `auth` != '%s' ORDER BY `points` ASC LIMIT %d", g_iCurrentPoints[client], g_sAuth[client], g_iLimitTopPlayers);
+				FormatEx(sText, sizeof(sText), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d AND `auth` != '%s' ORDER BY `points` ASC LIMIT %d", g_iCurrentPoints[client], g_sAuth[client], g_iLimitTopPlayers);
 				if(g_iEnabled == 2)
 					PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, sText);
 				SQL_TQuery(g_hDatabase, CallBack_Next, sText, GetClientUserId(client));
@@ -552,21 +552,21 @@ CreateCookieMenu(client)
 	decl String:sBuffer[128];
 	new Handle:hMenu = CreateMenu(MenuHandler_CookieMenu);
 
-	Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Title_Cookie", client);
+	FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Title_Cookie", client);
 	SetMenuTitle(hMenu, sBuffer);
 
 	decl String:sSelected[8], String:sUnselected[8];
-	Format(sSelected, sizeof(sSelected), "%T", "Menu_Option_Selected", client);
-	Format(sSelected, sizeof(sSelected), "%T", "Menu_Option_Empty", client);
+	FormatEx(sSelected, sizeof(sSelected), "%T", "Menu_Option_Selected", client);
+	FormatEx(sUnselected, sizeof(sUnselected), "%T", "Menu_Option_Empty", client);
 
 	new iDisplayMethod = (g_iDisplayMethod * -1);
 	if(iDisplayMethod & cDisplayScoreTag)
 	{
 		GetArrayString(g_hCfgArray_DisplayTag, g_iCurrentIndex[client], sBuffer, sizeof(sBuffer));
 		if(!StrEqual(sBuffer, ""))
-			Format(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayScoreTag) ? sSelected : sUnselected, "Menu_Cookie_Option_Tag", client);
+			FormatEx(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayScoreTag) ? sSelected : sUnselected, "Menu_Cookie_Option_Tag", client);
 		else
-			Format(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayScoreTag) ? sSelected : sUnselected, "Menu_Cookie_Option_Tag_Default", client);
+			FormatEx(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayScoreTag) ? sSelected : sUnselected, "Menu_Cookie_Option_Tag_Default", client);
 		AddMenuItem(hMenu, "1", sBuffer);
 	}
 
@@ -574,9 +574,9 @@ CreateCookieMenu(client)
 	{
 		GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[client], sBuffer, sizeof(sBuffer));
 		if(!StrEqual(sBuffer, ""))
-			Format(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayChatTag) ? sSelected : sUnselected, "Menu_Cookie_Option_Chat", client);
+			FormatEx(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayChatTag) ? sSelected : sUnselected, "Menu_Cookie_Option_Chat", client);
 		else
-			Format(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayChatTag) ? sSelected : sUnselected, "Menu_Cookie_Option_Chat_Default", client);
+			FormatEx(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayChatTag) ? sSelected : sUnselected, "Menu_Cookie_Option_Chat_Default", client);
 		AddMenuItem(hMenu, "2", sBuffer);
 	}
 
@@ -584,18 +584,18 @@ CreateCookieMenu(client)
 	{
 		GetArrayString(g_hCfgArray_DisplayColor, g_iCurrentIndex[client], sBuffer, sizeof(sBuffer));
 		if(!StrEqual(sBuffer, ""))
-			Format(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayChatColor) ? sSelected : sUnselected, "Menu_Cookie_Option_Text", client);
+			FormatEx(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayChatColor) ? sSelected : sUnselected, "Menu_Cookie_Option_Text", client);
 		else
-			Format(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayChatColor) ? sSelected : sUnselected, "Menu_Cookie_Option_Text_Default", client);
+			FormatEx(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayChatColor) ? sSelected : sUnselected, "Menu_Cookie_Option_Text_Default", client);
 		AddMenuItem(hMenu, "4", sBuffer);
 	}
 
 	if(iDisplayMethod & cDisplayScoreStars)
 	{
 		if(GetArrayCell(g_hCfgArray_DisplayStars, g_iCurrentIndex[client]))
-			Format(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayScoreStars) ? sSelected : sUnselected, "Menu_Cookie_Option_Stars", client);
+			FormatEx(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayScoreStars) ? sSelected : sUnselected, "Menu_Cookie_Option_Stars", client);
 		else
-			Format(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayScoreStars) ? sSelected : sUnselected, "Menu_Cookie_Option_Stars_Default", client);
+			FormatEx(sBuffer, sizeof(sBuffer), "%s%T", (g_iClientDisplay[client] & cDisplayScoreStars) ? sSelected : sUnselected, "Menu_Cookie_Option_Stars_Default", client);
 		AddMenuItem(hMenu, "8", sBuffer);
 	}
 
@@ -687,7 +687,7 @@ CreateInfoMenu(client, item = 0)
 		return;
 
 	decl String:sBuffer[128], String:sTemp[4];
-	Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Title_Info", client);
+	FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Title_Info", client);
 
 	new Handle:hMenu = CreateMenu(MenuHandler_InfoMenu);
 	SetMenuTitle(hMenu, sBuffer);
@@ -1101,7 +1101,7 @@ public CallBack_Creation(Handle:owner, Handle:hndl, const String:error[], any:da
 		{
 			if(IsClientInGame(i) && !g_bLoadedSQL[i] && g_bAuthed[i] && !IsFakeClient(i))
 			{
-				Format(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[i]);
+				FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[i]);
 				if(g_iEnabled == 2)
 					PrintToDebug("CallBack_Creation(%N): Issuing Query `%s`", i, sQuery);
 				SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(i), DBPrio_Low);
@@ -1134,7 +1134,7 @@ public CallBack_CreateClient(Handle:owner, Handle:hndl, const String:error[], an
 	if(g_iPositionMethod)
 	{
 		decl String:sQuery[192];
-		Format(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
+		FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_CreateClient(%N): Issuing Query `%s`", client, sQuery);
 		SQL_TQuery(g_hDatabase, CallBack_LoadRank, sQuery, userid);
@@ -1198,7 +1198,7 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 	{
 		g_iCurrentPoints[client] = 0;
 
-		Format(sQuery, sizeof(sQuery), "INSERT INTO `ranks` (auth, points, lastname, lastplay) VALUES ('%s', 0, '%s', %d)", g_sAuth[client], sSafeName, GetTime());
+		FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `ranks` (auth, points, lastname, lastplay) VALUES ('%s', 0, '%s', %d)", g_sAuth[client], sSafeName, GetTime());
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_ClientConnect(%N): Issuing Query `%s`", client, sQuery);
 		SQL_TQuery(g_hDatabase, CallBack_CreateClient, sQuery, userid);
@@ -1209,7 +1209,7 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 	}
 	else if(SQL_FetchRow(hndl))
 	{
-		Format(sQuery, sizeof(sQuery), "UPDATE `ranks` SET lastname = '%s', lastplay = %d WHERE auth = '%s'", sSafeName, GetTime(), g_sAuth[client]);
+		FormatEx(sQuery, sizeof(sQuery), "UPDATE `ranks` SET lastname = '%s', lastplay = %d WHERE auth = '%s'", sSafeName, GetTime(), g_sAuth[client]);
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_ClientConnect(%N): Issuing Query `%s`", client, sQuery);
 		SQL_TQuery(g_hDatabase, CallBack_UpdateClient, sQuery, _);
@@ -1218,7 +1218,7 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 
 		if(g_iPositionMethod)
 		{
-			Format(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
+			FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
 			if(g_iEnabled == 2)
 				PrintToDebug("CallBack_ClientConnect(%N): Issuing Query `%s`", client, sQuery);
 			SQL_TQuery(g_hDatabase, CallBack_LoadRank, sQuery, userid);
@@ -1260,7 +1260,7 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 
 	if(g_iLimitCompletions)
 	{
-		Format(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `round` WHERE `map` = '%s' AND `auth` = '%s' GROUP BY 'map'", g_sCurrentMap, g_sAuth[client]);
+		FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `round` WHERE `map` = '%s' AND `auth` = '%s' GROUP BY 'map'", g_sCurrentMap, g_sAuth[client]);
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_ClientConnect(%N): Issuing Query `%s`", client, sQuery);
 		SQL_TQuery(g_hDatabase, CallBack_LoadCompletions, sQuery, userid);
@@ -1379,7 +1379,7 @@ CreateTopMenu(client, Handle:pack)
 	decl String:sBuffer[128], String:sName[32];
 	new Handle:hMenu = CreateMenu(MenuHandler_MenuTopPlayers);
 
-	Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Title_Top", client, g_iLimitTopPlayers);
+	FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Title_Top", client, g_iLimitTopPlayers);
 	SetMenuTitle(hMenu, sBuffer);
 	if(g_iLimitTopPerPage)
 		SetMenuPagination(hMenu, g_iLimitTopPerPage);
@@ -1393,7 +1393,7 @@ CreateTopMenu(client, Handle:pack)
 		ReadPackString(pack, sName, sizeof(sName));
 		new iPoints = ReadPackCell(pack);
 
-		Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Top_Option", client, sName, iPoints, i + 1);
+		FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Top_Option", client, sName, iPoints, i + 1);
 		AddMenuItem(hMenu, "", sBuffer, ITEMDRAW_DISABLED);
 	}
 	CloseHandle(pack);
@@ -1446,7 +1446,7 @@ CreateNextMenu(client, Handle:pack)
 	decl String:sBuffer[128], String:sName[32];
 	new Handle:hMenu = CreateMenu(MenuHandler_MenuNextPlayers);
 
-	Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Title_Next", client, g_iLimitTopPlayers);
+	FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Title_Next", client, g_iLimitTopPlayers);
 	SetMenuTitle(hMenu, sBuffer);
 	if(g_iLimitTopPerPage)
 		SetMenuPagination(hMenu, g_iLimitTopPerPage);
@@ -1460,7 +1460,7 @@ CreateNextMenu(client, Handle:pack)
 		ReadPackString(pack, sName, sizeof(sName));
 		new iPoints = ReadPackCell(pack);
 
-		Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Next_Option", client, sName, iPoints, g_iLimitTopPlayers - i);
+		FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Next_Option", client, sName, iPoints, g_iLimitTopPlayers - i);
 
 		if(i == 0)
 			AddMenuItem(hMenu, "", sBuffer, ITEMDRAW_DISABLED);
@@ -1476,27 +1476,27 @@ CreateSettingsMenu(client)
 	decl String:sBuffer[128];
 	new Handle:hMenu = CreateMenu(MenuHandler_SettingsMenu);
 
-	Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Title", client);
+	FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Title", client);
 	SetMenuTitle(hMenu, sBuffer);
 
 	if(g_iDisplayMethod < 0 && g_hDisplayCookie != INVALID_HANDLE && g_iCurrentIndex[client] != -1)
 	{
-		Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Cookie", client);
+		FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Cookie", client);
 		AddMenuItem(hMenu, "1", sBuffer);
 	}
 
-	Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Top", client);
+	FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Top", client);
 	AddMenuItem(hMenu, "2", sBuffer);
 
-	Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Rank", client);
+	FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Rank", client);
 	AddMenuItem(hMenu, "3", sBuffer);
 
-	Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Next", client);
+	FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Next", client);
 	AddMenuItem(hMenu, "4", sBuffer);
 
 	if(g_iDisplayMethod != 0)
 	{
-		Format(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Positions", client);
+		FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Positions", client);
 		AddMenuItem(hMenu, "5", sBuffer);
 	}
 
@@ -1531,7 +1531,7 @@ public MenuHandler_SettingsMenu(Handle:menu, MenuAction:action, param1, param2)
 				case 2:
 				{
 					decl String:sQuery[192];
-					Format(sQuery, sizeof(sQuery), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC LIMIT %d", g_iRequiredPoints, g_iLimitTopPlayers);
+					FormatEx(sQuery, sizeof(sQuery), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC LIMIT %d", g_iRequiredPoints, g_iLimitTopPlayers);
 					if(g_iEnabled == 2)
 						PrintToDebug("Command_Say(%N): Issuing Query `%s`", param1, sQuery);
 					SQL_TQuery(g_hDatabase, CallBack_Top, sQuery, GetClientUserId(param1));
@@ -1549,7 +1549,7 @@ public MenuHandler_SettingsMenu(Handle:menu, MenuAction:action, param1, param2)
 					else
 					{
 						decl String:sQuery[192];
-						Format(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[param1]);
+						FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[param1]);
 						if(g_iEnabled == 2)
 							PrintToDebug("Command_Say(%N): Issuing Query `%s`", param1, sQuery);
 						SQL_TQuery(g_hDatabase, CallBack_Rank, sQuery, GetClientUserId(param1));
@@ -1566,7 +1566,7 @@ public MenuHandler_SettingsMenu(Handle:menu, MenuAction:action, param1, param2)
 					}
 
 					decl String:sQuery[192];
-					Format(sQuery, sizeof(sQuery), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d AND `auth` != '%s' ORDER BY `points` ASC LIMIT %d", g_iCurrentPoints[param1], g_sAuth[param1], g_iLimitTopPlayers);
+					FormatEx(sQuery, sizeof(sQuery), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d AND `auth` != '%s' ORDER BY `points` ASC LIMIT %d", g_iCurrentPoints[param1], g_sAuth[param1], g_iLimitTopPlayers);
 					if(g_iEnabled == 2)
 						PrintToDebug("Command_Say(%N): Issuing Query `%s`", param1, sQuery);
 					SQL_TQuery(g_hDatabase, CallBack_Next, sQuery, GetClientUserId(param1));
@@ -1669,7 +1669,7 @@ public Action:Command_SetRankPoints(client, args)
 		WritePackString(hPack, sAuth);
 		WritePackCell(hPack, iPoints);
 
-		Format(sText, sizeof(sText), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", sAuth);
+		FormatEx(sText, sizeof(sText), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", sAuth);
 		if(g_iEnabled == 2)
 			PrintToDebug("Command_SetRankPoints(%N): Issuing Query `%s`", client, sText);
 		SQL_TQuery(g_hDatabase, CallBack_CommandSetRankPoints, sText, hPack);
@@ -1697,7 +1697,7 @@ public CallBack_CommandSetRankPoints(Handle:owner, Handle:hndl, const String:err
 		PrintToAdmins("(Notice) Auth '%s' now has a total of %d points.", sAuth, iPoints);
 
 		decl String:sQuery[192];
-		Format(sQuery, sizeof(sQuery), "UPDATE `ranks` SET `points` = %d WHERE `auth` = '%s'", iPoints, sAuth);
+		FormatEx(sQuery, sizeof(sQuery), "UPDATE `ranks` SET `points` = %d WHERE `auth` = '%s'", iPoints, sAuth);
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_CommandSetRankPoints(): Issuing Query `%s`", sQuery);
 		SQL_TQuery(g_hDatabase, CallBack_UpdateClient, sQuery, _);
@@ -1744,7 +1744,7 @@ public Action:Command_ChangeRankPoints(client, args)
 		WritePackString(hPack, sAuth);
 		WritePackCell(hPack, iPoints);
 
-		Format(sText, sizeof(sText), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", sAuth);
+		FormatEx(sText, sizeof(sText), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", sAuth);
 		if(g_iEnabled == 2)
 			PrintToDebug("Command_ChangeRankPoints(): Issuing Query `%s`", sText);
 		SQL_TQuery(g_hDatabase, CallBack_CommandChangeRankPoints, sText, hPack);
@@ -1773,7 +1773,7 @@ public CallBack_CommandChangeRankPoints(Handle:owner, Handle:hndl, const String:
 		PrintToAdmins("(Notice) Auth '%s' has been assigned %d points.", sAuth, iPoints);
 
 		decl String:sQuery[192];
-		Format(sQuery, sizeof(sQuery), "UPDATE `ranks` SET `points` = %d WHERE `auth` = '%s'", (iCurrent + iPoints), sAuth);
+		FormatEx(sQuery, sizeof(sQuery), "UPDATE `ranks` SET `points` = %d WHERE `auth` = '%s'", (iCurrent + iPoints), sAuth);
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_CommandChangeRankPoints(): Issuing Query `%s`", sQuery);
 		SQL_TQuery(g_hDatabase, CallBack_UpdateClient, sQuery, _);
@@ -1806,7 +1806,7 @@ public Action:Command_ListRanks(client, args)
 	if(g_hDatabase != INVALID_HANDLE && !g_bInitalizing)
 	{
 		decl String:sQuery[128];
-		Format(sQuery, sizeof(sQuery), "SELECT `lastname`,`points` FROM `ranks` ORDER BY `points` DESC");
+		FormatEx(sQuery, sizeof(sQuery), "SELECT `lastname`,`points` FROM `ranks` ORDER BY `points` DESC");
 		if(g_iEnabled == 2)
 			PrintToDebug("Command_ListRanks(%N): Issuing Query `%s`", client, sQuery);
 		SQL_TQuery(g_hDatabase, CallBack_CommandListRanks, sQuery, client ? GetClientUserId(client) : 0);
@@ -1845,7 +1845,7 @@ public CallBack_CommandListRanks(Handle:owner, Handle:hndl, const String:error[]
 			ReplyToCommand(iClient, "(#%d) %s, %d Points", iIndex, sName, iPoints);
 		else
 		{
-			Format(sBuffer, sizeof(sBuffer), "(#%d) %s, %d Points", iIndex, sName, iPoints);
+			FormatEx(sBuffer, sizeof(sBuffer), "(#%d) %s, %d Points", iIndex, sName, iPoints);
 			AddMenuItem(hMenu, "", sBuffer, ITEMDRAW_DISABLED);
 		}
 	}
@@ -2130,7 +2130,7 @@ public Action:Command_PrintRanks(args)
 
 		g_iCurrentDebug = (g_iTotalPlayers > 500) ? 500 : g_iTotalPlayers;
 		decl String:sPlayerQuery[256];
-		Format(sPlayerQuery, sizeof(sPlayerQuery), "SELECT `lastname`,`auth`,`points` FROM `ranks` ORDER BY `points` DESC LIMIT %d,%d", 0, g_iCurrentDebug);
+		FormatEx(sPlayerQuery, sizeof(sPlayerQuery), "SELECT `lastname`,`auth`,`points` FROM `ranks` ORDER BY `points` DESC LIMIT %d,%d", 0, g_iCurrentDebug);
 		SQL_TQuery(g_hDatabase, CallBack_DebugPrintPlayers, sPlayerQuery, 0);
 	}
 
@@ -2197,7 +2197,7 @@ public CallBack_DebugPrintPlayers(Handle:owner, Handle:hndl, const String:error[
 		g_iCurrentDebug = g_iTotalPlayers;
 
 	decl String:sPlayerQuery[256];
-	Format(sPlayerQuery, sizeof(sPlayerQuery), "SELECT `lastname`,`auth`,`points` FROM `ranks` ORDER BY `points` DESC LIMIT %d,%d", iStart, g_iCurrentDebug);
+	FormatEx(sPlayerQuery, sizeof(sPlayerQuery), "SELECT `lastname`,`auth`,`points` FROM `ranks` ORDER BY `points` DESC LIMIT %d,%d", iStart, g_iCurrentDebug);
 	SQL_TQuery(g_hDatabase, CallBack_DebugPrintPlayers, sPlayerQuery, iStart);
 }
 
@@ -2218,7 +2218,7 @@ public Action:Timer_AuthClient(Handle:timer, any:userid)
 			if(!g_bLoadedSQL[client])
 			{
 				decl String:sQuery[192];
-				Format(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
+				FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
 				SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(client));
 			}
 
@@ -2366,14 +2366,14 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 SavePoints(client)
 {
 	decl String:sQuery[192];
-	Format(sQuery, sizeof(sQuery), "UPDATE `ranks` SET `points` = %d WHERE `auth` = '%s'", g_iCurrentPoints[client], g_sAuth[client]);
+	FormatEx(sQuery, sizeof(sQuery), "UPDATE `ranks` SET `points` = %d WHERE `auth` = '%s'", g_iCurrentPoints[client], g_sAuth[client]);
 	if(g_iEnabled == 2)
 		PrintToDebug("OnFinishRound(%N): Issuing Query `%s`", client, sQuery);
 	SQL_TQuery(g_hDatabase, CallBack_UpdateClient, sQuery, GetClientUserId(client), DBPrio_High);
 
 	if(g_iPositionMethod)
 	{
-		Format(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
+		FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
 		if(g_iEnabled == 2)
 			PrintToDebug("OnFinishRound(%N): Issuing Query `%s`", client, sQuery);
 		SQL_TQuery(g_hDatabase, CallBack_LoadRank, sQuery, GetClientUserId(client));
@@ -2707,11 +2707,11 @@ public Action:Timer_PrepareKick(Handle:timer, any:serial)
 		return Plugin_Stop;
 	}
 	
-	new String:sRank[32];
-	Format(sRank, sizeof(sRank), "%d", g_iConnectTopOnly);
+	decl String:sRank[32];
+	FormatEx(sRank, sizeof(sRank), "%d", g_iConnectTopOnly);
 	
-	new String:buffer[512];
-	Format(buffer, sizeof(buffer), "%s", g_sKickMsg);
+	decl String:buffer[512];
+	FormatEx(buffer, sizeof(buffer), "%s", g_sKickMsg);
 	
 	ReplaceString(buffer, sizeof(buffer), "{rank}", sRank, true);
 	

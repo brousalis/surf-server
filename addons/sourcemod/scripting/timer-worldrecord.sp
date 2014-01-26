@@ -297,7 +297,7 @@ public Action:Command_DeletePlayerRecord_All(client, args)
 	GetCmdArgString(auth, sizeof(auth));
 
 	decl String:query[512];
-	Format(query, sizeof(query), "DELETE FROM round WHERE auth = '%s'", auth);
+	FormatEx(query, sizeof(query), "DELETE FROM round WHERE auth = '%s'", auth);
 
 	SQL_TQuery(g_hSQL, DeleteRecordsCallback, query, _, DBPrio_Normal);
 	
@@ -316,7 +316,7 @@ public Action:Command_DeletePlayerRecord_Map(client, args)
 	GetCmdArgString(auth, sizeof(auth));
 
 	decl String:query[512];
-	Format(query, sizeof(query), "DELETE FROM round WHERE auth = '%s' AND map = '%s'", auth, g_currentMap);
+	FormatEx(query, sizeof(query), "DELETE FROM round WHERE auth = '%s' AND map = '%s'", auth, g_currentMap);
 
 	SQL_TQuery(g_hSQL, DeleteRecordsCallback, query, _, DBPrio_Normal);
 	
@@ -335,7 +335,7 @@ public Action:Command_DeletePlayerRecord_ID(client, args)
 	GetCmdArgString(id, sizeof(id));
 
 	decl String:query[512];
-	Format(query, sizeof(query), "DELETE FROM round WHERE id = '%s'", id);
+	FormatEx(query, sizeof(query), "DELETE FROM round WHERE id = '%s'", id);
 
 	SQL_TQuery(g_hSQL, DeleteRecordsCallback, query, _, DBPrio_Normal);
 	
@@ -354,7 +354,7 @@ public Action:Command_DeleteMapRecords_All(client, args)
 	GetCmdArgString(mapname, sizeof(mapname));
 
 	decl String:query[512];
-	Format(query, sizeof(query), "DELETE FROM round WHERE map = '%s'", mapname);
+	FormatEx(query, sizeof(query), "DELETE FROM round WHERE map = '%s'", mapname);
 
 	SQL_TQuery(g_hSQL, DeleteRecordsCallback, query, _, DBPrio_Normal);
 	
@@ -416,9 +416,9 @@ public AdminMenu_CategoryHandler(Handle:topmenu,
 			maxlength)
 {
 	if (action == TopMenuAction_DisplayTitle) {
-		Format(buffer, maxlength, "%t", "Timer Management");
+		FormatEx(buffer, maxlength, "%t", "Timer Management");
 	} else if (action == TopMenuAction_DisplayOption) {
-		Format(buffer, maxlength, "%t", "Timer Management");
+		FormatEx(buffer, maxlength, "%t", "Timer Management");
 	}
 }
 
@@ -430,7 +430,7 @@ public AdminMenu_DeleteMapRecords(Handle:topmenu,
 			maxlength)
 {
 	if (action == TopMenuAction_DisplayOption) {
-		Format(buffer, maxlength, "%t", "Delete Map Records");
+		FormatEx(buffer, maxlength, "%t", "Delete Map Records");
 	} else if (action == TopMenuAction_SelectOption) {
 		decl String:map[32];
 		GetCurrentMap(map, sizeof(map));
@@ -487,7 +487,7 @@ public AdminMenu_DeleteRecord(Handle:topmenu,
 {
 	if (action == TopMenuAction_DisplayOption) 
 	{
-		Format(buffer, maxlength, "%t", "Delete Player Record");
+		FormatEx(buffer, maxlength, "%t", "Delete Player Record");
 	} else if (action == TopMenuAction_SelectOption) 
 	{
 		if(g_Settings[MultimodeEnable]) CreateAdminModeSelection(client);
@@ -510,10 +510,10 @@ CreateAdminModeSelection(client)
 			continue;
 		
 		decl String:text[92];
-		Format(text, sizeof(text), "%s", g_Physics[i][ModeName]);
+		FormatEx(text, sizeof(text), "%s", g_Physics[i][ModeName]);
 		
 		decl String:text2[32];
-		Format(text2, sizeof(text2), "%d", i);
+		FormatEx(text2, sizeof(text2), "%d", i);
 		
 		AddMenuItem(menu, text2, text);
 		items++;
@@ -586,13 +586,13 @@ CreateAdminRecordSelection(client, mode, bonus)
 			continue;
 		
 		decl String:text[92];
-		Format(text, sizeof(text), "%s - %s", g_cache[mode][bonus][cache][TimeString], g_cache[mode][bonus][cache][Name]);
+		FormatEx(text, sizeof(text), "%s - %s", g_cache[mode][bonus][cache][TimeString], g_cache[mode][bonus][cache][Name]);
 		
 		if (g_Settings[JumpsEnable])
 			Format(text, sizeof(text), "%s (%d %T)", text, g_cache[mode][bonus][cache][Jumps], "Jumps", client);
 
 		decl String:text2[32];
-		Format(text2, sizeof(text2), "%d", g_cache[mode][bonus][cache][Id]);
+		FormatEx(text2, sizeof(text2), "%d", g_cache[mode][bonus][cache][Id]);
 		AddMenuItem(menu, text2, text);
 		items++;
 	}
@@ -618,7 +618,7 @@ public MenuHandler_SelectPlayer(Handle:menu, MenuAction:action, client, itemNum)
 		GetMenuItem(menu, itemNum, info, sizeof(info));
 		
 		decl String:query[512];
-		Format(query, sizeof(query), "DELETE FROM `round` WHERE id = '%s'", info);
+		FormatEx(query, sizeof(query), "DELETE FROM `round` WHERE id = '%s'", info);
 
 		SQL_TQuery(g_hSQL, DeletePlayersRecordCallback, query, client, DBPrio_Normal);
 		
@@ -641,7 +641,7 @@ public DeletePlayersRecordCallback(Handle:owner, Handle:hndl, const String:error
 DeleteMapRecords(const String:map[]) 
 {
 	decl String:query[128];
-	Format(query, sizeof(query), "DELETE FROM `round` WHERE map = '%s'", map);	
+	FormatEx(query, sizeof(query), "DELETE FROM `round` WHERE map = '%s'", map);	
 
 	SQL_TQuery(g_hSQL, DeleteRecordsCallback, query, _, DBPrio_Normal);
 }
@@ -665,20 +665,20 @@ RefreshCache()
 			g_cacheLoaded[mode][1] = false;
 			g_cacheLoaded[mode][2] = false;
 			decl String:query[512];
-			Format(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_NORMAL, MAX_CACHE);	
+			FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_NORMAL, MAX_CACHE);	
 			
 			SQL_TQuery(g_hSQL, RefreshCacheCallback, query, mode, DBPrio_Low);
 			
 			if(g_Settings[BonusWrEnable])
 			{
-				Format(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_BONUS, MAX_CACHE);	
+				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_BONUS, MAX_CACHE);	
 				
 				SQL_TQuery(g_hSQL, RefreshBonusCacheCallback, query, mode, DBPrio_Low);
 			}
 			
 			if(g_Settings[ShortWrEnable])
 			{
-				Format(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_SHORT, MAX_CACHE);	
+				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_SHORT, MAX_CACHE);	
 				
 				SQL_TQuery(g_hSQL, RefreshShortCacheCallback, query, mode, DBPrio_Low);
 			}
@@ -702,10 +702,10 @@ ClearCache()
 				
 				g_cache[mode][bonus][cache][Ignored] = true;
 				
-				Format(g_cache[mode][bonus][cache][Name], 32, "");
-				Format(g_cache[mode][bonus][cache][TimeString], 16, "");
-				Format(g_cache[mode][bonus][cache][Date], 32, "");
-				Format(g_cache[mode][bonus][cache][Auth], 32, "");
+				FormatEx(g_cache[mode][bonus][cache][Name], 32, "");
+				FormatEx(g_cache[mode][bonus][cache][TimeString], 16, "");
+				FormatEx(g_cache[mode][bonus][cache][Date], 32, "");
+				FormatEx(g_cache[mode][bonus][cache][Auth], 32, "");
 				
 				g_cache[mode][bonus][cache][Time] = 0.0;
 				g_cache[mode][bonus][cache][FinishCount] = 0;
@@ -802,8 +802,8 @@ CollectBestCache(bonus, any:mode)
 	g_cachestats[mode][bonus][RecordStatsCount] = 0;
 	g_cachestats[mode][bonus][RecordStatsID] = 0;
 	g_cachestats[mode][bonus][RecordStatsBestTime] = 0.0;
-	Format(g_cachestats[mode][bonus][RecordStatsName], 32, "");
-	Format(g_cachestats[mode][bonus][RecordStatsBestTimeString], 32, "");
+	FormatEx(g_cachestats[mode][bonus][RecordStatsName], 32, "");
+	FormatEx(g_cachestats[mode][bonus][RecordStatsBestTimeString], 32, "");
 	
 	for (new i = 0; i < g_cacheCount[mode][bonus]; i++)
 	{
@@ -816,8 +816,8 @@ CollectBestCache(bonus, any:mode)
 		{
 			g_cachestats[mode][bonus][RecordStatsID] = g_cache[mode][bonus][i][Id];
 			g_cachestats[mode][bonus][RecordStatsBestTime] = g_cache[mode][bonus][i][Time];
-			Format(g_cachestats[mode][bonus][RecordStatsBestTimeString], 32, "%s", g_cache[mode][bonus][i][TimeString]);
-			Format(g_cachestats[mode][bonus][RecordStatsName], 32, "%s", g_cache[mode][bonus][i][Name]);
+			FormatEx(g_cachestats[mode][bonus][RecordStatsBestTimeString], 32, "%s", g_cache[mode][bonus][i][TimeString]);
+			FormatEx(g_cachestats[mode][bonus][RecordStatsName], 32, "%s", g_cache[mode][bonus][i][Name]);
 		}
 	}
 }
@@ -1123,7 +1123,7 @@ CreateWRMenu(client, mode, bonus)
 			IntToString(g_cache[mode][bonus][cache][Id], id, sizeof(id));
 			
 			decl String:text[92];
-			Format(text, sizeof(text), "#%d | %s - %s", cache+1, g_cache[mode][bonus][cache][Name], g_cache[mode][bonus][cache][TimeString]);
+			FormatEx(text, sizeof(text), "#%d | %s - %s", cache+1, g_cache[mode][bonus][cache][Name], g_cache[mode][bonus][cache][TimeString]);
 			
 			if (g_Settings[JumpsEnable])
 				Format(text, sizeof(text), "%s (%d jumps)", text, g_cache[mode][bonus][cache][Jumps]);
@@ -1259,38 +1259,38 @@ CreatePlayerInfoMenu(client, id, bonus)
 
 			SetMenuTitle(menu, "Record Info [ID: %d]\n \n", id);
 
-			Format(text, sizeof(text), "Date: %s", g_cache[mode][bonus][cache][Date]);
+			FormatEx(text, sizeof(text), "Date: %s", g_cache[mode][bonus][cache][Date]);
 			AddMenuItem(menu, difficulty, text);
 			
-			Format(text, sizeof(text), "Player: %s (%s)", g_cache[mode][bonus][cache][Name], g_cache[mode][bonus][cache][Auth]);
+			FormatEx(text, sizeof(text), "Player: %s (%s)", g_cache[mode][bonus][cache][Name], g_cache[mode][bonus][cache][Auth]);
 			AddMenuItem(menu, difficulty, text);
 
-			Format(text, sizeof(text), "Rank: #%d (#%d) [FC: %d]", cache + 1, g_cache[mode][bonus][cache][CurrentRank], g_cache[mode][bonus][cache][FinishCount]);
+			FormatEx(text, sizeof(text), "Rank: #%d (#%d) [FC: %d]", cache + 1, g_cache[mode][bonus][cache][CurrentRank], g_cache[mode][bonus][cache][FinishCount]);
 			AddMenuItem(menu, difficulty, text);
 
-			Format(text, sizeof(text), "Time: %s", g_cache[mode][bonus][cache][TimeString]);
+			FormatEx(text, sizeof(text), "Time: %s", g_cache[mode][bonus][cache][TimeString]);
 			AddMenuItem(menu, difficulty, text);
 			
-			Format(text, sizeof(text), "Speed [Avg: %.2f | Max: %.2f | Fin: %.2f]", g_cache[mode][bonus][cache][AvgSpeed], g_cache[mode][bonus][cache][MaxSpeed], g_cache[mode][bonus][cache][FinishSpeed]);
+			FormatEx(text, sizeof(text), "Speed [Avg: %.2f | Max: %.2f | Fin: %.2f]", g_cache[mode][bonus][cache][AvgSpeed], g_cache[mode][bonus][cache][MaxSpeed], g_cache[mode][bonus][cache][FinishSpeed]);
 			AddMenuItem(menu, difficulty, text);
 			
 			if (g_Settings[JumpsEnable])
 			{
-				Format(text, sizeof(text), "Jumps: %d", g_cache[mode][bonus][cache][Jumps]);
+				FormatEx(text, sizeof(text), "Jumps: %d", g_cache[mode][bonus][cache][Jumps]);
 				Format(text, sizeof(text), "%s [%.2f ⁰⁄₀]", text, g_cache[mode][bonus][cache][JumpAcc]);
 				AddMenuItem(menu, difficulty, text);
 			}
 			
 			if (g_Settings[StrafesEnable])
 			{
-				Format(text, sizeof(text), "Strafes: %d", g_cache[mode][bonus][cache][Strafes]);
+				FormatEx(text, sizeof(text), "Strafes: %d", g_cache[mode][bonus][cache][Strafes]);
 				Format(text, sizeof(text), "%s [%.2f ⁰⁄₀]", text, g_cache[mode][bonus][cache][StrafeAcc]);
 				AddMenuItem(menu, difficulty, text);
 			}
 			
 			if (g_Settings[MultimodeEnable])
 			{
-				Format(text, sizeof(text), "%Mode: %s", g_Physics[mode][ModeName]);
+				FormatEx(text, sizeof(text), "%Mode: %s", g_Physics[mode][ModeName]);
 				AddMenuItem(menu, difficulty, text);
 			}			
 
@@ -1307,7 +1307,7 @@ CreateDeleteMenu(client, target, String:targetmap[64], ignored = -1)
 {	
 	decl String:buffer[128];
 	if(ignored != -1) 
-		Format(buffer, sizeof(buffer), " AND NOT id = '%d'", ignored);
+		FormatEx(buffer, sizeof(buffer), " AND NOT id = '%d'", ignored);
 	
 	if (g_hSQL == INVALID_HANDLE)
 	{
@@ -1319,7 +1319,7 @@ CreateDeleteMenu(client, target, String:targetmap[64], ignored = -1)
 		GetClientAuthString(target, auth, sizeof(auth));
 			
 		decl String:query[512];
-		Format(query, sizeof(query), "SELECT id, time, jumps, physicsdifficulty, auth FROM `round` WHERE map = '%s' AND auth = '%s'%s ORDER BY physicsdifficulty, time, jumps", targetmap, auth, buffer);	
+		FormatEx(query, sizeof(query), "SELECT id, time, jumps, physicsdifficulty, auth FROM `round` WHERE map = '%s' AND auth = '%s'%s ORDER BY physicsdifficulty, time, jumps", targetmap, auth, buffer);	
 		
 		g_deleteMenuSelection[client] = target;
 		SQL_TQuery(g_hSQL, CreateDeleteMenuCallback, query, client, DBPrio_Normal);
@@ -1328,9 +1328,9 @@ CreateDeleteMenu(client, target, String:targetmap[64], ignored = -1)
 	{
 		decl String:auth[32];
 		GetClientAuthString(target, auth, sizeof(auth));
-			
+		
 		decl String:query[512];
-		Format(query, sizeof(query), "SELECT id, time, jumps, physicsdifficulty, auth FROM `round` WHERE map = '%s' AND auth = '%s'%s ORDER BY physicsdifficulty, time, jumps", targetmap, auth, buffer);	
+		FormatEx(query, sizeof(query), "SELECT id, time, jumps, physicsdifficulty, auth FROM `round` WHERE map = '%s' AND auth = '%s'%s ORDER BY physicsdifficulty, time, jumps", targetmap, auth, buffer);	
 		
 		g_deleteMenuSelection[client] = target;
 		SQL_TQuery(g_hSQL, CreateDeleteMenuCallback, query, client, DBPrio_Normal);
@@ -1371,7 +1371,7 @@ public CreateDeleteMenuCallback(Handle:owner, Handle:hndl, const String:error[],
 		Timer_SecondsToTime(SQL_FetchFloat(hndl, 1), time, sizeof(time), 3);
 		
 		decl String:value[92];
-		Format(value, sizeof(value), "%s %s", time, g_Physics[SQL_FetchInt(hndl, 3)][ModeName]);
+		FormatEx(value, sizeof(value), "%s %s", time, g_Physics[SQL_FetchInt(hndl, 3)][ModeName]);
 		
 		if (g_Settings[JumpsEnable])
 			Format(value, sizeof(value), "%s %T: %d", value, "Jumps", client, SQL_FetchInt(hndl, 2));
@@ -1399,7 +1399,7 @@ public MenuHandler_DeleteRecord(Handle:menu, MenuAction:action, client, itemNum)
 		CreateDeleteMenu(client, g_deleteMenuSelection[client], g_currentMap, StringToInt(info));
 		
 		decl String:query[384];
-		Format(query, sizeof(query), "DELETE FROM `round` WHERE id = %s", info);	
+		FormatEx(query, sizeof(query), "DELETE FROM `round` WHERE id = %s", info);	
 
 		SQL_TQuery(g_hSQL, DeleteRecordCallback, query, client, DBPrio_Normal);
 	}
@@ -1523,7 +1523,7 @@ public Native_SetCacheMapName(Handle:plugin, numParams)
 	
 	GetNativeString(1, buffer, nlen);
 	
-	Format(g_currentMap, sizeof(g_currentMap), "%s", buffer);
+	FormatEx(g_currentMap, sizeof(g_currentMap), "%s", buffer);
 	
 	RefreshCache();
 	
@@ -1553,8 +1553,8 @@ public Native_GetRecordHolderName(Handle:plugin, numParams)
 
 	if(rank > 0 && bonus >= 0)
 	{
-		new String:buffer[nlen];
-		Format(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Name]);
+		decl String:buffer[nlen];
+		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Name]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
@@ -1574,8 +1574,8 @@ public Native_GetRecordDate(Handle:plugin, numParams)
 
 	if(rank > 0 && bonus >= 0)
 	{
-		new String:buffer[nlen];
-		Format(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Date]);
+		decl String:buffer[nlen];
+		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Date]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
@@ -1610,8 +1610,8 @@ public Native_GetRecordTimeInfo(Handle:plugin, numParams)
 	{
 		SetNativeCellRef(4, g_cache[mode][bonus][rank-1][Time]);
 		
-		new String:buffer[nlen];
-		Format(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][TimeString]);
+		decl String:buffer[nlen];
+		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][TimeString]);
 		
 		if (SetNativeString(5, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
@@ -1665,8 +1665,8 @@ public Native_GetReplayPath(Handle:plugin, numParams)
 
 	if(rank > 0 && bonus >= 0)
 	{
-		new String:buffer[nlen];
-		Format(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][ReplayPath]);
+		decl String:buffer[nlen];
+		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][ReplayPath]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
@@ -1686,8 +1686,8 @@ public Native_GetCustom1(Handle:plugin, numParams)
 
 	if(rank > 0 && bonus >= 0)
 	{
-		new String:buffer[nlen];
-		Format(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom1]);
+		decl String:buffer[nlen];
+		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom1]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
@@ -1707,8 +1707,8 @@ public Native_GetCustom2(Handle:plugin, numParams)
 
 	if(rank > 0 && bonus >= 0)
 	{
-		new String:buffer[nlen];
-		Format(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom2]);
+		decl String:buffer[nlen];
+		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom2]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
@@ -1729,12 +1729,11 @@ public Native_GetCustom3(Handle:plugin, numParams)
 
 	if(rank > 0 && bonus >= 0)
 	{
-		new String:buffer[nlen];
-		Format(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom3]);
+		decl String:buffer[nlen];
+		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom3]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
 	
 	return false;
 }
-

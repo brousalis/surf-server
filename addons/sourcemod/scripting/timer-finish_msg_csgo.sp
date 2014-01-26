@@ -36,7 +36,6 @@ public OnPluginStart()
 
 public OnLibraryAdded(const String:name[])
 {
-
 	if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = true;
@@ -93,14 +92,16 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	new bool:NewWorldRecord = false;
 	new bool:FirstRecord = false;
 	
-	new bool:ranked;
-	if(g_timerPhysics) ranked = bool:Timer_IsModeRanked(mode);
+	new bool:ranked, Float:jumpacc;
+	if(g_timerPhysics) 
+	{
+		ranked = bool:Timer_IsModeRanked(mode);
+		Timer_GetJumpAccuracy(client, jumpacc);
+	}
 	
 	new strafes;
 	if(g_timerStrafes)  strafes = Timer_GetStrafeCount(client);
-	
-	new Float:jumpacc;
-	if(g_timerPhysics) Timer_GetJumpAccuracy(client, jumpacc);
+
 	
 	new bool:enabled = false;
 	new jumps = 0;
@@ -119,17 +120,17 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 			{
 				LastTime *= -1.0;
 				Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-				Format(TimeDiff, sizeof(TimeDiff), "+%s", buffer);
+				FormatEx(TimeDiff, sizeof(TimeDiff), "+%s", buffer);
 			}
 			else if(LastTime > 0.0)
 			{
 				Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-				Format(TimeDiff, sizeof(TimeDiff), "-%s", buffer);
+				FormatEx(TimeDiff, sizeof(TimeDiff), "-%s", buffer);
 			}
 			else if(LastTime == 0.0)
 			{
 				Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-				Format(TimeDiff, sizeof(TimeDiff), "%s", buffer);
+				FormatEx(TimeDiff, sizeof(TimeDiff), "%s", buffer);
 			}
 		}
 		else
@@ -138,26 +139,25 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 			FirstRecord = true;
 			LastTime = 0.0;
 			Timer_SecondsToTime(LastTime, buffer, sizeof(buffer), 3);
-			Format(TimeDiff, sizeof(TimeDiff), "%s", buffer);
+			FormatEx(TimeDiff, sizeof(TimeDiff), "%s", buffer);
 			RankTotal++;
 		}
 	}
 	
 	decl String:TimeString[32];
-	Format(TimeString, sizeof(TimeString), "");
 	Timer_SecondsToTime(time, TimeString, sizeof(TimeString), 2);
 	
-	decl String:WrName[32];
-	Format(WrName, sizeof(WrName), "");
-	decl String:WrTime[32];
-	Format(WrTime, sizeof(WrTime), "");
+	new String:WrName[32], String:WrTime[32];
 	new Float:wrtime;
 	
-	if(g_timerWorldRecord) Timer_GetRecordTimeInfo(mode, bonus, newrank, wrtime, WrTime, 32);
-	if(g_timerWorldRecord) Timer_GetRecordHolderName(mode, bonus, newrank, WrName, 32);
+	if(g_timerWorldRecord) 
+	{
+		Timer_GetRecordTimeInfo(mode, bonus, newrank, wrtime, WrTime, 32);
+		Timer_GetRecordHolderName(mode, bonus, newrank, WrName, 32);
 	
-	/* Get World Record */
-	if(g_timerWorldRecord) Timer_GetDifficultyRecordTime(mode, bonus, RecordId, RecordTime, RankTotal);
+		/* Get World Record */
+		Timer_GetDifficultyRecordTime(mode, bonus, RecordId, RecordTime, RankTotal);
+	}
 	
 	/* Detect Record Type */
 	if(RecordTime == 0.0 || time < RecordTime)
@@ -181,76 +181,65 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	
 	new Float:wrdiff = time-wrtime;
 	
-	decl String:BonusString[32];
+	new String:BonusString[32];
 	
 	if(bonus == 1)
 	{
-		Format(BonusString, sizeof(BonusString), " {olive}bonus");
+		FormatEx(BonusString, sizeof(BonusString), " {olive}bonus");
 	}
 	else if(bonus == 2)
 	{
-		Format(BonusString, sizeof(BonusString), " {olive}short");
+		FormatEx(BonusString, sizeof(BonusString), " {olive}short");
 	}	
-	else
-	{
-		//Format(BonusString, sizeof(BonusString), " {olive}normal");
-		Format(BonusString, sizeof(BonusString), "");
-	}		
 	
-	decl String:RankString[128];
-	Format(RankString, sizeof(RankString), "");
-	
-	decl String:RankPwndString[128];
-	Format(RankPwndString, sizeof(RankPwndString), "");
+	new String:RankString[128], String:RankPwndString[128];
 
-	decl String:JumpString[128];
+	new String:JumpString[128];
 	new bool:bAll = false;
 	
-	decl String:StyleString[128];
+	new String:StyleString[128];
 	if(g_Settings[MultimodeEnable]) 
-		Format(StyleString, sizeof(StyleString), " on {olive}%s", g_Physics[mode][ModeName]);
-	else 
-		Format(StyleString, sizeof(StyleString), "");
+		FormatEx(StyleString, sizeof(StyleString), " on {olive}%s", g_Physics[mode][ModeName]);
 	
 	if(NewWorldRecord)
 	{
 		bAll = true;
-		Format(RankString, sizeof(RankString), "{lightred}NEW WORLD RECORD");
+		FormatEx(RankString, sizeof(RankString), "{lightred}NEW WORLD RECORD");
 		
 		if(wrtime > 0.0)
 		{
 			if(self)
-				Format(RankPwndString, sizeof(RankPwndString), "{olive}Improved {lightred}%s{olive}! {lightred}[%.2fs]{olive} diff, old time was {lightred}[%s]", "himself", wrdiff, WrTime);
+				FormatEx(RankPwndString, sizeof(RankPwndString), "{olive}Improved {lightred}%s{olive}! {lightred}[%.2fs]{olive} diff, old time was {lightred}[%s]", "himself", wrdiff, WrTime);
 			else
-				Format(RankPwndString, sizeof(RankPwndString), "{olive}Beaten {lightred}%s{olive}! {lightred}[%.2fs]{olive} diff, old time was {lightred}[%s]", WrName, wrdiff, WrTime);
+				FormatEx(RankPwndString, sizeof(RankPwndString), "{olive}Beaten {lightred}%s{olive}! {lightred}[%.2fs]{olive} diff, old time was {lightred}[%s]", WrName, wrdiff, WrTime);
 		}
 	}
 	else if(newrank > 5000)
 	{
-		Format(RankString, sizeof(RankString), "{lightred}#%d+ / %d", newrank, RankTotal);
+		FormatEx(RankString, sizeof(RankString), "{lightred}#%d+ / %d", newrank, RankTotal);
 	}
 	else if(NewPersonalRecord || FirstRecord)
 	{
 		bAll = true;
-		Format(RankString, sizeof(RankString), "{lightred}#%d / %d", newrank, RankTotal);
+		FormatEx(RankString, sizeof(RankString), "{lightred}#%d / %d", newrank, RankTotal);
 		
-		if(newrank < currentrank) Format(RankPwndString, sizeof(RankPwndString), "{olive}Beaten {lightred}%s{olive}! {lightred}[%.2fs]{olive} diff, old time was {lightred}[%s]", WrName, wrdiff, WrTime);
+		if(newrank < currentrank) FormatEx(RankPwndString, sizeof(RankPwndString), "{olive}Beaten {lightred}%s{olive}! {lightred}[%.2fs]{olive} diff, old time was {lightred}[%s]", WrName, wrdiff, WrTime);
 	}	
 	else if(NewPersonalRecord)
 	{
-		Format(RankString, sizeof(RankString), "{orange}#%d / %d", newrank, RankTotal);
+		FormatEx(RankString, sizeof(RankString), "{orange}#%d / %d", newrank, RankTotal);
 		
 		Format(RankPwndString, sizeof(RankPwndString), "You have improved {lightred}yourself! {lightred}[%.2fs]{olive} diff, old time was {lightred}[%s]", wrdiff, WrTime);
 	}
 	
 	if(g_Settings[JumpsEnable])
 	{
-		Format(JumpString, sizeof(JumpString), "{olive} and {lightred}%d jumps [%.2f ⁰⁄₀]", jumps, jumpacc);
+		FormatEx(JumpString, sizeof(JumpString), "{olive} and {lightred}%d jumps [%.2f ⁰⁄₀]", jumps, jumpacc);
 	}
 	
 	if(g_Settings[StrafesEnable])
 	{
-		Format(JumpString, sizeof(JumpString), "{olive} and {lightred}%d strafes", strafes);
+		FormatEx(JumpString, sizeof(JumpString), "{olive} and {lightred}%d strafes", strafes);
 	}
 	
 	if(ranked)

@@ -775,7 +775,7 @@ ShowHudMenu(client, start_item)
 		new Handle:menu = CreateMenu(MenuHandlerHud);
 		decl String:buffer[100];
 		
-		Format(buffer, sizeof(buffer), "Custom Hud Menu");
+		FormatEx(buffer, sizeof(buffer), "Custom Hud Menu");
 		SetMenuTitle(menu, buffer);
 		
 		if(hudSettings[Master][client] == 0)
@@ -1245,13 +1245,13 @@ UpdateHUD_CSS(client)
 	}
 	
 	//start building HUD
-	decl String:hintText[512]; //HUD buffer	
-	decl String:centerText[512]; //HUD buffer	
+	new String:hintText[512]; //HUD buffer	
+	new String:centerText[512]; //HUD buffer	
 	
 	//collect player info
 	decl String:auth[32]; //steam ID
 	if(!IsFakeClient(iClientToShow)) GetClientAuthString(iClientToShow, auth, sizeof(auth));
-	else Format(auth, sizeof(auth), "Replay-Bot");
+	else FormatEx(auth, sizeof(auth), "Replay-Bot");
 	
 	//decl String:client_tag[32]; //clantag	
 	//CS_GetClientClanTag(iClientToShow, client_tag, sizeof(client_tag));
@@ -1274,10 +1274,12 @@ UpdateHUD_CSS(client)
 	
 	Timer_GetClientTimer(iClientToShow, enabled, time, jumps, fpsmax);
 	
-	new mode;	
-	if(g_timerPhysics) mode = Timer_GetMode(iClientToShow);	
-	new ranked;
-	if(g_timerPhysics) ranked = Timer_IsModeRanked(mode);
+	new mode, ranked;	
+	if(g_timerPhysics) 
+	{
+		mode = Timer_GetMode(iClientToShow);	
+		ranked = Timer_IsModeRanked(mode);
+	}
 		
 	//get current player level
 	new currentLevel = 0;
@@ -1360,8 +1362,8 @@ UpdateHUD_CSS(client)
 	{
 		decl String:tagbuffer[32];
 		
-		if(enabled) Format(tagbuffer, sizeof(tagbuffer), "%s", buffer);
-		else if (ranked) Format(tagbuffer, sizeof(tagbuffer), "%s", bestbuffer);
+		if(enabled) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", buffer);
+		else if (ranked) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", bestbuffer);
 		
 		if(g_Settings[MultimodeEnable])
 		{
@@ -1393,14 +1395,12 @@ UpdateHUD_CSS(client)
 		}
 	}
 	
-	Format(centerText, sizeof(centerText), "");
-	
 	if (enabled)
 	{
 		decl String:timeString[64];
 		Timer_SecondsToTime(time, timeString, sizeof(timeString), 1);
 		
-		if(StrEqual(timeString, "00:-0.0")) Format(timeString, sizeof(timeString), "00:00.0");
+		if(StrEqual(timeString, "00:-0.0")) FormatEx(timeString, sizeof(timeString), "00:00.0");
 		
 		if (hudSettings[Time][client])
 			Format(centerText, sizeof(centerText), "%sTime: %s\n", centerText, timeString);
@@ -1438,7 +1438,6 @@ UpdateHUD_CSS(client)
 	
 	//start format side HUD
 	
-	Format(hintText, sizeof(hintText), "");
 	
 	if (iClientToShow != client && (iObserverMode == SPECMODE_FIRSTPERSON || iObserverMode == SPECMODE_3RDPERSON))
 	{
@@ -1481,8 +1480,8 @@ UpdateHUD_CSS(client)
 		
 		
 		//correct fail format
-		if(StrEqual(RecordTimeString, "00:-0.00")) Format(RecordTimeString, sizeof(RecordTimeString), "00:00.00");
-		if(StrEqual(RecordTimeString, "00:00.-0")) Format(RecordTimeString, sizeof(RecordTimeString), "00:00.00");
+		if(StrEqual(RecordTimeString, "00:-0.00")) FormatEx(RecordTimeString, sizeof(RecordTimeString), "00:00.00");
+		if(StrEqual(RecordTimeString, "00:00.-0")) FormatEx(RecordTimeString, sizeof(RecordTimeString), "00:00.00");
 	}
 	
 	if (g_timerPhysics && g_Settings[MultimodeEnable]) 
@@ -1797,12 +1796,12 @@ UpdateHUD_CSGO(client)
 	}
 	
 	//start building HUD
-	decl String:centerText[512]; //HUD buffer	
+	new String:centerText[512]; //HUD buffer	
 	
 	//collect player info
 	decl String:auth[32]; //steam ID
 	if(!IsFakeClient(iClientToShow)) GetClientAuthString(iClientToShow, auth, sizeof(auth));
-	else Format(auth, sizeof(auth), "Replay-Bot");
+	else FormatEx(auth, sizeof(auth), "Replay-Bot");
 	
 	//decl String:client_tag[32]; //clantag	
 	//CS_GetClientClanTag(iClientToShow, client_tag, sizeof(client_tag));
@@ -1854,12 +1853,13 @@ UpdateHUD_CSGO(client)
 	//if(g_timerMaptier) tier = Timer_GetTier();
 
 	//get speed
-	new Float:maxspeed;
-	if(g_timerPhysics) Timer_GetMaxSpeed(iClientToShow, maxspeed);
-	new Float:currentspeed;
-	if(g_timerPhysics) Timer_GetCurrentSpeed(iClientToShow, currentspeed);
-	new Float:avgspeed;
-	if(g_timerPhysics) Timer_GetAvgSpeed(iClientToShow, avgspeed);
+	new Float:maxspeed, Float:currentspeed, Float:avgspeed;
+	if(g_timerPhysics)
+	{
+		Timer_GetMaxSpeed(iClientToShow, maxspeed);
+		Timer_GetCurrentSpeed(iClientToShow, currentspeed);
+		Timer_GetAvgSpeed(iClientToShow, avgspeed);
+	}
 
 	//get jump accuracy
 	new Float:accuracy = 0.0;
@@ -1906,8 +1906,8 @@ UpdateHUD_CSGO(client)
 	{
 		decl String:tagbuffer[32];
 		
-		if(enabled) Format(tagbuffer, sizeof(tagbuffer), "%s", buffer);
-		else if (ranked) Format(tagbuffer, sizeof(tagbuffer), "%s", bestbuffer);
+		if(enabled) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", buffer);
+		else if (ranked) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", bestbuffer);
 		
 		if(g_Settings[MultimodeEnable])
 		{
@@ -1926,8 +1926,6 @@ UpdateHUD_CSGO(client)
 	
 	
 	//start format center HUD
-	
-	Format(centerText, sizeof(centerText), "");
 	
 	new stagecount;
 	
@@ -2058,12 +2056,11 @@ public Action:Cmd_SpecInfo(client, args)
 
 Print_Specinfo(client)
 {
-	decl String:buffer[1024];
+	new String:buffer[1024];
 	
 	new spec_count = GetSpecCount(client);
 	new count = 0;
 	
-	Format(buffer, sizeof(buffer), "");
 	for(new j = 1; j <= MaxClients; j++) 
 	{
 		if (!IsClientInGame(j) || !IsClientObserver(j))
