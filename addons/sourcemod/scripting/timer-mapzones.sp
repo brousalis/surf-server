@@ -1097,13 +1097,10 @@ public Action:CS_OnTerminateRound(&Float:delay, &CSRoundEndReason:reason)
 
 public Action:Event_RoundStart(Handle:event,const String:name[],bool:dontBroadcast)
 {
-	if(!g_Settings[TerminateRoundEnd])
-	{
-		if (g_hSQL != INVALID_HANDLE)
-			LoadMapZones();
-		else 
+	if (g_hSQL != INVALID_HANDLE)
+		LoadMapZones();
+	else 
 		ConnectSQL();
-	}
 }
 
 public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
