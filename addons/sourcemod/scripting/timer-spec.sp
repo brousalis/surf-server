@@ -115,7 +115,7 @@ public Action:Cmd_SpecList(client, args)
 		if(i == client)
 			continue;
 		
-		if(Client_IsValid(i, true))
+		if(IsValidClient(i, true))
 		{
 			new SpecMode = GetEntProp(i, Prop_Send, "m_iObserverMode");
 			
@@ -149,24 +149,15 @@ public Action:Cmd_SpecFar(client, args)
 		if(i == client)
 			continue;
 		
-		if(Client_IsValid(i, true))
+		if(!Client_IsValid(i, true))
+			continue;
+		
+		Level = Timer_GetClientLevel(i);
+		
+		if(Level > MaxLevel)
 		{
-			for(new x = 1; x <= MaxClients; x++)
-			{
-				if(!IsClientInGame(x) || !IsClientObserver(x))
-				{
-					continue;
-				}
-				
-				Level = Timer_GetClientLevel(x);
-				
-				if(Level > MaxLevel)
-				{
-					MaxLevel = Level;
-					target = i;
-				}
-				
-			}
+			MaxLevel = Level;
+			target = i;
 		}
 	}
 
@@ -174,4 +165,14 @@ public Action:Cmd_SpecFar(client, args)
 	SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", target);
 
 	return Plugin_Handled;
+}
+
+stock bool:IsValidClient(client, bool:alive = false)
+{
+	if(client >= 1 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && (!alive || IsPlayerAlive(client)))
+	{
+		return true;
+	}
+	
+	return false;
 }
