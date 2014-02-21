@@ -3751,6 +3751,9 @@ public Action:Command_Restart(client, args)
 	
 	if(!IsClientInGame(client)) 
 		return Plugin_Handled;
+		
+	if(Timer_GetMapzoneCount(ZtStart) < 1)
+		return Plugin_Handled;
 	
 	if(g_timerTeams)
 	{
@@ -3773,6 +3776,9 @@ public Action:Command_Start(client, args)
 	
 	if(!IsClientInGame(client)) 
 		return Plugin_Handled;
+		
+	if(Timer_GetMapzoneCount(ZtStart) < 1)
+		return Plugin_Handled;
 	
 	if(g_timerTeams)
 	{
@@ -3794,6 +3800,9 @@ public Action:Command_BonusRestart(client, args)
 		return Plugin_Handled;
 	
 	if(!IsClientInGame(client)) 
+		return Plugin_Handled;
+		
+	if(Timer_GetMapzoneCount(ZtBonusStart) < 1)
 		return Plugin_Handled;
 	
 	if(g_timerTeams)

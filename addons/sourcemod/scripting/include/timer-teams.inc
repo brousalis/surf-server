@@ -32,7 +32,8 @@ public SharedPlugin:__pl_timer_teams =
 #endif
 };
 
-public __pl_timer_teams_SetNTVOptional() {
+public __pl_timer_teams_SetNTVOptional() 
+{
 	MarkNativeAsOptional("Timer_GetClientTeammate");
 	MarkNativeAsOptional("Timer_SetClientTeammate");
 	MarkNativeAsOptional("Timer_GetCoopStatus");

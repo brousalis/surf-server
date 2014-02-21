@@ -20,6 +20,7 @@
 
 new bool:g_timerPhysics = false;
 new bool:g_timerStrafes = false;
+new bool:g_timerScripterDB = false;
 new bool:g_timerTeams = false;
 new bool:g_timerWorldRecord = false;
 
@@ -168,6 +169,7 @@ public OnPluginStart()
 
 	g_timerPhysics = LibraryExists("timer-physics");
 	g_timerStrafes = LibraryExists("timer-strafes");
+	g_timerScripterDB = LibraryExists("timer-scripter_db");
 	g_timerTeams = LibraryExists("timer-teams");
 	g_timerWorldRecord = LibraryExists("timer-worldrecord");
 }
@@ -181,6 +183,10 @@ public OnLibraryAdded(const String:name[])
 	else if (StrEqual(name, "timer-strafes"))
 	{
 		g_timerStrafes = true;
+	}
+	else if (StrEqual(name, "timer-scripter_db"))
+	{
+		g_timerScripterDB = true;
 	}
 	else if (StrEqual(name, "timer-teams"))
 	{
@@ -198,10 +204,13 @@ public OnLibraryRemoved(const String:name[])
 	{
 		g_timerPhysics = false;
 	}
-
 	else if (StrEqual(name, "timer-strafes"))
 	{
 		g_timerStrafes = false;
+	}
+	else if (StrEqual(name, "timer-scripter_db"))
+	{
+		g_timerScripterDB = false;
 	}
 	else if (StrEqual(name, "timer-teams"))
 	{
@@ -639,10 +648,14 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 		Timer_Log(Timer_LogLevelWarning, "Detected illegal record by %N on %s [time:%.2f|mode:%d|bonus:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, mode, bonus, jumps, auth);
 		return;
 	}
-	if (Timer_IsScripter(client))
+	
+	if(g_timerScripterDB)
 	{
-		Timer_Log(Timer_LogLevelWarning, "Detected scripter record by %N on %s [time:%.2f|mode:%d|bonus:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, mode, bonus, jumps, auth);
-		return;
+		if (Timer_IsScripter(client))
+		{
+			Timer_Log(Timer_LogLevelWarning, "Detected scripter record by %N on %s [time:%.2f|mode:%d|bonus:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, mode, bonus, jumps, auth);
+			return;
+		}
 	}
 	
 	if(bonus == 2) g_timers[client][ShortEndReached] = true;
