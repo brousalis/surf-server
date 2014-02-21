@@ -5,6 +5,7 @@
 #include <cstrike>
 #include <smlib>
 #include <timer>
+#include <timer-mapzones>
 
 public Plugin:myinfo ={
     name        = "[Timer] Spectate",
@@ -20,6 +21,7 @@ public OnPluginStart()
 	RegConsoleCmd("sm_spectate", Command_spec, "sm_spectate <target> - Spectates a player.");
 	RegConsoleCmd("sm_specmost", Cmd_SpecMost);
 	RegConsoleCmd("sm_speclist", Cmd_SpecList);
+	RegConsoleCmd("sm_specfar", Cmd_SpecFar);
 	LoadTranslations("common.phrases");
 }
 
@@ -134,6 +136,42 @@ public Action:Cmd_SpecList(client, args)
 
 	if(spectators > 0) PrintToChat(client, "[SPEC-LIST] Found %d spectators: %s.", spectators, buffer);
 	else PrintToChat(client, "[SPEC-LIST] Nobody is spectating you. ");
+
+	return Plugin_Handled;
+}
+
+public Action:Cmd_SpecFar(client, args)
+{
+	new MaxLevel, Level, target;
+
+	for(new i = 1; i <= MaxClients; i++)
+	{
+		if(i == client)
+			continue;
+		
+		if(Client_IsValid(i, true))
+		{
+			for(new x = 1; x <= MaxClients; x++)
+			{
+				if(!IsClientInGame(x) || !IsClientObserver(x))
+				{
+					continue;
+				}
+				
+				Level = Timer_GetClientLevel(x);
+				
+				if(Level > MaxLevel)
+				{
+					MaxLevel = Level;
+					target = i;
+				}
+				
+			}
+		}
+	}
+
+	ChangeClientTeam(client, 1);
+	SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", target);
 
 	return Plugin_Handled;
 }
