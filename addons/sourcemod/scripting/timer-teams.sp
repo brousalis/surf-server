@@ -13,6 +13,8 @@
 #include <timer-logging>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
+
+#undef REQUIRE_PLUGIN
 #include <timer-hide>
 
 new String:g_currentMap[64];
