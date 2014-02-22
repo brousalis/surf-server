@@ -857,13 +857,13 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 		return;
 	}
 
+	g_hSQL = CloneHandle(hndl);
+	
 	decl String:driver[16];
 	SQL_GetDriverIdent(owner, driver, sizeof(driver));
 	
 	if (StrEqual(driver, "mysql", false))
-		SQL_FastQuery(hndl, "SET NAMES 'utf8'");
-
-	g_hSQL = CloneHandle(hndl);
+		SQL_SetCharset(g_hSQL, "utf8");
 
 	g_reconnectCounter = 1;
 

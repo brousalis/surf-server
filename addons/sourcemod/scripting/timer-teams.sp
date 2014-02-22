@@ -94,7 +94,11 @@ public OnPluginStart()
 	
 	AutoExecConfig(true, "timer/timer-teams");
 	
-	HookEvent("player_spawn", Event_PlayerSpawn);
+	HookEvent("player_spawn", Event_Reset);
+	HookEvent("player_connect", Event_Reset);
+	HookEvent("player_disconnect", Event_Reset);
+	HookEvent("player_death", Event_Reset);
+	HookEvent("player_team", Event_Reset);
 }
 
 public OnMapStart()
@@ -152,11 +156,14 @@ public Action_OnSettingsChange(Handle:cvar, const String:oldvalue[], const Strin
 		FormatEx(SND_TIMER_OWNED, sizeof(SND_TIMER_OWNED) ,"%s", newvalue);
 }
 
-public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
+public Event_Reset(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	
-	
+	g_clientTeammate[g_clientTeammate[client]] = 0;
+	g_bClientChallenge[g_clientTeammate[client]] = false;
+	g_bClientCoop[g_clientTeammate[client]] = false;
+	g_fIgnoreTime[g_clientTeammate[client]] = 0.0;
+
 	g_clientTeammate[client] = 0;
 	g_bClientChallenge[client] = false;
 	g_bClientCoop[client] = false;

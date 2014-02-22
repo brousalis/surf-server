@@ -125,6 +125,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public OnPluginStart()
 {
+	ConnectSQL();
 	LoadPhysics();
 	LoadTimerSettings();
 	
@@ -224,25 +225,30 @@ public OnLibraryRemoved(const String:name[])
 
 public OnClientAuthorized(client, const String:auth[])
 {
-	if(StrContains(auth, "STEAM", true) > -1)
+	if (g_hSQL == INVALID_HANDLE)
 	{
-		if(Client_IsValid(client) && !IsFakeClient(client) && g_hSQL != INVALID_HANDLE)
-		{
-			new String:name[MAX_NAME_LENGTH];
-			GetClientName(client, name, sizeof(name));
-			
-			decl String:safeName[2 * strlen(name) + 1];
-			SQL_EscapeString(g_hSQL, name, safeName, 2 * strlen(name) + 1);
-			
-			decl String:query[256];
-			FormatEx(query, sizeof(query), "UPDATE `round` SET name = '%s' WHERE auth = '%s'", safeName, auth);
-
-			SQL_TQuery(g_hSQL, UpdateNameCallback, query, _, DBPrio_Normal);
-			
-			if(GetGameTime() > 10.0 && g_timerWorldRecord) Timer_ForceReloadCache();
-		}
+		ConnectSQL();
 	}
-	else if(!IsFakeClient(client)) KickClient(client, "NO VALID STEAM ID");
+	else
+	{
+		if(StrContains(auth, "STEAM", true) > -1)
+		{
+			if(Client_IsValid(client) && !IsFakeClient(client))
+			{
+				decl String:name[MAX_NAME_LENGTH];
+				GetClientName(client, name, sizeof(name));
+			
+				decl String:safeName[2 * strlen(name) + 1];
+				SQL_EscapeString(g_hSQL, name, safeName, 2 * strlen(name) + 1);
+			
+				decl String:query[256];
+				FormatEx(query, sizeof(query), "UPDATE `round` SET name = '%s' WHERE auth = '%s'", safeName, auth);
+
+				SQL_TQuery(g_hSQL, UpdateNameCallback, query, _, DBPrio_Normal);
+			}
+		}
+		else if(!IsFakeClient(client)) KickClient(client, "NO VALID STEAM ID");
+	}
 }
 
 public PrepareSound(String: sound[MAX_FILE_LEN])
@@ -264,8 +270,6 @@ public PrepareSound(String: sound[MAX_FILE_LEN])
 
 public OnMapStart()
 {	
-	ConnectSQL();
-	
 	GetCurrentMap(g_currentMap, sizeof(g_currentMap));
 	ClearCache();
 	ClearFinishCounts();
@@ -283,17 +287,6 @@ ClearFinishCounts()
 		g_timers[i][ShortFinishCount] = 0;
 		g_timers[i][Bonus] = 0;
 	}
-}
-
-
-public OnMapEnd()
-{
-	ClearCache();
-}
-
-public OnPlayerConnect(client)
-{
-    StartTimer(client);
 }
 
 /**
@@ -410,7 +403,7 @@ bool:TimerPenalty(client, Float:penaltytime)
 bool:StartTimer(client)
 {
 	if(!IsValidClient(client))
-		return true;
+		return false;
 	if (g_timers[client][Enabled])
 		return false;
 	
@@ -437,7 +430,7 @@ bool:StartTimer(client)
 bool:StopTimer(client, bool:stopPaused = true)
 {
 	if(!IsValidClient(client))
-		return true;
+		return false;
 	if (!g_timers[client][Enabled])
 		return false;
 	
@@ -461,8 +454,17 @@ bool:StopTimer(client, bool:stopPaused = true)
 	Call_Finish();
 	
 	//Stop mate
-	new mate = Timer_GetClientTeammate(client);
-	if(0 < mate) StopTimer(mate, false);
+	if (g_timerTeams)
+	{
+		new mate = Timer_GetClientTeammate(client);
+		if(0 < mate)
+		{
+			StopTimer(mate, false);
+			Call_StartForward(g_timerStoppedForward);
+			Call_PushCell(mate);
+			Call_Finish();
+		}
+	}
 		
 	return true;
 }
@@ -470,7 +472,7 @@ bool:StopTimer(client, bool:stopPaused = true)
 bool:RestartTimer(client)
 {
 	if(!IsValidClient(client))
-		return true;
+		return false;
 	
 	StopTimer(client, false);
 	
@@ -478,9 +480,21 @@ bool:RestartTimer(client)
 	Call_StartForward(g_timerRestartForward);
 	Call_PushCell(client);
 	Call_Finish();
-	
-	new mate = Timer_GetClientTeammate(client);
-	if(mate != 0) StopTimer(mate, false);
+
+	if (g_timerTeams)
+	{
+		new mate = Timer_GetClientTeammate(client);
+		if(mate != 0) 
+		{	
+			StopTimer(mate, false);
+
+			Call_StartForward(g_timerRestartForward);
+			Call_PushCell(mate);
+			Call_Finish();
+
+			return StartTimer(client) && StartTimer(mate);
+		}
+	}
 
 	return StartTimer(client);
 }
@@ -488,45 +502,17 @@ bool:RestartTimer(client)
 bool:PauseTimer(client)
 {
 	if(!IsValidClient(client))
-		return true;
+		return false;
 	if (!g_timers[client][Enabled] || g_timers[client][IsPaused])
 		return false;
 	
-	Call_StartForward(g_timerPausedForward);
-	Call_PushCell(client);
-	Call_Finish();
-	
-	new mate;
-	if(g_timerTeams) mate = Timer_GetClientTeammate(client);
 	g_timers[client][IsPaused] = true;
 	g_timers[client][PauseStartTime] = GetGameTime();
 	
 	CreateTimer(0.0, Timer_ValidatePause, client, TIMER_FLAG_NO_MAPCHANGE);
 	
 	CPrintToChat(client, PLUGIN_PREFIX, "Pause Info");
-	
-	if(0 < mate)
-	{
-		g_timers[mate][IsPaused] = true;
-		g_timers[mate][PauseStartTime] = GetGameTime();
-		
-		CreateTimer(0.0, Timer_ValidatePause, mate, TIMER_FLAG_NO_MAPCHANGE);
-		
-		CPrintToChat(mate, PLUGIN_PREFIX, "Pause Info");
-		
-		new Float:origin2[3];
-		GetClientAbsOrigin(mate, origin2);
-		Array_Copy(origin2, g_timers[mate][PauseLastOrigin], 3);
 
-		new Float:angles2[3];
-		GetClientAbsAngles(mate, angles2);
-		Array_Copy(angles2, g_timers[mate][PauseLastAngles], 3);
-
-		new Float:velocity2[3];
-		GetClientAbsVelocity(mate, velocity2);
-		Array_Copy(velocity2, g_timers[mate][PauseLastVelocity], 3);
-	}
-	
 	new Float:origin[3];
 	GetClientAbsOrigin(client, origin);
 	Array_Copy(origin, g_timers[client][PauseLastOrigin], 3);
@@ -538,6 +524,40 @@ bool:PauseTimer(client)
 	new Float:velocity[3];
 	GetClientAbsVelocity(client, velocity);
 	Array_Copy(velocity, g_timers[client][PauseLastVelocity], 3);
+
+	Call_StartForward(g_timerPausedForward);
+	Call_PushCell(client);
+	Call_Finish();
+	
+	if(g_timerTeams) 
+	{
+		new mate = Timer_GetClientTeammate(client);
+		if(0 < mate)
+		{
+			g_timers[mate][IsPaused] = true;
+			g_timers[mate][PauseStartTime] = GetGameTime();
+		
+			CreateTimer(0.0, Timer_ValidatePause, mate, TIMER_FLAG_NO_MAPCHANGE);
+		
+			CPrintToChat(mate, PLUGIN_PREFIX, "Pause Info");
+		
+			new Float:origin2[3];
+			GetClientAbsOrigin(mate, origin2);
+			Array_Copy(origin2, g_timers[mate][PauseLastOrigin], 3);
+
+			new Float:angles2[3];
+			GetClientAbsAngles(mate, angles2);
+			Array_Copy(angles2, g_timers[mate][PauseLastAngles], 3);
+
+			new Float:velocity2[3];
+			GetClientAbsVelocity(mate, velocity2);
+			Array_Copy(velocity2, g_timers[mate][PauseLastVelocity], 3);
+
+			Call_StartForward(g_timerPausedForward);
+			Call_PushCell(mate);
+			Call_Finish();
+		}
+	}
 
 	return true;
 }
@@ -555,31 +575,9 @@ public Action:Timer_ValidatePause(Handle:timer, any:client)
 bool:ResumeTimer(client)
 {
 	if(!IsValidClient(client))
-		return true;
+		return false;
 	if (!g_timers[client][Enabled] || !g_timers[client][IsPaused])
 		return false;
-
-	Call_StartForward(g_timerResumedForward);
-	Call_PushCell(client);
-	Call_Finish();
-	
-	new mate ;
-	if(g_timerTeams) mate = Timer_GetClientTeammate(client);
-	if(0 < mate)
-	{
-		g_timers[mate][IsPaused] = false;
-		g_timers[mate][PauseTotalTime] += GetGameTime() - g_timers[mate][PauseStartTime];
-		new Float:origin2[3];
-		Array_Copy(g_timers[mate][PauseLastOrigin], origin2, 3);
-
-		new Float:angles2[3];
-		Array_Copy(g_timers[mate][PauseLastAngles], angles2, 3);
-
-		new Float:velocity2[3];
-		Array_Copy(g_timers[mate][PauseLastVelocity], velocity2, 3);
-
-		if(IsClientInGame(mate)) TeleportEntity(mate, origin2, angles2, velocity2);
-	}
 
 	new Float:origin[3];
 	Array_Copy(g_timers[client][PauseLastOrigin], origin, 3);
@@ -592,23 +590,39 @@ bool:ResumeTimer(client)
 
 	TeleportEntity(client, origin, angles, velocity);
 	
-	CreateTimer(0.0, TResumed, client, TIMER_FLAG_NO_MAPCHANGE);
-	
-	return true;
-}
-
-public Action:TResumed(Handle:timer, any:client)
-{
-	if(!IsClientInGame(client))
-	return Plugin_Handled;
-
-	if(!IsPlayerAlive(client))
-	return Plugin_Handled;
-	
 	g_timers[client][IsPaused] = false;
 	g_timers[client][PauseTotalTime] += GetGameTime() - g_timers[client][PauseStartTime];
+
+	Call_StartForward(g_timerResumedForward);
+	Call_PushCell(client);
+	Call_Finish();
+
+	if(g_timerTeams)
+	{
+		new mate = Timer_GetClientTeammate(client);
+		if(0 < mate)
+		{
+			new Float:origin2[3];
+			Array_Copy(g_timers[mate][PauseLastOrigin], origin2, 3);
+
+			new Float:angles2[3];
+			Array_Copy(g_timers[mate][PauseLastAngles], angles2, 3);
+
+			new Float:velocity2[3];
+			Array_Copy(g_timers[mate][PauseLastVelocity], velocity2, 3);
+
+			TeleportEntity(mate, origin2, angles2, velocity2);
+
+			g_timers[mate][IsPaused] = false;
+			g_timers[mate][PauseTotalTime] += GetGameTime() - g_timers[mate][PauseStartTime];
+
+			Call_StartForward(g_timerResumedForward);
+			Call_PushCell(mate);
+			Call_Finish();
+		}
+	}
 	
-	return Plugin_Handled;
+	return true;
 }
 
 ClearCache()
@@ -860,6 +874,11 @@ public UpdateNameCallback(Handle:owner, Handle:hndl, const String:error[], any:p
 		Timer_LogError("SQL Error on UpdateName: %s", error);
 		return;
 	}
+
+	if (g_timerWorldRecord) 
+	{
+		Timer_ForceReloadCache();
+	}
 }
 
 public DeletePlayersRecordCallback(Handle:owner, Handle:hndl, const String:error[], any:param1)
@@ -932,19 +951,11 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 	decl String:driver[16];
 	SQL_GetDriverIdent(owner, driver, sizeof(driver));
 
-	g_hSQL = CloneHandle(hndl);		
-	db_createTables(driver);
+	g_hSQL = CloneHandle(hndl);
 	
-	g_reconnectCounter = 1;
-}
-
-public db_createTables(String:driver[16])
-{
-	SQL_LockDatabase(g_hSQL);
-
 	if (StrEqual(driver, "mysql", false))
 	{
-		SQL_FastQuery(g_hSQL, "SET NAMES  'utf8'");
+		SQL_SetCharset(g_hSQL, "utf8");
 		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `round` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` int(11) NOT NULL, `physicsdifficulty` int(11) NOT NULL, `bonus` int(11) NOT NULL, `name` varchar(64) NOT NULL, `finishcount` int(11) NOT NULL, `levelprocess` int(11) NOT NULL, `fpsmax` int(11) NOT NULL, `jumpacc` float NOT NULL, `strafes` int(11) NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `finishspeed` float NOT NULL, `flashbangcount` int(11) NOT NULL, `rank` int(11) NOT NULL, `replaypath` varchar(32) NOT NULL, `custom1` varchar(32) NOT NULL, `custom2` varchar(32) NOT NULL, `custom3` varchar(32) NOT NULL, date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `single_record` (`auth`, `map`, `physicsdifficulty`, `bonus`));");
 	}
 	
@@ -954,8 +965,7 @@ public db_createTables(String:driver[16])
 		//SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `round` (`id` INTEGER PRIMARY KEY, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` INTEGER NOT NULL, `jumpacc` float NOT NULL, `strafes` INTEGER NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `flashbangcount` INTEGER NOT NULL, `rank` INTEGER NOT NULL, `replaypath` varchar(32) NOT NULL, `finishcount` INTEGER NOT NULL, `physicsdifficulty` INTEGER NOT NULL, `name` varchar(64) NOT NULL, `fpsmax` INTEGER NOT NULL), `bonus` INTEGER NOT NULL, date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 	}
 	
-
-	SQL_UnlockDatabase(g_hSQL);
+	g_reconnectCounter = 1;
 }
 
 public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
@@ -1069,9 +1079,8 @@ public Native_GetMapFinishBonusCount(Handle:plugin, numParams)
 public Native_SetMode(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
-	new newmode = GetNativeCell(2);
 	
-	g_timers[client][CurrentMode] = newmode;
+	g_timers[client][CurrentMode] = GetNativeCell(2);
 	if(g_timerPhysics) Timer_ApplyPhysics(client);
 }
 

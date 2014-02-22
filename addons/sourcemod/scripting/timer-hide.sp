@@ -14,6 +14,8 @@ new bool:g_timerTeams = false;
 
 new bool:g_bHooked;
 new bool:g_bHide[MAXPLAYERS+1] = {false, ...};
+new g_iWeaponOwner[2048];
+new g_bLateLoad;
 
 public Plugin:myinfo =
 {
@@ -28,10 +30,11 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
 	RegPluginLibrary("timer-hide");
 	g_timerTeams = LibraryExists("timer-teams");
-	
+	g_bLateLoad = late;
+
 	CreateNative("Timer_SetClientHide", Native_SetClientHide);
 	CreateNative("Timer_GetClientHide", Native_GetClientHide);
-	
+
 	return APLRes_Success;
 }
 
@@ -39,8 +42,18 @@ public OnPluginStart()
 {
 	RegConsoleCmd("sm_hide", Command_Hide);
 	
-	HookEvent("player_spawn", Event_PlayerSpawn);
 	AddTempEntHook("Shotgun Shot", CSS_Hook_ShotgunShot);
+
+	if (g_bLateLoad)
+	{
+		for (new i = 1; i <= MaxClients; i++)
+		{
+			if (IsClientConnected(i) && IsClientInGame(i))
+			{
+				OnClientPutInServer(i);
+			}
+		}
+	}
 }
 
 public OnLibraryAdded(const String:name[])
@@ -63,42 +76,52 @@ public OnClientPutInServer(client)
 {
 	g_bHide[client] = false;
 	SDKHook(client, SDKHook_SetTransmit, Hook_SetTransmit);
+	SDKHook(client, SDKHook_WeaponEquip, Hook_WeaponEquip);
+	SDKHook(client, SDKHook_WeaponDrop, Hook_WeaponDrop);
+	CheckHooks();
 }
 
 public OnClientDisconnect_Post(client)
 {
 	g_bHide[client] = false;
+	SDKUnhook(client, SDKHook_SetTransmit, Hook_SetTransmit);
+	SDKUnhook(client, SDKHook_WeaponEquip, Hook_WeaponEquip);
+	SDKUnhook(client, SDKHook_WeaponDrop, Hook_WeaponDrop);
 	CheckHooks();
 }
 
-public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
+public OnEntityCreated(entity, const String:classname[])
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	
-	g_bHide[client] = false;
+	if (entity > MaxClients && entity < 2048)
+	{
+		g_iWeaponOwner[entity] = 0;
+	}
 }
 
-public Action:Hook_NormalSound(clients[64], &numClients, String:sample[PLATFORM_MAX_PATH], &entity, &channel, &Float:volume, &level, &pitch, &flags)
+public OnEntityDestroyed(entity)
 {
-	// Ignore non-weapon sounds.
-	if (!g_bHooked || !(strncmp(sample, "weapon", 7) == 0 || strncmp(sample[1], "weapon", 7) == 0 || strncmp(sample[1], "reload", 7) == 0))
-		return Plugin_Continue;
-	
-	decl i, j;
-	
-	for (i = 0; i < numClients; i++)
+	if (entity > MaxClients && entity < 2048)
 	{
-		// Remove the client from the array.
-		for (j = i; j < numClients-1; j++)
-		{
-			clients[j] = clients[j+1];
-		}
-		
-		numClients--;
-		i--;
+		g_iWeaponOwner[entity] = 0;
 	}
-	
-	return (numClients > 0) ? Plugin_Changed : Plugin_Stop;
+}
+
+public Hook_WeaponEquip(client, weapon)
+{
+	if (weapon > MaxClients && weapon < 2048)
+	{
+		g_iWeaponOwner[weapon] = client;
+		SDKHook(weapon, SDKHook_SetTransmit, Hook_SetTransmitWeapon);
+	}
+}
+
+public Hook_WeaponDrop(client, weapon)
+{
+	if (weapon > MaxClients && weapon < 2048)
+	{
+		g_iWeaponOwner[weapon] = 0;
+		SDKUnhook(weapon, SDKHook_SetTransmit, Hook_SetTransmitWeapon);
+	}
 }
 
 public Action:CSS_Hook_ShotgunShot(const String:te_name[], const Players[], numClients, Float:delay)
@@ -153,7 +176,7 @@ public Action:Command_Hide(client, args)
 		g_bHide[client] = false;
 		CPrintToChat(client, PLUGIN_PREFIX, "Hide Disabled");
 	}
-	else if(GetClientTeam(client) > 1)
+	else
 	{
 		g_bHide[client] = true;
 		CPrintToChat(client, PLUGIN_PREFIX, "Hide Enabled");
@@ -181,31 +204,24 @@ CheckHooks()
 	g_bHooked = bShouldHook;
 }
 
-public Action:Hook_SetTransmit(entity, client)
+public Action:Hook_SetTransmit(entity, client) 
 {
-	if(client == entity)
-		return Plugin_Continue;
-	
-	if(!g_bHide[client])
-		return Plugin_Continue;
-	
 	new mate;
 	if(g_timerTeams) 
 	{	
 		mate = Timer_GetClientTeammate(client);
 	}
-	
-	//Don't hide mates
-	if(mate > 0 && mate == entity)
-		return Plugin_Continue;
-	
-	//Hide rest
-	if(0 < entity <= MaxClients)
-	{
-		return Plugin_Handled;
-	}
-	
-	return Plugin_Continue;
+	return (g_bHide[client] && IsPlayerAlive(client) && client != entity && mate != entity && (0 < entity <= MaxClients)) ? Plugin_Handled : Plugin_Continue;
+}
+
+public Action:Hook_SetTransmitWeapon(entity, client) 
+{
+	new mate;
+	if(g_timerTeams) 
+	{	
+		mate = Timer_GetClientTeammate(client);
+	} 
+	return (g_bHide[client] && IsPlayerAlive(client) && g_iWeaponOwner[entity] && g_iWeaponOwner[entity] != client && g_iWeaponOwner[entity] != mate) ? Plugin_Handled : Plugin_Continue;
 }
 
 public Native_GetClientHide(Handle:plugin, numParams)
