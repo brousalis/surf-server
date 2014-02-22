@@ -30,7 +30,7 @@ public OnMapStart()
 	LoadPhysics();
 }
 
-public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
+public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon, &subtype, &cmdnum, &tickcount, &seed, mouse[2])
 {
 	if(!IsClientInGame(client))
 		return Plugin_Continue;
@@ -74,5 +74,6 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 		RIGHT[client] = false;
 		LEFT[client] = false;
 	}
+	
 	return Plugin_Continue;
 }

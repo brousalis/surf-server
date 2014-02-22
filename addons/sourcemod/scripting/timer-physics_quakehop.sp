@@ -54,50 +54,49 @@ public Action:PlayerJump(Handle:event, const String:name[], bool:dontBroadcast)
 	}
 }
 
-public OnGameFrame()
+public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon, &subtype, &cmdnum, &tickcount, &seed, mouse[2])
 {
-	for(new i = 1; i <= MaxClients; i++)
+	if(!IsClientInGame(client))
+		return Plugin_Continue;
+	
+	if(!IsPlayerAlive(client))
+		return Plugin_Continue;
+	
+	if(g_Physics[Timer_GetMode(client)][ModeQuakeBhop] != 1)
+		return Plugin_Continue;
+	
+	if(GetEntityFlags(client) & FL_ONGROUND)
 	{
-		if(!IsClientConnected(i))
-			continue;
-		if(!IsClientInGame(i))
-			continue;
-		if(!IsPlayerAlive(i))
-			continue;
-		if(g_Physics[Timer_GetMode(client)][ModeQuakeBhop] != 1)
-			continue;
-		
-		if(GetEntityFlags(i) & FL_ONGROUND)
+		if(g_bOnGround[client] != true)
 		{
-			if(g_bOnGround[i] != true)
-			{
-				OnClientLand(i);
-				g_bOnGround[i] = true;
-			}
+			OnClientLand(client);
+			g_bOnGround[client] = true;
+		}
+	}
+	else
+	{
+		StopSlide(client);
+		if(g_bOnGround[client] != false)
+		{
+			g_bOnGround[client] = false;
+		}
+	}
+
+	if(g_bIsSliding[client] == true)
+	{
+		if(GetSpeed(client) > 40.0)
+		{
+			g_fSpeed[client][0] *= (1.0 - GetConVarFloat(g_cvLoss));
+			g_fSpeed[client][1] *= (1.0 - GetConVarFloat(g_cvLoss));
+			g_fSpeed[client][2] = 0.0;
 		}
 		else
 		{
-			StopSlide(i);
-			if(g_bOnGround[i] != false)
-			{
-				g_bOnGround[i] = false;
-			}
-		}
-
-		if(g_bIsSliding[i] == true)
-		{
-			if(GetSpeed(i) > 40.0)
-			{
-				g_fSpeed[i][0] *= (1.0 - GetConVarFloat(g_cvLoss));
-				g_fSpeed[i][1] *= (1.0 - GetConVarFloat(g_cvLoss));
-				g_fSpeed[i][2] = 0.0;
-			}
-			else
-			{
-				StopSlide(i);
-			}
+			StopSlide(client);
 		}
 	}
+	
+	return Plugin_Continue;
 }
 
 public StopSlide(client)
