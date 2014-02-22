@@ -9,7 +9,6 @@
 #include <timer-mapzones>
 #include <timer-logging>
 #include <timer-stocks>
-#include <timer-teams>
 #include <timer-config_loader.sp>
 
 #undef REQUIRE_PLUGIN
@@ -17,6 +16,7 @@
 #include <timer-physics>
 #include <timer-hide>
 #include <timer-maptier>
+#include <timer-teams>
 
 new bool:g_timerPhysics = false;
 new bool:g_timerTeams = false;
@@ -436,7 +436,9 @@ public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
 	
 	new Float:vec[3];
 	GetClientAbsOrigin(client, vec);
-	new mate = Timer_GetClientTeammate(client);
+	
+	new mate;
+	if(g_timerTeams) mate = Timer_GetClientTeammate(client);
 	
 	new zone = g_MapZoneEntityZID[caller];
 	
@@ -476,7 +478,7 @@ public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
 		if(!g_Settings[NoblockEnable])
 			SetPush(client);
 		
-		if(Timer_GetCoopStatus(client) == 0 && Timer_GetChallengeStatus(client) == 0)
+		if(mate == 0)
 		{
 			g_iIgnoreEndTouchStart[client] = false;
 			g_clientLevel[client] = zone;
@@ -500,7 +502,7 @@ public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
 		if(!g_Settings[NoblockEnable])
 			SetPush(client);
 		
-		if(Timer_GetCoopStatus(client) == 0 && Timer_GetChallengeStatus(client) == 0)
+		if(mate == 0)
 		{
 			//has player noclip?
 			if(GetEntProp(client, Prop_Send, "movetype", 1) == 8)
@@ -532,7 +534,7 @@ public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
 	}
 	else if (g_mapZones[zone][Type] == ZtShortEnd)
 	{
-		if(Timer_GetCoopStatus(client) == 0 && Timer_GetChallengeStatus(client) == 0)
+		if(mate == 0)
 		{
 			//has player noclip?
 			if(GetEntProp(client, Prop_Send, "movetype", 1) == 8)
@@ -561,7 +563,7 @@ public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
 	}
 	else if (g_mapZones[zone][Type] == ZtBonusEnd)
 	{
-		if(Timer_GetCoopStatus(client) == 0 && Timer_GetChallengeStatus(client) == 0)
+		if(mate == 0)
 		{
 			//has player noclip?
 			if(GetEntProp(client, Prop_Send, "movetype", 1) == 8)
@@ -808,6 +810,9 @@ public EndTouchTrigger(const String:output[], caller, activator, Float:delay)
 	new Float:vec[3];
 	GetClientAbsOrigin(client, vec);
 	
+	new mate;
+	if(g_timerTeams) mate = Timer_GetClientTeammate(client);
+	
 	new zone = g_MapZoneEntityZID[caller];
 	
 	if(zone < 0)
@@ -850,7 +855,7 @@ public EndTouchTrigger(const String:output[], caller, activator, Float:delay)
 		if(!g_Settings[NoblockEnable])
 			SetBlock(client);
 		
-		if(Timer_GetCoopStatus(client) == 0 && Timer_GetChallengeStatus(client) == 0 && CheckIllegalTeleport(client))
+		if(mate == 0 && CheckIllegalTeleport(client))
 		{
 			if(Timer_IsPlayerTouchingZoneType(client, ZtStop))
 				return;
@@ -1079,7 +1084,6 @@ public Action:CheckEntitysLoaded(Handle:timer)
 
 public OnClientDisconnect_Post(client)
 {
-	Timer_SetClientTeammate(client, 0, 1);
 	g_bHurt[client] = false;
 	g_iIgnoreEndTouchStart[client] = 0;
 	g_iTargetNPC[client] = 0;
@@ -1108,7 +1112,6 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
 	g_clientLevel[client] = 0;
-	Timer_SetClientTeammate(client, 0, 1);
 	g_bHurt[client] = false;
 	g_iIgnoreEndTouchStart[client] = 0;
 	g_iTargetNPC[client] = 0;
@@ -3121,24 +3124,27 @@ Menu_NPC_Next(client, zone)
 				
 				if(Timer_IsPlayerTouchingZoneType(client, ZtStart)) Timer_SetIgnoreEndTouchStart(client, 1);
 				
-				if(g_mapZones[zone][Type] == ZtNPC_Next_Double)
+				if(mate > 0)
 				{
-					new mate = Timer_GetClientTeammate(client);
-					
-					TeleportEntity(client, vecDestination, NULL_VECTOR, velStop);
-					CreateTimer(1.5, SetBlockable, client, TIMER_FLAG_NO_MAPCHANGE);
-					SetPush(client);
-					
-					if(mate > 0)
+					if(g_mapZones[zone][Type] == ZtNPC_Next_Double)
 					{
+						
+						new mate;
+						if(g_timerTeams) mate = Timer_GetClientTeammate(client);
+						
+						TeleportEntity(client, vecDestination, NULL_VECTOR, velStop);
+						CreateTimer(1.5, SetBlockable, client, TIMER_FLAG_NO_MAPCHANGE);
+						SetPush(client);
+						
 						TeleportEntity(mate, vecDestination, NULL_VECTOR, velStop);
 						CreateTimer(1.5, SetBlockable, mate, TIMER_FLAG_NO_MAPCHANGE);
 						SetPush(mate);
 					}
-				}
-				else if(Timer_GetCoopStatus(client))
-				{
-					TeleportEntity(Timer_GetClientTeammate(client), vecDestination, NULL_VECTOR, velStop);
+					else if(Timer_GetCoopStatus(client))
+					{
+						TeleportEntity(Timer_GetClientTeammate(client), vecDestination, NULL_VECTOR, velStop);
+					}
+					else TeleportEntity(client, vecDestination, NULL_VECTOR, velStop);
 				}
 				else TeleportEntity(client, vecDestination, NULL_VECTOR, velStop);
 			}
@@ -3166,9 +3172,16 @@ public Handle_Menu_NPC_Next(Handle:menu, MenuAction:action, client, itemNum)
 					
 					if(Timer_IsPlayerTouchingZoneType(client, ZtStart)) Timer_SetIgnoreEndTouchStart(client, 1);
 					
-					if(Timer_GetCoopStatus(client))
+					new mate;
+					if(g_timerTeams) mate= Timer_GetClientTeammate(client);
+					
+					if(mate > 0)
 					{
-						TeleportEntity(Timer_GetClientTeammate(client), vecDestination, NULL_VECTOR, velStop);
+						if(Timer_GetCoopStatus(client))
+						{
+							TeleportEntity(mate, vecDestination, NULL_VECTOR, velStop);
+						}
+						else TeleportEntity(client, vecDestination, NULL_VECTOR, velStop);
 					}
 					else TeleportEntity(client, vecDestination, NULL_VECTOR, velStop);
 				}
@@ -3825,10 +3838,16 @@ ConfirmAbortMenu(client, command)
 	{
 		new Handle:menu = CreateMenu(Handle_ConfirmAbortMenu);
 		
-		if(Timer_GetChallengeStatus(client) == 1)
-			SetMenuTitle(menu, "Are you sure to quit the Challenge?");
-		else if(Timer_GetCoopStatus(client) == 1)
-			SetMenuTitle(menu, "Are you sure to quit the Coop?");
+		new mate;
+		if(g_timerTeams) mate = Timer_GetClientTeammate(client);
+		
+		if(mate > 0)
+		{
+			if(Timer_GetChallengeStatus(client) == 1)
+				SetMenuTitle(menu, "Are you sure to quit the Challenge?");
+			else if(Timer_GetCoopStatus(client) == 1)
+				SetMenuTitle(menu, "Are you sure to quit the Coop?");
+		}else SetMenuTitle(menu, "Are you sure to quit?");
 		
 		if(command == SCMD_RESTART)
 			AddMenuItem(menu, "restart", "Yes");
