@@ -43,7 +43,7 @@ public Action:Command_spec(client, args)
 		new String:arg1[64];
 		GetCmdArgString(arg1, sizeof(arg1));
 		
-		new target = FindTarget(client, arg1);
+		new target = FindTarget(client, arg1, true, true);
 		if (target == -1) 
 		{
 			return Plugin_Handled;

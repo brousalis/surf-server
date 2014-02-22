@@ -229,7 +229,9 @@ enum PhysicModes
 	ModeFPSMin,
 	ModeFPSRedirectStyle,
 	bool:ModeAllowWorldDamage,
-	ModeSpawnHealth
+	ModeSpawnHealth,
+	ModeAutoStrafe,
+	ModeQuakeBhop
 }
 
 new g_Physics[MAX_MODES][PhysicModes];
@@ -481,7 +483,6 @@ LoadPhysics()
 		{
 			KvGetString(hKv, "name", g_Physics[g_ModeCount][ModeName], 32);
 			
-			
 			g_Physics[g_ModeCount][ModeEnable] = bool:KvGetNum(hKv, "enable", 0);
 			g_Physics[g_ModeCount][ModeOrder] = KvGetNum(hKv, "order", 0);
 			
@@ -522,6 +523,8 @@ LoadPhysics()
 			g_Physics[g_ModeCount][ModePointsMulti] = KvGetFloat(hKv, "points_multi", 1.0);
 			g_Physics[g_ModeCount][ModeHoverScale] = KvGetFloat(hKv, "hover_scale", 0.0);
 			g_Physics[g_ModeCount][ModeMaxSpeed] = KvGetFloat(hKv, "max_speed", 0.0);
+			g_Physics[g_ModeCount][ModeAutoStrafe] = KvGetNum(hKv, "auto_strafe", 0);
+			g_Physics[g_ModeCount][ModeQuakeBhop] = KvGetNum(hKv, "quake_bhop", 0);
 			
 			KvGetString(hKv, "tag_name", g_Physics[g_ModeCount][ModeTagName], 32);
 			KvGetString(hKv, "tag_shortname", g_Physics[g_ModeCount][ModeTagShortName], 32);
