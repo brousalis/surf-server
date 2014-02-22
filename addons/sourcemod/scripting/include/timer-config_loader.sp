@@ -220,9 +220,7 @@ enum PhysicModes
 	Float:ModeMaxSpeed,
 	
 	//other
-	bool:ModeSvCheats,
 	bool:ModeLJStats,
-	bool:ModeDrugs,
 	bool:ModeCustom,
 	String:ModeOnFinishExec[128],
 	ModeFPSMax,
@@ -511,8 +509,6 @@ LoadPhysics()
 			g_Physics[g_ModeCount][ModePreventMoveback] = bool:KvGetNum(hKv, "prevent_back", 0);
 			g_Physics[g_ModeCount][ModePreventMoveforward] = bool:KvGetNum(hKv, "prevent_forward", 0);
 			g_Physics[g_ModeCount][ModeForceMoveforward] = bool:KvGetNum(hKv, "force_forward", 0);
-			g_Physics[g_ModeCount][ModeSvCheats] = bool:KvGetNum(hKv, "sv_cheats", 0);
-			g_Physics[g_ModeCount][ModeDrugs] = bool:KvGetNum(hKv, "drugs", 0);
 			g_Physics[g_ModeCount][ModeCustom] = bool:KvGetNum(hKv, "custom", 0);
 			g_Physics[g_ModeCount][ModeFPSMax] = KvGetNum(hKv, "fps_max", 0);
 			g_Physics[g_ModeCount][ModeFPSMin] = KvGetNum(hKv, "fps_min", 0);

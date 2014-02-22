@@ -1217,23 +1217,8 @@ ApplyDifficulty(client)
 		SetEntProp(client, Prop_Send, "m_iFOV", g_Physics[mode][ModeFOV]);
 		SetEntProp(client, Prop_Send, "m_iDefaultFOV", g_Physics[mode][ModeFOV]);
 		
-		if(g_Physics[mode][ModeSvCheats])
-		{
-			//SendConVarValue(client, FindConVar("sv_cheats"), "1");
-		}
-		
 		decl String:auth[32];
 		GetClientAuthString(client, auth, sizeof(auth));
-		
-		//skittles
-		if(g_Physics[mode][ModeDrugs])
-		{
-			ServerCommand("sm_drug #%d 1", GetClientUserId(client));
-		}
-		else
-		{
-			ServerCommand("sm_drug #%d 0", GetClientUserId(client));
-		}
 		
 		if(StrEqual(g_Physics[mode][ModeDesc], ""))
 		{
