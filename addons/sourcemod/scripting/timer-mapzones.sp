@@ -333,10 +333,11 @@ public OnTimerStarted(client)
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
-	if (!IsPlayerAlive(client) || IsClientSourceTV(client))
-	{
+	if(g_mapZoneEditors[client][Step] == 0)
 		return Plugin_Continue;
-	}
+	
+	if (!IsPlayerAlive(client) || IsClientSourceTV(client))
+		return Plugin_Continue;
 
 	if (buttons & IN_ATTACK2)
 	{
@@ -345,9 +346,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			new Float:vec[3];			
 			GetClientAbsOrigin(client, vec);
 			g_mapZoneEditors[client][Point1] = vec;
-			
 			DisplayPleaseWaitMenu(client);
-			
 			CreateTimer(1.0, ChangeStep, GetClientSerial(client));
 			return Plugin_Handled;
 		}
@@ -356,22 +355,47 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			new Float:vec[3];
 			GetClientAbsOrigin(client, vec);
 			g_mapZoneEditors[client][Point2] = vec;
-			
 			g_mapZoneEditors[client][Step] = 3;
-			
 			DisplaySelectZoneTypeMenu(client, 0);
 			
 			return Plugin_Handled;
 		}		
 	}
 	
-	StopPreSpeed(client);
-	
 	return Plugin_Continue;
 }
 
 //public Action:StartTouchTrigger(caller, activator)
-public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
+public Action:OnTouchTrigger(caller, activator)
+{
+	if(!g_bZonesLoaded)
+		return;
+	
+	if(g_mapZonesCount < 1)
+		return;
+	
+	if (activator < 1 || activator > MaxClients)
+	{
+		return;
+	}
+	
+	if (!IsClientInGame(activator))
+	{
+		return;
+	}
+	
+	if (!IsPlayerAlive(activator))
+	{
+		return;
+	}
+	
+	new client = activator;
+	
+	StopPreSpeed(client);
+}
+
+//public Action:StartTouchTrigger(caller, activator)
+public Action:StartTouchTrigger(caller, activator)
 {
 	if(!g_bZonesLoaded)
 		return;
@@ -688,7 +712,7 @@ public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
 }
 
 //public Action:EndTouchTrigger(caller, activator)
-public EndTouchTrigger(const String:output[], caller, activator, Float:delay)
+public Action:EndTouchTrigger(caller, activator)
 {
 	if(!g_bZonesLoaded)
 		return;
@@ -1092,38 +1116,6 @@ AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:point1
 	
 	SQL_TQuery(g_hSQL, MapZoneChangedCallback, query, _, DBPrio_Normal);	
 }
-
-/*
-DeleteMapZoneType(String:map[], MapZoneType:type)
-{
-decl String:query[512];
-
-decl String:deleteQuery[128];
-Format(deleteQuery, sizeof(deleteQuery), "DELETE FROM mapzone WHERE map = '%s' AND type = %d;", map, type);
-
-SQL_TQuery(g_hSQL, MapZoneChangedCallback, deleteQuery, _, DBPrio_High);	
-}
-
-DeleteMapZoneLevel(String:map[], level_id)
-{
-decl String:query[512];
-
-decl String:deleteQuery[128];
-Format(deleteQuery, sizeof(deleteQuery), "DELETE FROM mapzone WHERE map = '%s' AND level_id = %d;", map, level_id);
-
-SQL_TQuery(g_hSQL, MapZoneChangedCallback, deleteQuery, _, DBPrio_High);	
-}
-
-DeleteMapZoneName(String:map[], String:name[])
-{
-decl String:query[512];
-
-decl String:deleteQuery[128];
-Format(deleteQuery, sizeof(deleteQuery), "DELETE FROM mapzone WHERE map = '%s' AND name = %s;", map, name);
-
-SQL_TQuery(g_hSQL, MapZoneChangedCallback, deleteQuery, _, DBPrio_High);	
-}
-*/
 
 public MapZoneChangedCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
 {
@@ -1622,28 +1614,24 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			{
 				zonetype = ZtStop;
 				ZoneName = "Stop Timer";
-				LvlID = -1;
 				valid = true;
 			}
 			else if(StrEqual(info, "restart"))
 			{
 				zonetype = ZtRestart;
 				ZoneName = "Restart Timer";
-				LvlID = -2;
 				valid = true;
 			}
 			else if(StrEqual(info, "last"))
 			{
 				zonetype = ZtLast;
 				ZoneName = "Tele Last Level";
-				LvlID = -3;
 				valid = true;
 			}
 			else if(StrEqual(info, "next"))
 			{
 				zonetype = ZtNext;
 				ZoneName = "Tele Next Level";
-				LvlID = -4;
 				valid = true;
 			}
 			else if(StrEqual(info, "level"))
@@ -1712,154 +1700,132 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			{
 				zonetype = ZtBlock;
 				ZoneName = "Block";
-				LvlID = -6;
 				valid = true;
 			}
 			else if(StrEqual(info, "limit"))
 			{
 				zonetype = ZtLimitSpeed;
 				ZoneName = "LimitSpeed";
-				LvlID = -7;
 				valid = true;
 			}
 			else if(StrEqual(info, "clip"))
 			{
 				zonetype = ZtPlayerClip;
 				ZoneName = "PlayerClip";
-				LvlID = -8;
 				valid = true;
 			}
 			else if(StrEqual(info, "longjump"))
 			{
 				zonetype = ZtLongjump;
 				ZoneName = "Longjump";
-				LvlID = -9;
 				valid = true;
 			}
 			else if(StrEqual(info, "booster"))
 			{
 				zonetype = ZtBooster;
 				ZoneName = "Booster";
-				LvlID = -10;
 				valid = true;
 			}
 			else if(StrEqual(info, "fullbooster"))
 			{
 				zonetype = ZtFullBooster;
 				ZoneName = "FullBooster";
-				LvlID = -11;
 				valid = true;
 			}
 			else if(StrEqual(info, "arena"))
 			{
 				zonetype = ZtArena;
 				ZoneName = "Arena";
-				LvlID = -12;
 				valid = true;
 			}
 			else if(StrEqual(info, "bounceback"))
 			{
 				zonetype = ZtBounceBack;
 				ZoneName = "BounceBack";
-				LvlID = -13;
 				valid = true;
 			}
 			else if(StrEqual(info, "jail"))
 			{
 				zonetype = ZtJail;
 				ZoneName = "Jail";
-				LvlID = -14;
 				valid = true;
 			}
 			else if(StrEqual(info, "up"))
 			{
 				zonetype = ZtPushUp;
 				ZoneName = "Push Up";
-				LvlID = -15;
 				valid = true;
 			}
 			else if(StrEqual(info, "down"))
 			{
 				zonetype = ZtPushDown;
 				ZoneName = "Push Down";
-				LvlID = -21;
 				valid = true;
 			}
 			else if(StrEqual(info, "north"))
 			{
 				zonetype = ZtPushNorth;
 				ZoneName = "Push North";
-				LvlID = -22;
 				valid = true;
 			}
 			else if(StrEqual(info, "south"))
 			{
 				zonetype = ZtPushSouth;
 				ZoneName = "Push South";
-				LvlID = -23;
 				valid = true;
 			}
 			else if(StrEqual(info, "east"))
 			{
 				zonetype = ZtPushEast;
 				ZoneName = "Push East";
-				LvlID = -24;
 				valid = true;
 			}
 			else if(StrEqual(info, "west"))
 			{
 				zonetype = ZtPushWest;
 				ZoneName = "Push West";
-				LvlID = -25;
 				valid = true;
 			}
 			else if(StrEqual(info, "auto"))
 			{
 				zonetype = ZtAuto;
 				ZoneName = "Enable Auto Bhop";
-				LvlID = -26;
 				valid = true;
 			}
 			else if(StrEqual(info, "noauto"))
 			{
 				zonetype = ZtNoAuto;
 				ZoneName = "DisableAuto Bhop";
-				LvlID = -27;
 				valid = true;
 			}
 			else if(StrEqual(info, "bullettime"))
 			{
 				zonetype = ZtBulletTime;
 				ZoneName = "Bullet Time";
-				LvlID = -16;
 				valid = true;
 			}
 			else if(StrEqual(info, "nogravity"))
 			{
 				zonetype = ZtNoGravityOverwrite;
 				ZoneName = "No Gravity Overwrite";
-				LvlID = -17;
 				valid = true;
 			}
 			else if(StrEqual(info, "noboost"))
 			{
 				zonetype = ZtNoBoost;
 				ZoneName = "No Boost";
-				LvlID = -18;
 				valid = true;
 			}
 			else if(StrEqual(info, "restart_normal"))
 			{
 				zonetype = ZtRestartNormalTimer;
 				ZoneName = "Restart Normal";
-				LvlID = -19;
 				valid = true;
 			}
 			else if(StrEqual(info, "restart_bonus"))
 			{
 				zonetype = ZtRestartBonusTimer;
 				ZoneName = "Restart Bonust";
-				LvlID = -20;
 				valid = true;
 			}
 			else if(StrEqual(info, "short_end"))
@@ -1873,21 +1839,18 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			{
 				zonetype = ZtReset;
 				ZoneName = "Reset Timer";
-				LvlID = -21;
 				valid = true;
 			}
 			else if(StrEqual(info, "hover"))
 			{
 				zonetype = ZtHover;
 				ZoneName = "Hover";
-				LvlID = -22;
 				valid = true;
 			}
 			else if(StrEqual(info, "freestyle"))
 			{
 				zonetype = ZtFreeStyle;
 				ZoneName = "Freestyle Zone";
-				LvlID = -23;
 				valid = true;
 			}
 			
@@ -2166,97 +2129,85 @@ StopPreSpeed(client)
 	new mode = Timer_GetMode(client);
 	new Float:maxspeed = g_Physics[mode][ModeBlockPreSpeeding];
 	
-	if(maxspeed <= 0.0)
+	if(!Timer_IsPlayerTouchingZoneType(client, ZtStart) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtBonusStart) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtLimitSpeed) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtFullBooster) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtPlayerClip) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtBounceBack) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtPushUp) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtPushDown) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtPushNorth) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtPushSouth) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtPushEast) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtPushWest) &&
+	!Timer_IsPlayerTouchingZoneType(client, ZtHover))
 		return;
 	
-	for (new zone = 0; zone < g_mapZonesCount; zone++)
+	new Float:push_maxspeed = GetEntPropFloat(client, Prop_Send, "m_flMaxspeed");
+	
+	if (Timer_IsPlayerTouchingZoneType(client, ZtFullBooster))
 	{
-		if (g_mapZones[zone][Type] != ZtStart && 
-			g_mapZones[zone][Type] != ZtBonusStart && 
-		g_mapZones[zone][Type] != ZtLimitSpeed && 
-		g_mapZones[zone][Type] != ZtFullBooster && 
-		g_mapZones[zone][Type] != ZtPlayerClip && 
-		g_mapZones[zone][Type] != ZtBounceBack && 
-		g_mapZones[zone][Type] != ZtPushUp && 
-		g_mapZones[zone][Type] != ZtPushDown && 
-		g_mapZones[zone][Type] != ZtPushNorth && 
-		g_mapZones[zone][Type] != ZtPushSouth && 
-		g_mapZones[zone][Type] != ZtPushEast && 
-		g_mapZones[zone][Type] != ZtPushWest && 
-		g_mapZones[zone][Type] != ZtHover)
-		continue;
-		
-		if (IsInsideBox(vec, g_mapZones[zone][Point1][0], g_mapZones[zone][Point1][1], g_mapZones[zone][Point1][2], g_mapZones[zone][Point2][0], g_mapZones[zone][Point2][1], g_mapZones[zone][Point2][2]))
-		{
-			new Float:push_maxspeed = GetEntPropFloat(client, Prop_Send, "m_flMaxspeed");
-			
-			if (g_mapZones[zone][Type] == ZtFullBooster)
-			{
-				CheckVelocity(client, 4, maxspeed);
-			}
-			else if (g_mapZones[zone][Type] == ZtPlayerClip)
-			{
-				CheckVelocity(client, 0, 10000.0);
-			}
-			else if (g_mapZones[zone][Type] == ZtBounceBack)
-			{
-				CheckVelocity(client, 2, 10000.0);
-			}
-			else if (g_mapZones[zone][Type] == ZtPushUp)
-			{
-				new Float:fVelocity[3];
-				fVelocity[2] = push_maxspeed;
-				TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
-			}
-			else if (g_mapZones[zone][Type] == ZtPushDown)
-			{
-				new Float:fVelocity[3];
-				fVelocity[2] = push_maxspeed*-1.0;
-				TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
-			}
-			else if (g_mapZones[zone][Type] == ZtPushNorth)
-			{
-				new Float:fVelocity[3];
-				fVelocity[0] = push_maxspeed;
-				TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
-				Block_MovementControl(client);
-			}
-			else if (g_mapZones[zone][Type] == ZtPushSouth)
-			{
-				new Float:fVelocity[3];
-				fVelocity[0] = push_maxspeed*-1.0;
-				TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
-				Block_MovementControl(client);
-			}
-			else if (g_mapZones[zone][Type] == ZtPushEast)
-			{
-				new Float:fVelocity[3];
-				fVelocity[1] = push_maxspeed*-1;
-				TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
-				Block_MovementControl(client);
-			}
-			else if (g_mapZones[zone][Type] == ZtPushWest)
-			{
-				new Float:fVelocity[3];
-				fVelocity[1] = push_maxspeed;
-				TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
-				Block_MovementControl(client);
-			}
-			else if (g_mapZones[zone][Type] == ZtHover)
-			{
-				new Float:fVelocity[3];
-				GetEntPropVector(client, Prop_Data, "m_vecVelocity", fVelocity);
-				fVelocity[2] = -1.0;
-				TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
-			}
-			else
-			{
-				CheckVelocity(client, 1, maxspeed);
-			}
-			
-			DrawZone(zone, true);
-			break;
-		}
+		CheckVelocity(client, 4, maxspeed);
+	}
+	else if (Timer_IsPlayerTouchingZoneType(client, ZtPlayerClip))
+	{
+		CheckVelocity(client, 0, 10000.0);
+	}
+	else if (Timer_IsPlayerTouchingZoneType(client, ZtBounceBack))
+	{
+		CheckVelocity(client, 2, 10000.0);
+	}
+	else if (Timer_IsPlayerTouchingZoneType(client, ZtPushUp))
+	{
+		new Float:fVelocity[3];
+		fVelocity[2] = push_maxspeed;
+		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+	}
+	else if (Timer_IsPlayerTouchingZoneType(client, ZtPushDown))
+	{
+		new Float:fVelocity[3];
+		fVelocity[2] = push_maxspeed*-1.0;
+		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+	}
+	else if (Timer_IsPlayerTouchingZoneType(client, ZtPushNorth))
+	{
+		new Float:fVelocity[3];
+		fVelocity[0] = push_maxspeed;
+		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+		Block_MovementControl(client);
+	}
+	else if (Timer_IsPlayerTouchingZoneType(client, ZtPushSouth))
+	{
+		new Float:fVelocity[3];
+		fVelocity[0] = push_maxspeed*-1.0;
+		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+		Block_MovementControl(client);
+	}
+	else if (Timer_IsPlayerTouchingZoneType(client, ZtPushEast))
+	{
+		new Float:fVelocity[3];
+		fVelocity[1] = push_maxspeed*-1;
+		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+		Block_MovementControl(client);
+	}
+	else if (Timer_IsPlayerTouchingZoneType(client, ZtPushWest))
+	{
+		new Float:fVelocity[3];
+		fVelocity[1] = push_maxspeed;
+		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+		Block_MovementControl(client);
+	}
+	else if (Timer_IsPlayerTouchingZoneType(client, ZtHover))
+	{
+		new Float:fVelocity[3];
+		GetEntPropVector(client, Prop_Data, "m_vecVelocity", fVelocity);
+		fVelocity[2] = -1.0;
+		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+	}
+	else
+	{
+		CheckVelocity(client, 1, maxspeed);
 	}
 }
 
@@ -2337,7 +2288,6 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 			lefttopfront[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
 		else
 			lefttopfront[2] = fFrom[2];
-		//lefttopfront[2] = fFrom[2]+100;
 		decl Float:righttopfront[3];
 		righttopfront[0] = fTo[0];
 		righttopfront[1] = fFrom[1];
@@ -2345,7 +2295,6 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 			righttopfront[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
 		else
 			righttopfront[2] = fFrom[2];
-		//righttopfront[2] = fFrom[2]+100;
 		
 		//initialize tempoary variables top back
 		decl Float:fLeftTopBack[3];
@@ -2355,7 +2304,6 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 			fLeftTopBack[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
 		else
 			fLeftTopBack[2] = fFrom[2];
-		//fLeftTopBack[2] = fFrom[2]+100;
 		decl Float:fRightTopBack[3];
 		fRightTopBack[0] = fTo[0];
 		fRightTopBack[1] = fTo[1];
@@ -2363,7 +2311,6 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 			fRightTopBack[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
 		else
 		fRightTopBack[2] = fFrom[2];
-		//fRightTopBack[2] = fFrom[2]+100;
 		
 		//create the box
 		TE_SetupBeamPoints(lefttopfront,righttopfront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,10,0.0,color,0);TE_SendToAll(0.0);
@@ -2389,245 +2336,232 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 }
 
 
-/*
-DrawBlueBalls(Float:fFrom[3], Float:fTo[3])
+stock DrawBlueBalls(Float:fFrom[3], Float:fTo[3])
 {
-//initialize tempoary variables bottom front
-decl Float:fLeftBottomFront[3];
-fLeftBottomFront[0] = fFrom[0];
-fLeftBottomFront[1] = fFrom[1];
-fLeftBottomFront[2] = fTo[2]-20;
+	//initialize tempoary variables bottom front
+	decl Float:fLeftBottomFront[3];
+	fLeftBottomFront[0] = fFrom[0];
+	fLeftBottomFront[1] = fFrom[1];
+	fLeftBottomFront[2] = fTo[2]-20;
 
-decl Float:fRightBottomFront[3];
-fRightBottomFront[0] = fTo[0];
-fRightBottomFront[1] = fFrom[1];
-fRightBottomFront[2] = fTo[2]-20;
+	decl Float:fRightBottomFront[3];
+	fRightBottomFront[0] = fTo[0];
+	fRightBottomFront[1] = fFrom[1];
+	fRightBottomFront[2] = fTo[2]-20;
 
-//initialize tempoary variables bottom back
-decl Float:fLeftBottomBack[3];
-fLeftBottomBack[0] = fFrom[0];
-fLeftBottomBack[1] = fTo[1];
-fLeftBottomBack[2] = fTo[2]-20;
+	//initialize tempoary variables bottom back
+	decl Float:fLeftBottomBack[3];
+	fLeftBottomBack[0] = fFrom[0];
+	fLeftBottomBack[1] = fTo[1];
+	fLeftBottomBack[2] = fTo[2]-20;
 
-decl Float:fRightBottomBack[3];
-fRightBottomBack[0] = fTo[0];
-fRightBottomBack[1] = fTo[1];
-fRightBottomBack[2] = fTo[2]-20;
+	decl Float:fRightBottomBack[3];
+	fRightBottomBack[0] = fTo[0];
+	fRightBottomBack[1] = fTo[1];
+	fRightBottomBack[2] = fTo[2]-20;
 
-//initialize tempoary variables top front
-decl Float:fLeftTopFront[3];
-fLeftTopFront[0] = fFrom[0];
-fLeftTopFront[1] = fFrom[1];
-fLeftTopFront[2] = fFrom[2]+20;
-decl Float:fRightTopFront[3];
-fRightTopFront[0] = fTo[0];
-fRightTopFront[1] = fFrom[1];
-fRightTopFront[2] = fFrom[2]+20;
+	//initialize tempoary variables top front
+	decl Float:fLeftTopFront[3];
+	fLeftTopFront[0] = fFrom[0];
+	fLeftTopFront[1] = fFrom[1];
+	fLeftTopFront[2] = fFrom[2]+20;
+	decl Float:fRightTopFront[3];
+	fRightTopFront[0] = fTo[0];
+	fRightTopFront[1] = fFrom[1];
+	fRightTopFront[2] = fFrom[2]+20;
 
-//initialize tempoary variables top back
-decl Float:fLeftTopBack[3];
-fLeftTopBack[0] = fFrom[0];
-fLeftTopBack[1] = fTo[1];
-fLeftTopBack[2] = fFrom[2]+20;
-decl Float:fRightTopBack[3];
-fRightTopBack[0] = fTo[0];
-fRightTopBack[1] = fTo[1];
-fRightTopBack[2] = fFrom[2]+20;
+	//initialize tempoary variables top back
+	decl Float:fLeftTopBack[3];
+	fLeftTopBack[0] = fFrom[0];
+	fLeftTopBack[1] = fTo[1];
+	fLeftTopBack[2] = fFrom[2]+20;
+	decl Float:fRightTopBack[3];
+	fRightTopBack[0] = fTo[0];
+	fRightTopBack[1] = fTo[1];
+	fRightTopBack[2] = fFrom[2]+20;
 
-//fLeftTopBack[2] -= 1490.0;TE_SetupSmoke(fLeftBottomBack, gSmoke1, 10.0, 2);TE_SendToAll();
-TE_SetupGlowSprite(fLeftTopBack, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
-
-//fLeftTopFront[2] -= 1490.0;TE_SetupSmoke(fLeftBottomFront, gSmoke1, 10.0, 2);TE_SendToAll();
-TE_SetupGlowSprite(fLeftTopFront, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
-
-//fRightTopFront[2] -= 1490.0;TE_SetupSmoke(fRightBottomFront, gSmoke1, 10.0, 2);TE_SendToAll();
-TE_SetupGlowSprite(fRightTopFront, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
-
-//fRightTopBack[2] -= 1490.0;TE_SetupSmoke(fRightBottomBack, gSmoke1, 10.0, 2);TE_SendToAll();
-TE_SetupGlowSprite(fRightTopBack, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
+	TE_SetupGlowSprite(fLeftTopBack, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
+	TE_SetupGlowSprite(fLeftTopFront, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
+	TE_SetupGlowSprite(fRightTopFront, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
+	TE_SetupGlowSprite(fRightTopBack, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
 }
 
-DrawSmoke(Float:fFrom[3], Float:fTo[3])
+stock DrawSmoke(Float:fFrom[3], Float:fTo[3])
 {
-//initialize tempoary variables bottom front
-decl Float:fLeftBottomFront[3];
-fLeftBottomFront[0] = fFrom[0];
-fLeftBottomFront[1] = fFrom[1];
-fLeftBottomFront[2] = fTo[2]-50;
+	//initialize tempoary variables bottom front
+	decl Float:fLeftBottomFront[3];
+	fLeftBottomFront[0] = fFrom[0];
+	fLeftBottomFront[1] = fFrom[1];
+	fLeftBottomFront[2] = fTo[2]-50;
 
-decl Float:fRightBottomFront[3];
-fRightBottomFront[0] = fTo[0];
-fRightBottomFront[1] = fFrom[1];
-fRightBottomFront[2] = fTo[2]-50;
+	decl Float:fRightBottomFront[3];
+	fRightBottomFront[0] = fTo[0];
+	fRightBottomFront[1] = fFrom[1];
+	fRightBottomFront[2] = fTo[2]-50;
 
-//initialize tempoary variables bottom back
-decl Float:fLeftBottomBack[3];
-fLeftBottomBack[0] = fFrom[0];
-fLeftBottomBack[1] = fTo[1];
-fLeftBottomBack[2] = fTo[2]-50;
+	//initialize tempoary variables bottom back
+	decl Float:fLeftBottomBack[3];
+	fLeftBottomBack[0] = fFrom[0];
+	fLeftBottomBack[1] = fTo[1];
+	fLeftBottomBack[2] = fTo[2]-50;
 
-decl Float:fRightBottomBack[3];
-fRightBottomBack[0] = fTo[0];
-fRightBottomBack[1] = fTo[1];
-fRightBottomBack[2] = fTo[2]-50;
+	decl Float:fRightBottomBack[3];
+	fRightBottomBack[0] = fTo[0];
+	fRightBottomBack[1] = fTo[1];
+	fRightBottomBack[2] = fTo[2]-50;
 
-//initialize tempoary variables top front
-decl Float:fLeftTopFront[3];
-fLeftTopFront[0] = fFrom[0];
-fLeftTopFront[1] = fFrom[1];
-fLeftTopFront[2] = fFrom[2]+50;
-decl Float:fRightTopFront[3];
-fRightTopFront[0] = fTo[0];
-fRightTopFront[1] = fFrom[1];
-fRightTopFront[2] = fFrom[2]+50;
+	//initialize tempoary variables top front
+	decl Float:fLeftTopFront[3];
+	fLeftTopFront[0] = fFrom[0];
+	fLeftTopFront[1] = fFrom[1];
+	fLeftTopFront[2] = fFrom[2]+50;
+	decl Float:fRightTopFront[3];
+	fRightTopFront[0] = fTo[0];
+	fRightTopFront[1] = fFrom[1];
+	fRightTopFront[2] = fFrom[2]+50;
 
-//initialize tempoary variables top back
-decl Float:fLeftTopBack[3];
-fLeftTopBack[0] = fFrom[0];
-fLeftTopBack[1] = fTo[1];
-fLeftTopBack[2] = fFrom[2]+50;
-decl Float:fRightTopBack[3];
-fRightTopBack[0] = fTo[0];
-fRightTopBack[1] = fTo[1];
-fRightTopBack[2] = fFrom[2]+50;
+	//initialize tempoary variables top back
+	decl Float:fLeftTopBack[3];
+	fLeftTopBack[0] = fFrom[0];
+	fLeftTopBack[1] = fTo[1];
+	fLeftTopBack[2] = fFrom[2]+50;
+	decl Float:fRightTopBack[3];
+	fRightTopBack[0] = fTo[0];
+	fRightTopBack[1] = fTo[1];
+	fRightTopBack[2] = fFrom[2]+50;
 
-TE_SetupSmoke(fLeftTopBack, gSmoke1, 10.0, 2);TE_SendToAll();
-
-TE_SetupSmoke(fLeftTopFront, gSmoke1, 10.0, 2);TE_SendToAll();
-
-TE_SetupSmoke(fRightTopFront, gSmoke1, 10.0, 2);TE_SendToAll();
-
-TE_SetupSmoke(fRightTopBack, gSmoke1, 10.0, 2);TE_SendToAll();
+	TE_SetupSmoke(fLeftTopBack, gSmoke1, 10.0, 2);TE_SendToAll();
+	TE_SetupSmoke(fLeftTopFront, gSmoke1, 10.0, 2);TE_SendToAll();
+	TE_SetupSmoke(fRightTopFront, gSmoke1, 10.0, 2);TE_SendToAll();
+	TE_SetupSmoke(fRightTopBack, gSmoke1, 10.0, 2);TE_SendToAll();
 }
 
-DrawXBeam(Float:fFrom[3], Float:fTo[3])
+stock DrawXBeam(Float:fFrom[3], Float:fTo[3])
 {
-//initialize tempoary variables bottom front
-decl Float:fLeftBottomFront[3];
-fLeftBottomFront[0] = fFrom[0];
-fLeftBottomFront[1] = fFrom[1];
-fLeftBottomFront[2] = fTo[2]-20;
+	//initialize tempoary variables bottom front
+	decl Float:fLeftBottomFront[3];
+	fLeftBottomFront[0] = fFrom[0];
+	fLeftBottomFront[1] = fFrom[1];
+	fLeftBottomFront[2] = fTo[2]-20;
 
-decl Float:fRightBottomFront[3];
-fRightBottomFront[0] = fTo[0];
-fRightBottomFront[1] = fFrom[1];
-fRightBottomFront[2] = fTo[2]-20;
+	decl Float:fRightBottomFront[3];
+	fRightBottomFront[0] = fTo[0];
+	fRightBottomFront[1] = fFrom[1];
+	fRightBottomFront[2] = fTo[2]-20;
 
-//initialize tempoary variables bottom back
-decl Float:fLeftBottomBack[3];
-fLeftBottomBack[0] = fFrom[0];
-fLeftBottomBack[1] = fTo[1];
-fLeftBottomBack[2] = fTo[2]-20;
+	//initialize tempoary variables bottom back
+	decl Float:fLeftBottomBack[3];
+	fLeftBottomBack[0] = fFrom[0];
+	fLeftBottomBack[1] = fTo[1];
+	fLeftBottomBack[2] = fTo[2]-20;
 
-decl Float:fRightBottomBack[3];
-fRightBottomBack[0] = fTo[0];
-fRightBottomBack[1] = fTo[1];
-fRightBottomBack[2] = fTo[2]-20;
+	decl Float:fRightBottomBack[3];
+	fRightBottomBack[0] = fTo[0];
+	fRightBottomBack[1] = fTo[1];
+	fRightBottomBack[2] = fTo[2]-20;
 
-//initialize tempoary variables top front
-decl Float:fLeftTopFront[3];
-fLeftTopFront[0] = fFrom[0];
-fLeftTopFront[1] = fFrom[1];
-fLeftTopFront[2] = fFrom[2]+20;
-decl Float:fRightTopFront[3];
-fRightTopFront[0] = fTo[0];
-fRightTopFront[1] = fFrom[1];
-fRightTopFront[2] = fFrom[2]+20;
+	//initialize tempoary variables top front
+	decl Float:fLeftTopFront[3];
+	fLeftTopFront[0] = fFrom[0];
+	fLeftTopFront[1] = fFrom[1];
+	fLeftTopFront[2] = fFrom[2]+20;
+	decl Float:fRightTopFront[3];
+	fRightTopFront[0] = fTo[0];
+	fRightTopFront[1] = fFrom[1];
+	fRightTopFront[2] = fFrom[2]+20;
 
-//initialize tempoary variables top back
-decl Float:fLeftTopBack[3];
-fLeftTopBack[0] = fFrom[0];
-fLeftTopBack[1] = fTo[1];
-fLeftTopBack[2] = fFrom[2]+20;
-decl Float:fRightTopBack[3];
-fRightTopBack[0] = fTo[0];
-fRightTopBack[1] = fTo[1];
-fRightTopBack[2] = fFrom[2]+20;
+	//initialize tempoary variables top back
+	decl Float:fLeftTopBack[3];
+	fLeftTopBack[0] = fFrom[0];
+	fLeftTopBack[1] = fTo[1];
+	fLeftTopBack[2] = fFrom[2]+20;
+	decl Float:fRightTopBack[3];
+	fRightTopBack[0] = fTo[0];
+	fRightTopBack[1] = fTo[1];
+	fRightTopBack[2] = fFrom[2]+20;
 
-TE_SetupBeamPoints(fRightTopBack, fLeftTopFront, gLaser1, 0, 0, 0, 1.1, 25.0, 25.0, 0, 1.0, {255, 0, 0, 255}, 3 );TE_SendToAll();
-TE_SetupBeamPoints(fLeftTopBack, fRightTopFront, gLaser1, 0, 0, 0, 1.1, 25.0, 25.0, 0, 1.0, {255, 0, 0, 255}, 3 );TE_SendToAll();
+	TE_SetupBeamPoints(fRightTopBack, fLeftTopFront, gLaser1, 0, 0, 0, 1.1, 25.0, 25.0, 0, 1.0, {255, 0, 0, 255}, 3 );TE_SendToAll();
+	TE_SetupBeamPoints(fLeftTopBack, fRightTopFront, gLaser1, 0, 0, 0, 1.1, 25.0, 25.0, 0, 1.0, {255, 0, 0, 255}, 3 );TE_SendToAll();
 }
 
-DrawXBeam2(Float:fFrom[3], Float:fTo[3])
+stock DrawXBeam2(Float:fFrom[3], Float:fTo[3])
 {
-//initialize tempoary variables bottom front
-decl Float:fLeftBottomFront[3];
-fLeftBottomFront[0] = fFrom[0];
-fLeftBottomFront[1] = fFrom[1];
-fLeftBottomFront[2] = fTo[2]-20;
+	//initialize tempoary variables bottom front
+	decl Float:fLeftBottomFront[3];
+	fLeftBottomFront[0] = fFrom[0];
+	fLeftBottomFront[1] = fFrom[1];
+	fLeftBottomFront[2] = fTo[2]-20;
 
-decl Float:fRightBottomFront[3];
-fRightBottomFront[0] = fTo[0];
-fRightBottomFront[1] = fFrom[1];
-fRightBottomFront[2] = fTo[2]-20;
+	decl Float:fRightBottomFront[3];
+	fRightBottomFront[0] = fTo[0];
+	fRightBottomFront[1] = fFrom[1];
+	fRightBottomFront[2] = fTo[2]-20;
 
-//initialize tempoary variables bottom back
-decl Float:fLeftBottomBack[3];
-fLeftBottomBack[0] = fFrom[0];
-fLeftBottomBack[1] = fTo[1];
-fLeftBottomBack[2] = fTo[2]-20;
+	//initialize tempoary variables bottom back
+	decl Float:fLeftBottomBack[3];
+	fLeftBottomBack[0] = fFrom[0];
+	fLeftBottomBack[1] = fTo[1];
+	fLeftBottomBack[2] = fTo[2]-20;
 
-decl Float:fRightBottomBack[3];
-fRightBottomBack[0] = fTo[0];
-fRightBottomBack[1] = fTo[1];
-fRightBottomBack[2] = fTo[2]-20;
+	decl Float:fRightBottomBack[3];
+	fRightBottomBack[0] = fTo[0];
+	fRightBottomBack[1] = fTo[1];
+	fRightBottomBack[2] = fTo[2]-20;
 
-//initialize tempoary variables top front
-decl Float:fLeftTopFront[3];
-fLeftTopFront[0] = fFrom[0];
-fLeftTopFront[1] = fFrom[1];
-fLeftTopFront[2] = fFrom[2]+20;
-decl Float:fRightTopFront[3];
-fRightTopFront[0] = fTo[0];
-fRightTopFront[1] = fFrom[1];
-fRightTopFront[2] = fFrom[2]+20;
+	//initialize tempoary variables top front
+	decl Float:fLeftTopFront[3];
+	fLeftTopFront[0] = fFrom[0];
+	fLeftTopFront[1] = fFrom[1];
+	fLeftTopFront[2] = fFrom[2]+20;
+	decl Float:fRightTopFront[3];
+	fRightTopFront[0] = fTo[0];
+	fRightTopFront[1] = fFrom[1];
+	fRightTopFront[2] = fFrom[2]+20;
 
-//initialize tempoary variables top back
-decl Float:fLeftTopBack[3];
-fLeftTopBack[0] = fFrom[0];
-fLeftTopBack[1] = fTo[1];
-fLeftTopBack[2] = fFrom[2]+20;
-decl Float:fRightTopBack[3];
-fRightTopBack[0] = fTo[0];
-fRightTopBack[1] = fTo[1];
-fRightTopBack[2] = fFrom[2]+20;
+	//initialize tempoary variables top back
+	decl Float:fLeftTopBack[3];
+	fLeftTopBack[0] = fFrom[0];
+	fLeftTopBack[1] = fTo[1];
+	fLeftTopBack[2] = fFrom[2]+20;
+	decl Float:fRightTopBack[3];
+	fRightTopBack[0] = fTo[0];
+	fRightTopBack[1] = fTo[1];
+	fRightTopBack[2] = fFrom[2]+20;
 
-TE_SetupBeamPoints(fRightTopBack, fLeftTopFront, gLaser1, 0, 0, 0, 1.1, 25.0, 25.0, 0, 1.0, {255, 0, 255, 255}, 3 );TE_SendToAll();
-TE_SetupBeamPoints(fLeftTopBack, fRightTopFront, gLaser1, 0, 0, 0, 1.1, 25.0, 25.0, 0, 1.0, {255, 0, 255, 255}, 3 );TE_SendToAll();
+	TE_SetupBeamPoints(fRightTopBack, fLeftTopFront, gLaser1, 0, 0, 0, 1.1, 25.0, 25.0, 0, 1.0, {255, 0, 255, 255}, 3 );TE_SendToAll();
+	TE_SetupBeamPoints(fLeftTopBack, fRightTopFront, gLaser1, 0, 0, 0, 1.1, 25.0, 25.0, 0, 1.0, {255, 0, 255, 255}, 3 );TE_SendToAll();
 }
 
-ZoneEffectTesla(targetzone)
+stock ZoneEffectTesla(targetzone)
 {
-new Float:zero[3];
+	new Float:zero[3];
 
-new Float:center[3];
-center[0] = (g_mapZones[targetzone][Point1][0] + g_mapZones[targetzone][Point2][0]) / 2.0;
-center[1] = (g_mapZones[targetzone][Point1][1] + g_mapZones[targetzone][Point2][1]) / 2.0;
-center[2] = (g_mapZones[targetzone][Point1][2] + g_mapZones[targetzone][Point2][2]) / 2.0;
-center[2] = center[2]+20;
+	new Float:center[3];
+	center[0] = (g_mapZones[targetzone][Point1][0] + g_mapZones[targetzone][Point2][0]) / 2.0;
+	center[1] = (g_mapZones[targetzone][Point1][1] + g_mapZones[targetzone][Point2][1]) / 2.0;
+	center[2] = (g_mapZones[targetzone][Point1][2] + g_mapZones[targetzone][Point2][2]) / 2.0;
+	center[2] = center[2]+20;
 
-new laserent = CreateEntityByName("point_tesla");
-DispatchKeyValue(laserent, "m_flRadius", "70.0");
-DispatchKeyValue(laserent, "m_SoundName", "DoSpark");
-DispatchKeyValue(laserent, "beamcount_min", "42");
-DispatchKeyValue(laserent, "beamcount_max", "62");
-DispatchKeyValue(laserent, "texture", "sprites/physbeam.vmt");
-DispatchKeyValue(laserent, "m_Color", "255 255 255");
-DispatchKeyValue(laserent, "thick_min", "10.0");
-DispatchKeyValue(laserent, "thick_max", "11.0");
-DispatchKeyValue(laserent, "lifetime_min", "0.3");
-DispatchKeyValue(laserent, "lifetime_max", "0.3");
-DispatchKeyValue(laserent, "interval_min", "0.1");
-DispatchKeyValue(laserent, "interval_max", "0.2");
-DispatchSpawn(laserent);
+	new laserent = CreateEntityByName("point_tesla");
+	DispatchKeyValue(laserent, "m_flRadius", "70.0");
+	DispatchKeyValue(laserent, "m_SoundName", "DoSpark");
+	DispatchKeyValue(laserent, "beamcount_min", "42");
+	DispatchKeyValue(laserent, "beamcount_max", "62");
+	DispatchKeyValue(laserent, "texture", "sprites/physbeam.vmt");
+	DispatchKeyValue(laserent, "m_Color", "255 255 255");
+	DispatchKeyValue(laserent, "thick_min", "10.0");
+	DispatchKeyValue(laserent, "thick_max", "11.0");
+	DispatchKeyValue(laserent, "lifetime_min", "0.3");
+	DispatchKeyValue(laserent, "lifetime_max", "0.3");
+	DispatchKeyValue(laserent, "interval_min", "0.1");
+	DispatchKeyValue(laserent, "interval_max", "0.2");
+	DispatchSpawn(laserent);
 
-TeleportEntity(laserent, center, zero, zero);
+	TeleportEntity(laserent, center, zero, zero);
 
-AcceptEntityInput(laserent, "TurnOn");  
-AcceptEntityInput(laserent, "DoSpark");
+	AcceptEntityInput(laserent, "TurnOn");  
+	AcceptEntityInput(laserent, "DoSpark");
 }
-
-*/
 
 GetZoneEntityCount()
 {
@@ -2672,10 +2606,9 @@ DeleteAllZoneEntitys()
 		new valid2 = StrContains(EntName, "#DHC_TRIGGER");
 		if(valid2 > -1)
 		{
-			//SDKUnhook(i, SDKHook_StartTouch, StartTouchTrigger);
-			//SDKUnhook(i, SDKHook_EndTouch, EndTouchTrigger);
-			UnhookSingleEntityOutput(i, "OnStartTouch", StartTouchTrigger);
-			UnhookSingleEntityOutput(i, "OnEndTouch", EndTouchTrigger);
+			SDKUnhook(i, SDKHook_StartTouch, StartTouchTrigger);
+			SDKUnhook(i, SDKHook_EndTouch, EndTouchTrigger);
+			SDKUnhook(i, SDKHook_Touch, OnTouchTrigger);
 		}
 		
 		new valid3 = StrContains(EntName, "#DHC_");
@@ -2776,10 +2709,10 @@ SpawnZoneEntitys(zone)
 					iEffects |= 0x020;
 					SetEntProp(entity, Prop_Send, "m_fEffects", iEffects);
 					
-					//SDKHook(entity, SDKHook_StartTouch, StartTouchTrigger);
-					//SDKHook(entity, SDKHook_EndTouch, EndTouchTrigger);
-					HookSingleEntityOutput(entity, "OnStartTouch", StartTouchTrigger);
-					HookSingleEntityOutput(entity, "OnEndTouch", EndTouchTrigger);
+					SDKHook(entity, SDKHook_StartTouch,  StartTouchTrigger);
+					SDKHook(entity, SDKHook_EndTouch, EndTouchTrigger);
+					SDKHook(entity, SDKHook_Touch, OnTouchTrigger);
+					
 				}
 				else 
 				{
