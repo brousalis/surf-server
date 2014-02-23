@@ -61,6 +61,7 @@ public OnMapStart()
 	
 	LoadPhysics();
 	LoadTimerSettings();
+	LoadLatestRecords();
 }
 
 ConnectSQL()
@@ -97,13 +98,6 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 		ConnectSQL();
 		return;
 	}
-	
-	if (g_hSQL != INVALID_HANDLE)
-	{
-		CloseHandle(g_hSQL);
-	}
-	
-	g_hSQL = INVALID_HANDLE;
 	g_hSQL = CloneHandle(hndl);
 	
 	g_iSQLReconnectCounter = 1;
@@ -112,31 +106,21 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 
 public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank)
 {
-	if(lasttime == 0.0 || time < lasttime) CreateTimer(3.0, Timer_LoadLatestRecords, client);
-}
-
-public Action:Timer_LoadLatestRecords(Handle:timer, any:client)
-{
-	LoadLatestRecords();
-	
-	return Plugin_Stop;
+	if(lasttime == 0.0 || time < lasttime) LoadLatestRecords();
 }
 
 LoadLatestRecords()
 {
 	decl String:sQuery[1024];
 	
-	g_RecordCount[RECORD_ANY] = 0;
 	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` ORDER BY `date` DESC LIMIT 25");
-	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_ANY, DBPrio_High);
+	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_ANY, DBPrio_Low);
 	
-	g_RecordCount[RECORD_TOP] = 0;
 	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` <= 10 ORDER BY `date` DESC LIMIT 25");
-	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_TOP, DBPrio_High);
+	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_TOP, DBPrio_Low);
 	
-	g_RecordCount[RECORD_WORLD] = 0;
 	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` = 1 ORDER BY `date` DESC LIMIT 25");
-	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_WORLD, DBPrio_High);
+	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_WORLD, DBPrio_Low);
 }
 
 public LoadLatestRecordsCallback(Handle:owner, Handle:hndl, const String:error[], any:recordtype)
@@ -144,11 +128,6 @@ public LoadLatestRecordsCallback(Handle:owner, Handle:hndl, const String:error[]
 	if (hndl == INVALID_HANDLE)
 	{
 		PrintToServer("SQL Error on LoadMap: %s", error);
-		return;
-	}
-
-	if (!SQL_GetRowCount(hndl))
-	{
 		return;
 	}
 
@@ -176,21 +155,17 @@ public LoadLatestRecordsCallback(Handle:owner, Handle:hndl, const String:error[]
 
 public Action:Cmd_LatestChoose(client, args)
 {
-	if (args == 0)
+	if (client)
 	{
-		if (0 < client < MaxClients)
-		{
-			new Handle:menu = CreateMenu(Handle_LatestChoose);
+		new Handle:menu = CreateMenu(Handle_LatestChoose);
 			
-			SetMenuTitle(menu, "Select filter for latest records");
+		SetMenuTitle(menu, "Select filter for latest records");
 			
-			AddMenuItem(menu, "any", "Any");
-			AddMenuItem(menu, "top", "Top10");
-			AddMenuItem(menu, "world", "World");
+		AddMenuItem(menu, "any", "Any");
+		AddMenuItem(menu, "top", "Top10");
+		AddMenuItem(menu, "world", "World");
 			
-			DisplayMenu(menu, client, MENU_TIME_FOREVER);
-		}
-		return Plugin_Handled;
+		DisplayMenu(menu, client, MENU_TIME_FOREVER);
 	}
 
 	return Plugin_Handled;
@@ -198,25 +173,27 @@ public Action:Cmd_LatestChoose(client, args)
 
 public Handle_LatestChoose(Handle:menu, MenuAction:action, client, itemNum)
 {
-	if ( action == MenuAction_Select )
+	if (action == MenuAction_Select)
 	{
-		decl String:info[100], String:info2[100];
-		new bool:found = GetMenuItem(menu, itemNum, info, sizeof(info), _, info2, sizeof(info2));
-		if(found)
+		switch(itemNum)
 		{
-			if(StrEqual(info, "any"))
+			case 0:
 			{
 				Menu_Latest(client, RECORD_ANY);
 			}
-			else if(StrEqual(info, "top"))
+			case 1:
 			{
 				Menu_Latest(client, RECORD_TOP);
 			}
-			else if(StrEqual(info, "world"))
+			case 2:
 			{
 				Menu_Latest(client, RECORD_WORLD);
 			}
 		}
+	}
+	else if (action == MenuAction_End)
+	{
+		CloseHandle(menu);
 	}
 }
 

@@ -245,7 +245,7 @@ new g_ModeCountPractise = 0;
 new g_ModeCountPractiseEnabled = 0;
 new g_ModeDefault = -1;
 
-bool:LoadTimerSettings()
+stock LoadTimerSettings()
 {
 	new String:sPath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/timer/settings.cfg");
@@ -254,13 +254,13 @@ bool:LoadTimerSettings()
 	if (!FileToKeyValues(hKv, sPath))
 	{
 		CloseHandle(hKv);
-		return false;
+		return;
 	}
 
 	if (!KvGotoFirstSubKey(hKv))
 	{
 		CloseHandle(hKv);
-		return false;
+		return;
 	}
 	
 	do 
@@ -441,10 +441,9 @@ bool:LoadTimerSettings()
 	} while (KvGotoNextKey(hKv));
 		
 	CloseHandle(hKv);
-	return true;
 }
 
-LoadPhysics()
+stock LoadPhysics()
 {
 	new String:sPath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/timer/physics.cfg");
