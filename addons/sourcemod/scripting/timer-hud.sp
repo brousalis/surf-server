@@ -1407,7 +1407,7 @@ UpdateHUD_CSS(client)
 			//Format(centerText, sizeof(centerText), "%s%t: %s\n", centerText, "Time", timeString);
 		
 		if ((hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable]) && (hudSettings[JumpAcc][client] && g_Settings[HUDJumpAccEnable]))
-			Format(centerText, sizeof(centerText), "%s%t: %d [%.2f ⁰⁄₀]\n", centerText, "Jumps", jumps, accuracy);
+			Format(centerText, sizeof(centerText), "%s%t: %d [%.2f %%]\n", centerText, "Jumps", jumps, accuracy);
 		else if (hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable])
 			Format(centerText, sizeof(centerText), "%s%t: %d\n", centerText, "Jumps", jumps);
 	}
@@ -1981,9 +1981,20 @@ UpdateHUD_CSGO(client)
 			Format(centerText, sizeof(centerText), "%sTime: %s", centerText, timeString);
 		}
 		else Format(centerText, sizeof(centerText), "%sTime: Stopped", centerText);
+
+		if(hudSettings[Jumps][client]) Format(centerText, sizeof(centerText), "%s | ", centerText);
+	}
+
+	if ((hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable]) && (hudSettings[JumpAcc][client] && g_Settings[HUDJumpAccEnable]))
+	{
+		Format(centerText, sizeof(centerText), "%s%t: %d [%.2f %%]", centerText, "Jumps", jumps, accuracy);
+	}
+	else if (hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable])
+	{
+		Format(centerText, sizeof(centerText), "%s%t: %d", centerText, "Jumps", jumps);
 	}
 	
-	if(hudSettings[Time][client] || hudSettings[Level][client])
+	if(hudSettings[Time][client] || hudSettings[Level][client] || hudSettings[Jumps][client])
 		Format(centerText, sizeof(centerText), "%s\n", centerText);
 	
 	if(ranked && g_timerWorldRecord)
