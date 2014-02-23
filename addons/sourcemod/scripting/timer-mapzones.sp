@@ -4244,18 +4244,17 @@ public Action:Hook_NormalSound(clients[64], &numClients, String:sample[PLATFORM_
 
 public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype)
 {
-	new bool:ff = bool:GetConVarInt(g_hFF); 
+	new bool:ff = GetConVarBool(g_hFF); 
 	new mode = Timer_GetMode(victim);
 	
-	if(attacker == 0)
+	if(attacker == 0 || attacker >= MaxClients)
 	{
 		if(g_Physics[mode][ModeAllowWorldDamage])
 		{
 			return Plugin_Continue;
 		}
 		
-		damage = 0.0;
-		return Plugin_Changed;
+		return Plugin_Handled;
 	}
 	
 	if(g_Settings[Godmode])
@@ -4274,8 +4273,7 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 				return Plugin_Continue;
 			}
 			
-			damage = 0.0;
-			return Plugin_Changed;
+			return Plugin_Handled;
 		}
 	}
 	
@@ -4286,8 +4284,7 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 			return Plugin_Continue;
 		}
 		
-		damage = 0.0;
-		return Plugin_Changed;
+		return Plugin_Handled;
 	}
 	
 	return Plugin_Continue;
