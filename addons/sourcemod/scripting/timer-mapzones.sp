@@ -4217,6 +4217,8 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 		{
 			return Plugin_Continue;
 		}
+
+		return Plugin_Handled;
 	}
 
 	if(g_bHurt[victim] && g_bHurt[attacker])
