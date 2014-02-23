@@ -43,6 +43,8 @@ new g_MapZoneEntityZID[2048];
 */
 new Handle:g_hSQL;
 
+new Handle:g_hFF;
+
 new adminmode = 0;
 new bool:g_bZonesLoaded = false;
 
@@ -149,6 +151,7 @@ public OnPluginStart()
 	LoadPhysics();
 	LoadTimerSettings();
 	
+	g_hFF = FindConVar("mp_friendlyfire");
 
 	g_timerPhysics = LibraryExists("timer-physics");
 	g_timerTeams = LibraryExists("timer-teams");
@@ -4241,47 +4244,38 @@ public Action:Hook_NormalSound(clients[64], &numClients, String:sample[PLATFORM_
 
 public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype)
 {
-	if(attacker > 0 && attacker <= MaxClients)
-	{
-		return Plugin_Continue;
-	}
+	new bool:ff = bool:GetConVarInt(g_hFF); 
+	new mode = Timer_GetMode(victim);
 	
-	if(victim > 0 && victim <= MaxClients)
+	if(attacker == 0)
 	{
-		return Plugin_Continue;
-	}
-
-	new bool:ff = bool:GetConVarInt(FindConVar("mp_fiendlyfire"));
-	
-	if(g_Settings[Godmode])
-	{	
-		new mode = Timer_GetMode(victim);
-		
-		//Style allows falldamage and worlddamage
-		if(g_Physics[mode][ModeAllowWorldDamage] && !attacker)
+		if(g_Physics[mode][ModeAllowWorldDamage])
 		{
 			return Plugin_Continue;
 		}
 		
-		//Valid attacker
-		if(attacker > 0 && attacker <= MaxClients)
+		damage = 0.0;
+		return Plugin_Changed;
+	}
+	
+	if(g_Settings[Godmode])
+	{
+		//Player can hurt each other
+		if(g_bHurt[victim] && g_bHurt[attacker])
 		{
-			//Player can hurt each other
-			if(g_bHurt[victim] && g_bHurt[attacker])
+			return Plugin_Continue;
+		}
+		
+	
+		if(GetClientTeam(victim) == GetClientTeam(attacker))
+		{
+			if(ff)
 			{
-				if(GetClientTeam(victim) == GetClientTeam(attacker))
-				{
-					if(ff)
-					{
-						return Plugin_Continue;
-					}
-					else 
-					{
-						RemovePunchAngle(victim);
-						return Plugin_Handled;
-					}
-				}
+				return Plugin_Continue;
 			}
+			
+			damage = 0.0;
+			return Plugin_Changed;
 		}
 	}
 	
@@ -4291,14 +4285,12 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 		{
 			return Plugin_Continue;
 		}
-		else 
-		{
-			RemovePunchAngle(victim);
-			return Plugin_Handled;
-		}
+		
+		damage = 0.0;
+		return Plugin_Changed;
 	}
 	
-	return Plugin_Handled;
+	return Plugin_Continue;
 }
 
 stock RemovePunchAngle(client)

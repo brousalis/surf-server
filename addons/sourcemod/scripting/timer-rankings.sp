@@ -100,10 +100,10 @@ new Float:g_fKickDelay;
 //Client Data
 //* * * * * * * * * * * * * * * * * * * * * * * * * *
 new g_iCompletions[MAXPLAYERS + 1];
-new g_iCurrentPoints[MAXPLAYERS + 1];
-new g_iNextIndex[MAXPLAYERS + 1] = { -1, ... };
 new g_iCurrentIndex[MAXPLAYERS + 1] = { -1, ... };
+new g_iCurrentPoints[MAXPLAYERS + 1];
 new g_iCurrentRank[MAXPLAYERS + 1];
+new g_iNextIndex[MAXPLAYERS + 1] = { -1, ... };
 new g_iLastGlobalMessage[MAXPLAYERS + 1];
 new String:g_sAuth[MAXPLAYERS + 1][24];
 new bool:g_bLoadedSQL[MAXPLAYERS + 1];
