@@ -239,8 +239,6 @@ public OnPluginStart()
 	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	
-	HookEvent("player_team", Event_OnPlayerTeam);
-	
 	AddNormalSoundHook(Hook_NormalSound);
 	
 	g_ioffsCollisionGroup = FindSendPropOffs("CBaseEntity", "m_CollisionGroup");
@@ -296,15 +294,6 @@ public OnLibraryRemoved(const String:name[])
 	}
 }
 
-public Action:Event_OnPlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	
-	Timer_SetClientHide(client, 0);
-	
-	return Plugin_Continue;
-}
-
 public OnClientPutInServer(client)
 {
 	SDKHook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage);
@@ -344,6 +333,11 @@ public OnTimerStarted(client)
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
+	if (!IsPlayerAlive(client) || IsClientSourceTV(client))
+	{
+		return Plugin_Continue;
+	}
+
 	if (buttons & IN_ATTACK2)
 	{
 		if (g_mapZoneEditors[client][Step] == 1)
@@ -372,47 +366,6 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	}
 	
 	StopPreSpeed(client);
-	
-	/*
-	if (buttons & IN_USE)
-	{
-	new ent = TraceToEntity(client);
-	if (ent < 1 && !(IsValidEdict(ent) && IsValidEntity(ent))) 
-		return Plugin_Continue;
-	
-	PrintToChatAll("found something %d", ent);
-	
-	new Float:vecNPC[3];
-	Entity_GetAbsOrigin(ent, vecNPC);
-	new Float:vecClient[3];
-	GetClientAbsOrigin(ent, vecClient);
-	
-	//if(GetVectorDistance(vecNPC, vecClient) < 100.0)
-	//return Plugin_Continue;
-	
-	new String:edictname[128];
-	Entity_GetName(ent, edictname, 128);
-	if (StrContains(edictname, "DHC_NPC", false) != -1)
-	{
-	PrintToChatAll("found npc %s", edictname);
-	for (new i = 0; i < g_mapZonesCount; i++)
-	{
-	if(g_mapZones[i][NPC] == ent)
-	{
-	new Float:velStop[3];
-	new Float:vecDestination[3];
-	vecDestination[0] = g_mapZones[i][Point2][0];
-	vecDestination[1] = g_mapZones[i][Point2][1];
-	vecDestination[2] = g_mapZones[i][Point2][2];
-	
-	TeleportEntity(client, vecDestination, NULL_VECTOR, velStop);
-	break;
-	}
-	}
-	}
-	}
-	*/
-	
 	
 	return Plugin_Continue;
 }
@@ -4246,25 +4199,24 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 {
 	new bool:ff = GetConVarBool(g_hFF); 
 	new mode = Timer_GetMode(victim);
-	
-	if(attacker == 0 || attacker >= MaxClients)
+
+	if (g_Settings[Godmode])
 	{
-		if(g_Physics[mode][ModeAllowWorldDamage])
+		if (attacker == 0 || attacker >= MaxClients)
 		{
-			return Plugin_Continue;
-		}
+			if(g_Physics[mode][ModeAllowWorldDamage])
+			{
+				return Plugin_Continue;
+			}
 		
-		return Plugin_Handled;
-	}
+			return Plugin_Handled;
+		}
 	
-	if(g_Settings[Godmode])
-	{
 		//Player can hurt each other
 		if(g_bHurt[victim] && g_bHurt[attacker])
 		{
 			return Plugin_Continue;
 		}
-		
 	
 		if(GetClientTeam(victim) == GetClientTeam(attacker))
 		{
@@ -4275,6 +4227,11 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 			
 			return Plugin_Handled;
 		}
+	}
+
+	if(g_bHurt[victim] && g_bHurt[attacker])
+	{
+		return Plugin_Continue;
 	}
 	
 	if(GetClientTeam(victim) == GetClientTeam(attacker))
