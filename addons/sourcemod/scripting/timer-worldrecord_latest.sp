@@ -112,7 +112,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 
 public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank)
 {
-	if(time == 0.0 || time < lasttime) CreateTimer(3.0, Timer_LoadLatestRecords, client);
+	if(lasttime == 0.0 || time < lasttime) CreateTimer(3.0, Timer_LoadLatestRecords, client);
 }
 
 public Action:Timer_LoadLatestRecords(Handle:timer, any:client)
