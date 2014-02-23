@@ -4217,16 +4217,6 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 		{
 			return Plugin_Continue;
 		}
-	
-		if(GetClientTeam(victim) == GetClientTeam(attacker))
-		{
-			if(ff)
-			{
-				return Plugin_Continue;
-			}
-			
-			return Plugin_Handled;
-		}
 	}
 
 	if(g_bHurt[victim] && g_bHurt[attacker])
