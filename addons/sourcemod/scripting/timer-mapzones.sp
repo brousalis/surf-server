@@ -35,7 +35,6 @@ enum MapZoneEditor
 	String:Name[32]
 }
 
-new Float:g_MapZoneLevelBestTime[2048][MAXPLAYERS+1];
 new Handle:g_MapZoneDrawDelayTimer[2048];
 new g_MapZoneEntityZID[2048];
 
@@ -117,6 +116,9 @@ new g_clientLevel[MAXPLAYERS+1]=0;
 
 new Handle:g_OnClientStartTouchZoneType;
 new Handle:g_OnClientEndTouchZoneType;
+
+new Handle:g_OnClientStartTouchLevel;
+new Handle:g_OnClientStartTouchBonusLevel;
 
 public Plugin:myinfo =
 {
@@ -242,6 +244,9 @@ public OnPluginStart()
 	
 	g_OnClientStartTouchZoneType = CreateGlobalForward("OnClientStartTouchZoneType", ET_Event, Param_Cell,Param_Cell);
 	g_OnClientEndTouchZoneType = CreateGlobalForward("OnClientEndTouchZoneType", ET_Event, Param_Cell,Param_Cell);
+	
+	g_OnClientStartTouchLevel = CreateGlobalForward("OnClientStartTouchLevel", ET_Event, Param_Cell, Param_Cell, Param_Cell);
+	g_OnClientStartTouchBonusLevel = CreateGlobalForward("OnClientStartTouchBonusLevel", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 }
 
 public OnLibraryAdded(const String:name[])
@@ -660,87 +665,31 @@ public StartTouchTrigger(const String:output[], caller, activator, Float:delay)
 	}
 	else if (g_mapZones[zone][Type] == ZtLevel)
 	{
-		new bool:enabled = false;
-		new Float:time;
-		new jumps;
-		new fpsmax;
-		new String:buffer[32];
-		new String:buffer2[32];
-		new String:buffer3[32];
-		
-		Timer_GetClientTimer(client, enabled, time, jumps, fpsmax);
-		
-		if(enabled && g_clientLevel[client] != zone)
+		if(Timer_GetBonus(client) == 0)
 		{
-			if(g_MapZoneLevelBestTime[zone][client] == 0.0)
-			{
-				Timer_SecondsToTime(time, buffer, sizeof(buffer), 2);
-				PrintCenterText(client, "-00:00.00");
-				g_MapZoneLevelBestTime[zone][client] = time;
-			}
-			else if(g_MapZoneLevelBestTime[zone][client] > time)
-			{
-				Timer_SecondsToTime(time, buffer, sizeof(buffer), 2);
-				Timer_SecondsToTime(g_MapZoneLevelBestTime[zone][client], buffer2, sizeof(buffer2), 2);
-				Timer_SecondsToTime(g_MapZoneLevelBestTime[zone][client]-time, buffer3, sizeof(buffer3), 2);
-				PrintCenterText(client, "-%s", buffer3);
-				g_MapZoneLevelBestTime[zone][client] = time;
-			}
-			else if(g_MapZoneLevelBestTime[zone][client] == time)
-			{
-				PrintCenterText(client, "+00:00.00");
-			}
-			else if(g_MapZoneLevelBestTime[zone][client] < time)
-			{
-				Timer_SecondsToTime(time-g_MapZoneLevelBestTime[zone][client], buffer, sizeof(buffer), 2);
-				PrintCenterText(client, "+%s", buffer);
-			}
+			new lastlevel = g_mapZones[g_clientLevel[client]][Level_Id];
+			g_clientLevel[client] = zone;
+			
+			Call_StartForward(g_OnClientStartTouchLevel);
+			Call_PushCell(client);
+			Call_PushCell(g_mapZones[g_clientLevel[client]][Level_Id]);
+			Call_PushCell(lastlevel);
+			Call_Finish();
 		}
-		
-		if(Timer_GetBonus(client) == 1) Timer_Stop(client, false);
-		else g_clientLevel[client] = zone;
 	}
 	else if (g_mapZones[zone][Type] == ZtBonusLevel)
 	{
-		new bool:enabled = false;
-		new Float:time;
-		new jumps;
-		new fpsmax;
-		new String:buffer[32];
-		new String:buffer2[32];
-		new String:buffer3[32];
-		//new Float:g_MapZoneLevelBestTime[256];
-		Timer_GetClientTimer(client, enabled, time, jumps, fpsmax);
-		
-		if(enabled && g_clientLevel[client] != zone)
+		if(Timer_GetBonus(client) == 1)
 		{
-			if(g_MapZoneLevelBestTime[zone][client] == 0.0)
-			{
-				Timer_SecondsToTime(time, buffer, sizeof(buffer), 2);
-				PrintCenterText(client, "-00:00.00");
-				g_MapZoneLevelBestTime[zone][client] = time;
-			}
-			else if(g_MapZoneLevelBestTime[zone][client] > time)
-			{
-				Timer_SecondsToTime(time, buffer, sizeof(buffer), 2);
-				Timer_SecondsToTime(g_MapZoneLevelBestTime[zone][client], buffer2, sizeof(buffer2), 2);
-				Timer_SecondsToTime(g_MapZoneLevelBestTime[zone][client]-time, buffer3, sizeof(buffer3), 2);
-				PrintCenterText(client, "-%s", buffer3);
-				g_MapZoneLevelBestTime[zone][client] = time;
-			}
-			else if(g_MapZoneLevelBestTime[zone][client] == time)
-			{
-				PrintCenterText(client, "+00:00.00");
-			}
-			else if(g_MapZoneLevelBestTime[zone][client] < time)
-			{
-				Timer_SecondsToTime(time-g_MapZoneLevelBestTime[zone][client], buffer, sizeof(buffer), 2);
-				PrintCenterText(client, "+%s", buffer);
-			}
+			new lastlevel = g_mapZones[g_clientLevel[client]][Level_Id];
+			g_clientLevel[client] = zone;
+			
+			Call_StartForward(g_OnClientStartTouchBonusLevel);
+			Call_PushCell(client);
+			Call_PushCell(g_mapZones[g_clientLevel[client]][Level_Id]);
+			Call_PushCell(lastlevel);
+			Call_Finish();
 		}
-		
-		if(Timer_GetBonus(client) == 0) Timer_Stop(client, false);
-		else g_clientLevel[client] = zone;
 	}
 	else if (g_mapZones[zone][Type] == ZtBlock)
 	{
@@ -1054,13 +1003,6 @@ public OnMapStart()
 	for (new i = 1; i < MAXPLAYERS; i++)
 	{
 		g_clientLevel[i] = 0;
-	}
-	for (new i = 0; i < 2047; i++)
-	{
-		for (new client = 1; client < MAXPLAYERS; client++)
-		{
-			g_MapZoneLevelBestTime[i][client] = 0.0;
-		}
 	}
 	
 	PrecacheModel("models/props_junk/wood_crate001a.mdl", true);
@@ -3124,14 +3066,13 @@ Menu_NPC_Next(client, zone)
 				
 				if(Timer_IsPlayerTouchingZoneType(client, ZtStart)) Timer_SetIgnoreEndTouchStart(client, 1);
 				
+				new mate;
+				if(g_timerTeams) mate = Timer_GetClientTeammate(client);
+				
 				if(mate > 0)
 				{
 					if(g_mapZones[zone][Type] == ZtNPC_Next_Double)
 					{
-						
-						new mate;
-						if(g_timerTeams) mate = Timer_GetClientTeammate(client);
-						
 						TeleportEntity(client, vecDestination, NULL_VECTOR, velStop);
 						CreateTimer(1.5, SetBlockable, client, TIMER_FLAG_NO_MAPCHANGE);
 						SetPush(client);

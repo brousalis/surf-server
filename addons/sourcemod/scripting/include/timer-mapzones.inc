@@ -49,6 +49,9 @@ enum MapZoneType
 forward OnClientStartTouchZoneType(client, MapZoneType:type);
 forward OnClientEndTouchZoneType(client, MapZoneType:type);
 
+forward OnClientStartTouchLevel(client, level, lastlevel);
+forward OnClientStartTouchBonusLevel(client, level, lastlevel);
+
 /* Natives */
 native Timer_IsPlayerTouchingZoneType(client, MapZoneType:type);
 native Timer_GetLevelName(id, String:name[], length);
