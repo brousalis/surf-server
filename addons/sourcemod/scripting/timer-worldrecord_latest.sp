@@ -25,7 +25,7 @@ enum Record
 new Handle:g_hSQL = INVALID_HANDLE;
 new g_iSQLReconnectCounter;
 
-new g_latestRecords[3][10][Record];
+new g_latestRecords[3][25][Record];
 new g_RecordCount[3];
 
 public Plugin:myinfo = 
@@ -127,15 +127,15 @@ LoadLatestRecords()
 	decl String:sQuery[1024];
 	
 	g_RecordCount[RECORD_ANY] = 0;
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` ORDER BY `date` DESC LIMIT 10");
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` ORDER BY `date` DESC LIMIT 25");
 	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_ANY, DBPrio_High);
 	
 	g_RecordCount[RECORD_TOP] = 0;
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` <= 10 ORDER BY `date` DESC LIMIT 10");
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` <= 10 ORDER BY `date` DESC LIMIT 25");
 	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_TOP, DBPrio_High);
 	
 	g_RecordCount[RECORD_WORLD] = 0;
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` = 1 ORDER BY `date` DESC LIMIT 10");
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` = 1 ORDER BY `date` DESC LIMIT 25");
 	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_WORLD, DBPrio_High);
 }
 
@@ -165,7 +165,7 @@ public LoadLatestRecordsCallback(Handle:owner, Handle:hndl, const String:error[]
 		SQL_FetchString(hndl, 7, g_latestRecords[recordtype][recordCounter][RecordDate], 32);
 		
 		recordCounter++;
-		if (recordCounter == 9)
+		if (recordCounter == 25)
 		{
 			break;
 		}
@@ -252,6 +252,8 @@ Menu_Latest(client, type)
 			
 			if(g_latestRecords[type][i][RecordBonus] == 1)
 				Format(buffer, sizeof(buffer), "%s [B]", buffer);
+			else if(g_latestRecords[type][i][RecordBonus] == 2)
+				Format(buffer, sizeof(buffer), "%s [S]", buffer);
 			
 			Format(buffer, sizeof(buffer), "%s - %s", buffer, g_latestRecords[type][i][RecordName]);
 			
