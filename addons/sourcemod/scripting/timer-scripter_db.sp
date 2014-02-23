@@ -173,28 +173,17 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 	SQL_GetDriverIdent(owner, driver, sizeof(driver));
 
 	g_hSQL = CloneHandle(hndl);		
-	db_createTables(driver);
-	
-	g_reconnectCounter = 1;
-}
-
-public db_createTables(String:driver[16])
-{
-	SQL_LockDatabase(g_hSQL);
-
 	if (StrEqual(driver, "mysql", false))
 	{
+		SQL_SetCharset(g_hSQL, "utf8");
 		SQL_TQuery(g_hSQL, CreateSQLTableCallback, SQLQueries[MYSQL__][E_QCreate]);
-		
-		SQL_FastQuery(g_hSQL, "SET NAMES  'utf8'");
-
 	}
 	else if (StrEqual(driver, "sqlite", false))
 	{
 		SQL_TQuery(g_hSQL, CreateSQLTableCallback, SQLQueries[SQLITE__][E_QCreate]);
 	}
-
-	SQL_UnlockDatabase(g_hSQL);
+	
+	g_reconnectCounter = 1;
 }
 
 public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
