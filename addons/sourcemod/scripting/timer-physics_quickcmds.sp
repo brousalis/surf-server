@@ -19,40 +19,44 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	LoadPhysics();
+	LoadTimerSettings();
 
-	AddCommandListener(Client_Say, "say");
-	AddCommandListener(Client_Say, "say_team");
+	for(new i = 0; i < MAX_MODES-1; i++) 
+	{
+		if(StrEqual(g_Physics[i][ModeQuickCommand], ""))
+			continue;
+		
+		RegConsoleCmd(g_Physics[i][ModeQuickCommand], Callback_Empty);
+		AddCommandListener(Hook_Command, g_Physics[i][ModeQuickCommand]);
+	}
 }
 
 public OnMapStart()
 {
 	LoadPhysics();
+	LoadTimerSettings();
 }
 
-public Action:Client_Say(client, const String:sCommand[], argc)
+public Action:Callback_Empty(client, args)
 {
-	if (argc < 1 || !IsValidClient(client))
+	return Plugin_Handled;
+}
+
+public Action:Hook_Command(client, const String:sCommand[], argc)
+{
+	if (!IsValidClient(client))
 	{
 		return Plugin_Continue;
 	}
-	
-	decl String:sFirstArg[64];
-	GetCmdArg(1, sFirstArg, sizeof(sFirstArg));
-	
 	for(new i = 0; i < MAX_MODES-1; i++) 
 	{
 		if(!g_Physics[i][ModeEnable])
 			continue;
 		if(StrEqual(g_Physics[i][ModeQuickCommand], ""))
 			continue;
-		if(StrEqual(g_Physics[i][ModeQuickCommand], sFirstArg))
+		if(StrEqual(g_Physics[i][ModeQuickCommand], sCommand))
 		{
-			if(g_Physics[i][ModeEnable])
-			{
-				Timer_SetMode(client, i);
-			}
-			else
-				PrintToChat(client, "Style disabled by server!");
+			Timer_SetMode(client, i);
 			
 			return Plugin_Handled;
 		}
