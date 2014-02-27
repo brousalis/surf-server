@@ -58,10 +58,10 @@ public OnMapStart()
 	{
 		ConnectSQL();
 	}
+	else LoadLatestRecords();
 	
 	LoadPhysics();
 	LoadTimerSettings();
-	LoadLatestRecords();
 }
 
 ConnectSQL()
