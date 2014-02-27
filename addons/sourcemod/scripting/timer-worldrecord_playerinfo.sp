@@ -25,6 +25,7 @@ new g_MainMenu[MAXPLAYERS+1][eMain];
 new g_MainMapMenu[MAXPLAYERS+1][eMain2];
 new String:g_sTargetPlayerName[MAXPLAYERS+1][256];
 new g_iTargetStyle[MAXPLAYERS+1];
+new Handle:g_hTargetData[MAXPLAYERS+1];
 new g_MapCount;
 new g_BonusMapCount;
 new g_MenuPos[MAXPLAYERS+1];
@@ -156,20 +157,21 @@ public SQL_CountMapCallback(Handle:owner, Handle:hndl, const String:error[], any
 
 public Action:Client_PlayerInfo(client, args)
 {
+	g_hTargetData[client] = INVALID_HANDLE;
+	
 	if(args < 1)
 	{
 		decl String:SteamID[32];
 		decl String:PlayerName[256];
-		decl String:buffer[512];
+		
 		GetClientAuthString(client, SteamID, 32);
 		GetClientName(client, PlayerName, sizeof(PlayerName));
 		new Handle:pack = CreateDataPack();
 		WritePackCell(pack, client);
 		WritePackString(pack, SteamID);
 		WritePackString(pack, PlayerName);
-		Format(buffer, sizeof(buffer), "%d", pack);
-		
-		Menu_PlayerInfo(client, buffer);
+		g_hTargetData[client] = pack;
+		StylePanel(client);
 	}
 	else if(args >= 1)
 	{
@@ -239,7 +241,8 @@ public MenuHandler_StylePanel(Handle:menu, MenuAction:action, client, itemNum)
 		GetMenuItem(menu, itemNum, info, sizeof(info));
 		
 		g_iTargetStyle[client] = StringToInt(info);
-		QueryPlayerName(client, g_sTargetPlayerName[client]);
+		if(g_hTargetData[client] != INVALID_HANDLE) Menu_PlayerInfo(client, g_hTargetData[client]);
+		else QueryPlayerName(client, g_sTargetPlayerName[client]);
 	}
 }
 
@@ -315,9 +318,9 @@ public SQL_QueryPlayerNameCallback(Handle:owner, Handle:hndl, const String:error
 	DisplayMenu(menu, client, MENU_TIME_FOREVER);
 }
 
-public Menu_PlayerInfo(client, String:data[512])
+public Menu_PlayerInfo(client, Handle:pack)
 {
-	g_MainMenu[client][eMain_Pack] = Handle:StringToInt(data); 
+	g_MainMenu[client][eMain_Pack] = pack; 
 	ResetPack(g_MainMenu[client][eMain_Pack]);
 	ReadPackCell(g_MainMenu[client][eMain_Pack]);
 	decl String:SteamID[256];
@@ -327,6 +330,10 @@ public Menu_PlayerInfo(client, String:data[512])
 
 	g_MainMenu[client][eMain_Menu] = CreateMenu(Menu_PlayerInfo_Handler);
 	SetMenuTitle(g_MainMenu[client][eMain_Menu], "%s's Overview\n(%s)\n ", PlayerName, SteamID);
+	
+	decl String:data[512];
+	Format(data, sizeof(data), "%d", pack);
+	
 	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View Record/Rank (current Map)");
 	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View Points/Rank");
 	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View all Records");
@@ -635,7 +642,7 @@ public Menu_PlayerSearch(Handle:menu, MenuAction:action, param1, param2)
 		decl String:data[512];
 		GetMenuItem(menu, param2, data, sizeof(data));
 
-		Menu_PlayerInfo(param1, data);
+		Menu_PlayerInfo(param1, Handle:StringToInt(data));
 	}
 }
 
