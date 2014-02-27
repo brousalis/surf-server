@@ -12,7 +12,7 @@ public Plugin:myinfo =
 {
 	name = "[Timer] Worldrecord - MapTop",
 	author = "Zipcore",
-	description = "[Timer] Show latest records done.",
+	description = "[Timer] Show other maps top records.",
 	version = "1.0",
 	url = "forums.alliedmods.net/showthread.php?p=2074699"
 };

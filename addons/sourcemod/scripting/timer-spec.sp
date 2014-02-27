@@ -142,11 +142,16 @@ public Action:Cmd_SpecList(client, args)
 
 public Action:Cmd_SpecFar(client, args)
 {
-	new MaxLevel, Level, target;
+	new MaxLevel, Level, target, oldtarget;
 
+	oldtarget = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+	
 	for(new i = 1; i <= MaxClients; i++)
 	{
 		if(i == client)
+			continue;
+		
+		if(i == oldtarget)
 			continue;
 		
 		if(!Client_IsValid(i, true))
