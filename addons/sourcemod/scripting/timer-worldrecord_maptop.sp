@@ -11,7 +11,7 @@
 public Plugin:myinfo = 
 {
 	name = "[Timer] Worldrecord - MapTop",
-	author = "Zipcore",
+	author = "Zipcore, Credits: Das D",
 	description = "[Timer] Show other maps top records.",
 	version = "1.0",
 	url = "forums.alliedmods.net/showthread.php?p=2074699"
@@ -49,7 +49,6 @@ public OnMapStart()
 		ConnectSQL();
 	}
 }
-
 
 ConnectSQL()
 {
