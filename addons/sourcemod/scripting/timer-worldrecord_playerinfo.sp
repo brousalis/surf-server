@@ -26,8 +26,11 @@ new g_MainMapMenu[MAXPLAYERS+1][eMain2];
 new String:g_sTargetPlayerName[MAXPLAYERS+1][256];
 new g_iTargetStyle[MAXPLAYERS+1];
 new Handle:g_hTargetData[MAXPLAYERS+1];
-new g_MapCount;
-new g_BonusMapCount;
+
+new g_iMapCount[2];
+new g_iMapCountComplete[MAXPLAYERS+1];
+new Handle:g_hMaps[2] = {INVALID_HANDLE, ...};
+
 new g_MenuPos[MAXPLAYERS+1];
 
 new String:sql_QueryPlayerName[] = "SELECT name, auth FROM round WHERE name LIKE \"%%%s%%\" ORDER BY `round`.`name` ASC, `round`.`auth` ASC;";
@@ -35,10 +38,13 @@ new String:sql_selectSingleRecord[] = "SELECT auth, name, jumps, time, date, ran
 new String:sql_selectPlayerRowCount[] = "SELECT name FROM round WHERE time <= (SELECT time FROM round WHERE auth = '%s' AND map = '%s' AND bonus = '%i') AND map = '%s' AND bonus = '%i' ORDER BY time; AND `physicsdifficulty` = '%d'";
 new String:sql_selectPlayer_Points[] = "SELECT auth, lastname, points FROM ranks WHERE auth LIKE '%s' AND points NOT LIKE '0';";
 new String:sql_selectPlayerPRowCount[] = "SELECT lastname FROM ranks WHERE points >= (SELECT points FROM ranks WHERE auth = '%s' AND points NOT LIKE '0') AND points NOT LIKE '0' ORDER BY points;";
+
 new String:sql_selectPlayerMaps[] = "SELECT time, map, auth FROM round WHERE auth LIKE '%s' AND bonus = '0' AND `physicsdifficulty` = '%d' ORDER BY map ASC;";
 new String:sql_selectPlayerMapsBonus[] = "SELECT time, map, auth FROM round WHERE auth LIKE '%s' AND bonus = '1' AND `physicsdifficulty` = '%d' ORDER BY map ASC;";
-new String:sql_countmaps[] = "SELECT map FROM mapzone WHERE level_id = '1' GROUP BY map ORDER BY map ASC;";
-new String:sql_countbonusmaps[] = "SELECT map FROM mapzone WHERE level_id = '1001' GROUP BY map ORDER BY map ASC;";
+
+new String:sql_selectMaps[] = "SELECT map FROM mapzone WHERE type = 0 GROUP BY map ORDER BY map;";
+new String:sql_selectMapsBonus[] = "SELECT map FROM mapzone WHERE type = 7 GROUP BY map ORDER BY map;";
+
 new String:sql_selectPlayerWRs[] = "SELECT * FROM (SELECT * FROM (SELECT `time`,`map`,`auth` FROM `round` WHERE `bonus` = '0' AND `physicsdifficulty` = '%d' GROUP BY `round`.`map`, `round`.`time`) AS temp GROUP BY LOWER(`map`)) AS temp2 WHERE `auth` = '%s';";
 new String:sql_selectPlayerWRsBonus[] = "SELECT * FROM (SELECT * FROM (SELECT `time`,`map`,`auth` FROM `round` WHERE `bonus` = '1' AND `physicsdifficulty` = '%d' GROUP BY `round`.`map`, `round`.`time`) AS temp GROUP BY LOWER(`map`)) AS temp2 WHERE `auth` = '%s';";
 new String:sql_selectPlayerMapRecord[] = "SELECT auth, name, jumps, time, date, rank, finishcount, avgspeed, maxspeed, finishspeed FROM round WHERE auth LIKE '%s' AND map = '%s' AND bonus = '%i' AND `physicsdifficulty` = '%d';";
@@ -128,30 +134,43 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 public countmaps()
 {
 	decl String:Query[255];
-	Format(Query, 255, sql_countmaps);
+	Format(Query, 255, sql_selectMaps);
 	SQL_TQuery(g_hSQL, SQL_CountMapCallback, Query, false);
 }
 
 public countbonusmaps()
 {
 	decl String:Query[255];
-	Format(Query, 255, sql_countbonusmaps);
+	Format(Query, 255, sql_selectMapsBonus);
 	SQL_TQuery(g_hSQL, SQL_CountMapCallback, Query, true);
 }
 
 public SQL_CountMapCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
 {
-	new bool:BonusMap = data;
-	if(hndl == INVALID_HANDLE)
-		LogError("Error getting mapcount (%s)", error);
-	
-	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl) && !BonusMap)
+	if (hndl == INVALID_HANDLE)
 	{
-		g_MapCount = SQL_GetRowCount(hndl);
+		return;
 	}
-	else if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl) && BonusMap)
+	
+	if(SQL_GetRowCount(hndl))
 	{
-		g_BonusMapCount = SQL_GetRowCount(hndl);
+		new bonus = data;
+		g_iMapCount[bonus] = 0;
+		
+		new String:sMap[128];
+		new Handle:Kv = CreateKeyValues("data");
+		
+		while(SQL_FetchRow(hndl))
+		{
+			SQL_FetchString(hndl, 0, sMap, sizeof(sMap));
+			
+			KvJumpToKey(Kv, sMap, true);
+			KvRewind(Kv);
+			
+			g_iMapCount[bonus]++;
+		}
+		
+		g_hMaps[bonus] = CloneHandle(Kv);
 	}
 }
 
@@ -346,6 +365,8 @@ public Menu_PlayerInfo(client, Handle:pack)
 	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View all Records (Bonus)");
 	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View all WRs");
 	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View all WRs (Bonus)");
+	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View Incomplete Maps");
+	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View Incomplete Maps (Bonus)");
 	
 	decl String:buffer[512];
 	Format(buffer, sizeof(buffer), "Change style [current: %s]", g_Physics[g_iTargetStyle[client]][ModeName]);
@@ -596,21 +617,21 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 	new Float: mapcou_fl;
 	if(!bonus)
 	{
-		mapcou_fl = float(g_MapCount);
+		mapcou_fl = float(g_iMapCount[0]);
 	}
 	else
 	{
-		mapcou_fl = float(g_BonusMapCount);
+		mapcou_fl = float(g_iMapCount[1]);
 	}
 	new Float: Com_Per_fl = (mapcom_fl/mapcou_fl)*100;
 	
 	if(!bonus)
 	{
-		SetMenuTitle(g_MainMapMenu[client][eMain2_Menu], "%i of %i (%.2f%%) Maps completed\nRecords:\n ", mapscomplete, g_MapCount, Com_Per_fl);
+		SetMenuTitle(g_MainMapMenu[client][eMain2_Menu], "%i of %i (%.2f%%) Maps completed\nRecords:\n ", mapscomplete, g_iMapCount[0], Com_Per_fl);
 	}
 	else
 	{
-		SetMenuTitle(g_MainMapMenu[client][eMain2_Menu], "%i of %i (%.2f%%) Bonuses completed\nRecords:\n ", mapscomplete, g_BonusMapCount, Com_Per_fl);
+		SetMenuTitle(g_MainMapMenu[client][eMain2_Menu], "%i of %i (%.2f%%) Bonuses completed\nRecords:\n ", mapscomplete, g_iMapCount[1], Com_Per_fl);
 	}
 	
 	if(SQL_HasResultSet(hndl))
@@ -643,6 +664,7 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 	SetMenuExitBackButton(g_MainMapMenu[client][eMain2_Menu], true);
 	DisplayMenu(g_MainMapMenu[client][eMain2_Menu], client, MENU_TIME_FOREVER);
 }
+
 public Menu_PlayerSearch(Handle:menu, MenuAction:action, param1, param2)
 {
 	if (action == MenuAction_Select)
@@ -669,8 +691,8 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 		g_MainMenu[client][eMain_Pack] = Handle:StringToInt(data); 
 		ResetPack(g_MainMenu[client][eMain_Pack]);
 		ReadPackCell(g_MainMenu[client][eMain_Pack]);
-		decl String:SteamID[256];
-		ReadPackString(g_MainMenu[client][eMain_Pack], SteamID, 256);
+		decl String:SteamID[64];
+		ReadPackString(g_MainMenu[client][eMain_Pack], SteamID, sizeof(SteamID));
 		decl String:PlayerName[256];
 		ReadPackString(g_MainMenu[client][eMain_Pack], PlayerName, 256);
 
@@ -750,6 +772,14 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 			}
 			case 6:
 			{
+				GetIncompleteMaps(client, SteamID, 0, g_iTargetStyle[client]);
+			}
+			case 7:
+			{
+				GetIncompleteMaps(client, SteamID, 1, g_iTargetStyle[client]);
+			}
+			case 8:
+			{
 				StylePanel(client);
 			}
 		}
@@ -811,6 +841,107 @@ public MapMenu_Stock_Handler(Handle:menu, MenuAction:action, client, param2)
 	else if(action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
 	{
 		DisplayMenu(g_MainMenu[client][eMain_Menu], client, MENU_TIME_FOREVER);
+	}
+}
+
+GetIncompleteMaps(client, String:auth[64], bonus, style)
+{
+	new Handle:pack = CreateDataPack();
+	WritePackCell(pack, client);
+	WritePackString(pack, auth);
+	WritePackCell(pack, bonus);
+	WritePackCell(pack, style);
+	
+	decl String:sQuery[255];
+	if(style > -1)
+		Format(sQuery, sizeof(sQuery), "SELECT DISTINCT map FROM round WHERE bonus = %d AND auth = '%s' AND physicsdifficulty = %d ORDER BY map", bonus, auth, style);
+	else
+		Format(sQuery, sizeof(sQuery), "SELECT DISTINCT map FROM round WHERE bonus = %d AND auth = '%s' ORDER BY map", bonus, auth);
+	SQL_TQuery(g_hSQL, CallBack_IncompleteMaps, sQuery, pack, DBPrio_Low);
+}
+
+public CallBack_IncompleteMaps(Handle:owner, Handle:hndl, const String:error[], any:data)
+{
+	if (hndl == INVALID_HANDLE)
+	{
+		return;
+	}
+	
+	if(!SQL_GetRowCount(hndl))
+	{
+		LogError("No startzone found.");
+	}
+	else
+	{
+		new Handle:pack = data;
+		
+		ResetPack(pack);
+		new client = ReadPackCell(pack);
+		decl String:sAuth[64];
+		ReadPackString(pack, sAuth, sizeof(sAuth));
+		new bonus = ReadPackCell(pack);
+		new style = ReadPackCell(pack);
+		CloseHandle(pack);
+		
+		new String:sMap[128];
+		new Handle:Kv = CreateKeyValues("data");
+		
+		while(SQL_FetchRow(hndl))
+		{
+			SQL_FetchString(hndl, 0, sMap, sizeof(sMap));
+			
+			KvJumpToKey(Kv, sMap, true);
+			KvRewind(Kv);
+			
+			g_iMapCountComplete[client]++;
+		}
+		
+		new iCountIncomplete;
+		
+		new Handle:menu = CreateMenu(MenuHandler_Empty);
+		
+		KvRewind(g_hMaps[bonus]);
+		KvGotoFirstSubKey(g_hMaps[bonus], true);
+		do
+		{
+			KvGetSectionName(g_hMaps[bonus], sMap, sizeof(sMap));
+			if(!KvJumpToKey(Kv, sMap, false))
+			{
+				iCountIncomplete++;
+				AddMenuItem(menu, "", sMap);
+			}
+			KvRewind(Kv);
+        } while (KvGotoNextKey(g_hMaps[bonus], false));
+		
+		new String:buffer[128];
+		if(bonus == TRACK_BONUS)
+			Format(buffer, sizeof(buffer), "Bonus Maps Left %d/%d", iCountIncomplete, g_iMapCount[bonus]);
+		else if(bonus == TRACK_NORMAL)
+			Format(buffer, sizeof(buffer), "Maps Left %d/%d", iCountIncomplete, g_iMapCount[bonus]);
+		
+		if(style > -1)
+			Format(buffer, sizeof(buffer), "%s\nStyle: %s", buffer, g_Physics[style][ModeName]);
+			
+		SetMenuTitle(menu, buffer);
+		
+		SetMenuExitButton(menu, true);
+		DisplayMenu(menu, client, MENU_TIME_FOREVER);
+	}
+}
+
+public MenuHandler_Empty(Handle:menu, MenuAction:action, client, param2)
+{
+	if (action == MenuAction_Select)
+	{
+		if(g_hTargetData[client] != INVALID_HANDLE) Menu_PlayerInfo(client, g_hTargetData[client]);
+	}
+	else if (action == MenuAction_Cancel)
+	{
+		CloseHandle(menu);
+	}
+	else if (action == MenuAction_End)
+	{
+		CloseHandle(menu);
 	}
 }
 

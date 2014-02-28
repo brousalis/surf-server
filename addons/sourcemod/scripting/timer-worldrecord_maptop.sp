@@ -357,7 +357,7 @@ public SQL_TopPanel(client, String:sMapName[64], style, track)
 {
 	decl String:sQuery[255];
 	
-	Format(sQuery, 255, sql_select, sMapName, track, style, MAPTOP_LIMIT);
+	Format(sQuery, sizeof(sQuery), sql_select, sMapName, track, style, MAPTOP_LIMIT);
 	new Handle:pack = CreateDataPack();
 	WritePackCell(pack, client);
 	WritePackString(pack, sMapName);

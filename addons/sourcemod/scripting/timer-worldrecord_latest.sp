@@ -146,7 +146,7 @@ public LoadLatestRecordsCallback(Handle:owner, Handle:hndl, const String:error[]
 		SQL_FetchString(hndl, 7, g_latestRecords[recordtype][recordCounter][RecordDate], 32);
 		
 		recordCounter++;
-		if (recordCounter == 25)
+		if (recordCounter == LATEST_LIMIT)
 		{
 			break;
 		}
@@ -177,17 +177,19 @@ public Handle_LatestChoose(Handle:menu, MenuAction:action, client, itemNum)
 {
 	if (action == MenuAction_Select)
 	{
-		switch(itemNum)
+		decl String:info[100], String:info2[100];
+		new bool:found = GetMenuItem(menu, itemNum, info, sizeof(info), _, info2, sizeof(info2));
+		if(found)
 		{
-			case 0:
+			if(StrEqual(info, "any"))
 			{
 				Menu_Latest(client, RECORD_ANY);
 			}
-			case 1:
+			else if(StrEqual(info, "top"))
 			{
 				Menu_Latest(client, RECORD_TOP);
 			}
-			case 2:
+			else if(StrEqual(info, "world"))
 			{
 				Menu_Latest(client, RECORD_WORLD);
 			}
