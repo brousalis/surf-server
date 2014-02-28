@@ -28,7 +28,7 @@ public OnPluginStart()
 {
 	RegConsoleCmd("sm_mtop", Cmd_MapTop_Record, "Displays Top of a given map");
 	RegConsoleCmd("sm_mbtop", Cmd_MapBonusTop_Record, "Displays BonusTop of a given map");
-	RegConsoleCmd("sm_sbtop", Cmd_MapShortTop_Record, "Displays ShortTop of a given map");
+	RegConsoleCmd("sm_mstop", Cmd_MapShortTop_Record, "Displays ShortTop of a given map");
 
 	LoadPhysics();
 	LoadTimerSettings();

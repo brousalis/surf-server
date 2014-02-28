@@ -157,7 +157,11 @@ public SQL_CountMapCallback(Handle:owner, Handle:hndl, const String:error[], any
 
 public Action:Client_PlayerInfo(client, args)
 {
-	g_hTargetData[client] = INVALID_HANDLE;
+	if(g_hTargetData[client] != INVALID_HANDLE)
+	{
+		CloseHandle(g_hTargetData[client]);
+		g_hTargetData[client] = INVALID_HANDLE;
+	}
 	
 	if(args < 1)
 	{
@@ -171,7 +175,9 @@ public Action:Client_PlayerInfo(client, args)
 		WritePackString(pack, SteamID);
 		WritePackString(pack, PlayerName);
 		g_hTargetData[client] = pack;
-		StylePanel(client);
+		
+		if(g_Settings[MultimodeEnable]) StylePanel(client);
+		else Menu_PlayerInfo(client, g_hTargetData[client]);
 	}
 	else if(args >= 1)
 	{
@@ -340,6 +346,10 @@ public Menu_PlayerInfo(client, Handle:pack)
 	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View all Records (Bonus)");
 	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View all WRs");
 	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View all WRs (Bonus)");
+	
+	decl String:buffer[512];
+	Format(buffer, sizeof(buffer), "Change style [current: %s]", g_Physics[g_iTargetStyle[client]][ModeName]);
+	if(g_Settings[MultimodeEnable]) AddMenuItem(g_MainMenu[client][eMain_Menu], data, buffer);
 	SetMenuExitButton(g_MainMenu[client][eMain_Menu], true);
 	DisplayMenu(g_MainMenu[client][eMain_Menu], client, MENU_TIME_FOREVER);
 }
@@ -577,7 +587,8 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 	g_MainMapMenu[client][eMain2_Menu] = CreateMenu(MapMenu_Stock_Handler);
 	
 	new mapscomplete = 0;
-	if(SQL_HasResultSet(hndl)){
+	if(SQL_HasResultSet(hndl))
+	{
 		mapscomplete = SQL_GetRowCount(hndl);
 	}
 	/// Calc Percent
@@ -736,6 +747,10 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 				decl String:szQuery[255];
 				Format(szQuery, 255, sql_selectPlayerWRsBonus, g_iTargetStyle[client], SteamID);
 				SQL_TQuery(g_hSQL, SQL_ViewPlayerMapsCallback, szQuery, pack5);
+			}
+			case 6:
+			{
+				StylePanel(client);
 			}
 		}
 	}

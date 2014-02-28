@@ -560,8 +560,6 @@ stock LoadPhysics()
 		g_ModeCount++;
 	} while (KvGotoNextKey(hKv));
 	
-	//Timer_Log(Timer_LogLevelInfo, "PhysicsCFG: Loaded config file %d/%d [Ranked %d/%d]", g_ModeCountEnabled, g_ModeCount, g_ModeCountRankedEnabled, g_ModeCountRanked);
-	
 	CloseHandle(hKv);	
 }
 

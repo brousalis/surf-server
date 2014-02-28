@@ -10,6 +10,8 @@
 #define RECORD_TOP 1
 #define RECORD_WORLD 2
 
+#define LATEST_LIMIT 100
+
 enum Record
 {
 	String:RecordMap[64],
@@ -25,7 +27,7 @@ enum Record
 new Handle:g_hSQL = INVALID_HANDLE;
 new g_iSQLReconnectCounter;
 
-new g_latestRecords[3][25][Record];
+new g_latestRecords[3][LATEST_LIMIT][Record];
 new g_RecordCount[3];
 
 public Plugin:myinfo = 
@@ -113,13 +115,13 @@ LoadLatestRecords()
 {
 	decl String:sQuery[1024];
 	
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` ORDER BY `date` DESC LIMIT 25");
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` ORDER BY `date` DESC LIMIT %d", LATEST_LIMIT);
 	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_ANY, DBPrio_Low);
 	
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` <= 10 ORDER BY `date` DESC LIMIT 25");
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` <= 10 ORDER BY `date` DESC LIMIT %d", LATEST_LIMIT);
 	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_TOP, DBPrio_Low);
 	
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` = 1 ORDER BY `date` DESC LIMIT 25");
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` = 1 ORDER BY `date` DESC LIMIT %d", LATEST_LIMIT);
 	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_WORLD, DBPrio_Low);
 }
 
