@@ -176,12 +176,6 @@ public SQL_CountMapCallback(Handle:owner, Handle:hndl, const String:error[], any
 
 public Action:Client_PlayerInfo(client, args)
 {
-	if(g_hTargetData[client] != INVALID_HANDLE)
-	{
-		CloseHandle(g_hTargetData[client]);
-		g_hTargetData[client] = INVALID_HANDLE;
-	}
-	
 	if(args < 1)
 	{
 		decl String:SteamID[32];
@@ -193,13 +187,16 @@ public Action:Client_PlayerInfo(client, args)
 		WritePackCell(pack, client);
 		WritePackString(pack, SteamID);
 		WritePackString(pack, PlayerName);
-		g_hTargetData[client] = pack;
+		ResetPack(pack);
+		CloneHandle(g_hTargetData[client], pack);
 		
 		if(g_Settings[MultimodeEnable]) StylePanel(client);
 		else Menu_PlayerInfo(client, g_hTargetData[client]);
 	}
 	else if(args >= 1)
 	{
+		ClearClient(client);
+		
 		decl String:NameBuffer[256], String:NameClean[256];
 		GetCmdArgString(NameBuffer, sizeof(NameBuffer));
 		new startidx = 0;
@@ -256,11 +253,7 @@ StylePanel(client)
 
 public MenuHandler_StylePanel(Handle:menu, MenuAction:action, client, itemNum)
 {
-	if (action == MenuAction_End) 
-	{
-		CloseHandle(menu);
-	}
-	else if (action == MenuAction_Select) 
+	if (action == MenuAction_Select) 
 	{
 		decl String:info[8];		
 		GetMenuItem(menu, itemNum, info, sizeof(info));
@@ -368,14 +361,18 @@ public Menu_PlayerInfo(client, Handle:pack)
 	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View Incomplete Maps");
 	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View Incomplete Maps (Bonus)");
 	
-	decl String:buffer[512];
-	Format(buffer, sizeof(buffer), "Change style [current: %s]", g_Physics[g_iTargetStyle[client]][ModeName]);
-	if(g_Settings[MultimodeEnable]) AddMenuItem(g_MainMenu[client][eMain_Menu], data, buffer);
+	if(g_Settings[MultimodeEnable]) 
+	{
+		decl String:buffer[512];
+		Format(buffer, sizeof(buffer), "Change style [current: %s]", g_Physics[g_iTargetStyle[client]][ModeName]);
+		AddMenuItem(g_MainMenu[client][eMain_Menu], data, buffer);
+	}
 	SetMenuExitButton(g_MainMenu[client][eMain_Menu], true);
 	DisplayMenu(g_MainMenu[client][eMain_Menu], client, MENU_TIME_FOREVER);
 }
 
-public SQL_ViewSingleRecordCallback(Handle:owner, Handle:hndl, const String:error[], any:data){
+public SQL_ViewSingleRecordCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
+{
 	if(hndl == INVALID_HANDLE)
 		LogError("Error loading single record (%s)", error);
 	
@@ -387,6 +384,7 @@ public SQL_ViewSingleRecordCallback(Handle:owner, Handle:hndl, const String:erro
 	ReadPackString(pack, MapName, 32);
 	
 	CloseHandle(pack);
+	pack = INVALID_HANDLE;
 	
 	new Handle:menu = CreateMenu(Menu_Stock_Handler);
 	SetMenuTitle(menu, "Record Info\n ");
@@ -553,6 +551,7 @@ public SQL_PlayerPointsCallback(Handle:owner, Handle:hndl, const String:error[],
 	new client = ReadPackCell(pack);
 	
 	CloseHandle(pack);
+	pack = INVALID_HANDLE;
 	
 	new Handle:menu = CreateMenu(Menu_Stock_Handler);
 	SetMenuTitle(menu, "Points Info\n ");
@@ -597,6 +596,7 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 	new bonus = ReadPackCell(pack);
 	
 	CloseHandle(pack);
+	pack = INVALID_HANDLE;
 
 	decl String:szValue[64];
 	decl String:szMapName[32];
@@ -882,6 +882,7 @@ public CallBack_IncompleteMaps(Handle:owner, Handle:hndl, const String:error[], 
 		new bonus = ReadPackCell(pack);
 		new style = ReadPackCell(pack);
 		CloseHandle(pack);
+		pack = INVALID_HANDLE;
 		
 		new String:sMap[128];
 		new Handle:Kv = CreateKeyValues("data");
@@ -898,7 +899,7 @@ public CallBack_IncompleteMaps(Handle:owner, Handle:hndl, const String:error[], 
 		
 		new iCountIncomplete;
 		
-		new Handle:menu = CreateMenu(MenuHandler_Empty);
+		new Handle:menu = CreateMenu(MenuHandler_Incompelte);
 		
 		KvRewind(g_hMaps[bonus]);
 		KvGotoFirstSubKey(g_hMaps[bonus], true);
@@ -913,39 +914,43 @@ public CallBack_IncompleteMaps(Handle:owner, Handle:hndl, const String:error[], 
 			KvRewind(Kv);
         } while (KvGotoNextKey(g_hMaps[bonus], false));
 		
-		new String:buffer[128];
-		if(bonus == TRACK_BONUS)
-			Format(buffer, sizeof(buffer), "Bonus Maps Left %d/%d", iCountIncomplete, g_iMapCount[bonus]);
-		else if(bonus == TRACK_NORMAL)
-			Format(buffer, sizeof(buffer), "Maps Left %d/%d", iCountIncomplete, g_iMapCount[bonus]);
+		if(iCountIncomplete == 0)
+			AddMenuItem(menu, "", "All maps compelte, awesome!");
 		
-		if(style > -1)
-			Format(buffer, sizeof(buffer), "%s\nStyle: %s", buffer, g_Physics[style][ModeName]);
-			
-		SetMenuTitle(menu, buffer);
+		if(bonus == TRACK_BONUS)
+		{
+			if(style == -1 || !g_Settings[MultimodeEnable])
+				SetMenuTitle(menu, "%i of %i (%.2f%%) Bonus Maps incomplete\n ", iCountIncomplete, g_iMapCount[bonus], 100.0*(float(iCountIncomplete)/float(g_iMapCount[bonus])));
+			else
+				SetMenuTitle(menu, "%i of %i (%.2f%%) Bonus Maps incomplete\nStyle: %s\n ", iCountIncomplete, g_iMapCount[bonus], 100.0*(float(iCountIncomplete)/float(g_iMapCount[bonus])), g_Physics[style][ModeName]);
+		}
+		else if(bonus == TRACK_NORMAL)
+		{
+			if(style == -1 || !g_Settings[MultimodeEnable])
+				SetMenuTitle(menu, "%i of %i (%.2f%%) Maps incomplete\n ", iCountIncomplete, g_iMapCount[bonus], 100.0*(float(iCountIncomplete)/float(g_iMapCount[bonus])));
+			else
+				SetMenuTitle(menu, "%i of %i (%.2f%%) Maps incomplete\nStyle: %s\n ", iCountIncomplete, g_iMapCount[bonus], 100.0*(float(iCountIncomplete)/float(g_iMapCount[bonus])), g_Physics[style][ModeName]);
+		}
 		
 		SetMenuExitButton(menu, true);
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
 	}
 }
 
-public MenuHandler_Empty(Handle:menu, MenuAction:action, client, param2)
+public MenuHandler_Incompelte(Handle:menu, MenuAction:action, client, param2)
 {
 	if (action == MenuAction_Select)
 	{
-		if(g_hTargetData[client] != INVALID_HANDLE) Menu_PlayerInfo(client, g_hTargetData[client]);
-	}
-	else if (action == MenuAction_Cancel)
-	{
-		CloseHandle(menu);
-	}
-	else if (action == MenuAction_End)
-	{
-		CloseHandle(menu);
+		if(g_MainMenu[client][eMain_Pack] != INVALID_HANDLE) Menu_PlayerInfo(client, g_MainMenu[client][eMain_Pack]);
 	}
 }
 
 public OnClientDisconnect(client)
+{
+	ClearClient(client);
+}
+
+ClearClient(client)
 {
 	if(g_MainMenu[client][eMain_Pack] != INVALID_HANDLE)
 	{
@@ -969,5 +974,11 @@ public OnClientDisconnect(client)
 	{
 		CloseHandle(g_MainMapMenu[client][eMain2_Menu]);
 		g_MainMapMenu[client][eMain2_Menu] = INVALID_HANDLE;
+	}
+	
+	if(g_hTargetData[client] != INVALID_HANDLE)
+	{
+		CloseHandle(g_hTargetData[client]);
+		g_hTargetData[client] = INVALID_HANDLE;
 	}
 }

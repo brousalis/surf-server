@@ -380,6 +380,24 @@ public FpsMaxCallback(QueryCookie:cookie, client, ConVarQueryResult:result, cons
 
 bool:ResetTimer(client)
 {
+	//Forward Timer_Stopped(client)
+	Call_StartForward(g_timerStoppedForward);
+	Call_PushCell(client);
+	Call_Finish();
+	
+	//Stop mate
+	if (g_timerTeams)
+	{
+		new mate = Timer_GetClientTeammate(client);
+		if(0 < mate)
+		{
+			StopTimer(mate, false);
+			Call_StartForward(g_timerStoppedForward);
+			Call_PushCell(mate);
+			Call_Finish();
+		}
+	}
+	
 	g_timers[client][Enabled] = false;
 	g_timers[client][StartTime] = GetGameTime();
 	g_timers[client][EndTime] = -1.0;
