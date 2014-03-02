@@ -80,13 +80,13 @@ new bool:g_timerTeams = false;
 //----------//
 // includes //
 //----------//
-#include "cPMod/admin.sp"
-#include "cPMod/commands.sp"
-#include "cPMod/helper.sp"
-#include "cPMod/sql.sp"
+#include "cpMod/admin.sp"
+#include "cpMod/commands.sp"
+#include "cpMod/helper.sp"
+#include "cpMod/sql.sp"
 
 public Plugin:myinfo = {
-	name = "[Timer] cPMod",
+	name = "[Timer] cpMod",
 	author = "Zipcore, byaaaaah",
 	description = "Bunnyhop / Surf / Tricks server modification",
 	version = VERSION,
@@ -122,7 +122,7 @@ public OnPluginStart()
 	LoadTranslations("cpmod.phrases");
 	
 	db_setupDatabase();
-	CreateConVar("cPMod_version", VERSION, "cP Mod version.", FCVAR_DONTRECORD|FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
+	CreateConVar("cpMod_version", VERSION, "cp Mod version.", FCVAR_DONTRECORD|FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
 	g_hcvarEnable     = CreateConVar("sm_cp_enabled", "1", "Enable/Disable the plugin.", FCVAR_PLUGIN|FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_bEnabled      = GetConVarBool(g_hcvarEnable);
 	HookConVarChange(g_hcvarEnable, OnSettingChanged);
