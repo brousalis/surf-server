@@ -1274,8 +1274,8 @@ public CreditsPanel3(client)
 	DrawPanelText(panel, " ");
 	DrawPanelText(panel, "SMAC Team - Trigger Detection");
 	DrawPanelText(panel, "Jason Bourne - Challenge, Custom-HUD");
-	DrawPanelText(panel, " ");
-	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "SWATr - Small fixes/changes");
+	DrawPanelText(panel, "Smesh292 - No Jail and small fixes/changes");
 	DrawPanelText(panel, " ");
 	DrawPanelText(panel, " ");
 	DrawPanelText(panel, " ");

@@ -237,7 +237,7 @@ public HelpPanel3(client)
 	
 	if(g_Settings[RaceEnable])
 	{
-		DrawPanelText(panel, "!race - Displays race manager [Extra points] (not finished)");
+		DrawPanelText(panel, "!race - Displays race manager [Extra points]");
 	}
 	else
 	{
@@ -245,9 +245,9 @@ public HelpPanel3(client)
 	}
 	DrawPanelText(panel, "!rank - Displays your rank");
 	DrawPanelText(panel, "!top - Displays top10 of this map");
-	DrawPanelText(panel, "!mtop <mapname> - Displays a maps top10 (not finished)");
+	DrawPanelText(panel, "!mtop <mapname> - Displays a maps top10");
 	DrawPanelText(panel, "!btop - Displays bonus top10 of this map");
-	DrawPanelText(panel, "!mbtop <mapname> - Displays a maps bonus top10 (not finished)");
+	DrawPanelText(panel, "!mbtop <mapname> - Displays a maps bonus top10");
 	DrawPanelText(panel, " ");
 	DrawPanelItem(panel, "- Back -");
 	DrawPanelItem(panel, "- Next -");
@@ -304,9 +304,9 @@ public HelpPanel4(client)
 	DrawPanelText(panel, " ");
 	DrawPanelText(panel, "!prank - Displays your point rank");
 	DrawPanelText(panel, "!ptop - Displays top10 by pointrank");
-	DrawPanelText(panel, "!mapinfo - Displays Mapinfo (not finished) (not finished)");
-	DrawPanelText(panel, "!viewranks - View all ranks (not finished)");
-	DrawPanelText(panel, "!viewrecords - View all records (not finished)");
+	DrawPanelText(panel, "!mapinfo - Displays Mapinfo");
+	DrawPanelText(panel, "!points - Displays how much points you can get");
+	DrawPanelText(panel, "!latest - Displays latest records");
 	DrawPanelText(panel, "!playerinfo <partial playername> - Displays Playerinfos [WEB] (not finished)");
 	if(PluginEnabled("timer-physicsinfo.smx"))
 	{
