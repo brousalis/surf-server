@@ -10,12 +10,13 @@ public Plugin:myinfo =
 	author = "Zipcore",
 	description = "Re-writes maplist.txt and mapcycle.txt with valid maps",
 	version = "1.0",
-	url = ""
+	url = "forums.alliedmods.net/showthread.php?p=2074699"
 }
 
 public OnPluginStart()
 {
 	RegAdminCmd("sm_maplist_rewrite", Cmd_Rewrite, ADMFLAG_BAN);
+	RegAdminCmd("sm_nav_create", Cmd_NavCreate, ADMFLAG_BAN);
 	
 	if (g_hSQL == INVALID_HANDLE)
 	{
@@ -34,6 +35,12 @@ public OnMapStart()
 public Action:Cmd_Rewrite(client, args)
 {
 	ReWriteMaplist();
+	return Plugin_Handled;
+}
+
+public Action:Cmd_NavCreate(client, args)
+{
+	CreateNavFiles();
 	return Plugin_Handled;
 }
 
@@ -80,10 +87,10 @@ public ReWriteMaplist()
 {
 	decl String:Query[255];
 	Format(Query, 255, sql_selectMaps);
-	SQL_TQuery(g_hSQL, SQL_CountMapCallback, Query, false);
+	SQL_TQuery(g_hSQL, SQL_ReWriteMaplistCallback, Query, false);
 }
 
-public SQL_CountMapCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
+public SQL_ReWriteMaplistCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
 {
 	if (hndl == INVALID_HANDLE)
 	{
@@ -111,4 +118,73 @@ public SQL_CountMapCallback(Handle:owner, Handle:hndl, const String:error[], any
 		CloseHandle(hfile);
 		CloseHandle(hfile2);
 	}
+}
+
+public CreateNavFiles()
+{
+	decl String:Query[255];
+	Format(Query, 255, sql_selectMaps);
+	SQL_TQuery(g_hSQL, SQL_CreateNavFilesCallback, Query, false);
+}
+
+public SQL_CreateNavFilesCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
+{
+	if (hndl == INVALID_HANDLE)
+	{
+		return;
+	}
+	
+	if(SQL_GetRowCount(hndl))
+	{
+		decl String:sMap[128];
+		decl String:sNav[64];
+		
+		while(SQL_FetchRow(hndl))
+		{
+			SQL_FetchString(hndl, 0, sMap, sizeof(sMap));
+			
+			Format(sNav, 64, "maps/%s.nav", sMap);
+			if(!FileExists(sNav))
+			{
+				File_Copy("maps/base.nav", sNav);
+			}
+		}
+	}
+}
+
+/*
+ * Copies file source to destination
+ * Based on code of javalia:
+ * http://forums.alliedmods.net/showthread.php?t=159895
+ *
+ * @param source		Input file
+ * @param destination	Output file
+ */
+stock bool:File_Copy(const String:source[], const String:destination[])
+{
+	new Handle:file_source = OpenFile(source, "rb");
+
+	if (file_source == INVALID_HANDLE) {
+		return false;
+	}
+
+	new Handle:file_destination = OpenFile(destination, "wb");
+
+	if (file_destination == INVALID_HANDLE) {
+		CloseHandle(file_source);
+		return false;
+	}
+
+	new buffer[32];
+	new cache;
+
+	while (!IsEndOfFile(file_source)) {
+		cache = ReadFile(file_source, buffer, 32, 1);
+		WriteFile(file_destination, buffer, cache, 1);
+	}
+
+	CloseHandle(file_source);
+	CloseHandle(file_destination);
+
+	return true;
 }

@@ -23,11 +23,13 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	LoadPhysics();
+	LoadTimerSettings();
 }
 
 public OnMapStart()
 {
 	LoadPhysics();
+	LoadTimerSettings();
 }
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon, &subtype, &cmdnum, &tickcount, &seed, mouse[2])
@@ -35,10 +37,10 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	if(!IsClientInGame(client))
 		return Plugin_Continue;
 	
-	if(g_Physics[Timer_GetMode(client)][ModeAutoStrafe] != 1)
+	if(!IsPlayerAlive(client))
 		return Plugin_Continue;
 	
-	if(!IsPlayerAlive(client))
+	if(g_Physics[Timer_GetMode(client)][ModeAutoStrafe] != 1)
 		return Plugin_Continue;
 	
 	if(GetEntityFlags(client) & FL_ONGROUND)
@@ -46,32 +48,53 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	
 	if(GetEntityMoveType(client) & MOVETYPE_LADDER)
 		return Plugin_Continue;
-
-	if(!(buttons & IN_BACK) && !(buttons & IN_MOVELEFT) && !(buttons & IN_MOVERIGHT))
-	{
-		AngDiff[client] = Second[client][1]-angles[1];
-		Second[client] = angles;
-		if (AngDiff[client] > 180)
-			AngDiff[client] -= 360;
-		if (AngDiff[client] < -180)
-			AngDiff[client] += 360;
-	   
-		if(AngDiff[client] < 0 || LEFT[client])
-		{
-			vel[1] = -400.0;
-			LEFT[client] = true;
-			RIGHT[client] = false;
-		}      
-		if(AngDiff[client] > 0 || RIGHT[client])
-		{
-			vel[1] = 400.0;
-			RIGHT[client] = true;
-			LEFT[client] = false;
-		}
-	}
-	else
+	
+	if(buttons & IN_MOVELEFT)
 	{
 		RIGHT[client] = false;
+		LEFT[client] = false;
+		return Plugin_Continue;
+	}
+	
+	if(buttons & IN_MOVERIGHT)
+	{
+		RIGHT[client] = false;
+		LEFT[client] = false;
+		return Plugin_Continue;
+	}
+	
+	if(buttons & IN_FORWARD)
+	{
+		RIGHT[client] = false;
+		LEFT[client] = false;
+		return Plugin_Continue;
+	}
+	
+	if(buttons & IN_BACK)
+	{
+		RIGHT[client] = false;
+		LEFT[client] = false;
+		return Plugin_Continue;
+	}
+	
+	AngDiff[client] = Second[client][1]-angles[1];
+	Second[client] = angles;
+	if (AngDiff[client] > 180)
+		AngDiff[client] -= 360;
+	if (AngDiff[client] < -180)
+		AngDiff[client] += 360;
+   
+	if(AngDiff[client] < 0 || LEFT[client])
+	{
+		vel[1] = -400.0;
+		LEFT[client] = true;
+		RIGHT[client] = false;
+	}
+	
+	if(AngDiff[client] > 0 || RIGHT[client])
+	{
+		vel[1] = 400.0;
+		RIGHT[client] = true;
 		LEFT[client] = false;
 	}
 	

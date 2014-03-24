@@ -5,11 +5,11 @@
 public Plugin:myinfo = 
 {
 
-	name = "",
+	name = "[Timer] Autospawn",
 	author = "Zipcore",
 	version = PL_VERSION,
 	description = "",
-	url = ""
+	url = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
 public OnPluginStart() 
