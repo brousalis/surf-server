@@ -1151,7 +1151,7 @@ public Action:Command_Credits(client, args)
 public CreditsPanel(client)
 {
 	new Handle:panel = CreatePanel();
-	SetPanelTitle(panel, "- DMT|Timer Credits -");
+	SetPanelTitle(panel, "- Timer Credits -");
 	
 	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 8);
 	else SetPanelCurrentKey(panel, 9);
@@ -1204,7 +1204,7 @@ public CreditsHandler1 (Handle:menu, MenuAction:action,param1, param2)
 public CreditsPanel2(client)
 {
 	new Handle:panel = CreatePanel();
-	SetPanelTitle(panel, "- DMT|Timer Credits -");
+	SetPanelTitle(panel, "- Timer Credits -");
 	
 	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 7);
 	else SetPanelCurrentKey(panel, 8);
@@ -1265,7 +1265,7 @@ public CreditsHandler2 (Handle:menu, MenuAction:action,param1, param2)
 public CreditsPanel3(client)
 {
 	new Handle:panel = CreatePanel();
-	SetPanelTitle(panel, "- DMT|Timer Credits -");
+	SetPanelTitle(panel, "- Timer Credits -");
 	
 	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 7);
 	else SetPanelCurrentKey(panel, 8);
@@ -1326,7 +1326,7 @@ public CreditsHandler3 (Handle:menu, MenuAction:action,param1, param2)
 public CreditsPanel4(client)
 {
 	new Handle:panel = CreatePanel();
-	SetPanelTitle(panel, "- DMT|Timer Credits -");
+	SetPanelTitle(panel, "- Timer Credits -");
 	
 	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 7);
 	else SetPanelCurrentKey(panel, 8);
