@@ -490,7 +490,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	if(!IsPlayerAlive(client))
 		return Plugin_Continue;
 	
-	new mode = Timer_GetMode(client);
+	new style = Timer_GetMode(client);
 	new Float:fGameTime = GetGameTime();
 	new bool:abuse = false;
 	new bool:oldgroundstatus = g_bStayOnGround[client];
@@ -537,7 +537,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	{
 		if(!Timer_IsPlayerTouchingZoneType(client, ZtFreeStyle))
 		{
-			if(g_Physics[mode][ModeForceMoveforward])
+			if(g_Physics[style][ModeForceMoveforward])
 			{
 				if (!(buttons & IN_FORWARD))
 				{
@@ -545,7 +545,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[mode][ModePreventMoveleft])
+			if(g_Physics[style][ModePreventMoveleft])
 			{
 				if (buttons & IN_MOVELEFT || vel[1] < 0)
 				{
@@ -553,7 +553,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[mode][ModePreventMoveright])
+			if(g_Physics[style][ModePreventMoveright])
 			{
 				if (buttons & IN_MOVERIGHT || vel[1] > 0)
 				{
@@ -561,31 +561,29 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[mode][ModePreventPlusleft])
+			if(g_Physics[style][ModePreventPlusleft])
 			{
 				if (buttons & IN_LEFT) //Can't disable
 				{
 					if(Timer_GetStatus(client) > 0)
 					{
-						CPrintToChat(client, "%s +left is disabled for this mode.", PLUGIN_PREFIX2);
-						Timer_Reset(client);
+						if(g_Physics[style][ModePunishType] > 0) CPrintToChat(client, "%s +left is disabled for this mode.", PLUGIN_PREFIX2);
 					}
 				}
 			}
 			
-			if(g_Physics[mode][ModePreventPlusright])
+			if(g_Physics[style][ModePreventPlusright])
 			{
 				if (buttons & IN_RIGHT) //Can't disable 
 				{
 					if(Timer_GetStatus(client) > 0)
 					{
-						CPrintToChat(client, "%s +right is disabled for this mode.", PLUGIN_PREFIX2);
-						Timer_Reset(client);
+						if(g_Physics[style][ModePunishType] > 0) CPrintToChat(client, "%s +right is disabled for this mode.", PLUGIN_PREFIX2);
 					}
 				}
 			}
 			
-			if(g_Physics[mode][ModePreventMoveforward])
+			if(g_Physics[style][ModePreventMoveforward])
 			{
 				if (buttons & IN_FORWARD || vel[0] > 0)
 				{
@@ -593,7 +591,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[mode][ModePreventMoveback])
+			if(g_Physics[style][ModePreventMoveback])
 			{
 				if (buttons & IN_BACK || vel[0] < 0)
 				{
@@ -601,10 +599,10 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[mode][ModeBlockMovementDirection] != 0)
+			if(g_Physics[style][ModeBlockMovementDirection] != 0)
 			{
 				//backwards
-				if(g_Physics[mode][ModeBlockMovementDirection] == 1)
+				if(g_Physics[style][ModeBlockMovementDirection] == 1)
 				{
 					if (GetClientMovingDirection(client) > 0.45)
 					{
@@ -612,7 +610,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 					}
 				}
 				//forward
-				else if(g_Physics[mode][ModeBlockMovementDirection] == 2)
+				else if(g_Physics[style][ModeBlockMovementDirection] == 2)
 				{
 					if (GetClientMovingDirection(client) < -0.45)
 					{
@@ -622,7 +620,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			}
 		}
 		
-		if(g_Physics[mode][ModePreventLeft])
+		if(g_Physics[style][ModePreventLeft])
 		{
 			if(buttons & IN_LEFT)
 			{
@@ -630,7 +628,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			}
 		}
 		
-		if(g_Physics[mode][ModePreventRight])
+		if(g_Physics[style][ModePreventRight])
 		{
 			if(buttons & IN_RIGHT)
 			{
@@ -638,13 +636,13 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			}
 		}
 		
-		if(g_Physics[mode][ModeHoverScale] != 0.0)
+		if(g_Physics[style][ModeHoverScale] != 0.0)
 		{
 			if(fVelocity[2] < 0.0)
 			{
 				if((mouse[0] || mouse[1]))
 				{
-					Client_Push(client, Float:{-90.0,0.0,0.0}, g_Physics[mode][ModeHoverScale], VelocityOverride:{VelocityOvr_None,VelocityOvr_None,VelocityOvr_None});
+					Client_Push(client, Float:{-90.0,0.0,0.0}, g_Physics[style][ModeHoverScale], VelocityOverride:{VelocityOvr_None,VelocityOvr_None,VelocityOvr_None});
 				}
 			}
 		}
@@ -652,7 +650,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	
 	if(abuse)
 	{
-		Block_MovementControl(client);
+		PunishAbuse(client);
 	}
 	else if(g_timerMapzones) if(!Timer_IsPlayerTouchingZoneType(client, ZtPushEast)
 			&& !Timer_IsPlayerTouchingZoneType(client, ZtPushWest)
@@ -1437,8 +1435,6 @@ FindBhopBlocks()
 {
 	if(g_Settings[MultiBhopEnable])
 	{
-		Timer_LogDebug("Start searching bhop blocks");
-		
 		decl Float:startpos[3], Float:endpos[3], Float:mins[3], Float:maxs[3], tele;
 		new ent = -1;
 
@@ -1516,9 +1512,6 @@ FindBhopBlocks()
 				}
 			}
 		}
-		
-		Timer_LogDebug("Got %d buttons and %d doors", g_iBhopButtonCount, g_iBhopDoorCount);
-
 		AlterBhopBlocks(false);
 	}
 }
@@ -2058,5 +2051,38 @@ Client_BoostForward(client, Float:scale, Float:maxspeed)
 	if(maxspeed == 0.0 || SquareRoot(Pow(fVelocity[0],2.0)+Pow(fVelocity[1],2.0)) < maxspeed)
 	{
 		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+	}
+}
+
+PunishAbuse(client)
+{
+	new style = Timer_GetMode(client);
+	
+	if(g_Physics[style][ModePunishType] == 0)
+		return;
+	
+	//Block controls
+	if(g_Physics[style][ModePunishType] == 1)
+	{
+		Block_MovementControl(client);
+	}
+	//Stop movement
+	else if(g_Physics[style][ModePunishType] == 2)
+	{
+		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, Float:{0.0,0.0,-100.0});
+	}
+	//Reset timer
+	else if(g_Physics[style][ModePunishType] == 3)
+	{
+		Timer_Reset(client);
+	}
+	//Teleport to startzone
+	else if(g_Physics[style][ModePunishType] == 4)
+	{
+		Timer_Restart(client);
+	}
+	else
+	{
+		Timer_LogError("%d is not a valid punish type", g_Physics[style][ModePunishType]);
 	}
 }
