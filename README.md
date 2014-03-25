@@ -22,6 +22,7 @@ Please read descriptions of modules you like to install first, they can contain 
 
 replace
 - //#define LEGACY_COLORS "CS:GO Color Support"
+
 with
 - #define LEGACY_COLORS "CS:GO Color Support"
 
