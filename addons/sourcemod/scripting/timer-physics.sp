@@ -567,7 +567,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				{
 					if(Timer_GetStatus(client) > 0)
 					{
-						if(g_Physics[style][ModePunishType] > 0) CPrintToChat(client, "%s +left is disabled for this mode.", PLUGIN_PREFIX2);
+						abuse = true;
 					}
 				}
 			}
@@ -578,7 +578,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				{
 					if(Timer_GetStatus(client) > 0)
 					{
-						if(g_Physics[style][ModePunishType] > 0) CPrintToChat(client, "%s +right is disabled for this mode.", PLUGIN_PREFIX2);
+						abuse = true;
 					}
 				}
 			}
@@ -652,10 +652,17 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	{
 		PunishAbuse(client);
 	}
-	else if(g_timerMapzones) if(!Timer_IsPlayerTouchingZoneType(client, ZtPushEast)
+	else if(g_timerMapzones) 
+	{
+		if(!Timer_IsPlayerTouchingZoneType(client, ZtPushEast)
 			&& !Timer_IsPlayerTouchingZoneType(client, ZtPushWest)
 			&& !Timer_IsPlayerTouchingZoneType(client, ZtPushNorth)
 			&& !Timer_IsPlayerTouchingZoneType(client, ZtPushSouth))
+		{
+			Block_MovementControl(client, true);
+		}
+	}
+	else 
 	{
 		Block_MovementControl(client, true);
 	}

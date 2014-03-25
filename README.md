@@ -29,20 +29,6 @@ with
 3.) recompile all needed .sp files (some modules have different files for CS:GO)
 
 4.) Insert "timer" keyvalue into configs/databases.cfg (no sqlite support)
-PHP Code:
-"Databases"
-{
-	"timer"
-	{
-		"driver"		"mysql"
-		"host"			"123.123.123.123"
-		"database"		"db-name"
-		"user"			"user-name"
-		"pass"			"12345"
-		"timeout"		"120"
-		"port"			"3306"
-	}
-} 
 
 
 5.) Change configs/timer/settings.cfg to your needs
@@ -57,12 +43,16 @@ PHP Code:
 #Update instructions
 
 Update 2.0.x to 2.1.x:
+
 1.) Make a backup of your mapzone, round and maptier table.
+
 2.) Delete mapzone, round and maptier table
+
 3.) Delte "create table" lines of you backup files (Notepad++)
+
 4.) Import modified backups
 
-#Compability
+#Compability Info
 
 - Noblock (Included into Mapzone module)
 - MultiPlayer Bunny Hops (Included into Physics module)
@@ -71,7 +61,7 @@ Update 2.0.x to 2.1.x:
 - SMAC autotrigger (Included into Scripter-SMAC module)
 - Macrodox - Bhop cheat detection (Included into Scripter-Macrodox module)
 
-#Usefull cvar list
+#Usefull CVAR list
 
 - sv_accelerate "10" (Ground control)
 - sv_wateraccelerate "150" (Water control)
