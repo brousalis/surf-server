@@ -1,0 +1,3 @@
+Timer-Sound
+
+This plugin plays sounds on different events.

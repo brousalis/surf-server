@@ -1,0 +1,4 @@
+Timer-Autospawn
+
+This plugin spawns players which are dead or joined a team during a round,
+this is usefull if your server blocks round end events.

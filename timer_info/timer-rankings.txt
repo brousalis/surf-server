@@ -1,0 +1,7 @@
+Timer-Rankings
+
+This plugin ranks players by points and gives chat-tags for players rank.
+
+Chatranks-CFG: cfg/sourcemod/timer-rankings.cfg
+
+!!! Requires simple chat processor to work(plugins/disabled)

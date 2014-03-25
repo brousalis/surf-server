@@ -1,0 +1,3 @@
+Timer-Random-Startmap
+
+This plugin will change to a random apon serverstart. Only maps with a startzone will be choosen.

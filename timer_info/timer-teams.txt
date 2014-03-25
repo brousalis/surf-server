@@ -1,0 +1,13 @@
+Timer-Teams
+
+This plugins provides 2 team-modes.
+
+Challenge:
+Challenge another player and winner takes points from loser.
+
+Coop:
+Both players have to finish a map to become ranked, this mode can be forced.
+
+Commands:
+sm_challenge - Send invite to challenge another player
+sm_coop - Send invite to a teammate

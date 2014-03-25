@@ -1,0 +1,8 @@
+Timer-Worldrecord_Playerinfo
+
+This module provides a powerfull command which allows, to search for a player and displays stats for this player.
+It can show his records, world-records, complete status, incomplete maps and much more
+
+Commands:
+sm_playerinfo - Displays your own stats
+sm_playerinfo <name> - Displayer stats for another player

@@ -5,12 +5,12 @@ Timer
 
 Support: https://forums.alliedmods.net/showthread.php?t=231866
 
-*** HISTORY ***
+#History
 
 This timer was private until poppin leaked it, this timer is a heavy modified version of Timer by Alongub (https://github.com/alongubkin/timer),
 with many new components and annexed plugins by various authors.
 
-*** INSTALL INSTRUCTIONS ***
+#Install instructions
 
 Please read descriptions of modules you like to install first, they can contain additional install instructions!
 
@@ -54,7 +54,7 @@ PHP Code:
 8.) Restart your server and have fun creating zones
 (It's possible to import your old Timer 1.0.x Zones)
 
-*** UPDATE INSTRUCTIONS ***
+#Update instructions
 
 Update 2.0.x to 2.1.x:
 1.) Make a backup of your mapzone, round and maptier table.
@@ -62,7 +62,7 @@ Update 2.0.x to 2.1.x:
 3.) Delte "create table" lines of you backup files (Notepad++)
 4.) Import modified backups
 
-*** COMPABILITY CHECKS ***
+#Compability
 
 - Noblock (Included into Mapzone module)
 - MultiPlayer Bunny Hops (Included into Physics module)
@@ -71,11 +71,11 @@ Update 2.0.x to 2.1.x:
 - SMAC autotrigger (Included into Scripter-SMAC module)
 - Macrodox - Bhop cheat detection (Included into Scripter-Macrodox module)
 
-*** USEFULL CVAR LIST ***
+#Usefull cvar list
 
-sv_accelerate "10" //Ground control
-sv_wateraccelerate "150" //Water control
-sv_airaccelerate "150" //Air control
-sv_enablebunnyhopping "1" //Disable speed limit
-sv_maxvelocity "9999" //Increase max. possible speed
-mp_falldamage "0" //Disable fall damage  
+- sv_accelerate "10" (Ground control)
+- sv_wateraccelerate "150" (Water control)
+- sv_airaccelerate "150" (Air control)
+- sv_enablebunnyhopping "1" (Disable speed limit)
+- sv_maxvelocity "9999" (Increase max. possible speed)
+- mp_falldamage "0" (Disable fall damage)

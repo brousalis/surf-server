@@ -147,7 +147,7 @@ public OnPluginStart()
 	RegConsoleCmd("sm_record", Command_PersonalRecord);
 	RegConsoleCmd("sm_rank", Command_PersonalRecord);
 	//RegConsoleCmd("sm_delete", Command_Delete);
-	RegConsoleCmd("sm_reloadcache", Command_ReloadCache);
+	RegAdminCmd("sm_reloadcache", Command_ReloadCache, ADMFLAG_RCON, "refresh records cache");
 	RegAdminCmd("sm_deleterecord_all", Command_DeletePlayerRecord_All, ADMFLAG_ROOT, "sm_deleterecord_all STEAM_ID");
 	RegAdminCmd("sm_deleterecord_map", Command_DeletePlayerRecord_Map, ADMFLAG_ROOT, "sm_deleterecord_map STEAM_ID");
 	RegAdminCmd("sm_deleterecord", Command_DeletePlayerRecord_ID, ADMFLAG_RCON, "sm_deleterecord RECORDID");

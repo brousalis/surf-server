@@ -1,0 +1,3 @@
+Timer-Scripter-Macrodox
+
+This plugin uses Macrodox to detect players unsing simple bhop scipts and adds them to Timer-Scripter_DB.

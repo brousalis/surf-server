@@ -1,0 +1,6 @@
+Timer-Physics_Info
+
+This plugin allows to see server settings for each style ingame.
+
+Commands:
+sm_styleinfo

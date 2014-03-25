@@ -1,0 +1,7 @@
+Timer-Teleme
+
+This plugin allows players to teleport to another player and stops their timer.
+
+Commands:
+sm_tpto
+sm_teleme
