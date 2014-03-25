@@ -250,9 +250,15 @@ new g_ModeDefault = -1;
 
 stock LoadTimerSettings()
 {
-	new String:sPath[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/timer/settings.cfg");
+	decl String:sPath[PLATFORM_MAX_PATH];
+	decl String:currentMap[64];
+	GetCurrentMap(currentMap, 64);
+	
+	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/timer/settings_%s.cfg", currentMap);
 
+	if(!FileExists(sPath))
+		BuildPath(Path_SM, sPath, sizeof(sPath), "configs/timer/settings.cfg");
+	
 	new Handle:hKv = CreateKeyValues("Settings");
 	if (!FileToKeyValues(hKv, sPath))
 	{
@@ -451,8 +457,14 @@ stock LoadTimerSettings()
 
 stock LoadPhysics()
 {
-	new String:sPath[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/timer/physics.cfg");
+	decl String:sPath[PLATFORM_MAX_PATH];
+	decl String:currentMap[64];
+	GetCurrentMap(currentMap, 64);
+	
+	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/timer/physics_%s.cfg", currentMap);
+
+	if(!FileExists(sPath))
+		BuildPath(Path_SM, sPath, sizeof(sPath), "configs/timer/physics.cfg");
 
 	new Handle:hKv = CreateKeyValues("Physics");
 	if (!FileToKeyValues(hKv, sPath))
