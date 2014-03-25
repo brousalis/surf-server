@@ -5,13 +5,11 @@
 #include <timer-strafes>
 #include <timer-mapzones>
 
-#define MAX_STRAFES 5000
-
 enum PlayerState
 {
 	bool:bOn,
 	bool:bLastBoosted,
-	nStrafes,
+	nStrafes, // Count strafes
 	nStrafesReal,
 	nStrafesBoosted,
 	nStrafeDir,
@@ -75,21 +73,6 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 {
 	new bool:ongrund = bool:(GetEntityFlags(client) & FL_ONGROUND);
 	
-	if(g_PlayerStates[client][bOn])
-	{
-		GetClientAbsOrigin(client, vLastOrigin[client]);
-		GetClientAbsAngles(client, vLastAngles[client]);
-		GetEntPropVector(client, Prop_Data, "m_vecVelocity", vLastVelocity[client]);
-		return;
-	}
-	
-	if(g_PlayerStates[client][nStrafes] >= MAX_STRAFES-1)
-	{
-		GetClientAbsOrigin(client, vLastOrigin[client]);
-		GetClientAbsAngles(client, vLastAngles[client]);
-		GetEntPropVector(client, Prop_Data, "m_vecVelocity", vLastVelocity[client]);
-	}
-	
 	new bool:newstrafe = false;
 	
 	new nButtonCount;
@@ -128,16 +111,8 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	
 	if(newstrafe)
 	{
-		if(g_PlayerStates[client][nStrafes] >= MAX_STRAFES)
-		{
-			g_PlayerStates[client][nStrafesReal]++;
-			g_PlayerStates[client][nStrafes] = 1;
-		}
-		else
-		{
-			g_PlayerStates[client][nStrafesReal]++;
-			g_PlayerStates[client][nStrafes]++;
-		}
+		g_PlayerStates[client][nStrafesReal]++;
+		g_PlayerStates[client][nStrafes]++;
 	}
 	
 	if(g_PlayerStates[client][nStrafes] > 0)
@@ -184,7 +159,6 @@ public OnClientEndTouchZoneType(client, MapZoneType:type)
 	g_PlayerStates[client][nStrafeDir] = 0;
 	g_PlayerStates[client][nStrafes] = 0;
 	g_PlayerStates[client][nStrafesBoosted] = 0;
-	
 	g_PlayerStates[client][bLastBoosted] = false;
 }
 
