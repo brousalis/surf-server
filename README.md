@@ -21,12 +21,9 @@ Please read descriptions of modules you like to install first, they can contain 
 2a) open scripting/incudes/timer.inc with a text editor (like Notepad++)
 
 replace
-PHP Code:
-//#define LEGACY_COLORS "CS:GO Color Support" 
+//#define LEGACY_COLORS "CS:GO Color Support"
 with
-PHP Code:
-#define LEGACY_COLORS "CS:GO Color Support" 
-
+#define LEGACY_COLORS "CS:GO Color Support"
 
 3.) recompile all needed .sp files (some modules have different files for CS:GO)
 
