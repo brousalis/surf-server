@@ -113,6 +113,11 @@ new bool:g_bLoadedCookies[MAXPLAYERS + 1];
 new bool:g_bShowConnectMsg[MAXPLAYERS + 1] = {false, ...};
 new Float:g_fKickTime[MAXPLAYERS + 1];
 
+//* * * * * * * * * * * * * * * * * * * * * * * * * *
+//Forwards
+//* * * * * * * * * * * * * * * * * * * * * * * * * *
+new Handle:g_timerGainPointsForward;
+
 public Plugin:myinfo =
 {
 	name        = "[Timer] Rankings",
@@ -217,6 +222,8 @@ public OnPluginStart()
 	HookEvent("player_spawn", Event_OnPlayerSpawn);
 	HookEvent("player_team", Event_OnPlayerTeam);
 
+	g_timerGainPointsForward = CreateGlobalForward("OnPlayerGainPoints", ET_Event, Param_Cell, Param_Cell);
+	
 	if(g_iDisplayMethod < 0)
 	{
 		g_hDisplayCookie = RegClientCookie("Timer-Ranks-Display", "Determines the display method for [Timer] Ranks.", CookieAccess_Private);
@@ -2282,33 +2289,6 @@ stock PrintToAdmins(const String:format[], any:...)
 		LogToFile(g_sPluginLog, sBuffer);
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-/*
-public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank)
-{
-	if(g_Settings[PointsEnable])
-	{
-		new tier = Timer_GetTier();
-		
-		//give less points for short end & bonus 
-		if(bonus != 0) tier = 1;
-		
-		new bool:ranked = bool:Timer_IsModeRanked(mode);
-		new total = Timer_GetDifficultyTotalRank(mode, bonus);
-		new finishcount = Timer_GetFinishCount(mode, bonus, currentrank);
-		if(ranked)
-		{
-			new points = GetRecordPoints(lasttime > time, bonus, mode, tier, finishcount, total, currentrank, newrank);
-			
-			g_iPoints[client] += points;
-			Timer_SavePoints(client);
-			if(points > 0) CPrintToChat(client, "%s {olive}You got {lightred}%d points {olive}. Now you have {lightred}%d points{olive}.", PLUGIN_PREFIX2, points, g_iPoints[client]);
-		}
-	}
-}
-*/
-
 //public OnFinishRound(client, const String:map[], jumps, flashbangs, physicsDifficulty, fpsmax, const String:timeString[], const String:timeDiffString[], position, totalrank, bool:overwrite)
 public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank)
 {
@@ -2360,6 +2340,12 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 		{
 			CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Complete_Round_Points", iBuffer, g_sCurrentMap);
 		}
+        
+		// Forward points edit by raska
+		Call_StartForward(g_timerGainPointsForward);
+		Call_PushCell(client);
+		Call_PushCell(iBuffer);
+		Call_Finish();
 	}
 }
 

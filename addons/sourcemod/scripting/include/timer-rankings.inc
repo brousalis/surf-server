@@ -3,6 +3,10 @@
 #endif
 #define _timer_rankings_included
 
+/* Forwards */
+
+forward OnPlayerGainPoints(client, points);  
+
 /* Natives */
 native Timer_GetPoints(client);
 native Timer_GetPointRank(client);
