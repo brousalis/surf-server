@@ -66,6 +66,9 @@ enum TimerSettings
 	HUDUseMVPStars,
 	bool:HUDUseFragPointsRank,
 	bool:HUDUseDeathRank,
+	bool:HUDUseClanTag,
+	bool:HUDUseClanTagStyle,
+	bool:HUDUseClanTagTime,
 	
 	bool:HUDMasterOnlyEnable,
 	bool:HUDMasterEnable,
@@ -327,6 +330,9 @@ stock LoadTimerSettings()
 		else if(StrEqual(sSectionName, "Hud"))
 		{
 			g_Settings[HUDUseDeathRank] = bool:KvGetNum(hKv, "hud_use_death_rank", 1);
+			g_Settings[HUDUseClanTag] = bool:KvGetNum(hKv, "hud_use_clan_tag", 1);
+			g_Settings[HUDUseClanTagStyle] = bool:KvGetNum(hKv, "hud_use_clan_tag_style", 1);
+			g_Settings[HUDUseClanTagTime] = bool:KvGetNum(hKv, "hud_use_clan_tag_time", 1);
 			g_Settings[HUDUseFragPointsRank] = bool:KvGetNum(hKv, "hud_use_frag_points_rank", 1);
 			g_Settings[HUDUseMVPStars] = KvGetNum(hKv, "hud_use_mvp_stars", 100);
 			g_Settings[HUDMasterEnable] = bool:KvGetNum(hKv, "hud_master_enable", 1);

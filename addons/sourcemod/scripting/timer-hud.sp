@@ -1253,9 +1253,6 @@ UpdateHUD_CSS(client)
 	if(!IsFakeClient(iClientToShow)) GetClientAuthString(iClientToShow, auth, sizeof(auth));
 	else FormatEx(auth, sizeof(auth), "Replay-Bot");
 	
-	//decl String:client_tag[32]; //clantag	
-	//CS_GetClientClanTag(iClientToShow, client_tag, sizeof(client_tag));
-	
 	iButtons = g_iButtonsPressed[iClientToShow]; //buttons pressed
 
 	//collect player stats
@@ -1350,35 +1347,49 @@ UpdateHUD_CSS(client)
 	
 	new nprank = (prank * -1);
 	
-	//Update Stats
 	if(client == iClientToShow)
 	{
-		if(points100 > 0 && g_Settings[HUDUseMVPStars] > 0) CS_SetMVPCount(iClientToShow, points100);
-		if(g_Settings[HUDUseFragPointsRank]) SetEntProp(client, Prop_Data, "m_iFrags", nprank);
-		if(g_Settings[HUDUseDeathRank]) Client_SetDeaths(client, rank);
-	}
-	
-	if(client == iClientToShow)
-	{
-		decl String:tagbuffer[32];
-		
-		if(enabled) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", buffer);
-		else if (ranked) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", bestbuffer);
-		
-		if(g_Settings[MultimodeEnable])
+		if(g_Settings[HUDUseMVPStars] > 0 && points100 > 0)
 		{
-			if(!enabled && !ranked)
-			{
-				Format(tagbuffer, sizeof(tagbuffer), "%s %s", g_Physics[mode][ModeTagName], tagbuffer);
-			}
-			else
-			{
-				Format(tagbuffer, sizeof(tagbuffer), "%s %s", g_Physics[mode][ModeTagShortName], tagbuffer);
-			}
+			CS_SetMVPCount(iClientToShow, points100);
+		}
+		if(g_Settings[HUDUseFragPointsRank])
+		{
+			SetEntProp(client, Prop_Data, "m_iFrags", nprank);
+		}
+		if(g_Settings[HUDUseDeathRank])
+		{
+			Client_SetDeaths(client, rank);
 		}
 		
-		CS_SetClientClanTag(client, tagbuffer);
+		if(g_Settings[HUDUseClanTag])
+		{
+			decl String:tagbuffer[32];
+			if(g_Settings[HUDUseClanTagTime])
+			{
+				if(enabled) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", buffer);
+				else if (ranked) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", bestbuffer);
+			}
+			
+			if(g_Settings[HUDUseClanTagTime] && g_Settings[MultimodeEnable] && g_Settings[HUDUseClanTagStyle])
+				Format(tagbuffer, sizeof(tagbuffer), " %s", tagbuffer);
+			
+			if(g_Settings[MultimodeEnable] && g_Settings[HUDUseClanTagStyle])
+			{
+				if(!enabled && !ranked)
+				{
+					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[mode][ModeTagName], tagbuffer);
+				}
+				else
+				{
+					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[mode][ModeTagShortName], tagbuffer);
+				}
+			}
+			
+			CS_SetClientClanTag(client, tagbuffer);
+		}
 	}
+	
 	//start format center HUD
 	
 	new stagecount;
@@ -1802,11 +1813,6 @@ UpdateHUD_CSGO(client)
 	decl String:auth[32]; //steam ID
 	if(!IsFakeClient(iClientToShow)) GetClientAuthString(iClientToShow, auth, sizeof(auth));
 	else FormatEx(auth, sizeof(auth), "Replay-Bot");
-	
-	//decl String:client_tag[32]; //clantag	
-	//CS_GetClientClanTag(iClientToShow, client_tag, sizeof(client_tag));
-	
-	//iButtons = g_iButtonsPressed[iClientToShow]; //buttons pressed
 
 	//collect player stats
 	decl String:buffer[32]; //time format buffer
@@ -1900,30 +1906,55 @@ UpdateHUD_CSGO(client)
 		rank = Timer_GetDifficultyRank(iClientToShow, bonus, mode);	
 	}
 	
-	Client_SetDeaths(client, rank);
+	new prank;
+	if(g_timerRankings)  prank = Timer_GetPointRank(iClientToShow);
+	
+	if(prank > 2000 || prank < 1) prank = 2000;
+	
+	new nprank = (prank * -1);
 	
 	if(client == iClientToShow)
 	{
-		decl String:tagbuffer[32];
-		
-		if(enabled) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", buffer);
-		else if (ranked) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", bestbuffer);
-		
-		if(g_Settings[MultimodeEnable])
+		if(g_Settings[HUDUseMVPStars] > 0 && points100 > 0)
 		{
-			if(!enabled && !ranked)
-			{
-				Format(tagbuffer, sizeof(tagbuffer), "%s %s", g_Physics[mode][ModeTagName], tagbuffer);
-			}
-			else
-			{
-				Format(tagbuffer, sizeof(tagbuffer), "%s %s", g_Physics[mode][ModeTagShortName], tagbuffer);
-			}
+			CS_SetMVPCount(iClientToShow, points100);
+		}
+		if(g_Settings[HUDUseFragPointsRank])
+		{
+			SetEntProp(client, Prop_Data, "m_iFrags", nprank);
+		}
+		if(g_Settings[HUDUseDeathRank])
+		{
+			Client_SetDeaths(client, rank);
 		}
 		
-		CS_SetClientClanTag(client, tagbuffer);
+		if(g_Settings[HUDUseClanTag])
+		{
+			decl String:tagbuffer[32];
+			if(g_Settings[HUDUseClanTagTime])
+			{
+				if(enabled) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", buffer);
+				else if (ranked) FormatEx(tagbuffer, sizeof(tagbuffer), "%s", bestbuffer);
+			}
+			
+			if(g_Settings[HUDUseClanTagTime] && g_Settings[MultimodeEnable] && g_Settings[HUDUseClanTagStyle])
+				Format(tagbuffer, sizeof(tagbuffer), " %s", tagbuffer);
+			
+			if(g_Settings[MultimodeEnable] && g_Settings[HUDUseClanTagStyle])
+			{
+				if(!enabled && !ranked)
+				{
+					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[mode][ModeTagName], tagbuffer);
+				}
+				else
+				{
+					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[mode][ModeTagShortName], tagbuffer);
+				}
+			}
+			
+			CS_SetClientClanTag(client, tagbuffer);
+		}
 	}
-	
 	
 	//start format center HUD
 	
