@@ -58,6 +58,11 @@ new g_iIgnoreEndTouchStart[MAXPLAYERS+1];
 
 new g_iTargetNPC[MAXPLAYERS+1];
 
+new Handle:g_PreSpeedStart = INVALID_HANDLE;
+new g_bPreSpeedStart = true;
+new Handle:g_PreSpeedBonusStart = INVALID_HANDLE;
+new g_bPreSpeedBonusStart = true;
+
 new Handle:g_startMapZoneColor = INVALID_HANDLE;
 new g_startColor[4] = { 0, 255, 0, 255 };
 
@@ -160,6 +165,9 @@ public OnPluginStart()
 	
 	FindCollisionGroup();
 	
+	g_PreSpeedStart = CreateConVar("timer_prespeed_start", "1", "Enable prespeed limit for start zone.", _, true, 0.0, true, 1.0);
+	g_PreSpeedBonusStart = CreateConVar("timer_prespeed_bonusstart", "1", "Enable prespeed limit for bonus start zone.", _, true, 0.0, true, 1.0);
+	
 	g_startMapZoneColor = CreateConVar("timer_startcolor", "0 255 0 255", "The color of the start map zone.");
 	g_endMapZoneColor = CreateConVar("timer_endcolor", "255 0 0 255", "The color of the end map zone.");
 	g_startBonusZoneColor = CreateConVar("timer_startbonuscolor", "0 0 255 255", "The color of the start bonus zone.");
@@ -176,6 +184,9 @@ public OnPluginStart()
 	Sound_TeleLast = CreateConVar("timer_sound_tele_last", "ui/freeze_cam.wav", "");
 	Sound_TeleNext = CreateConVar("timer_sound_tele_next", "ui/freeze_cam.wav", "");
 	Sound_TimerStart = CreateConVar("timer_sound_start", "ui/freeze_cam.wav", "");
+	
+	HookConVarChange(g_PreSpeedStart, Action_OnSettingsChange);
+	HookConVarChange(g_PreSpeedBonusStart, Action_OnSettingsChange);
 	
 	HookConVarChange(g_startMapZoneColor, Action_OnSettingsChange);
 	HookConVarChange(g_endMapZoneColor, Action_OnSettingsChange);
@@ -391,7 +402,7 @@ public Action:OnTouchTrigger(caller, activator)
 	
 	new client = activator;
 	
-	StopPreSpeed(client);
+	ChangePlayerVelocity(client);
 }
 
 //public Action:StartTouchTrigger(caller, activator)
@@ -1093,6 +1104,10 @@ public Action_OnSettingsChange(Handle:cvar, const String:oldvalue[], const Strin
 		FormatEx(SND_TELE_NEXT, sizeof(SND_TELE_NEXT) ,"%s", newvalue);
 	else if (cvar == Sound_TimerStart)
 		FormatEx(SND_TIMER_START, sizeof(SND_TIMER_START) ,"%s", newvalue);
+	else if (cvar == g_PreSpeedStart)
+		g_bPreSpeedStart = GetConVarBool(g_PreSpeedStart);
+	else if (cvar == g_PreSpeedBonusStart)
+		g_bPreSpeedBonusStart = GetConVarBool(g_PreSpeedBonusStart);
 }
 
 AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:point1[3], Float:point2[3])
@@ -2108,7 +2123,39 @@ public bool:TraceASDF(entity, mask, any:data)
 	return (data != entity);
 }
 
-StopPreSpeed(client)
+bool:IsPlayerTouchingSpeedZone(client)
+{
+	if(g_bPreSpeedStart && Timer_IsPlayerTouchingZoneType(client, ZtStart))
+		return true;
+	if(g_bPreSpeedBonusStart && Timer_IsPlayerTouchingZoneType(client, ZtBonusStart))
+		return true;
+	if(Timer_IsPlayerTouchingZoneType(client, ZtLimitSpeed))
+		return true;
+	if(Timer_IsPlayerTouchingZoneType(client, ZtFullBooster))
+		return true;
+	if(Timer_IsPlayerTouchingZoneType(client, ZtPlayerClip))
+		return true;
+	if(Timer_IsPlayerTouchingZoneType(client, ZtBounceBack))
+		return true;
+	if(Timer_IsPlayerTouchingZoneType(client, ZtPushUp))
+		return true;
+	if(Timer_IsPlayerTouchingZoneType(client, ZtPushDown))
+		return true;
+	if(Timer_IsPlayerTouchingZoneType(client, ZtPushNorth))
+		return true;
+	if(Timer_IsPlayerTouchingZoneType(client, ZtPushSouth))
+		return true;
+	if(Timer_IsPlayerTouchingZoneType(client, ZtPushEast))
+		return true;
+	if(Timer_IsPlayerTouchingZoneType(client, ZtPushWest))
+		return true;
+	if(Timer_IsPlayerTouchingZoneType(client, ZtHover))
+		return true;
+	
+	return false;
+}
+
+ChangePlayerVelocity(client)
 {
 	if(!g_timerPhysics)
 		return;
@@ -2129,19 +2176,7 @@ StopPreSpeed(client)
 	new mode = Timer_GetMode(client);
 	new Float:maxspeed = g_Physics[mode][ModeBlockPreSpeeding];
 	
-	if(!Timer_IsPlayerTouchingZoneType(client, ZtStart) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtBonusStart) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtLimitSpeed) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtFullBooster) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtPlayerClip) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtBounceBack) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtPushUp) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtPushDown) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtPushNorth) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtPushSouth) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtPushEast) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtPushWest) &&
-	!Timer_IsPlayerTouchingZoneType(client, ZtHover))
+	if(!IsPlayerTouchingSpeedZone(client))
 		return;
 	
 	new Float:push_maxspeed = GetEntPropFloat(client, Prop_Send, "m_flMaxspeed");
