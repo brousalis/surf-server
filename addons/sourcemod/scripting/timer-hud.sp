@@ -1605,18 +1605,18 @@ UpdateHUD_CSS(client)
 				Format(hintText, sizeof(hintText), "%sD;", hintText);
 			// Is he pressing "+left"?
 			if(iButtons & IN_LEFT)
-				Format(hintText, sizeof(hintText), "%sL;", hintText);
+				Format(hintText, sizeof(hintText), "%s+L;", hintText);
 			// Is he pressing "+right"?
 			if(iButtons & IN_RIGHT)
-				Format(hintText, sizeof(hintText), "%sR;", hintText);
+				Format(hintText, sizeof(hintText), "%s+R;", hintText);
 				
 			// Is he pressing "space"?
 			if(iButtons & IN_JUMP || g_hDelayJump[iClientToShow] != INVALID_HANDLE)
-				Format(hintText, sizeof(hintText), "%sJUMP;", hintText);
+				Format(hintText, sizeof(hintText), "%sJ;", hintText);
 			
 			// Is he pressing "ctrl"?
 			if(iButtons & IN_DUCK)
-				Format(hintText, sizeof(hintText), "%sDUCK;", hintText);
+				Format(hintText, sizeof(hintText), "%sD;", hintText);
 				
 			// Is he pressing "shift"?
 			if(iButtons & IN_SPEED)
@@ -1624,7 +1624,7 @@ UpdateHUD_CSS(client)
 				
 			// Is he pressing "e"?
 			if(iButtons & IN_USE)
-				Format(hintText, sizeof(hintText), "%sUSE;", hintText);
+				Format(hintText, sizeof(hintText), "%sU;", hintText);
 				
 			// Is he pressing "mouse1"?
 			if(iButtons & IN_ATTACK)
@@ -1636,7 +1636,7 @@ UpdateHUD_CSS(client)
 			
 			// Is he pressing "tab"?
 			if(iButtons & IN_SCORE)
-				Format(hintText, sizeof(hintText), "%sSCORE;", hintText);
+				Format(hintText, sizeof(hintText), "%sTAB;", hintText);
 		}
 	
 		//if player has a mate show keys pressed by players mate
@@ -1661,18 +1661,18 @@ UpdateHUD_CSS(client)
 				Format(hintText, sizeof(hintText), "%sD;", hintText);
 			// Is he pressing "+left"?
 			if(mbuttons & IN_LEFT)
-				Format(hintText, sizeof(hintText), "%sL;", hintText);
+				Format(hintText, sizeof(hintText), "%s+L;", hintText);
 			// Is he pressing "+right"?
 			if(mbuttons & IN_RIGHT)
-				Format(hintText, sizeof(hintText), "%sR;", hintText);
+				Format(hintText, sizeof(hintText), "%s+R;", hintText);
 				
 			// Is he pressing "space"?
 			if(mbuttons & IN_JUMP || g_hDelayJump[mate] != INVALID_HANDLE)
-				Format(hintText, sizeof(hintText), "%sJUMP;", hintText);
+				Format(hintText, sizeof(hintText), "%sJ;", hintText);
 			
 			// Is he pressing "ctrl"?
 			if(mbuttons & IN_DUCK)
-				Format(hintText, sizeof(hintText), "%sDUCK;", hintText);
+				Format(hintText, sizeof(hintText), "%sD;", hintText);
 				
 			// Is he pressing "shift"?
 			if(mbuttons & IN_SPEED)
@@ -1680,26 +1680,26 @@ UpdateHUD_CSS(client)
 				
 			// Is he pressing "e"?
 			if(mbuttons & IN_USE)
-				Format(hintText, sizeof(hintText), "%sUSE;", hintText);
+				Format(hintText, sizeof(hintText), "%sU;", hintText);
 			
 			// Is he pressing "tab"?
 			if(mbuttons & IN_SCORE)
-				Format(hintText, sizeof(hintText), "%sSCORE;", hintText);
+				Format(hintText, sizeof(hintText), "%sTAB;", hintText);
 				
 			// Is he pressing "mouse1"?
 			if(mbuttons & IN_ATTACK)
-				Format(hintText, sizeof(hintText), "%sMOUSE1;", hintText);
+				Format(hintText, sizeof(hintText), "%sM1;", hintText);
 			
 			// Is he pressing "mouse1"?
 			if(mbuttons & IN_ATTACK2)
-				Format(hintText, sizeof(hintText), "%sMOUSE2;", hintText);
+				Format(hintText, sizeof(hintText), "%sM2;", hintText);
 		}
 	}
 	
 	//speclist
 	if (hudSettings[Spec][client] && g_Settings[HUDSpeclistEnable])
 	{
-		if (iClientToShow > 0 && spec[iClientToShow]) Format(hintText, sizeof(hintText), "%s\n_____Spec-List______\n\n", hintText);
+		new iSpecCount;
 		
 		for(new j = 1; j <= MaxClients; j++) 
 		{
@@ -1720,7 +1720,12 @@ UpdateHUD_CSS(client)
 			
 			// Are they spectating the same player as User?
 			if (iTarget == iClientToShow && j != client && !hidemyass[j])
-				Format(hintText, sizeof(hintText), "%s%N\n", hintText, j);
+				iSpecCount++;
+		}
+		
+		if(iSpecCount > 0)
+		{
+			Format(hintText, sizeof(hintText), "%s\nSpectators: %d", hintText, iSpecCount);
 		}
 	}
 	
