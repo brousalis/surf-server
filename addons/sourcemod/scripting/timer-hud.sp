@@ -1309,6 +1309,13 @@ UpdateHUD_CSS(client)
 	if(g_timerPhysics) Timer_GetCurrentSpeed(iClientToShow, currentspeed);
 	new Float:avgspeed;
 	if(g_timerPhysics) Timer_GetAvgSpeed(iClientToShow, avgspeed);
+	
+	if(g_Settings[HUDSpeedUnit] == 1)
+	{
+		maxspeed *= 0.06858;
+		currentspeed *= 0.06858;
+		avgspeed *= 0.06858;
+	}
 
 	//get jump accuracy
 	new Float:accuracy = 0.0;
@@ -1426,7 +1433,13 @@ UpdateHUD_CSS(client)
 	if(!enabled)
 	{
 		if (hudSettings[Speed][client])
+		{
 			Format(centerText, sizeof(centerText), "%s%t: %5.2f", centerText, "HUD Speed", currentspeed);
+			if(g_Settings[HUDSpeedUnit] == 1)
+			{
+				Format(centerText, sizeof(centerText), "%s km/h", centerText);
+			}
+		}
 	}
 	else 
 	{

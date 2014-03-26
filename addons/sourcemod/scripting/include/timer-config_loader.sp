@@ -69,6 +69,7 @@ enum TimerSettings
 	bool:HUDUseClanTag,
 	bool:HUDUseClanTagStyle,
 	bool:HUDUseClanTagTime,
+	HUDSpeedUnit,
 	
 	bool:HUDMasterOnlyEnable,
 	bool:HUDMasterEnable,
@@ -342,6 +343,7 @@ stock LoadTimerSettings()
 			g_Settings[HUDUseClanTagTime] = bool:KvGetNum(hKv, "hud_use_clan_tag_time", 1);
 			g_Settings[HUDUseFragPointsRank] = bool:KvGetNum(hKv, "hud_use_frag_points_rank", 1);
 			g_Settings[HUDUseMVPStars] = KvGetNum(hKv, "hud_use_mvp_stars", 100);
+			g_Settings[HUDSpeedUnit] = KvGetNum(hKv, "hud_speed_unit", 0);
 			g_Settings[HUDMasterEnable] = bool:KvGetNum(hKv, "hud_master_enable", 1);
 			g_Settings[HUDMasterOnlyEnable] = bool:KvGetNum(hKv, "hud_master_only_enable", 0);
 			g_Settings[HUDCenterEnable] = bool:KvGetNum(hKv, "hud_center_enable", 1);
