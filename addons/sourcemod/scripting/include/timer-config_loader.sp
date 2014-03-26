@@ -223,6 +223,7 @@ enum PhysicModes
 	Float:ModeHoverScale,
 	Float:ModeMaxSpeed,
 	ModePunishType,
+	bool:ModeAntiBhop,
 	
 	//other
 	bool:ModeLJStats,
@@ -542,6 +543,7 @@ stock LoadPhysics()
 			g_Physics[g_ModeCount][ModeAutoStrafe] = KvGetNum(hKv, "auto_strafe", 0);
 			g_Physics[g_ModeCount][ModeQuakeBhop] = KvGetNum(hKv, "quake_bhop", 0);
 			g_Physics[g_ModeCount][ModePunishType] = KvGetNum(hKv, "punish_type", 1);
+			g_Physics[g_ModeCount][ModeAntiBhop] = bool:KvGetNum(hKv, "anti_bhop", 0);
 			
 			KvGetString(hKv, "tag_name", g_Physics[g_ModeCount][ModeTagName], 32);
 			KvGetString(hKv, "tag_shortname", g_Physics[g_ModeCount][ModeTagShortName], 32);

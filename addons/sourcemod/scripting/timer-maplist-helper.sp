@@ -34,13 +34,13 @@ public OnMapStart()
 
 public Action:Cmd_Rewrite(client, args)
 {
-	ReWriteMaplist();
+	ReWriteMaplist(client);
 	return Plugin_Handled;
 }
 
 public Action:Cmd_NavCreate(client, args)
 {
-	CreateNavFiles();
+	CreateNavFiles(client);
 	return Plugin_Handled;
 }
 
@@ -83,19 +83,21 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 	g_iSQLReconnectCounter = 1;
 }
 
-public ReWriteMaplist()
+public ReWriteMaplist(client)
 {
 	decl String:Query[255];
 	Format(Query, 255, sql_selectMaps);
-	SQL_TQuery(g_hSQL, SQL_ReWriteMaplistCallback, Query, false);
+	SQL_TQuery(g_hSQL, SQL_ReWriteMaplistCallback, Query, client);
 }
 
-public SQL_ReWriteMaplistCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
+public SQL_ReWriteMaplistCallback(Handle:owner, Handle:hndl, const String:error[], any:client)
 {
 	if (hndl == INVALID_HANDLE)
 	{
 		return;
 	}
+	
+	new iMapCount = 0;
 	
 	if(SQL_GetRowCount(hndl))
 	{
@@ -113,26 +115,31 @@ public SQL_ReWriteMaplistCallback(Handle:owner, Handle:hndl, const String:error[
 			SQL_FetchString(hndl, 0, sMap, sizeof(sMap));
 			WriteFileLine(hfile, sMap);
 			WriteFileLine(hfile2, sMap);
+			iMapCount++;
 		}
 		
 		CloseHandle(hfile);
 		CloseHandle(hfile2);
 	}
+	
+	PrintToChat(client, "New maplist.txt contains %d maps.", iMapCount);
 }
 
-public CreateNavFiles()
+public CreateNavFiles(client)
 {
 	decl String:Query[255];
 	Format(Query, 255, sql_selectMaps);
-	SQL_TQuery(g_hSQL, SQL_CreateNavFilesCallback, Query, false);
+	SQL_TQuery(g_hSQL, SQL_CreateNavFilesCallback, Query, client);
 }
 
-public SQL_CreateNavFilesCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
+public SQL_CreateNavFilesCallback(Handle:owner, Handle:hndl, const String:error[], any:client)
 {
 	if (hndl == INVALID_HANDLE)
 	{
 		return;
 	}
+	
+	new iNavCount = 0;
 	
 	if(SQL_GetRowCount(hndl))
 	{
@@ -150,6 +157,8 @@ public SQL_CreateNavFilesCallback(Handle:owner, Handle:hndl, const String:error[
 			}
 		}
 	}
+	
+	PrintToChat(client, "Copied %d mssing Nav files", iNavCount);
 }
 
 /*

@@ -18,10 +18,16 @@
 #include <timer-rankings>
 #include <timer-mapzones>
 
+enum UserJumps
+{
+	Float:LastJumpTimes[3],
+}
+
 new bool:g_timerMapzones = false;
 new bool:g_timerLjStats = false;
 new bool:g_timerRankings = false;
 
+new g_userJumps[MAXPLAYERS][UserJumps];
 
 new Handle:g_OnClientMaxJumpHeight;
 
@@ -438,29 +444,39 @@ public Action:Event_PlayerJump(Handle:event, const String:name[], bool:dontBroad
 	if(g_Physics[mode][ModeBoostForward] != 1.0)
 		CreateTimer(0.0, Timer_Boost, client, TIMER_FLAG_NO_MAPCHANGE);
 	
-	new Float:velocity;
-	Timer_GetCurrentSpeed(client, velocity);
-	
 	if(g_Physics[mode][ModeMaxSpeed] != 0.0)
 	{
-		if(velocity > g_Physics[mode][ModeMaxSpeed])
+		CreateTimer(0.05, DelayedSlowDown, client);
+	}
+	
+	if(g_Physics[mode][ModeAntiBhop])
+	{
+		new Float:timediff = time - g_userJumps[client][LastJumpTimes][2];
+		g_userJumps[client][LastJumpTimes][2] = g_userJumps[client][LastJumpTimes][1];
+		g_userJumps[client][LastJumpTimes][1] = g_userJumps[client][LastJumpTimes][0];
+		g_userJumps[client][LastJumpTimes][0] = time;
+		
+		if (timediff <= 3.0)
 		{
-			new Float:vecVelocity[3];
-			Entity_GetAbsVelocity(client, vecVelocity);
-			
-			new Float:combined = vecVelocity[0] + vecVelocity[1];
-			
-			if(combined > g_Physics[mode][ModeMaxSpeed])
-			{
-				vecVelocity[0] = 200.0;
-				vecVelocity[1] = 200.0;
-			}
-			
-			Entity_SetAbsVelocity(client, vecVelocity);
+			g_userJumps[client][LastJumpTimes][2] = 0.0;
+			g_userJumps[client][LastJumpTimes][1] = 0.0;
+			g_userJumps[client][LastJumpTimes][0] = 0.0;
+			CreateTimer(0.05, DelayedSlowDownDefault, client);
 		}
 	}
 	
 	return Plugin_Continue;
+}
+
+public Action:DelayedSlowDown(Handle:timer, any:client)
+{
+	new mode = Timer_GetMode(client);
+	CheckVelocity(client, 1, g_Physics[mode][ModeMaxSpeed]);
+}
+
+public Action:DelayedSlowDownDefault(Handle:timer, any:client)
+{
+	CheckVelocity(client, 1, 1.0);
 }
 
 public Action:OnTraceAttack(victim, &attacker, &inflictor, &Float:damage, &damagetype, &ammotype, hitbox, hitgroup)
@@ -2076,7 +2092,7 @@ PunishAbuse(client)
 	//Stop movement
 	else if(g_Physics[style][ModePunishType] == 2)
 	{
-		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, Float:{0.0,0.0,-100.0});
+		CheckVelocity(client, 1, 1.0);
 	}
 	//Reset timer
 	else if(g_Physics[style][ModePunishType] == 3)

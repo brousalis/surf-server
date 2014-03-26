@@ -252,3 +252,96 @@ stock DealDamage(nClientVictim, nDamage, nClientAttacker = 0, nDamageType = DMG_
 		}
 	}
 }
+
+CheckVelocity(client, type, Float:maxspeed)
+{
+	if(maxspeed > 0.0)
+	{
+		new Float:fVelocity[3];
+		GetEntPropVector(client, Prop_Data, "m_vecVelocity", fVelocity);
+		
+		if(fVelocity[0] == 0.0)
+			fVelocity[0] = 1.0;
+		if(fVelocity[1] == 0.0)
+			fVelocity[1] = 1.0;
+		if(fVelocity[2] == 0.0)
+			fVelocity[2] = 1.0;
+		
+		new Float:currentspeed = SquareRoot(Pow(fVelocity[0],2.0)+Pow(fVelocity[1],2.0));
+		
+		// 0: slow
+		if(type == 0)
+		{
+			maxspeed = currentspeed/2.0;
+			new Float:Multpl = currentspeed / maxspeed;
+			fVelocity[0] /= Multpl;
+			fVelocity[1] /= Multpl;
+
+			TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+		}
+		// 1: limit
+		else if(type == 1)
+		{
+			if (currentspeed >= maxspeed)
+			{
+				new Float:Multpl = currentspeed / maxspeed;
+				fVelocity[0] /= Multpl;
+				fVelocity[1] /= Multpl;
+
+				TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+			}
+		}
+		// 2: bounce back
+		else if(type == 2)
+		{
+			fVelocity[0] *= -2.0;
+			fVelocity[1] *= -2.0;
+			if(fVelocity[1] > 0.0 && fVelocity[1] < 200.0)
+				fVelocity[1] = 200.0;
+			else if(fVelocity[1] < 0.0 && fVelocity[1] > -200.0)
+				fVelocity[1] = -200.0;
+			if(fVelocity[2] > 0.0)
+				fVelocity[2] *= -1.0;
+
+			TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+		}
+		// 3: booster
+		else if(type == 3)
+		{
+			fVelocity[0] = fVelocity[0]*1.5;
+			fVelocity[1] = fVelocity[1]*1.5;
+			
+			TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+		}
+		// 4: full booster (500.0)
+		else if(type == 4)
+		{
+			if (!(GetEntityFlags(client) & FL_ONGROUND))
+			{
+				new Float:Multpl = currentspeed / maxspeed;
+				fVelocity[0] /= Multpl;
+				fVelocity[1] /= Multpl;
+
+				TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+			}
+		}
+		// 5: push up/down
+		else if(type == 5)
+		{
+			fVelocity[2] = maxspeed;
+			TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+		}
+		// 6: push north/south
+		else if(type == 5)
+		{
+			fVelocity[0] = maxspeed;
+			TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+		}
+		// 7: push east/west
+		else if(type == 5)
+		{
+			fVelocity[1] = maxspeed;
+			TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+		}
+	}
+}
