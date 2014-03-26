@@ -253,7 +253,7 @@ stock DealDamage(nClientVictim, nDamage, nClientAttacker = 0, nDamageType = DMG_
 	}
 }
 
-CheckVelocity(client, type, Float:maxspeed)
+stock CheckVelocity(client, type, Float:maxspeed)
 {
 	if(maxspeed > 0.0)
 	{

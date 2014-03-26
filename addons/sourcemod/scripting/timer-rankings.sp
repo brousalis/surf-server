@@ -2241,8 +2241,8 @@ ErrorCheck(Handle:owner, const String:error[], const String:callback[] = "")
 {
 	if(owner == INVALID_HANDLE)
 	{
-		LogError("[Timer] Rankings: Fatal error occured in `%s`", callback);
-		LogError("> `%s`", error);
+		Timer_LogError("Rankings: Fatal error occured in `%s`", callback);
+		Timer_LogError("> `%s`", error);
 		if(g_iEnabled == 2)
 		{
 			PrintToDebug("[Timer] Rankings: Fatal error occured in `%s`", callback);
@@ -2253,8 +2253,8 @@ ErrorCheck(Handle:owner, const String:error[], const String:callback[] = "")
 	}
 	else if(!StrEqual(error, ""))
 	{
-		LogError("[Timer] Rankings: Error occured in `%s`", callback);
-		LogError("> `%s`", error);
+		Timer_LogError("Rankings: Error occured in `%s`", callback);
+		Timer_LogError("> `%s`", error);
 		if(g_iEnabled == 2)
 		{
 			PrintToDebug("[Timer] Rankings: Error occured in `%s`", callback);

@@ -908,7 +908,6 @@ public DeletePlayersRecordCallback(Handle:owner, Handle:hndl, const String:error
 	}
 }
 
-
 public FinishRoundCallback(Handle:owner, Handle:hndl, const String:error[], any:client)
 {
 	if (hndl == INVALID_HANDLE)
@@ -1276,7 +1275,7 @@ public CreditsPanel3(client)
 	DrawPanelText(panel, "Jason Bourne - Challenge, Custom-HUD");
 	DrawPanelText(panel, "SWATr - Small fixes/changes");
 	DrawPanelText(panel, "Smesh292 - No Jail and small fixes/changes");
-	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "Dark Session - Code optimization");
 	DrawPanelText(panel, " ");
 	DrawPanelText(panel, " ");
 	DrawPanelText(panel, " ");
