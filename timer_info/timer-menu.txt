@@ -1,0 +1,7 @@
+Timer-Menu
+
+This plugins can list commands and provides a simple main menu
+
+//Commands
+sm_timer - List timer commands
+sm_menu - Displays a simple main menu

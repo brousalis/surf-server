@@ -1,0 +1,3 @@
+Timer-Finish_MSG_CSGO
+
+This plugins displays a message on map finish

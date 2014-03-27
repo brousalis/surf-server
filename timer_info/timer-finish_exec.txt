@@ -1,0 +1,5 @@
+Timer-Finish_EXEC
+
+This plugins allows to set a command for each style that will be executet on map finish.
+
+Placeholders are {steamid} and {playername}

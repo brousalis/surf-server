@@ -1,0 +1,3 @@
+Timer-NoJail
+
+This plugins removes jail on most surf maps

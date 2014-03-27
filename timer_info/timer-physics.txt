@@ -1,0 +1,131 @@
+Timer-Physics
+
+This module manages all styles, it's main confing is located here: addons/sourcemod/timer/physics.cfg
+You can use map specific configs (example: addons/sourcemod/timer/physics_de_dust2.cfg).
+
+Commands:
+sm_style -Displays style selection menu
+sm_tauto - Toggle auto bhop on auto styles
+
+Here are all setings you can use for a style:
+
+//Enable style
+"enable"				"1"			//Default = 0
+
+//Default Style (Enable this only for 1 style!)
+"default"				"1"			//Default = 0
+
+//Sort style (menu)
+"order"					"5"			//Default = 0
+
+//Style category (0=ranked,1=fun,2=practise) 
+"category"				"2"			//Default = 0
+
+//Style name
+"name"					"Auto Bhop"
+
+//style name (clantag)
+"tag_name"				"Auto"
+
+//short style name (clantag)
+"tag_shortname"			"AU"
+
+//Console command to switch to this style
+//requires quickcommands module
+"chat_command"			"auto"
+
+//Exec a command on map finish (requires finishexec module)
+"exec_onfinish"			"sm_givestammpoints {steamid} 50"
+//just another example...
+"exec_onfinish"			"say {playername} finished map"
+
+//Print to chat on style select
+"desc"					"This style is awesome"
+
+//Enable HUD
+"hud_enable"			"1"			//Default = 0
+
+//Auto Bhop
+"auto"					"1"			//Default = 0
+
+//stamina (-1.0=engine, 0.0=no speed loss, 1.0 for better low gravity)
+//If set to 0.0 you can always do 64 unit jumps
+"stamina"				"0.0"		//Default = -1.0
+
+//Jump heigh boost
+"boost"					"0.1"		//Default = 0.0
+
+//Bhop Booster
+"boost_forward"			"1.5"		//Default = 1.0
+
+//Bhop Booster max speed (units/s)
+"boost_forward_max"		"1000.0"	//Default = 500.0
+
+//Low Gravity
+"gravity"				"0.5"		//Default = 1.0
+
+//Slowmotion
+"timescale"				"0.5"		//Default = 1.0
+
+//Allow LJStats (Requires ljstats module)
+"ljstats"				"1"			//Default = 0
+
+//Bhop platform teleport (0=disable, 1=multihp, 2=nohop)
+//This works only on func_button and func_door platforms
+"multimode"				"0"			//Default = 0
+
+//Field of view
+"fov"					"50"		//Default = 90
+
+//Block movement direction (0=allow all, 1=backwards only, 2=forward only)
+"block_direction"		"0"			//Default = 0
+
+//Block keys
+"prevent_moveleft"		"1"			//Default = 0
+"prevent_moveright"		"1"			//Default = 0
+"prevent_back"			"1"			//Default = 0
+"prevent_forward"		"1"			//Default = 0
+"prevent_plusleft"		"1"			//Default = 0
+"prevent_plusright"		"1"			//Default = 0
+
+//Force move forward
+"force_forward"			"1"			//Default = 0
+
+//Punishent for pressing blocked keys
+//0=no punishment,1=block all keys,2=stop movement,3=reset timer, 4=teleport to startzone,5=suiside
+"punish_type"			"4"			//Default = 1
+
+//Anti Bhop for skill-surf
+"anti_bhop"				"1"			//Default = 0
+
+//Allow custom settings
+"custom"				"1"			//Default = 0
+
+//Force FPS_MAX
+"fps_max"				"300"		//Default = 0
+"fps_min"				"300"		//Default = 0
+"fps_redirect_style"	"3"			//Default = -1
+
+//Allow world damage
+"allow_world_damage"	"1"			//Default = 0
+
+//Player spawn health
+"spawn_health"			"250"		//Default = 100
+
+//Block prespeed inside start/speedlimit zone (0.0 = unlimited)
+"prespeed"				"400.0"		//Default = 0.0
+
+//Set max speed (0.0 = unlimited)
+"max_speed"				"400.0"		//Default = 0.0
+
+//Multiply points (requires rankings module)
+"points_multi"			"1.6"		//Default = 1.0
+
+//Hover force
+"hover_scale"			"20.0"		//Default = 0.0
+
+//Enable server-side strafehack (requires autostrafe module)
+"auto_strafe"			"1"			//Default = 0
+
+//Enable quake bhop booster (requires quakebhop module)
+"quake_bhop"			"1"			//Default = 0

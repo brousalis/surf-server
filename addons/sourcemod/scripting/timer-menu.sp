@@ -43,135 +43,137 @@ public Action:Command_Menu(client, args)
 	return Plugin_Handled;
 }
 
+enum eCommand
+{
+    String:eCommand_Info[512],
+    String:eCommand_Plugin[512],
+}
+
+new commandsperpage = 5;
+new g_iCmdCount = 0;
+new g_Commands[512][eCommand];
+new g_iCurrentPage[MAXPLAYERS+1];
+new maxpage;
+
 public Action:Command_HelpMenu(client, args)
 {
-	HelpPanel(client);
+	//HelpPanel(client);
+	Init_Commands();
+	g_iCurrentPage[client] = 1;
+	CommandPanel(client);
 	
 	return Plugin_Handled;
 }
 
-// ----------- Page 1 -------------------------------------------
-public HelpPanel(client)
+public Init_Commands()
 {
-	new Handle:panel = CreatePanel();
-	SetPanelTitle(panel, "- DMT|Timer Help Menu - \nby Zipcore");
+	g_iCmdCount = 0;
 	
-	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 8);
-	else SetPanelCurrentKey(panel, 9);
+	Add_Command("!timer - Displays this menu", "timer-core.smx");
+	Add_Command("!menu - Displays a main menu", "timer-menu.smx");
+	Add_Command("!style - Displays style selection menu", "timer-physics.smx");
+	Add_Command("!start - Teleport to startzone (or !s)", "timer-mapzones.smx");
+	Add_Command("!restart - Teleport to startzone (or !r)", "timer-mapzones.smx");
+	Add_Command("!bonusstart - Teleport to bonus startzone (or !b)", "timer-mapzones.smx");
+	Add_Command("!pause - Pause the timer", "timer-core.smx", g_Settings[PauseEnable]);
+	Add_Command("!resume - Resume the timer", "timer-core.smx", g_Settings[PauseEnable]);
+	Add_Command("!tauto - Toggle auto bhop", "timer-physics");
+	Add_Command("!stage - Teleport to any Stage", "timer-core.smx", g_Settings[LevelTeleportEnable]);
+	Add_Command("!tpto - Teleport to another player", "timer-teleme.smx", g_Settings[PlayerTeleportEnable]);
+	Add_Command("!stuck - Teleport last stage (penalty time)", "timer-mapzones.smx", g_Settings[PlayerTeleportEnable]);
+	Add_Command("!hide - Hide other players", "timer-hide.smx");
+	Add_Command("!noclipme - Turn On/Off noclip mode", "timer-mapzones.smx", g_Settings[NoclipEnable]);
+	Add_Command("!hud - Customize your HUD", "timer-hud.smx");
+	Add_Command("!challenge - Challenge another player [Steal points]", "timer-teams.smx", g_Settings[ChallengeEnable]);
+	Add_Command("!coop - Do it together ", "timer-teams.smx", g_Settings[CoopEnable]);
+	Add_Command("!race - Displays race manager", "timer-teams.smx", g_Settings[RaceEnable]);
+	Add_Command("!rank - Displays your rank", "timer-worldrecord.smx");
+	Add_Command("!top - Displays top10 of this map (or !wr)", "timer-worldrecord.smx");
+	Add_Command("!btop - Displays bonus top10 of this map (or !bwr)", "timer-worldrecord.smx");
+	Add_Command("!stop - Displays short top10 of this map (or !swr)", "timer-worldrecord.smx");
+	Add_Command("!mtop <mapname> - Displays a maps top10", "timer-worldrecord_maptop.smx");
+	Add_Command("!mbtop <mapname> - Displays a maps bonus top10", "timer-worldrecord_maptop.smx");
+	Add_Command("!ranks - Displays available chatranks", "timer-rankings.smx");
+	Add_Command("!next - Displays next players", "timer-rankings.smx");
+	Add_Command("!prank - Displays your point rank", "timer-rankings.smx");
+	Add_Command("!ptop - Displays top10 by pointrank", "timer-rankings.smx");
+	Add_Command("!points - Displays how much points you can get", "timer-rankings.smx");
+	Add_Command("!latest - Displays latest records", "timer-worldrecord_latest.smx");
+	Add_Command("!playerinfo - Displays ALL your stats", "timer-worldrecord_playerinfo.smx");
+	Add_Command("!playerinfo <partial playername> - Displays ALL stats for a player", "timer-worldrecord_playerinfo.smx");
+	Add_Command("!styleinfo - Displays Styleinfo", "timer-physics_info.smx");
+	Add_Command("!mapinfo - Displays info about current map", "timer-mapinfo.smx");
+	Add_Command("!spec - Switch to spectators", "timer-spec.smx");
+	Add_Command("!specfar - Spectate player with highest level process", "timer-spec.smx");
+	Add_Command("!specmost - Spectate player with most spectators", "timer-spec.smx");
+	Add_Command("!speclist - List players spactating you", "timer-spec.smx");
+	Add_Command("!georank - Displays Top countrys", "timer-rankings_georank.smx");
+	Add_Command("!lj - Toogle Long Jump Stats", "timer-ljstats.smx");
+	Add_Command("!ljtop - Displays Top Long Jumps", "timer-ljstats.smx");
+	Add_Command("!ljsound - Toogle Long Jump Sounds", "timer-ljstats.smx");
+	Add_Command("!ljpopup - Toogle Long Jump Stats Popup", "timer-ljstats.smx");
+	Add_Command("!ljblock - Register Long Jump Destination", "timer-ljstats.smx");
+	Add_Command("!gap - Measure units between 2 point", "timer-ljstats.smx");
 	
-	DrawPanelText(panel, "         -- Page 1/4 --");
-	DrawPanelText(panel, " ");
-	DrawPanelText(panel, "!timer - Displays this menu");
-	DrawPanelText(panel, "!menu - Displays a main menu");
-	DrawPanelText(panel, " ");
-	DrawPanelText(panel, "!start - Teleport to startzone (or !r)");
-	DrawPanelText(panel, "!bonusstart - Teleport to bonus startzone (or !b)");
-	if(g_Settings[PauseEnable])
-	{
-		DrawPanelText(panel, "!pause - Pause the timer");
-		DrawPanelText(panel, "!resume - Resume the timer");
-	}
-	else
-	{
-		DrawPanelText(panel, " ");
-		DrawPanelText(panel, " ");
-	}
-	DrawPanelText(panel, " ");
-	if(g_Settings[BhopEnable])
-		DrawPanelText(panel, "!tauto - Toggle auto bhop");
-	else 
-		DrawPanelText(panel, " ");
-	DrawPanelItem(panel, "- Next -");
-	DrawPanelItem(panel, "- Exit -");
-	SendPanelToClient(panel, client, PanelHandler1, MENU_TIME_FOREVER);
-
-	CloseHandle(panel);
-}
-public PanelHandler1 (Handle:menu, MenuAction:action,param1, param2)
-{
-    if ( action == MenuAction_Select )
-    {
-		if(mod == MOD_CSGO) 
-		{
-			switch (param2)
-			{
-				case 8:
-				{
-					HelpPanel2(param1);
-				}
-			}
-		}
-		else
-		{
-			switch (param2)
-			{
-				case 9:
-				{
-					HelpPanel2(param1);
-				}
-			}
-		}
-    }
+	Add_Command("!credits - Displays Credits", "timer-core.smx");
 }
 
-// ---------------------------------- Page 2 -------------------------------
-
-public HelpPanel2(client)
+Add_Command(String:info[], String:plugin[], bool:enable = true)
 {
+	if(enable && PluginEnabled(plugin))
+	{
+		Format(g_Commands[g_iCmdCount][eCommand_Info], 512, "%s", info);
+		Format(g_Commands[g_iCmdCount][eCommand_Plugin], 512, "%s", plugin);
+		g_iCmdCount++;
+		maxpage = RoundToCeil(float(g_iCmdCount)/float(commandsperpage));
+	}
+}
+
+public CommandPanel(client)
+{
+	new firstcomand = g_iCurrentPage[client]*commandsperpage-commandsperpage;
+	
 	new Handle:panel = CreatePanel();
-	SetPanelTitle(panel, "- DMT|Timer Help Menu - \nby Zipcore");
+	SetPanelTitle(panel, ">>> Timer Help Menu <<<\nby Zipcore");
 	
-	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 7);
-	else SetPanelCurrentKey(panel, 8);
+	new String:sPage[512];
+	Format(sPage, sizeof(sPage), "         -- Page %d/%d --", g_iCurrentPage[client], maxpage);
 	
-	DrawPanelText(panel, "         -- Page 2/4 --");
+	DrawPanelText(panel, sPage);
 	DrawPanelText(panel, " ");
-	DrawPanelText(panel, "!spectate - Go to spectators");
-	if(g_Settings[LevelTeleportEnable])
+	
+	new String:buffer[512];
+	new iCmdCount;
+	for(new i=firstcomand; i < (g_iCurrentPage[client]*commandsperpage); i++)
 	{
-		DrawPanelText(panel, "!stage - Teleport to any Stage");
-		DrawPanelText(panel, "!stage <number> - Teleport to a stage (not finished)");
+		Format(buffer, sizeof(buffer), "%s", g_Commands[i][eCommand_Info]);
+		DrawPanelText(panel, buffer);
+		iCmdCount++;
 	}
-	else
-	{
-		DrawPanelText(panel, "!stage - Server Disabled");
-		DrawPanelText(panel, "!stage <number> - Server Disabled");
-	}
-	if(g_Settings[PlayerTeleportEnable])
-	{
-		DrawPanelText(panel, "!tpto - Teleport to another player");
-	}
-	else
-	{
-		DrawPanelText(panel, "!tpto - Server Disabled");
-	}
-	DrawPanelText(panel, "!hide - Hide other players");
-	if(g_Settings[NoclipEnable])
-	{
-		DrawPanelText(panel, "!noclipme - Turn On/Off noclip mode");
-	}
-	else
-	{
-		DrawPanelText(panel, "!noclipme - Server Disabled");
-	}
-	if(PluginEnabled("timer-hud.smx"))
-	{
-		DrawPanelText(panel, "!hud - Customize your HUD");
-	}
-	else
-	{
-		DrawPanelText(panel, "!hud - Server Disabled");
-	}
+	
 	DrawPanelText(panel, " ");
-	DrawPanelItem(panel, "- Back -");
-	DrawPanelItem(panel, "- Next -");
+	
+	
+	new startkey = 8;
+	if(g_iCurrentPage[client] > 1)
+		startkey = 7;
+	
+	//Fix CS:GO menu buttons
+	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, startkey);
+	else SetPanelCurrentKey(panel, startkey+1);
+	
+	if(g_iCurrentPage[client] > 1) DrawPanelItem(panel, "- Back -");
+	else DrawPanelText(panel, " ");
+	if(g_iCurrentPage[client] < maxpage) DrawPanelItem(panel, "- Next -");
+	else DrawPanelText(panel, " ");
 	DrawPanelItem(panel, "- Exit -");
-	SendPanelToClient(panel, client, PanelHandler2, MENU_TIME_FOREVER);
+	
+	SendPanelToClient(panel, client, CommandPanelHandler, MENU_TIME_FOREVER);
 
 	CloseHandle(panel);
 }
 
-public PanelHandler2 (Handle:menu, MenuAction:action,param1, param2)
+public CommandPanelHandler (Handle:menu, MenuAction:action,client, param2)
 {
     if ( action == MenuAction_Select )
     {
@@ -181,11 +183,15 @@ public PanelHandler2 (Handle:menu, MenuAction:action,param1, param2)
 			{
 				case 7:
 				{
-					HelpPanel(param1);
+					if(g_iCurrentPage[client] > 1)
+						g_iCurrentPage[client]--;
+					CommandPanel(client);
 				}
 				case 8:
 				{
-					HelpPanel3(param1);
+					if(g_iCurrentPage[client] < maxpage)
+						g_iCurrentPage[client]++;
+					CommandPanel(client);
 				}
 			}
 		}
@@ -195,157 +201,15 @@ public PanelHandler2 (Handle:menu, MenuAction:action,param1, param2)
 			{
 				case 8:
 				{
-					HelpPanel(param1);
+					if(g_iCurrentPage[client] > 1)
+						g_iCurrentPage[client]--;
+					CommandPanel(client);
 				}
 				case 9:
 				{
-					HelpPanel3(param1);
-				}
-			}
-		}
-    }
-}
-
-//------------------------- Page 3 -----------------------------------------
-public HelpPanel3(client)
-{
-	new Handle:panel = CreatePanel();
-	SetPanelTitle(panel, "- DMT|Timer Help Menu - \nby Zipcore");
-	
-	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 7);
-	else SetPanelCurrentKey(panel, 8);
-	
-	DrawPanelText(panel, "         -- Page 3/4 --");
-	DrawPanelText(panel, " ");
-	if(g_Settings[ChallengeEnable])
-	{
-		DrawPanelText(panel, "!challenge - Challenge another player [Steal points] (not finished)");
-	}
-	else
-	{
-		DrawPanelText(panel, "!challenge - Server Disabled");
-	}
-	
-	if(g_Settings[CoopEnable])
-	{
-		DrawPanelText(panel, "!coop - Do it together [Extra points] (not finished)");
-	}
-	else
-	{
-		DrawPanelText(panel, "!coop - Server Disabled");
-	}
-	
-	if(g_Settings[RaceEnable])
-	{
-		DrawPanelText(panel, "!race - Displays race manager [Extra points]");
-	}
-	else
-	{
-		DrawPanelText(panel, "!race - Server Disabled");
-	}
-	DrawPanelText(panel, "!rank - Displays your rank");
-	DrawPanelText(panel, "!top - Displays top10 of this map");
-	DrawPanelText(panel, "!mtop <mapname> - Displays a maps top10");
-	DrawPanelText(panel, "!btop - Displays bonus top10 of this map");
-	DrawPanelText(panel, "!mbtop <mapname> - Displays a maps bonus top10");
-	DrawPanelText(panel, " ");
-	DrawPanelItem(panel, "- Back -");
-	DrawPanelItem(panel, "- Next -");
-	DrawPanelItem(panel, "- Exit -");
-	SendPanelToClient(panel, client, PanelHandler3, MENU_TIME_FOREVER);
-
-	CloseHandle(panel);
-}
-public PanelHandler3 (Handle:menu, MenuAction:action,param1, param2)
-{
-    if ( action == MenuAction_Select )
-    {
-		if(mod == MOD_CSGO) 
-		{
-			switch (param2)
-			{
-				case 7:
-				{
-					HelpPanel2(param1);
-				}
-				case 8:
-				{
-					HelpPanel4(param1);
-				}
-			}
-		}
-		else
-		{
-			switch (param2)
-			{
-				case 8:
-				{
-					HelpPanel2(param1);
-				}
-				case 9:
-				{
-					HelpPanel4(param1);
-				}
-			}
-		}
-    }
-}
-
-//------------------------- Page 4 -----------------------------------------
-public HelpPanel4(client)
-{
-	new Handle:panel = CreatePanel();
-	SetPanelTitle(panel, "- DMT|Timer by Zipcore -");
-	
-	if(mod == MOD_CSGO) SetPanelCurrentKey(panel, 7);
-	else SetPanelCurrentKey(panel, 8);
-	
-	DrawPanelText(panel, "         -- Page 4/4 --");
-	DrawPanelText(panel, " ");
-	DrawPanelText(panel, "!prank - Displays your point rank");
-	DrawPanelText(panel, "!ptop - Displays top10 by pointrank");
-	DrawPanelText(panel, "!mapinfo - Displays Mapinfo");
-	DrawPanelText(panel, "!points - Displays how much points you can get");
-	DrawPanelText(panel, "!latest - Displays latest records");
-	DrawPanelText(panel, "!playerinfo <partial playername> - Displays Playerinfos [WEB] (not finished)");
-	if(PluginEnabled("timer-physicsinfo.smx"))
-	{
-		DrawPanelText(panel, "!styleinfo - Displays Styleinfo");
-	}
-	else
-	{
-		DrawPanelText(panel, "!styleinfo - Server Disabled");
-	}
-	DrawPanelText(panel, "!credits - Displays Credits");
-	DrawPanelText(panel, " ");
-	DrawPanelItem(panel, "- Back -");
-	DrawPanelItem(panel, "- Next -", ITEMDRAW_SPACER);
-	DrawPanelItem(panel, "- Exit -");
-	SendPanelToClient(panel, client, PanelHandler4, MENU_TIME_FOREVER);
-
-	CloseHandle(panel);
-}
-public PanelHandler4 (Handle:menu, MenuAction:action,param1, param2)
-{
-    if ( action == MenuAction_Select )
-    {
-		if(mod == MOD_CSGO) 
-		{
-			switch (param2)
-			{
-				case 7:
-				{
-					HelpPanel3(param1);
-				}
-			}
-		}
-		else
-		{
-			switch (param2)
-			{
-				case 8:
-				{
-					HelpPanel3(param1);
+					if(g_iCurrentPage[client] < maxpage)
+						g_iCurrentPage[client]++;
+					CommandPanel(client);
 				}
 			}
 		}

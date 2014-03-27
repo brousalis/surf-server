@@ -1,0 +1,7 @@
+Timer-Maplist_Helper
+
+This plugins heps admins to organize maps
+
+Admin Commands:
+sm_maplist_rewrite - Rewrite maplist.tyt and mapcycle.txt with maps including a startzone
+sm_nav_create - Copy base.nav for all maps with a startzone (for replay bot)

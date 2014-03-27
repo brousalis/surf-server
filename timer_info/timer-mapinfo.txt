@@ -1,0 +1,6 @@
+Timer-Mapinfo
+
+This plugin can display simple info about a map
+
+Commands:
+sm_mapinfo

@@ -201,8 +201,6 @@ enum PhysicModes
 	bool:ModePreventPlusright,
 	bool:ModePreventMoveforward,
 	bool:ModePreventMoveback,
-	bool:ModePreventLeft,
-	bool:ModePreventRight,
 	bool:ModeForceMoveforward,
 	
 	//Movement
@@ -525,8 +523,6 @@ stock LoadPhysics()
 			g_Physics[g_ModeCount][ModePreventMoveright] = bool:KvGetNum(hKv, "prevent_moveright", 0);
 			g_Physics[g_ModeCount][ModePreventPlusleft] = bool:KvGetNum(hKv, "prevent_plusleft", 0);
 			g_Physics[g_ModeCount][ModePreventPlusright] = bool:KvGetNum(hKv, "prevent_plusright", 0);
-			g_Physics[g_ModeCount][ModePreventLeft] = bool:KvGetNum(hKv, "prevent_left", 0);
-			g_Physics[g_ModeCount][ModePreventRight] = bool:KvGetNum(hKv, "prevent_right", 0);
 			g_Physics[g_ModeCount][ModePreventMoveback] = bool:KvGetNum(hKv, "prevent_back", 0);
 			g_Physics[g_ModeCount][ModePreventMoveforward] = bool:KvGetNum(hKv, "prevent_forward", 0);
 			g_Physics[g_ModeCount][ModeForceMoveforward] = bool:KvGetNum(hKv, "force_forward", 0);

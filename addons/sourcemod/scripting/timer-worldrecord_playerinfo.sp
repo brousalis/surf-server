@@ -6,26 +6,20 @@
 new Handle:g_hSQL = INVALID_HANDLE;
 new g_iSQLReconnectCounter;
 
-enum eMain
+enum eTarget
 {
-    Handle:eMain_Pack,
-    Handle:eMain_Menu
-}
-
-enum eMain2
-{
-    Handle:eMain2_Pack,
-    Handle:eMain2_Menu
+	bool:eTarget_Active = false,
+    String:eTarget_Name[256],
+    String:eTarget_SteamID[32],
+	eTarget_Style,
+	Handle:eTarget_MainMenu,
+	Handle:eTarget_MapMenu
 }
 
 new String:g_MapName[32];
 new g_RowCount[MAXPLAYERS+1];
 new g_PointRowCount[MAXPLAYERS+1];
-new g_MainMenu[MAXPLAYERS+1][eMain];
-new g_MainMapMenu[MAXPLAYERS+1][eMain2];
-new String:g_sTargetPlayerName[MAXPLAYERS+1][256];
-new g_iTargetStyle[MAXPLAYERS+1];
-new Handle:g_hTargetData[MAXPLAYERS+1];
+new g_TargetData[MAXPLAYERS+1][eTarget];
 
 new g_iMapCount[2];
 new g_iMapCountComplete[MAXPLAYERS+1];
@@ -178,26 +172,21 @@ public Action:Client_PlayerInfo(client, args)
 {
 	if(args < 1)
 	{
-		decl String:SteamID[32];
-		decl String:PlayerName[256];
+		GetClientAuthString(client, g_TargetData[client][eTarget_SteamID], 32);
+		GetClientName(client, g_TargetData[client][eTarget_Name], 256);
 		
-		GetClientAuthString(client, SteamID, 32);
-		GetClientName(client, PlayerName, sizeof(PlayerName));
-		new Handle:pack = CreateDataPack();
-		WritePackCell(pack, client);
-		WritePackString(pack, SteamID);
-		WritePackString(pack, PlayerName);
-		ResetPack(pack);
-		CloneHandle(g_hTargetData[client], pack);
+		g_TargetData[client][eTarget_Style] = g_ModeDefault;
+		
+		g_TargetData[client][eTarget_Style] = true;
 		
 		if(g_Settings[MultimodeEnable]) StylePanel(client);
-		else Menu_PlayerInfo(client, g_hTargetData[client]);
+		else Menu_PlayerInfo(client);
 	}
 	else if(args >= 1)
 	{
 		ClearClient(client);
 		
-		decl String:NameBuffer[256], String:NameClean[256];
+		decl String:NameBuffer[256];
 		GetCmdArgString(NameBuffer, sizeof(NameBuffer));
 		new startidx = 0;
 		new len = strlen(NameBuffer);
@@ -208,8 +197,9 @@ public Action:Client_PlayerInfo(client, args)
 			NameBuffer[len-1] = '\0';
 		}
 		
-		Format(NameClean, sizeof(NameClean), "%s", NameBuffer[startidx]);
-		Format(g_sTargetPlayerName[client], sizeof(g_sTargetPlayerName[]), NameClean);
+		Format(g_TargetData[client][eTarget_Name], 256, "%s", NameBuffer[startidx]);
+		
+		g_TargetData[client][eTarget_Style] = false;
 		
 		if(g_Settings[MultimodeEnable])
 		{
@@ -217,8 +207,8 @@ public Action:Client_PlayerInfo(client, args)
 		}
 		else
 		{
-			g_iTargetStyle[client] = g_ModeDefault;
-			QueryPlayerName(client, NameClean);
+			g_TargetData[client][eTarget_Style] = g_ModeDefault;
+			QueryPlayerName(client, g_TargetData[client][eTarget_Name]);
 		}
 	}
 	return Plugin_Handled;
@@ -258,13 +248,17 @@ public MenuHandler_StylePanel(Handle:menu, MenuAction:action, client, itemNum)
 		decl String:info[8];		
 		GetMenuItem(menu, itemNum, info, sizeof(info));
 		
-		g_iTargetStyle[client] = StringToInt(info);
-		if(g_hTargetData[client] != INVALID_HANDLE) Menu_PlayerInfo(client, g_hTargetData[client]);
-		else QueryPlayerName(client, g_sTargetPlayerName[client]);
+		g_TargetData[client][eTarget_Style] = StringToInt(info);
+		
+		if(g_TargetData[client][eTarget_Active])
+		{
+			Menu_PlayerInfo(client);
+		}
+		else QueryPlayerName(client, g_TargetData[client][eTarget_Name]);
 	}
 }
 
-public QueryPlayerName(client, String:QueryPlayerName[256])
+public QueryPlayerName(client, String:QueryPlayerName[])
 {
 	decl String:Query[255];
 	decl String:szName[MAX_NAME_LENGTH*2+1];
@@ -336,39 +330,30 @@ public SQL_QueryPlayerNameCallback(Handle:owner, Handle:hndl, const String:error
 	DisplayMenu(menu, client, MENU_TIME_FOREVER);
 }
 
-public Menu_PlayerInfo(client, Handle:pack)
+public Menu_PlayerInfo(client)
 {
-	g_MainMenu[client][eMain_Pack] = pack; 
-	ResetPack(g_MainMenu[client][eMain_Pack]);
-	ReadPackCell(g_MainMenu[client][eMain_Pack]);
-	decl String:SteamID[256];
-	ReadPackString(g_MainMenu[client][eMain_Pack], SteamID, 256);
-	decl String:PlayerName[256];
-	ReadPackString(g_MainMenu[client][eMain_Pack], PlayerName, 256);
-
-	g_MainMenu[client][eMain_Menu] = CreateMenu(Menu_PlayerInfo_Handler);
-	SetMenuTitle(g_MainMenu[client][eMain_Menu], "%s's Overview\n(%s)\n ", PlayerName, SteamID);
+	g_TargetData[client][eTarget_Active] = true;
 	
-	decl String:data[512];
-	Format(data, sizeof(data), "%d", pack);
+	g_TargetData[client][eTarget_MainMenu] = CreateMenu(Menu_PlayerInfo_Handler);
+	SetMenuTitle(g_TargetData[client][eTarget_MainMenu], "%s's Overview\n(%s)\n ", g_TargetData[client][eTarget_Name], g_TargetData[client][eTarget_SteamID]);
 	
-	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View Record/Rank (current Map)");
-	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View Points/Rank");
-	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View all Records");
-	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View all Records (Bonus)");
-	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View all WRs");
-	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View all WRs (Bonus)");
-	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View Incomplete Maps");
-	AddMenuItem(g_MainMenu[client][eMain_Menu], data, "View Incomplete Maps (Bonus)");
+	AddMenuItem(g_TargetData[client][eTarget_MainMenu], "view_rank", "View Record/Rank (current Map)");
+	AddMenuItem(g_TargetData[client][eTarget_MainMenu], "view_prank", "View Points/Rank");
+	AddMenuItem(g_TargetData[client][eTarget_MainMenu], "view_records", "View all Records");
+	AddMenuItem(g_TargetData[client][eTarget_MainMenu], "view_b_records", "View all Records (Bonus)");
+	AddMenuItem(g_TargetData[client][eTarget_MainMenu], "view_wr", "View all WRs");
+	AddMenuItem(g_TargetData[client][eTarget_MainMenu], "view_bwr", "View all WRs (Bonus)");
+	AddMenuItem(g_TargetData[client][eTarget_MainMenu], "view_incomplete", "View Incomplete Maps");
+	AddMenuItem(g_TargetData[client][eTarget_MainMenu], "view_b_incomplete", "View Incomplete Maps (Bonus)");
 	
 	if(g_Settings[MultimodeEnable]) 
 	{
 		decl String:buffer[512];
-		Format(buffer, sizeof(buffer), "Change style [current: %s]", g_Physics[g_iTargetStyle[client]][ModeName]);
-		AddMenuItem(g_MainMenu[client][eMain_Menu], data, buffer);
+		Format(buffer, sizeof(buffer), "Change style [current: %s]", g_Physics[g_TargetData[client][eTarget_Style]][ModeName]);
+		AddMenuItem(g_TargetData[client][eTarget_MainMenu], "style", buffer);
 	}
-	SetMenuExitButton(g_MainMenu[client][eMain_Menu], true);
-	DisplayMenu(g_MainMenu[client][eMain_Menu], client, MENU_TIME_FOREVER);
+	SetMenuExitButton(g_TargetData[client][eTarget_MainMenu], true);
+	DisplayMenu(g_TargetData[client][eTarget_MainMenu], client, MENU_TIME_FOREVER);
 }
 
 public SQL_ViewSingleRecordCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
@@ -605,7 +590,7 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 	decl String:buffer[512];
 	
 	// Begin Menu
-	g_MainMapMenu[client][eMain2_Menu] = CreateMenu(MapMenu_Stock_Handler);
+	g_TargetData[client][eTarget_MapMenu] = CreateMenu(MapMenu_Stock_Handler);
 	
 	new mapscomplete = 0;
 	if(SQL_HasResultSet(hndl))
@@ -627,11 +612,11 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 	
 	if(!bonus)
 	{
-		SetMenuTitle(g_MainMapMenu[client][eMain2_Menu], "%i of %i (%.2f%%) Maps completed\nRecords:\n ", mapscomplete, g_iMapCount[0], Com_Per_fl);
+		SetMenuTitle(g_TargetData[client][eTarget_MapMenu], "%i of %i (%.2f%%) Maps completed\nRecords:\n ", mapscomplete, g_iMapCount[0], Com_Per_fl);
 	}
 	else
 	{
-		SetMenuTitle(g_MainMapMenu[client][eMain2_Menu], "%i of %i (%.2f%%) Bonuses completed\nRecords:\n ", mapscomplete, g_iMapCount[1], Com_Per_fl);
+		SetMenuTitle(g_TargetData[client][eTarget_MapMenu], "%i of %i (%.2f%%) Bonuses completed\nRecords:\n ", mapscomplete, g_iMapCount[1], Com_Per_fl);
 	}
 	
 	if(SQL_HasResultSet(hndl))
@@ -652,30 +637,26 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 			WritePackCell(pack2, bonus);
 			Format(buffer, sizeof(buffer), "%d", pack2);
 			
-			AddMenuItem(g_MainMapMenu[client][eMain2_Menu], buffer, szValue);
+			AddMenuItem(g_TargetData[client][eTarget_MapMenu], buffer, szValue);
 			i++;
 		}
 		if(i == 1)
 		{
-			AddMenuItem(g_MainMapMenu[client][eMain2_Menu], "nope", "No Record found...");
+			AddMenuItem(g_TargetData[client][eTarget_MapMenu], "nope", "No Record found...");
 		}
 	}
 	
-	SetMenuExitBackButton(g_MainMapMenu[client][eMain2_Menu], true);
-	DisplayMenu(g_MainMapMenu[client][eMain2_Menu], client, MENU_TIME_FOREVER);
+	SetMenuExitBackButton(g_TargetData[client][eTarget_MapMenu], true);
+	DisplayMenu(g_TargetData[client][eTarget_MapMenu], client, MENU_TIME_FOREVER);
 }
 
-public Menu_PlayerSearch(Handle:menu, MenuAction:action, param1, param2)
+public Menu_PlayerSearch(Handle:menu, MenuAction:action, client, param2)
 {
 	if (action == MenuAction_Select)
 	{
 		new first_item = GetMenuSelectionPosition();
-		DisplayMenuAtItem(menu, param1, first_item, MENU_TIME_FOREVER); 
-
-		decl String:data[512];
-		GetMenuItem(menu, param2, data, sizeof(data));
-
-		Menu_PlayerInfo(param1, Handle:StringToInt(data));
+		DisplayMenuAtItem(menu, client, first_item, MENU_TIME_FOREVER); 
+		Menu_PlayerInfo(client);
 	}
 }
 
@@ -685,25 +666,15 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 	{
 		new first_item = GetMenuSelectionPosition();
 		DisplayMenuAtItem(menu, client, first_item, MENU_TIME_FOREVER); 
-		
-		decl String:data[512];
-		GetMenuItem(menu, param2, data, sizeof(data));
-		g_MainMenu[client][eMain_Pack] = Handle:StringToInt(data); 
-		ResetPack(g_MainMenu[client][eMain_Pack]);
-		ReadPackCell(g_MainMenu[client][eMain_Pack]);
-		decl String:SteamID[64];
-		ReadPackString(g_MainMenu[client][eMain_Pack], SteamID, sizeof(SteamID));
-		decl String:PlayerName[256];
-		ReadPackString(g_MainMenu[client][eMain_Pack], PlayerName, 256);
 
 		switch (param2)
 		{
 			case 0:
 			{
 				decl String:Query[255];
-				Format(Query, 255, sql_selectSingleRecord, SteamID, g_MapName, g_iTargetStyle[client]);
+				Format(Query, 255, sql_selectSingleRecord, g_TargetData[client][eTarget_SteamID], g_MapName, g_TargetData[client][eTarget_Style]);
 				decl String:Query2[255];
-				Format(Query2, 255, sql_selectPlayerRowCount, SteamID, g_MapName, 0, g_MapName, 0, g_iTargetStyle[client]);
+				Format(Query2, 255, sql_selectPlayerRowCount, g_TargetData[client][eTarget_SteamID], g_MapName, 0, g_MapName, 0, g_TargetData[client][eTarget_Style]);
 				
 				new Handle:pack2 = CreateDataPack();
 				WritePackCell(pack2, client);
@@ -715,9 +686,9 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 			case 1:
 			{
 				decl String:szQuery[255];
-				Format(szQuery, 255, sql_selectPlayer_Points, SteamID);
+				Format(szQuery, 255, sql_selectPlayer_Points, g_TargetData[client][eTarget_SteamID]);
 				decl String:Query2[255];
-				Format(Query2, 255, sql_selectPlayerPRowCount, SteamID);
+				Format(Query2, 255, sql_selectPlayerPRowCount, g_TargetData[client][eTarget_SteamID]);
 
 				new Handle:pack3 = CreateDataPack();
 				WritePackCell(pack3, client);
@@ -734,7 +705,7 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 				
 				
 				decl String:szQuery[255];
-				Format(szQuery, 255, sql_selectPlayerMaps, SteamID, g_iTargetStyle[client]);
+				Format(szQuery, 255, sql_selectPlayerMaps, g_TargetData[client][eTarget_SteamID], g_TargetData[client][eTarget_Style]);
 				SQL_TQuery(g_hSQL, SQL_ViewPlayerMapsCallback, szQuery, pack4);
 			}
 			case 3:
@@ -745,7 +716,7 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 				WritePackCell(pack5, bonus);
 				
 				decl String:szQuery[255];
-				Format(szQuery, 255, sql_selectPlayerMapsBonus, SteamID, g_iTargetStyle[client]);
+				Format(szQuery, 255, sql_selectPlayerMapsBonus, g_TargetData[client][eTarget_SteamID], g_TargetData[client][eTarget_Style]);
 				SQL_TQuery(g_hSQL, SQL_ViewPlayerMapsCallback, szQuery, pack5);
 			}
 			case 4:
@@ -756,7 +727,7 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 				WritePackCell(pack5, bonus);
 				
 				decl String:szQuery[255];
-				Format(szQuery, 255, sql_selectPlayerWRs, g_iTargetStyle[client], SteamID);
+				Format(szQuery, 255, sql_selectPlayerWRs, g_TargetData[client][eTarget_Style], g_TargetData[client][eTarget_SteamID]);
 				SQL_TQuery(g_hSQL, SQL_ViewPlayerMapsCallback, szQuery, pack5);
 			}
 			case 5:
@@ -767,16 +738,16 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 				WritePackCell(pack5, bonus);
 				
 				decl String:szQuery[255];
-				Format(szQuery, 255, sql_selectPlayerWRsBonus, g_iTargetStyle[client], SteamID);
+				Format(szQuery, 255, sql_selectPlayerWRsBonus, g_TargetData[client][eTarget_Style], g_TargetData[client][eTarget_SteamID]);
 				SQL_TQuery(g_hSQL, SQL_ViewPlayerMapsCallback, szQuery, pack5);
 			}
 			case 6:
 			{
-				GetIncompleteMaps(client, SteamID, 0, g_iTargetStyle[client]);
+				GetIncompleteMaps(client, g_TargetData[client][eTarget_SteamID], 0, g_TargetData[client][eTarget_Style]);
 			}
 			case 7:
 			{
-				GetIncompleteMaps(client, SteamID, 1, g_iTargetStyle[client]);
+				GetIncompleteMaps(client, g_TargetData[client][eTarget_SteamID], 1, g_TargetData[client][eTarget_Style]);
 			}
 			case 8:
 			{
@@ -786,29 +757,29 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 	}
 }
 
-public Menu_Stock_Handler(Handle:menu, MenuAction:action, param1, param2)
+public Menu_Stock_Handler(Handle:menu, MenuAction:action, client, param2)
 {
 	if ( action == MenuAction_Select )
 	{
 		new first_item = GetMenuSelectionPosition();
-		DisplayMenuAtItem(menu, param1, first_item, MENU_TIME_FOREVER); 
+		DisplayMenuAtItem(menu, client, first_item, MENU_TIME_FOREVER); 
 	}
 	else if(action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
 	{
-		DisplayMenu(g_MainMenu[param1][eMain_Menu], param1, MENU_TIME_FOREVER);
+		DisplayMenu(g_TargetData[client][eTarget_MainMenu], client, MENU_TIME_FOREVER);
 	}
 }
 
-public Menu_Stock_Handler2(Handle:menu, MenuAction:action, param1, param2)
+public Menu_Stock_Handler2(Handle:menu, MenuAction:action, client, param2)
 {
 	if ( action == MenuAction_Select )
 	{
 		new first_item = GetMenuSelectionPosition();
-		DisplayMenuAtItem(menu, param1, first_item, MENU_TIME_FOREVER); 
+		DisplayMenuAtItem(menu, client, first_item, MENU_TIME_FOREVER); 
 	}
 	else if(action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
 	{
-		DisplayMenuAtItem(g_MainMapMenu[param1][eMain2_Menu], param1, g_MenuPos[param1], MENU_TIME_FOREVER);
+		DisplayMenuAtItem(g_TargetData[client][eTarget_MapMenu], client, g_MenuPos[client], MENU_TIME_FOREVER);
 	}
 }
 
@@ -831,20 +802,20 @@ public MapMenu_Stock_Handler(Handle:menu, MenuAction:action, client, param2)
 		new Bonus = ReadPackCell(pack);
 		
 		decl String:szQuery[255];
-		Format(szQuery, 255, sql_selectPlayerMapRecord, SteamID, MapName, Bonus, g_iTargetStyle[client]);
+		Format(szQuery, 255, sql_selectPlayerMapRecord, g_TargetData[client][eTarget_SteamID], MapName, Bonus, g_TargetData[client][eTarget_Style]);
 		decl String:Query2[255];
-		Format(Query2, 255, sql_selectPlayerRowCount, SteamID, MapName, Bonus, MapName, Bonus, g_iTargetStyle[client]);
+		Format(Query2, 255, sql_selectPlayerRowCount, g_TargetData[client][eTarget_SteamID], MapName, Bonus, MapName, Bonus, g_TargetData[client][eTarget_Style]);
 
 		SQL_TQuery(g_hSQL, SQL_GetRowCountCallback, Query2, pack);
 		SQL_TQuery(g_hSQL, SQL_ViewPlayerMapRecordCallback, szQuery, pack);
 	}
 	else if(action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
 	{
-		DisplayMenu(g_MainMenu[client][eMain_Menu], client, MENU_TIME_FOREVER);
+		DisplayMenu(g_TargetData[client][eTarget_MainMenu], client, MENU_TIME_FOREVER);
 	}
 }
 
-GetIncompleteMaps(client, String:auth[64], bonus, style)
+GetIncompleteMaps(client, String:auth[], bonus, style)
 {
 	new Handle:pack = CreateDataPack();
 	WritePackCell(pack, client);
@@ -941,7 +912,7 @@ public MenuHandler_Incompelte(Handle:menu, MenuAction:action, client, param2)
 {
 	if (action == MenuAction_Select)
 	{
-		if(g_MainMenu[client][eMain_Pack] != INVALID_HANDLE) Menu_PlayerInfo(client, g_MainMenu[client][eMain_Pack]);
+		if(g_TargetData[client][eTarget_MainMenu] != INVALID_HANDLE) Menu_PlayerInfo(client);
 	}
 }
 
@@ -952,33 +923,15 @@ public OnClientDisconnect(client)
 
 ClearClient(client)
 {
-	if(g_MainMenu[client][eMain_Pack] != INVALID_HANDLE)
+	if(g_TargetData[client][eTarget_MainMenu] != INVALID_HANDLE)
 	{
-		CloseHandle(g_MainMenu[client][eMain_Pack]);
-		g_MainMenu[client][eMain_Pack] = INVALID_HANDLE;
+		CloseHandle(g_TargetData[client][eTarget_MainMenu]);
+		g_TargetData[client][eTarget_MainMenu] = INVALID_HANDLE;
 	}
 	
-	if(g_MainMenu[client][eMain_Menu] != INVALID_HANDLE)
+	if(g_TargetData[client][eTarget_MapMenu] != INVALID_HANDLE)
 	{
-		CloseHandle(g_MainMenu[client][eMain_Menu]);
-		g_MainMenu[client][eMain_Menu] = INVALID_HANDLE;
-	}
-	
-	if(g_MainMapMenu[client][eMain2_Pack] != INVALID_HANDLE)
-	{
-		CloseHandle(g_MainMapMenu[client][eMain2_Pack]);
-		g_MainMapMenu[client][eMain2_Pack] = INVALID_HANDLE;
-	}
-	
-	if(g_MainMapMenu[client][eMain2_Menu] != INVALID_HANDLE)
-	{
-		CloseHandle(g_MainMapMenu[client][eMain2_Menu]);
-		g_MainMapMenu[client][eMain2_Menu] = INVALID_HANDLE;
-	}
-	
-	if(g_hTargetData[client] != INVALID_HANDLE)
-	{
-		CloseHandle(g_hTargetData[client]);
-		g_hTargetData[client] = INVALID_HANDLE;
+		CloseHandle(g_TargetData[client][eTarget_MapMenu]);
+		g_TargetData[client][eTarget_MapMenu] = INVALID_HANDLE;
 	}
 }

@@ -1,0 +1,3 @@
+Timer-Physics_Autostrafe
+
+This plugin allows to create style with server-side strafehack (Don't worry about VAC).

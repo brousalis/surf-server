@@ -2104,6 +2104,11 @@ PunishAbuse(client)
 	{
 		Timer_Restart(client);
 	}
+	//Suiside
+	else if(g_Physics[style][ModePunishType] == 5)
+	{
+		ForcePlayerSuicide(client);
+	}
 	else
 	{
 		Timer_LogError("%d is not a valid punish type", g_Physics[style][ModePunishType]);
