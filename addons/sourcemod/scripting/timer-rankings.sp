@@ -2429,7 +2429,7 @@ stock GetRecordPoints(bool:timeimproved, bonus, mode, tier, finishcount, total, 
 	new Float:points = 0.0;
 	new totalbonus = GetTotalBonus(total);
 	new Float:style_scale = g_Physics[mode][ModePointsMulti];
-	new Float:tier_scale = 0.0;
+	new Float:tier_scale = 1.0;
 	
 	if(tier == 1)
 		tier_scale = g_Settings[Tier1Scale];

@@ -1424,7 +1424,7 @@ UpdateHUD_CSS(client)
 			Format(centerText, sizeof(centerText), "%sTime: %s\n", centerText, timeString);
 			//Format(centerText, sizeof(centerText), "%s%t: %s\n", centerText, "Time", timeString);
 		
-		if ((hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable]) && (hudSettings[JumpAcc][client] && g_Settings[HUDJumpAccEnable]))
+		if ((hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable]) && (hudSettings[JumpAcc][client] && g_Settings[HUDJumpAccEnable]) && !g_Physics[mode][ModeAuto])
 			Format(centerText, sizeof(centerText), "%s%t: %d [%.2f %%]\n", centerText, "Jumps", jumps, accuracy);
 		else if (hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable])
 			Format(centerText, sizeof(centerText), "%s%t: %d\n", centerText, "Jumps", jumps);
