@@ -1326,6 +1326,9 @@ public CallBack_LoadRank(Handle:owner, Handle:hndl, const String:error[], any:us
 
 ShowConnectMsg(client)
 {
+	if(g_bLateLoad)
+		return;
+	
 	if(IsFakeClient(client))
 		return;
 	

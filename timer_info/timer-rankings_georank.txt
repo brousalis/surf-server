@@ -1,6 +1,6 @@
 Timer-Rankings_Georank
 
-This plugin saves points given to players also t their country and provides a ranking menu.
+This plugin saves points given to players also to their country and provides a ranking menu.
 
 Commands:
 sm_georank - Displays top country by points
