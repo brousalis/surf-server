@@ -167,6 +167,9 @@ CreateTopMenu(client, Handle:pack)
 	{
 		ReadPackString(pack, sCountry, sizeof(sCountry));
 		new iPoints = ReadPackCell(pack);
+		
+		if(StrEqual(sCountry, "Unknown"))
+			continue;
 
 		FormatEx(sBuffer, sizeof(sBuffer), "%s: %d points", sCountry, iPoints, i + 1);
 		AddMenuItem(hMenu, "", sBuffer, ITEMDRAW_DISABLED);
