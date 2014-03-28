@@ -88,7 +88,9 @@ public OnPlayerGainPoints(client, points)
 {
 	new String:sCountry[64]; 
 	GetClientIP(client, sCountry, 64);
-	GeoipCountry(sCountry, sCountry, 64); 
+	
+	if(!GeoipCountry(sCountry, sCountry, 64))
+		Format(sCountry, 64, "Unknown");
 	
 	decl String:query[2048];
 	FormatEx(query, sizeof(query), "INSERT INTO ranks_geo (country, points) VALUES ('%s', '%d') ON DUPLICATE KEY UPDATE points = points+%d;", sCountry, points, points);
