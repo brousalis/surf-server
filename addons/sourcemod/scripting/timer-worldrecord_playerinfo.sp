@@ -29,7 +29,7 @@ new g_MenuPos[MAXPLAYERS+1];
 
 new String:sql_QueryPlayerName[] = "SELECT name, auth FROM round WHERE name LIKE \"%%%s%%\" ORDER BY `round`.`name` ASC, `round`.`auth` ASC;";
 new String:sql_selectSingleRecord[] = "SELECT auth, name, jumps, time, date, rank, finishcount, avgspeed, maxspeed, finishspeed FROM round WHERE auth LIKE '%s' AND map = '%s' AND bonus = '0' AND `physicsdifficulty` = '%d';";
-new String:sql_selectPlayerRowCount[] = "SELECT name FROM round WHERE time <= (SELECT time FROM round WHERE auth = '%s' AND map = '%s' AND bonus = '%i') AND map = '%s' AND bonus = '%i' ORDER BY time; AND `physicsdifficulty` = '%d'";
+new String:sql_selectPlayerRowCount[] = "SELECT name FROM round WHERE time <= (SELECT time FROM round WHERE auth = '%s' AND map = '%s' AND bonus = '%i') AND map = '%s' AND bonus = '%i' ORDER BY time AND `physicsdifficulty` = '%d'";
 new String:sql_selectPlayer_Points[] = "SELECT auth, lastname, points FROM ranks WHERE auth LIKE '%s' AND points NOT LIKE '0';";
 new String:sql_selectPlayerPRowCount[] = "SELECT lastname FROM ranks WHERE points >= (SELECT points FROM ranks WHERE auth = '%s' AND points NOT LIKE '0') AND points NOT LIKE '0' ORDER BY points;";
 
@@ -117,6 +117,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 		ConnectSQL();
 		return;
 	}
+	SQL_SetCharset(g_hSQL, "utf8");
 	g_hSQL = CloneHandle(hndl);
 	
 	g_iSQLReconnectCounter = 1;
