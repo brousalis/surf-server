@@ -636,7 +636,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			}
 		}
 		
-		if(g_Physics[style][ModePreventLeft])
+		if(g_Physics[style][ModePreventPlusleft])
 		{
 			if(buttons & IN_LEFT)
 			{
@@ -644,7 +644,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			}
 		}
 		
-		if(g_Physics[style][ModePreventRight])
+		if(g_Physics[style][ModePreventPlusright])
 		{
 			if(buttons & IN_RIGHT)
 			{
