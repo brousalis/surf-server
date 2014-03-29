@@ -117,8 +117,8 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 		ConnectSQL();
 		return;
 	}
-	SQL_SetCharset(g_hSQL, "utf8");
 	g_hSQL = CloneHandle(hndl);
+	SQL_SetCharset(g_hSQL, "utf8");
 	
 	g_iSQLReconnectCounter = 1;
 	
@@ -178,7 +178,7 @@ public Action:Client_PlayerInfo(client, args)
 		
 		g_TargetData[client][eTarget_Style] = g_ModeDefault;
 		
-		g_TargetData[client][eTarget_Style] = true;
+		g_TargetData[client][eTarget_Active] = true;
 		
 		if(g_Settings[MultimodeEnable]) StylePanel(client);
 		else Menu_PlayerInfo(client);

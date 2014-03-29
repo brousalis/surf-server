@@ -2092,7 +2092,7 @@ PunishAbuse(client)
 	//Stop movement
 	else if(g_Physics[style][ModePunishType] == 2)
 	{
-		CheckVelocity(client, 1, 1.0);
+		CheckVelocity(client, 1, 250.0);
 	}
 	//Reset timer
 	else if(g_Physics[style][ModePunishType] == 3)
