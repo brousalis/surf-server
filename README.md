@@ -1,7 +1,7 @@
 Timer
 =====
 
-[CS:S/CS:GO] Timer for surf, bhop, climb, deathrun, minigame and more
+[CS:S/CS:GO] Timer for surf, bhop, climb, deathrun, minigame and more...
 
 Support: https://forums.alliedmods.net/showthread.php?t=231866
 
@@ -18,7 +18,7 @@ Please read descriptions of modules you like to install first, they can contain 
 
 2.) Skip this part if you a running a CS:S server, for CS:GO you have to follow step 2 first!
 
-2a) open scripting/incudes/timer.inc with a text editor (like Notepad++).
+2.1) open scripting/incudes/timer.inc with a text editor (like Notepad++).
 
 replace
 - //#define LEGACY_COLORS "CS:GO Color Support"
@@ -26,7 +26,7 @@ replace
 with
 - #define LEGACY_COLORS "CS:GO Color Support"
 
-3.) recompile all needed .sp files (some modules have different files for CS:GO).
+3.) Recompile all needed .sp files (some modules have different files for CS:GO).
 
 4.) Insert "timer" keyvalue into configs/databases.cfg (no sqlite support).
 
