@@ -48,7 +48,7 @@ Update 2.0.x to 2.1.x:
 
 2.) Delete mapzone, round and maptier table.
 
-3.) Delte "create table" lines of you backup files (Notepad++).
+3.) Delete "create table" lines of you backup files (Notepad++).
 
 4.) Import modified backups.
 
