@@ -18,7 +18,7 @@ Please read descriptions of modules you like to install first, they can contain 
 
 2.) Skip this part if you a running a CS:S server, for CS:GO you have to follow step 2 first!
 
-2a) open scripting/incudes/timer.inc with a text editor (like Notepad++)
+2a) open scripting/incudes/timer.inc with a text editor (like Notepad++).
 
 replace
 - //#define LEGACY_COLORS "CS:GO Color Support"
@@ -26,18 +26,18 @@ replace
 with
 - #define LEGACY_COLORS "CS:GO Color Support"
 
-3.) recompile all needed .sp files (some modules have different files for CS:GO)
+3.) recompile all needed .sp files (some modules have different files for CS:GO).
 
-4.) Insert "timer" keyvalue into configs/databases.cfg (no sqlite support)
+4.) Insert "timer" keyvalue into configs/databases.cfg (no sqlite support).
 
 
-5.) Change configs/timer/settings.cfg to your needs
+5.) Change configs/timer/settings.cfg to your needs.
 
-6.) Add new styles to configs/timer/physics.cfg (example for bhop, bhopfun, surf & climb included)
+6.) Add new styles to configs/timer/physics.cfg (example for bhop, bhopfun, surf & climb included).
 
-7.) Upload all files to your webserver
+7.) Upload all files to your webserver.
 
-8.) Restart your server and have fun creating zones
+8.) Restart your server and have fun creating zones.
 (It's possible to import your old Timer 1.0.x Zones)
 
 #Update instructions
@@ -46,11 +46,11 @@ Update 2.0.x to 2.1.x:
 
 1.) Make a backup of your mapzone, round and maptier table.
 
-2.) Delete mapzone, round and maptier table
+2.) Delete mapzone, round and maptier table.
 
-3.) Delte "create table" lines of you backup files (Notepad++)
+3.) Delte "create table" lines of you backup files (Notepad++).
 
-4.) Import modified backups
+4.) Import modified backups.
 
 #Compability Info
 
