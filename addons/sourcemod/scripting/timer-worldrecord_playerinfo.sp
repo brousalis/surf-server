@@ -200,7 +200,7 @@ public Action:Client_PlayerInfo(client, args)
 		
 		Format(g_TargetData[client][eTarget_Name], 256, "%s", NameBuffer[startidx]);
 		
-		g_TargetData[client][eTarget_Style] = false;
+		g_TargetData[client][eTarget_Active] = false;
 		
 		if(g_Settings[MultimodeEnable])
 		{
@@ -270,23 +270,27 @@ public QueryPlayerName(client, String:QueryPlayerName[])
 	SQL_TQuery(g_hSQL, SQL_QueryPlayerNameCallback, Query, client);
 }
 
+new Handle:g_hPlayerSearch[MAXPLAYERS+1] = {INVALID_HANDLE, ...};
+
 public SQL_QueryPlayerNameCallback(Handle:owner, Handle:hndl, const String:error[], any:data){
 	if(hndl == INVALID_HANDLE)
 		LogError("Error loading playername (%s)", error);
 		
 	new client = data;
 	decl String:PlayerName[256];
-	decl String:SteamID[256];
+	decl String:SteamID[32];
 	decl String:PlayerSteam[256];
 	decl String:PlayerChkDup[256];
-	decl String:buffer[512];
 	PlayerChkDup = "zero";
 	
 	new Handle:menu = CreateMenu(Menu_PlayerSearch);
 	SetMenuTitle(menu, "Playersearch\n ");
 	
+	g_hPlayerSearch[client] = CreateKeyValues("data");
+	
 	if(SQL_HasResultSet(hndl))
 	{
+		
 		new i = 0;
 		while (SQL_FetchRow(hndl))
 		{
@@ -297,12 +301,20 @@ public SQL_QueryPlayerNameCallback(Handle:owner, Handle:hndl, const String:error
 				Format(PlayerSteam, 256, "%s - %s",PlayerName, SteamID);
 				if(!StrEqual(PlayerChkDup, SteamID, false))
 				{
+					KvJumpToKey(g_hPlayerSearch[client], SteamID, true);
+					
+					KvSetString(g_hPlayerSearch[client], "name", PlayerName);
+					
+					KvRewind(g_hPlayerSearch[client]);
+					
+					/*
 					new Handle:pack = CreateDataPack();
 					WritePackCell(pack, client);
 					WritePackString(pack, SteamID);
 					WritePackString(pack, PlayerName);
-					Format(buffer, sizeof(buffer), "%d", pack);
-					AddMenuItem(menu, buffer, PlayerSteam);
+					*/
+					
+					AddMenuItem(menu, SteamID, PlayerSteam);
 					
 					Format(PlayerChkDup, 256, "%s",SteamID);
 					i++;
@@ -570,7 +582,6 @@ public SQL_PlayerPointsCallback(Handle:owner, Handle:hndl, const String:error[],
 	}
 }
 
-
 public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[], any:data){
 	if(hndl == INVALID_HANDLE)
 		LogError("[Timer] Error loading playerinfo (%s)", error);
@@ -658,16 +669,29 @@ public Menu_PlayerSearch(Handle:menu, MenuAction:action, client, param2)
 		new first_item = GetMenuSelectionPosition();
 		DisplayMenuAtItem(menu, client, first_item, MENU_TIME_FOREVER); 
 		
-		decl String:data[512];
-		GetMenuItem(menu, param2, data, sizeof(data));
+		decl String:SteamID[256];
+		GetMenuItem(menu, param2, SteamID, sizeof(SteamID));
+		
+		/*
 		new Handle:pack = Handle:StringToInt(data); 
 		ResetPack(pack);
 		ReadPackCell(pack);
 		ReadPackString(pack, g_TargetData[client][eTarget_SteamID], 32);
 		ReadPackString(pack, g_TargetData[client][eTarget_Name], 256);
 		CloseHandle(pack);
+		*/
 		
-		Menu_PlayerInfo(client);
+		if(!StrEqual(SteamID, "nope") && !StrEqual(SteamID, "many") && !StrEqual(SteamID, "speci"))
+		{
+			Format(g_TargetData[client][eTarget_SteamID], 32, "%s", SteamID);
+			KvJumpToKey(g_hPlayerSearch[client], SteamID, false);
+			KvGetString(g_hPlayerSearch[client], "name", g_TargetData[client][eTarget_Name], 256, "Unknown");
+			
+			Menu_PlayerInfo(client);
+		}
+		
+		CloseHandle(g_hPlayerSearch[client]);
+		g_hPlayerSearch[client] = INVALID_HANDLE;
 	}
 }
 

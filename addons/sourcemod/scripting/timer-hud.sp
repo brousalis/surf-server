@@ -1582,6 +1582,39 @@ UpdateHUD_CSS(client)
 		else Format(hintText,sizeof(hintText),"%sOvertime: %d:%02d\n", hintText, (RoundToFloor(g_iMap_TimeLeft*-1.0))/60, (RoundToFloor(g_iMap_TimeLeft*-1.0))%60);
 	}
 	
+	//speclist
+	if (hudSettings[Spec][client] && g_Settings[HUDSpeclistEnable])
+	{
+		new iSpecCount;
+		
+		for(new j = 1; j <= MaxClients; j++) 
+		{
+			if (!IsClientInGame(j) || !IsClientObserver(j))
+				continue;
+			
+			if (IsClientSourceTV(j))
+				continue;
+				
+			new iSpecMode = GetEntProp(j, Prop_Send, "m_iObserverMode");
+			
+			// The client isn't spectating any one person, so ignore them.
+			if (iSpecMode != SPECMODE_FIRSTPERSON && iSpecMode != SPECMODE_3RDPERSON)
+				continue;
+			
+			// Find out who the client is spectating.
+			new iTarget = GetEntPropEnt(j, Prop_Send, "m_hObserverTarget");
+			
+			// Are they spectating the same player as User?
+			if (iTarget == iClientToShow && j != iClientToShow && !hidemyass[j])
+				iSpecCount++;
+		}
+		
+		if(iSpecCount > 0)
+		{
+			Format(hintText, sizeof(hintText), "%sSpectators: %d\n\n", hintText, iSpecCount);
+		}
+	}
+	
 	if (hudSettings[Keys][client] && g_Settings[HUDKeysEnable])
 	{
 		//if client is spectating show player keys
@@ -1693,39 +1726,6 @@ UpdateHUD_CSS(client)
 			// Is he pressing "mouse1"?
 			if(mbuttons & IN_ATTACK2)
 				Format(hintText, sizeof(hintText), "%sM2;", hintText);
-		}
-	}
-	
-	//speclist
-	if (hudSettings[Spec][client] && g_Settings[HUDSpeclistEnable])
-	{
-		new iSpecCount;
-		
-		for(new j = 1; j <= MaxClients; j++) 
-		{
-			if (!IsClientInGame(j) || !IsClientObserver(j))
-				continue;
-			
-			if (IsClientSourceTV(j))
-				continue;
-				
-			new iSpecMode = GetEntProp(j, Prop_Send, "m_iObserverMode");
-			
-			// The client isn't spectating any one person, so ignore them.
-			if (iSpecMode != SPECMODE_FIRSTPERSON && iSpecMode != SPECMODE_3RDPERSON)
-				continue;
-			
-			// Find out who the client is spectating.
-			new iTarget = GetEntPropEnt(j, Prop_Send, "m_hObserverTarget");
-			
-			// Are they spectating the same player as User?
-			if (iTarget == iClientToShow && j != client && !hidemyass[j])
-				iSpecCount++;
-		}
-		
-		if(iSpecCount > 0)
-		{
-			Format(hintText, sizeof(hintText), "%s\nSpectators: %d", hintText, iSpecCount);
 		}
 	}
 	
