@@ -307,13 +307,6 @@ public SQL_QueryPlayerNameCallback(Handle:owner, Handle:hndl, const String:error
 					
 					KvRewind(g_hPlayerSearch[client]);
 					
-					/*
-					new Handle:pack = CreateDataPack();
-					WritePackCell(pack, client);
-					WritePackString(pack, SteamID);
-					WritePackString(pack, PlayerName);
-					*/
-					
 					AddMenuItem(menu, SteamID, PlayerSteam);
 					
 					Format(PlayerChkDup, 256, "%s",SteamID);
@@ -671,15 +664,6 @@ public Menu_PlayerSearch(Handle:menu, MenuAction:action, client, param2)
 		
 		decl String:SteamID[256];
 		GetMenuItem(menu, param2, SteamID, sizeof(SteamID));
-		
-		/*
-		new Handle:pack = Handle:StringToInt(data); 
-		ResetPack(pack);
-		ReadPackCell(pack);
-		ReadPackString(pack, g_TargetData[client][eTarget_SteamID], 32);
-		ReadPackString(pack, g_TargetData[client][eTarget_Name], 256);
-		CloseHandle(pack);
-		*/
 		
 		if(!StrEqual(SteamID, "nope") && !StrEqual(SteamID, "many") && !StrEqual(SteamID, "speci"))
 		{
