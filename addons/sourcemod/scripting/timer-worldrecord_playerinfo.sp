@@ -657,6 +657,16 @@ public Menu_PlayerSearch(Handle:menu, MenuAction:action, client, param2)
 	{
 		new first_item = GetMenuSelectionPosition();
 		DisplayMenuAtItem(menu, client, first_item, MENU_TIME_FOREVER); 
+		
+		decl String:data[512];
+		GetMenuItem(menu, param2, data, sizeof(data));
+		new Handle:pack = Handle:StringToInt(data); 
+		ResetPack(pack);
+		ReadPackCell(pack);
+		ReadPackString(pack, g_TargetData[client][eTarget_SteamID], 32);
+		ReadPackString(pack, g_TargetData[client][eTarget_Name], 256);
+		CloseHandle(pack);
+		
 		Menu_PlayerInfo(client);
 	}
 }
