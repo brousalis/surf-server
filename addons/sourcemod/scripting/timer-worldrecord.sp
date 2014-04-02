@@ -193,6 +193,36 @@ public OnMapStart()
 	RefreshCache();
 }
 
+public OnMapEnd()
+{
+	for(new bonus = 0; bonus < 2; bonus++) 
+	{
+		for(new style = 0; style < MAX_MODES-1; style++) 
+		{
+			if(!g_Physics[style][ModeEnable])
+				continue;
+			
+			if(g_Physics[style][ModeCategory] == MCategory_Ranked)
+			{
+				decl String:query[2048];
+				FormatEx(query, sizeof(query), "SET @r=0;");
+				SQL_TQuery(g_hSQL, UpdateRanksCallback, query, _, DBPrio_High);
+				FormatEx(query, sizeof(query), "UPDATE `round` SET `rank` = @r:= (@r+1) WHERE `map` = '%s' AND `physicsdifficulty` = %d AND `bonus` = %d  ORDER BY `time` ASC;", g_currentMap, style, bonus);
+				SQL_TQuery(g_hSQL, UpdateRanksCallback, query, _, DBPrio_High);
+			}
+		}
+	}
+}
+
+public UpdateRanksCallback(Handle:owner, Handle:hndl, const String:error[], any:client)
+{
+	if (hndl == INVALID_HANDLE)
+	{
+		Timer_LogError("SQL Error on UpdateRanks: %s", error);
+		return;
+	}
+}
+
 public Action:Command_WorldRecord(client, args)
 {
 	if (g_timerPhysics && g_Settings[MultimodeEnable])
