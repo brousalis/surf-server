@@ -15,8 +15,8 @@ sm_stage - Stage teleport menu
 sm_stuck - Teleport to last stage (penalty time)
 
 Admin Commands:
-sm_zoneadmin - isplays zone admin menu
-sm_zoneadminmode <0|1> - Enable/Disable zone admin mode (admin will not trigger zones)
+sm_zoneadmin - Displays zone admin menu
+sm_zoneadminmode <0|1> - Enable/Disable zone admin mode (admins will not trigger zones)
 sm_zoneid <id> - Set zone ID (Stage ID)
 sm_zonetype <type> - Overwrite zone type
 sm_zonereload - Reload zones
