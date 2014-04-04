@@ -45,7 +45,6 @@ new Handle:g_hRequiredPoints = INVALID_HANDLE;
 new Handle:g_hGlobalMessage = INVALID_HANDLE;
 new Handle:g_hPositionMethod = INVALID_HANDLE;
 new Handle:g_hLimitTopPlayers = INVALID_HANDLE;
-new Handle:g_hLimitCompletions = INVALID_HANDLE;
 new Handle:g_hAdvertisement = INVALID_HANDLE;
 new Handle:g_hDisplayCookie = INVALID_HANDLE;
 new Handle:g_hTrie_CfgCommands = INVALID_HANDLE;
@@ -82,7 +81,6 @@ new g_iDisplayMethod;
 new g_iRequiredPoints;
 new g_iPositionMethod;
 new g_iLimitTopPlayers;
-new g_iLimitCompletions;
 new g_iDebugIndex = 1;
 new g_iCurrentDebug = -1;
 new g_iLimitTopPerPage;
@@ -117,6 +115,8 @@ new Float:g_fKickTime[MAXPLAYERS + 1];
 //Forwards
 //* * * * * * * * * * * * * * * * * * * * * * * * * *
 new Handle:g_timerGainPointsForward;
+new Handle:g_timerLostPointsForward;
+new Handle:g_timerSetPointsForward;
 
 public Plugin:myinfo =
 {
@@ -138,6 +138,8 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Timer_AddPoints", Native_AddPoints);
 	CreateNative("Timer_RemovePoints", Native_RemovePoints);
 	CreateNative("Timer_SavePoints", Native_SavePoints);
+	CreateNative("Timer_RefreshPoints", Native_RefreshPoints);
+	CreateNative("Timer_RefreshPointsAll", Native_RefreshPointsAll);
 
 	return APLRes_Success;
 }
@@ -176,11 +178,7 @@ public OnPluginStart()
 	g_hLimitTopPlayers = AutoExecConfig_CreateConVar("timer_ranks_limit_top_players", "10", "The maximum number of players to be pulled for the Top Players command.", FCVAR_NONE, true, 0.0);
 	HookConVarChange(g_hLimitTopPlayers, OnCVarChange);
 	g_iLimitTopPlayers = GetConVarInt(g_hLimitTopPlayers);
-
-	g_hLimitCompletions = AutoExecConfig_CreateConVar("timer_ranks_limit_completions", "0", "Optional restriction to the number of times a player can complete the same map and receive points for it. (0 = Infinite)", FCVAR_NONE, true, 0.0);
-	HookConVarChange(g_hLimitCompletions, OnCVarChange);
-	g_iLimitCompletions = GetConVarInt(g_hLimitCompletions);
-
+	
 	g_hAdvertisement = AutoExecConfig_CreateConVar("timer_ranks_adverts", "0.0", "Optional feature that prints the translation phrase `Advertisement` every x.x seconds. (0.0 = Disabled)", FCVAR_NONE, true, 0.0);
 	HookConVarChange(g_hAdvertisement, OnCVarChange);
 	g_fAdvertisement = GetConVarFloat(g_hAdvertisement);
@@ -222,7 +220,9 @@ public OnPluginStart()
 	HookEvent("player_spawn", Event_OnPlayerSpawn);
 	HookEvent("player_team", Event_OnPlayerTeam);
 
-	g_timerGainPointsForward = CreateGlobalForward("OnPlayerGainPoints", ET_Event, Param_Cell, Param_Cell);
+	g_timerGainPointsForward = CreateGlobalForward("OnPlayerGainPoints", ET_Event, Param_Cell, Param_Cell, Param_Cell);
+	g_timerLostPointsForward = CreateGlobalForward("OnPlayerLostPoints", ET_Event, Param_Cell, Param_Cell, Param_Cell);
+	g_timerSetPointsForward = CreateGlobalForward("OnPlayerSetPoints", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	
 	if(g_iDisplayMethod < 0)
 	{
@@ -239,8 +239,6 @@ public OnPluginStart()
 	BuildPath(Path_SM, g_sPluginLog, sizeof(g_sPluginLog), "logs/timer-rankings.debug.log");
 	BuildPath(Path_SM, g_sDumpLog, sizeof(g_sDumpLog), "logs/timer-rankings.dump.log");
 	RegServerCmd("timer_rankingsdump", Command_PrintRanks, "Generates a dump file in /logs/ that contains all definitions and rankings.");
-	
-	RegConsoleCmd("sm_points", Command_PointsInfo);
 }
 
 public Menu_Settings(client, CookieMenuAction:action, any:info, String:buffer[], maxlen)
@@ -291,10 +289,6 @@ public OnCVarChange(Handle:cvar, const String:oldvalue[], const String:newvalue[
 	else if(cvar == g_hLimitTopPlayers)
 	{
 		g_iLimitTopPlayers = StringToInt(newvalue);
-	}
-	else if(cvar == g_hLimitCompletions)
-	{
-		g_iLimitCompletions = StringToInt(newvalue);
 	}
 	else if(cvar == g_hAdvertisement)
 	{
@@ -393,6 +387,8 @@ public OnClientPostAdminCheck(client)
 	if(!g_iEnabled || IsFakeClient(client))
 		return;
 
+	g_bShowConnectMsg[client] = true;
+	
 	g_bAuthed[client] = GetClientAuthString(client, g_sAuth[client], sizeof(g_sAuth[]));
 	if(!g_bAuthed[client])
 		CreateTimer(2.0, Timer_AuthClient, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
@@ -1197,8 +1193,6 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 	decl String:sSafeName[((MAX_NAME_LENGTH * 2) + 1)];
 	GetClientName(client, sName, sizeof(sName));
 	SQL_EscapeString(g_hDatabase, sName, sSafeName, sizeof(sSafeName));
-
-	g_bShowConnectMsg[client] = true;
 	
 	decl String:sQuery[256];
 	if(!SQL_GetRowCount(hndl))
@@ -1264,27 +1258,6 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 			UpdateClientTag(client);
 		}
 	}
-
-	if(g_iLimitCompletions)
-	{
-		FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `round` WHERE `map` = '%s' AND `auth` = '%s' GROUP BY 'map'", g_sCurrentMap, g_sAuth[client]);
-		if(g_iEnabled == 2)
-			PrintToDebug("CallBack_ClientConnect(%N): Issuing Query `%s`", client, sQuery);
-		SQL_TQuery(g_hDatabase, CallBack_LoadCompletions, sQuery, userid);
-	}
-}
-
-public CallBack_LoadCompletions(Handle:owner, Handle:hndl, const String:error[], any:userid)
-{
-	ErrorCheck(hndl, error, "CallBack_LoadCompletions");
-	new client = GetClientOfUserId(userid);
-	if(!client || !IsClientInGame(client))
-		return;
-
-	if(SQL_FetchRow(hndl))
-		g_iCompletions[client] = SQL_FetchInt(hndl, 0);
-	else
-		g_iCompletions[client] = 0;
 }
 
 public CallBack_LoadRank(Handle:owner, Handle:hndl, const String:error[], any:userid)
@@ -2292,66 +2265,6 @@ stock PrintToAdmins(const String:format[], any:...)
 		LogToFile(g_sPluginLog, sBuffer);
 }
 
-//public OnFinishRound(client, const String:map[], jumps, flashbangs, physicsDifficulty, fpsmax, const String:timeString[], const String:timeDiffString[], position, totalrank, bool:overwrite)
-public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank)
-{
-	if(!g_iEnabled || IsFakeClient(client))
-		return;
-
-	//This shouldn't be done... Cache & Reward after?
-	if(!g_bLoadedSQL[client] || !g_bAuthed[client] || g_hDatabase == INVALID_HANDLE || g_bInitalizing)
-		return;
-
-	new tier = Timer_GetTier(bonus);
-	if(bonus != 0) tier = 1;
-	
-	new bool:ranked = bool:Timer_IsModeRanked(mode);
-	
-	if(ranked)
-	{
-		new total = Timer_GetDifficultyTotalRank(mode, bonus);
-		new finishcount = Timer_GetFinishCount(mode, bonus, currentrank);
-		
-		new iBuffer = GetRecordPoints(lasttime > time, bonus, mode, tier, finishcount, total, currentrank, newrank);
-
-		if(g_iLimitCompletions)
-		{
-			g_iCompletions[client]++;
-			if((g_iCompletions[client] - 1) >= g_iLimitCompletions)
-			{
-				CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Complete_Round_Exceeded", g_iCompletions[client], g_iLimitCompletions);
-				return;
-			}
-			else
-			{
-				if((g_iLimitCompletions - g_iCompletions[client]) == 0)
-					CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Complete_Round_Last", iBuffer);
-				else
-					CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Complete_Round_Remaining", iBuffer, (g_iLimitCompletions - g_iCompletions[client]), g_iLimitCompletions);
-			}
-		}
-
-		g_iCurrentPoints[client] += iBuffer;
-
-		SavePoints(client);
-
-		if(iBuffer == 1)
-		{
-			CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Complete_Round", iBuffer, g_sCurrentMap);
-		}
-		else
-		{
-			CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Complete_Round_Points", iBuffer, g_sCurrentMap);
-		}
-        
-		// Forward points edit by raska
-		Call_StartForward(g_timerGainPointsForward);
-		Call_PushCell(client);
-		Call_PushCell(iBuffer);
-		Call_Finish();
-	}
-}
-
 SavePoints(client)
 {
 	decl String:sQuery[192];
@@ -2386,248 +2299,6 @@ SavePoints(client)
 	}
 }
 
-public Action:Command_PointsInfo(client, args)
-{
-	if(Timer_IsModeRanked(Timer_GetMode(client)))
-		CPrintToChat(client, "%s You could earn between %d and %d points.", PLUGIN_PREFIX2, GetMinRecordPoints(client), GetMaxRecordPoints(client));
-
-	return Plugin_Handled;
-}
-
-stock GetMaxRecordPoints(client)
-{
-	new bonus = Timer_GetBonus(client);
-	new tier = Timer_GetTier(bonus);
-	new mode = Timer_GetMode(client);
-	new total = Timer_GetDifficultyTotalRank(mode, bonus);
-	new currentrank = Timer_GetDifficultyRank(client, bonus, mode);	
-	new finishcount = Timer_GetFinishCount(mode, bonus, currentrank);
-	
-	return GetRecordPoints(true, bonus, mode, tier, finishcount, total, currentrank, 1);
-}
-
-stock GetMinRecordPoints(client)
-{
-	new bonus = Timer_GetBonus(client);
-	new tier = Timer_GetTier(bonus);
-	new mode = Timer_GetMode(client);
-	new total = Timer_GetDifficultyTotalRank(mode, bonus);
-	new currentrank = Timer_GetDifficultyRank(client, bonus, mode);	
-	new finishcount = Timer_GetFinishCount(mode, bonus, currentrank);
-	
-	new badrank;
-	
-	if(currentrank == 0)
-	{
-		badrank = total;
-		finishcount = 0;
-	}
-	else badrank = currentrank;
-	
-	return GetRecordPoints(false, bonus, mode, tier, finishcount, total, currentrank, badrank);
-}
-
-stock GetRecordPoints(bool:timeimproved, bonus, mode, tier, finishcount, total, currentrank, newrank)
-{
-	new Float:points = 0.0;
-	new totalbonus = GetTotalBonus(total);
-	new Float:style_scale = g_Physics[mode][ModePointsMulti];
-	new Float:tier_scale = 1.0;
-	
-	if(tier == 1)
-		tier_scale = g_Settings[Tier1Scale];
-	else if(tier == 2)
-		tier_scale = g_Settings[Tier2Scale];
-	else if(tier == 3)
-		tier_scale = g_Settings[Tier3Scale];
-	else if(tier == 4)
-		tier_scale = g_Settings[Tier4Scale];
-	else if(tier == 5)
-		tier_scale = g_Settings[Tier5Scale];
-	else if(tier == 6)
-		tier_scale = g_Settings[Tier6Scale];
-	else if(tier == 7)
-		tier_scale = g_Settings[Tier7Scale];
-	else if(tier == 8)
-		tier_scale = g_Settings[Tier8Scale];
-	else if(tier == 9)
-		tier_scale = g_Settings[Tier9Scale];
-	else if(tier == 10)
-		tier_scale = g_Settings[Tier10Scale];
-
-	/* Anyway */
-	points += g_Settings[PointsAnyway]*tier_scale*style_scale; //for first 5 records on this map
-	//PrintToChatAll("a %.1f", g_Settings[PointsAnyway]*tier_scale*style_scale);
-	
-	/* First Record */
-	if(finishcount == 0)
-	{
-		points += g_Settings[PointsFirst]*tier_scale*style_scale; //for first personal record on this map
-		//PrintToChatAll("f %.1f", g_Settings[PointsFirst]*tier_scale*style_scale);
-	}
-	
-	/* First 5 */
-	if(finishcount < 5)
-	{
-		points += g_Settings[PointsFirst5]*tier_scale*style_scale; //for first 5 records on this map
-		//PrintToChatAll("f5 %.1f", g_Settings[PointsFirst5]*tier_scale*style_scale);
-	}
-	
-	/* First 10 */
-	if(finishcount < 10)
-	{
-		points += g_Settings[PointsFirst10]*tier_scale*style_scale; //for first 10 records on this map
-		//PrintToChatAll("f10 %.1f", g_Settings[PointsFirst10]*tier_scale*style_scale);
-	}
-	
-	/* First 25 */
-	if(finishcount < 25)
-	{
-		points += g_Settings[PointsFirst25]*tier_scale*style_scale; //for first 25 records on this map
-		//PrintToChatAll("f25 %.1f", g_Settings[PointsFirst25]*tier_scale*style_scale);
-	}
-	
-	/* First 50 */
-	if(finishcount < 50)
-	{
-		points += g_Settings[PointsFirst50]*tier_scale*style_scale; //for first 50 records on this map
-		//PrintToChatAll("f50 %.1f", g_Settings[PointsFirst50]*tier_scale*style_scale);
-	}
-	
-	/* First 100 */
-	if(finishcount < 100)
-	{
-		points += g_Settings[PointsFirst100]*tier_scale*style_scale; //for first 100 records on this map
-		//PrintToChatAll("f100 %.1f", g_Settings[PointsFirst100]*tier_scale*style_scale);
-	}
-	
-	/* First 250 */
-	if(finishcount < 250)
-	{
-		points += g_Settings[PointsFirst250]*tier_scale*style_scale; //for first 250 records on this map
-		//PrintToChatAll("f250 %.1f", g_Settings[PointsFirst250]*tier_scale*style_scale);
-	}
-	
-	/* Iproved Time */
-	if(timeimproved)
-	{
-		points += g_Settings[PointsImprovedTime]*tier_scale*style_scale; //improved yourself (time)
-		//PrintToChatAll("it %f.1f", g_Settings[PointsImprovedTime]*tier_scale*style_scale);
-	}
-	
-	/* Iproved Rank */
-	if(currentrank > newrank)
-	{
-		points += g_Settings[PointsImprovedRank]*tier_scale*style_scale; //improved yourself (rank)
-		//PrintToChatAll("ir %f.1f", g_Settings[PointsImprovedRank]*tier_scale*style_scale);
-	}
-	
-	/* Break World-Record Self */
-	if(newrank == 1 && total > 10 && currentrank == newrank)
-	{
-		points += g_Settings[PointsNewWorldRecordSelf]*tier_scale*style_scale; //for breaking own world record
-		points += totalbonus;
-		//PrintToChatAll("wrs %.1f", g_Settings[PointsNewWorldRecordSelf]*tier_scale*style_scale+totalbonus);
-	}
-	else if(currentrank > newrank)
-	{
-		/* Break World-Record */
-		if(newrank == 1 && total > 10 && finishcount == 0)
-		{
-			points += g_Settings[PointsNewWorldRecord]*tier_scale*style_scale; //for new world record
-			points += totalbonus;
-			//PrintToChatAll("wr %.1f", g_Settings[PointsNewWorldRecord]*tier_scale*style_scale+totalbonus);
-		} 
-		
-		/* Top 10 */
-		if(newrank <= 10 && total > 25 && (currentrank > 10 || finishcount == 0))
-		{
-			points += g_Settings[PointsTop10Record]*tier_scale*style_scale; //new top10 record
-			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop10Record]*tier_scale*style_scale+totalbonus);
-		}
-		
-		/* Top 25 */
-		if(newrank <= 25 && total > 50 && (currentrank > 25 || finishcount == 0))
-		{
-			points += g_Settings[PointsTop25Record]*tier_scale*style_scale; //new top25 record
-			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop25Record]*tier_scale*style_scale+totalbonus);
-		}
-		
-		/* Top 50 */
-		if(newrank <= 50 && total > 100 && (currentrank > 50 || finishcount == 0))
-		{
-			points += g_Settings[PointsTop50Record]*tier_scale*style_scale; //new top50 record
-			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop50Record]*tier_scale*style_scale+totalbonus);
-		}
-		
-		/* Top 100 */
-		if(newrank <= 100 && total > 200 && (currentrank > 100 || finishcount == 0))
-		{
-			points += g_Settings[PointsTop100Record]*tier_scale*style_scale; //new top100 record
-			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop100Record]*tier_scale*style_scale+totalbonus);
-		}
-		
-		/* Top 250 */
-		if(newrank <= 250 && total > 500 && (currentrank > 250 || finishcount == 0))
-		{
-			points += g_Settings[PointsTop250Record]*tier_scale*style_scale; //new top250 record
-			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop250Record]*tier_scale*style_scale+totalbonus);
-		}
-		
-		/* Top 500 */
-		if(newrank <= 500 && total > 750 && (currentrank > 500 || finishcount == 0))
-		{
-			points += g_Settings[PointsTop500Record]*tier_scale*style_scale; //new top500 record
-			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop500Record]*tier_scale*style_scale+totalbonus);
-		}
-	}
-	
-	return RoundToFloor(points);
-}
-
-stock GetTotalBonus(total)
-{
-	if(total != 0)
-	{
-		if(total >= 1 && total <= 3)
-		{
-			return 3;
-		}
-		else if(total >= 4 && total <= 10)
-		{
-			return 5;
-		}
-		else if(total >= 11 && total <= 25)
-		{
-			return 10;
-		}
-		else if(total >= 26 && total <= 50)
-		{
-			return 20;
-		}
-		else if(total >= 51 && total <= 100)
-		{
-			return 30;
-		}
-		else if(total >= 101 && total <= 200)
-		{
-			return 40;
-		}
-		else if(total >= 201)
-		{
-			return 50;
-		}
-	}
-	
-	return 1;
-}
-
 public Native_GetPoints(Handle:plugin, numParams)
 {
 	return g_iCurrentPoints[GetNativeCell(1)];
@@ -2640,12 +2311,33 @@ public Native_GetPointRank(Handle:plugin, numParams)
 
 public Native_SetPoints(Handle:plugin, numParams)
 {
-	g_iCurrentPoints[GetNativeCell(1)] = GetNativeCell(2);
+	new client = GetNativeCell(1);
+	new points = GetNativeCell(2);
+	
+	new old_points = g_iCurrentPoints[client];
+	
+	g_iCurrentPoints[client] = points;
+        
+	// Forward points edit by raska
+	Call_StartForward(g_timerSetPointsForward);
+	Call_PushCell(client);
+	Call_PushCell(g_iCurrentPoints[client]);
+	Call_PushCell(old_points);
+	Call_Finish();
 }
 
 public Native_AddPoints(Handle:plugin, numParams)
 {
-	g_iCurrentPoints[GetNativeCell(1)] += GetNativeCell(2);
+	new client = GetNativeCell(1);
+	new points = GetNativeCell(2);
+	g_iCurrentPoints[client] += points;
+        
+	// Forward points edit by raska
+	Call_StartForward(g_timerGainPointsForward);
+	Call_PushCell(client);
+	Call_PushCell(g_iCurrentPoints[client]);
+	Call_PushCell(points);
+	Call_Finish();
 }
 
 public Native_RemovePoints(Handle:plugin, numParams)
@@ -2656,12 +2348,51 @@ public Native_RemovePoints(Handle:plugin, numParams)
 	g_iCurrentPoints[client] -= points;
 	
 	if(g_iCurrentPoints[client] < 0) g_iCurrentPoints[client] = 0;
+        
+	// Forward points edit by raska
+	Call_StartForward(g_timerLostPointsForward);
+	Call_PushCell(client);
+	Call_PushCell(g_iCurrentPoints[client]);
+	Call_PushCell(points);
+	Call_Finish();
 }
 
 public Native_SavePoints(Handle:plugin, numParams)
 {
 	SavePoints(GetNativeCell(1));
 }
+
+public Native_RefreshPoints(Handle:plugin, numParams)
+{
+	new client = GetNativeCell(1);
+	
+	decl String:sQuery[192];
+	if(IsClientInGame(client) && g_bAuthed[client] && !IsFakeClient(client))
+	{
+		g_bShowConnectMsg[client] = false;
+		FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
+		if(g_iEnabled == 2)
+			PrintToDebug("CallBack_Creation(%N): Issuing Query `%s`", client, sQuery);
+		SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(client), DBPrio_Low);
+	}
+}
+
+public Native_RefreshPointsAll(Handle:plugin, numParams)
+{
+	decl String:sQuery[192];
+	for (new i = 1; i <= MaxClients; i++)
+	{
+		if(IsClientInGame(i) && g_bAuthed[i] && !IsFakeClient(i))
+		{
+			g_bShowConnectMsg[i] = false;
+			FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[i]);
+			if(g_iEnabled == 2)
+				PrintToDebug("CallBack_Creation(%N): Issuing Query `%s`", i, sQuery);
+			SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(i), DBPrio_Low);
+		}
+	}
+}
+
 
 stock bool:Client_HasAdminFlags(client, flags=ADMFLAG_GENERIC)
 {

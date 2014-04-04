@@ -3,46 +3,47 @@
 #endif
 #define _timer_mapzones_included
 
+// 38 zones types
 enum MapZoneType
 {
-    ZtStart,
-    ZtEnd,
-    ZtStop,
-    ZtRestart,
-    ZtLast,
-    ZtNext,
-	ZtLevel,
-    ZtBonusStart,
-    ZtBonusEnd,
-    ZtBonusLevel,
-    ZtNPC_Next,
-	ZtBlock,
-	ZtLimitSpeed,
-	ZtPlayerClip, //buggy
-	ZtLongjump,
-	ZtBooster,
-	ZtFullBooster,
-	ZtArena,
-	ZtBounceBack, //buggy
-	ZtJail,
-	ZtPushUp,
-	ZtBulletTime,
-	ZtNoGravityOverwrite,
-	ZtNPC_Next_Double,
-	ZtNoBoost,
-	ZtRestartNormalTimer,
-	ZtRestartBonusTimer,
-	ZtShortEnd,
-	ZtPushNorth,
-	ZtPushSouth,
-	ZtPushWest,
-	ZtPushEast,
-	ZtPushDown,
-	ZtAuto,
-	ZtNoAuto,
-	ZtHover,
-	ZtReset,
-	ZtFreeStyle
+    ZtStart, //0
+    ZtEnd, //1
+    ZtStop, //2
+    ZtRestart, //3
+    ZtLast, //4
+    ZtNext, //5
+	ZtLevel, //6
+    ZtBonusStart, //7
+    ZtBonusEnd, //8
+    ZtBonusLevel, //9
+    ZtNPC_Next, //10
+	ZtBlock, //11
+	ZtLimitSpeed, //12
+	ZtPlayerClip, //13
+	ZtLongjump, //14
+	ZtBooster, //15
+	ZtFullBooster, //16
+	ZtArena, //17
+	ZtBounceBack, //18
+	ZtJail, //19
+	ZtPushUp, //20
+	ZtBulletTime, //21
+	ZtNoGravityOverwrite, //22
+	ZtNPC_Next_Double, //23
+	ZtNoBoost, //24
+	ZtRestartNormalTimer, //25
+	ZtRestartBonusTimer, //26
+	ZtShortEnd, //27
+	ZtPushNorth, //28
+	ZtPushSouth, //29
+	ZtPushWest, //30
+	ZtPushEast, //31
+	ZtPushDown, //32
+	ZtAuto, //33
+	ZtNoAuto, //34
+	ZtHover, //35
+	ZtReset, //36
+	ZtFreeStyle //37
 }
 
 /* Forwards */

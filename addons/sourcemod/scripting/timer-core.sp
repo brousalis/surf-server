@@ -247,7 +247,7 @@ public OnClientAuthorized(client, const String:auth[])
 				SQL_TQuery(g_hSQL, UpdateNameCallback, query, _, DBPrio_Normal);
 			}
 		}
-		else if(!IsFakeClient(client)) KickClient(client, "NO VALID STEAM ID");
+		else if(!IsFakeClient(client) && IsClientSourceTV(client)) KickClient(client, "NO VALID STEAM ID");
 	}
 }
 
@@ -876,15 +876,6 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	}
 }
 
-public DeleteRecordCallback(Handle:owner, Handle:hndl, const String:error[], any:client)
-{
-	if (hndl == INVALID_HANDLE)
-	{
-		Timer_LogError("SQL Error on DeleteRecord: %s", error);
-		return;
-	}
-}
-
 public UpdateNameCallback(Handle:owner, Handle:hndl, const String:error[], any:param1)
 {
 	if (hndl == INVALID_HANDLE)
@@ -979,7 +970,6 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 	else if (StrEqual(driver, "sqlite", false))
 	{
 		SetFailState("Timer ERROR: SqLite is not supported, please check you databases.cfg and use MySQL driver");
-		//SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `round` (`id` INTEGER PRIMARY KEY, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` INTEGER NOT NULL, `jumpacc` float NOT NULL, `strafes` INTEGER NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `flashbangcount` INTEGER NOT NULL, `rank` INTEGER NOT NULL, `replaypath` varchar(32) NOT NULL, `finishcount` INTEGER NOT NULL, `physicsdifficulty` INTEGER NOT NULL, `name` varchar(64) NOT NULL, `fpsmax` INTEGER NOT NULL), `bonus` INTEGER NOT NULL, date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 	}
 	
 	g_reconnectCounter = 1;

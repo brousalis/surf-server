@@ -1,0 +1,3 @@
+Timer-Rankings Points Lite
+
+This plugin is and extension for timer-rankings module to give points on map finish.

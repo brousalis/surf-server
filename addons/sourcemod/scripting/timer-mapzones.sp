@@ -1149,12 +1149,18 @@ public MapZoneChangedCallback(Handle:owner, Handle:hndl, const String:error[], a
 	LoadMapZones();
 }
 
-LoadMapZones()
+bool:LoadMapZones()
 {
-	decl String:query[512];
-	FormatEx(query, sizeof(query), "SELECT * FROM mapzone WHERE map = '%s' ORDER BY level_id ASC;", g_currentMap);
-	//Format(query, sizeof(query), "SELECT * FROM mapzone WHERE map = '%s' ORDER BY type,name * 1;", g_currentMap);
-	SQL_TQuery(g_hSQL, LoadMapZonesCallback, query, _, DBPrio_High);	
+	if (g_hSQL != INVALID_HANDLE)
+	{
+		decl String:query[512];
+		FormatEx(query, sizeof(query), "SELECT * FROM mapzone WHERE map = '%s' ORDER BY level_id ASC;", g_currentMap);
+		SQL_TQuery(g_hSQL, LoadMapZonesCallback, query, _, DBPrio_High);
+		
+		return true;
+	}
+	
+	return false;
 }
 
 
@@ -3120,7 +3126,7 @@ stock Tele_Zone(client, zone)
 	new Float:center[3];
 	center[0] = (g_mapZones[zone][Point1][0] + g_mapZones[zone][Point2][0]) / 2.0;
 	center[1] = (g_mapZones[zone][Point1][1] + g_mapZones[zone][Point2][1]) / 2.0;
-	center[2] = (g_mapZones[zone][Point1][2] + g_mapZones[zone][Point2][2]) / 2.0;
+	center[2] = g_mapZones[zone][Point1][2] + 1.0;
 	
 	if(IsClientInGame(client)) 
 	{
