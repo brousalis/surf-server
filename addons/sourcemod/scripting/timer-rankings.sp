@@ -2197,7 +2197,7 @@ public Action:Timer_AuthClient(Handle:timer, any:userid)
 			if(g_hDatabase != INVALID_HANDLE && !g_bInitalizing)
 				return Plugin_Continue;
 
-			g_sAuth[client][6] = '0';
+			//g_sAuth[client][6] = '0';
 			if(!g_bLoadedSQL[client])
 			{
 				decl String:sQuery[192];
