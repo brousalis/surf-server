@@ -237,7 +237,6 @@ public OnPluginStart()
 	{
 		RegConsoleCmd("sm_start", Command_Start);
 		RegConsoleCmd("sm_s", Command_Start);
-		RegConsoleCmd("sm_t", Command_Start);
 		
 		RegConsoleCmd("sm_bonusrestart", Command_BonusRestart);
 		RegConsoleCmd("sm_bonusstart", Command_BonusRestart);
@@ -3374,6 +3373,17 @@ public Action:Command_Start(client, args)
 {
 	if(!g_Settings[StartEnable])
 		return Plugin_Handled;
+		
+	decl String:slevel[64];
+	GetCmdArg(1, slevel, sizeof(slevel));
+	new level = StringToInt(slevel);
+	
+	if(level > 0)
+	{
+		Timer_Reset(client);
+		Tele_Level(client, level);
+		return Plugin_Handled;
+	}
 	
 	if(!IsClientInGame(client)) 
 		return Plugin_Handled;
