@@ -2048,7 +2048,7 @@ UpdateHUD_CSGO(client)
 		}
 		else Format(centerText, sizeof(centerText), "%sTime: Stopped", centerText);
 
-		if(hudSettings[Jumps][client]) Format(centerText, sizeof(centerText), "%s | ", centerText);
+		if(hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable]) Format(centerText, sizeof(centerText), "%s | ", centerText);
 	}
 
 	if ((hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable]) && (hudSettings[JumpAcc][client] && g_Settings[HUDJumpAccEnable]))
