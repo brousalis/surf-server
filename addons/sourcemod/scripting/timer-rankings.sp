@@ -2241,7 +2241,7 @@ ErrorCheck(Handle:owner, const String:error[], const String:callback[] = "")
 
 stock PrintToDebug(const String:format[], any:...)
 {
-	decl String:sBuffer[1024];
+	decl String:sBuffer[2048];
 	VFormat(sBuffer, sizeof(sBuffer), format, 2);
 
 	LogToFile(g_sPluginLog, sBuffer);
