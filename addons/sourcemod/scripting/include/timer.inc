@@ -37,8 +37,8 @@
 //Colors Includes
 #if defined LEGACY_COLORS
 #include <colors>			//https://forums.alliedmods.net/showpost.php?p=1883578&postcount=311
-#define PLUGIN_PREFIX " {lightred}[{green}Timer{lightred}] %t"
-#define PLUGIN_PREFIX2 " {lightred}[{green}Timer{lightred}]"
+#define PLUGIN_PREFIX " {lightred}[{green}Timer{lightred}]{green} %t"
+#define PLUGIN_PREFIX2 " {lightred}[{green}Timer{lightred}]{green}"
 #else
 #include <morecolors>		//https://www.doctormckay.com/download/scripting/include/morecolors.inc
 #define PLUGIN_PREFIX "{green}[Timer] %t"
