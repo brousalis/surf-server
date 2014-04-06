@@ -9,7 +9,6 @@
 #include <timer-config_loader.sp>
 
 //Max. number of records per style to cache
-#define MAX_CACHE 1000
 
 /**
  * Global Enums

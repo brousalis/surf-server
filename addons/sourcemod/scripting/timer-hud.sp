@@ -1354,6 +1354,12 @@ UpdateHUD_CSS(client)
 	
 	new nprank = (prank * -1);
 	
+	new String:sRankTotal[32];
+	Format(sRankTotal, sizeof(sRankTotal), "%d", RankTotal);
+	
+	if(RankTotal >= MAX_CACHE) 
+		Format(sRankTotal, sizeof(sRankTotal), "%s+", sRankTotal);
+	
 	if(client == iClientToShow)
 	{
 		if(g_Settings[HUDUseMVPStars] > 0 && points100 > 0)
@@ -1555,7 +1561,12 @@ UpdateHUD_CSS(client)
 	if(ranked)
 	{
 		if (hudSettings[Rank][client] && g_Settings[HUDRankEnable])
-			Format(hintText, sizeof(hintText), "%sRank: %d / %d\n", hintText, rank, RankTotal);
+		{
+			if(rank < 1)
+				Format(centerText, sizeof(centerText), "%sRank: -/%s", hintText, sRankTotal);
+			else
+				Format(centerText, sizeof(centerText), "%sRank: %d/%s", hintText, rank, sRankTotal);
+		}
 		
 		if (hudSettings[PB][client] && g_Settings[HUDPBEnable])
 			Format(hintText, sizeof(hintText), "%sBest Time: %s\n", hintText, bestbuffer, bestJumps);
@@ -1931,6 +1942,12 @@ UpdateHUD_CSGO(client)
 	
 	new nprank = (prank * -1);
 	
+	new String:sRankTotal[32];
+	Format(sRankTotal, sizeof(sRankTotal), "%d", RankTotal);
+	
+	if(RankTotal >= MAX_CACHE) 
+		Format(sRankTotal, sizeof(sRankTotal), "%s+", sRankTotal);
+	
 	if(client == iClientToShow)
 	{
 		if(g_Settings[HUDUseMVPStars] > 0 && points100 > 0)
@@ -2052,9 +2069,9 @@ UpdateHUD_CSGO(client)
 		if (hudSettings[Rank][client])
 		{
 			if(rank < 1)
-				Format(centerText, sizeof(centerText), "%sRank: -/%d", centerText, RankTotal);
+				Format(centerText, sizeof(centerText), "%sRank: -/%s", centerText, sRankTotal);
 			else
-				Format(centerText, sizeof(centerText), "%sRank: %d/%d", centerText, rank, RankTotal);
+				Format(centerText, sizeof(centerText), "%sRank: %d/%s", centerText, rank, sRankTotal);
 			
 			if(hudSettings[PB][client]) Format(centerText, sizeof(centerText), "%s | ", centerText);
 		}
