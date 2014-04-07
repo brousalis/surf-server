@@ -5,6 +5,8 @@
 #include <timer-strafes>
 #include <timer-mapzones>
 
+#define RAYTRACE_Z_DELTA -0.1
+
 enum PlayerState
 {
 	bool:bOn,
@@ -65,9 +67,7 @@ public bool:WorldFilter(entity, mask)
 		return false;
 	
 	return true;
-}
-
-#define RAYTRACE_Z_DELTA -0.1
+} 
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {

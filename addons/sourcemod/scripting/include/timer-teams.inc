@@ -9,8 +9,8 @@ forward OnCoopConfirm(player1,player2);
 forward OnCoopWin(player1,player2);
 forward OnCoopForceEnd(player1,player2);
 
-forward OnChallengeStart(client,mate);
-forward OnChallengeConfirm(client,mate);
+forward OnChallengeStart(client, mate);
+forward OnChallengeConfirm(client, mate, bet);
 forward OnChallengeWin(winner,loser);
 forward OnChallengeForceEnd(winner,loser);
 

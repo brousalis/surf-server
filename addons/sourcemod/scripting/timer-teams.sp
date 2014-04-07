@@ -9,7 +9,6 @@
 #include <timer-teams>
 
 #include <timer-mapzones>
-#include <timer-rankings>
 #include <timer-logging>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
@@ -26,8 +25,8 @@ new g_iCoopCountdown[MAXPLAYERS+1];
 
 new bool:g_bClientChallenge[MAXPLAYERS+1];
 new g_iChallengeCountdown[MAXPLAYERS+1];
+
 new g_iBet[MAXPLAYERS+1];
-new g_iBalance[MAXPLAYERS+1];
 
 new Float:g_fIgnoreTime[MAXPLAYERS+1];
 new Float:g_fStartTime[MAXPLAYERS+1];
@@ -84,7 +83,7 @@ public OnPluginStart()
 	HookConVarChange(Sound_ChallengeStart, Action_OnSettingsChange);
 	HookConVarChange(Sound_TimerOwned, Action_OnSettingsChange);
 
-	g_OnChallengeConfirm = CreateGlobalForward("OnChallengeConfirm", ET_Event, Param_Cell,Param_Cell,Param_Cell);
+	g_OnChallengeConfirm = CreateGlobalForward("OnChallengeConfirm", ET_Event, Param_Cell,Param_Cell,Param_Cell,Param_Cell);
 	g_OnChallengeStart = CreateGlobalForward("OnChallengeStart", ET_Event, Param_Cell,Param_Cell);
 	g_OnChallengeWin = CreateGlobalForward("OnChallengeWin", ET_Event, Param_Cell,Param_Cell);
 	g_OnChallengeForceEnd = CreateGlobalForward("OnChallengeForceEnd", ET_Event, Param_Cell,Param_Cell);
@@ -113,7 +112,6 @@ public OnMapStart()
 	for (new i = 1; i <= MaxClients; i++)
 	{
 		g_clientTeammate[i] = 0;
-		g_iBalance[i] = 0;
 		g_fIgnoreTime[i] = 0.0;
 		g_fStartTime[i] = 0.0;
 	}
@@ -225,8 +223,6 @@ public Action:Command_Challenge(client, args)
 	if(!client)
 		return Plugin_Handled;
 	
-	new points = Timer_GetPoints(client);
-	
 	if(g_bClientCoop[client])
 	{
 		CPrintToChat(client, "%s You are already challenging.", PLUGIN_PREFIX2);
@@ -235,31 +231,23 @@ public Action:Command_Challenge(client, args)
 	{
 		CPrintToChat(client, "%s You are already in coop mode.", PLUGIN_PREFIX2);
 	}
-	else if(points < g_Settings[ChallengeMinPoints])
-	{
-		CPrintToChat(client, "%s You need at least %d points to challenge someone.", PLUGIN_PREFIX2, g_Settings[ChallengeMinPoints]);
-	}
-	else if(g_iBalance[client] < g_Settings[ChallengeMapMaxLoose])
-	{
-		CPrintToChat(client, "%s You have lost to much points this map.", PLUGIN_PREFIX2);
-	}
 	else 
 	{
 		new Handle:menu = CreateMenu(Handle_PointSelectMenu);
 		
-		SetMenuTitle(menu, "Select bet [you have %d points]", points);
+		SetMenuTitle(menu, "Select bet");
 		
 		decl String:buffer[32];
 		FormatEx(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet1]);
-		AddMenuItem(menu, buffer, buffer);
+		AddMenuItem(menu, buffer, "Very Low");
 		FormatEx(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet2]);
-		AddMenuItem(menu, buffer, buffer);
+		AddMenuItem(menu, buffer, "Low");
 		FormatEx(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet3]);
-		AddMenuItem(menu, buffer, buffer);
+		AddMenuItem(menu, buffer, "Mid");
 		FormatEx(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet4]);
-		AddMenuItem(menu, buffer, buffer);
+		AddMenuItem(menu, buffer, "Pro");
 		FormatEx(buffer, sizeof(buffer), "%d", g_Settings[ChallengeBet5]);
-		AddMenuItem(menu, buffer, buffer);
+		AddMenuItem(menu, buffer, "Match");
 		
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
 	}
@@ -315,25 +303,13 @@ Menu_SelectChallengeMate(client)
 			continue;
 		}
 		
-		new points = Timer_GetPoints(i);
-		
-		if(points <= g_Settings[ChallengeMinPoints])
-		{
-			continue;
-		}
-		
-		if(g_iBalance[i] <= g_Settings[ChallengeMapMaxLoose])
-		{
-			continue;
-		}
-		
 		if(GetGameTime() < g_fIgnoreTime[i])
 		{
 			continue;
 		}
 		
 		decl String:name2[32];
-		FormatEx(name2, sizeof(name2), "%N [%d points]", i, points);
+		FormatEx(name2, sizeof(name2), "%N", i);
 		decl String:zone2[32];
 		FormatEx(zone2,sizeof(zone2),"%d", i);
 		AddMenuItem(menu, zone2, name2);
@@ -365,9 +341,9 @@ public MenuHandlerChallenge(Handle:menu, MenuAction:action, creator, param2)
 				new Handle:menu2 = CreateMenu(MenuHandlerChallengeConfirm);
 				if(g_Settings[MultimodeEnable])
 				{
-					SetMenuTitle(menu2, "Confirm Challenge with %N on mode: %s for %d points.", creator, g_Physics[Timer_GetMode(creator)][ModeName], g_iBet[creator]);
+					SetMenuTitle(menu2, "Confirm Challenge with %N on mode: %s.", creator, g_Physics[Timer_GetMode(creator)][ModeName]);
 				}
-				else SetMenuTitle(menu2, "Confirm Challenge with %N for %d pointss.", creator, g_iBet[creator]);
+				else SetMenuTitle(menu2, "Confirm Challenge with %N.", creator);
 			
 				decl String:name[32];
 				FormatEx(name, sizeof(name),"%d", creator);
@@ -409,12 +385,11 @@ public MenuHandlerChallengeConfirm(Handle:menu, MenuAction:action, client, param
 			{
 				g_iBet[client] = g_iBet[target];
 				StartChallenge(client, target);
-				CPrintToChatAll("%s %N has confirmed a challenge with %N for %d points.", PLUGIN_PREFIX2, client, target, g_iBet[target]);
 				
 				Call_StartForward(g_OnChallengeConfirm);
 				Call_PushCell(client);
 				Call_PushCell(target);
-				Call_PushCell(found);
+				Call_PushCell(g_iBet[target]);
 				Call_Finish();
 			}
 		}
@@ -460,7 +435,7 @@ public Action:ChallengeCountdown(Handle:timer, any:client)
 	if(g_iChallengeCountdown[client] <= 0)
 	{
 		PrintCenterText(client, "GO GO GO !!!");
-		CPrintToChat(client, "%s You have %ds to abort without loosing points.", PLUGIN_PREFIX2, RoundToFloor(g_Settings[ChallengeAbortTime]));
+		CPrintToChat(client, "%s You have %ds to abort.", PLUGIN_PREFIX2, RoundToFloor(g_Settings[ChallengeAbortTime]));
 		EmitSoundToClient(client, SND_CHALLENGE_START);
 		SetEntityMoveType(client, MOVETYPE_WALK);
 		new mate = Timer_GetClientTeammate(client);
@@ -686,18 +661,6 @@ public Action:EndChallenge(client, force)
 			
 			FormatEx(pname, sizeof(pname), "%N", client);
 			FormatEx(pname2, sizeof(pname2), "%N", mate);
-			
-			//Points
-			Timer_AddPoints(client, g_iBet[client]);
-			Timer_SavePoints(client);
-			Timer_RemovePoints(mate, g_iBet[client]);
-			Timer_SavePoints(mate);
-			
-			g_iBalance[client] += g_iBet[client];
-			g_iBalance[mate] -= g_iBet[client];
-			
-			//Print info
-			CPrintToChatAll("%s %N has beaten %N and has taken %d points.", PLUGIN_PREFIX2, client, mate, g_iBet[client]);
 			
 			//Play sounds
 			EmitSoundToClient(client, SND_TIMER_OWNED);

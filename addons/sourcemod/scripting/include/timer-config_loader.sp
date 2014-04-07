@@ -97,8 +97,6 @@ enum TimerSettings
 	bool:ChallengeEnable,
 	Float:ChallengeIgnoreCooldown,
 	Float:ChallengeAbortTime,
-	ChallengeMinPoints,
-	ChallengeMapMaxLoose,
 	ChallengeBet1,
 	ChallengeBet2,
 	ChallengeBet3,
@@ -371,8 +369,6 @@ stock LoadTimerSettings()
 			g_Settings[ChallengeEnable] = bool:KvGetNum(hKv, "challenge_enable", 0);
 			g_Settings[ChallengeIgnoreCooldown] = KvGetFloat(hKv, "challenge_ignore_cooldown", 60.0);
 			g_Settings[ChallengeAbortTime] = KvGetFloat(hKv, "challenge_abort_time", 10.0);
-			g_Settings[ChallengeMinPoints] = KvGetNum(hKv, "challenge_min_points", 1000);
-			g_Settings[ChallengeMapMaxLoose] = KvGetNum(hKv, "challenge_map_max_lose", -500);
 			g_Settings[ChallengeBet1] = KvGetNum(hKv, "challenge_bet_option_1", 25);
 			g_Settings[ChallengeBet2] = KvGetNum(hKv, "challenge_bet_option_2", 50);
 			g_Settings[ChallengeBet3] = KvGetNum(hKv, "challenge_bet_option_3", 75);
