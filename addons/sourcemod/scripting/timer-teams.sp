@@ -46,6 +46,8 @@ new Handle:g_OnCoopConfirm;
 new Handle:g_OnCoopWin;
 new Handle:g_OnCoopForceEnd;
 
+new Float:g_fLastRun[MAXPLAYERS+1];
+
 public Plugin:myinfo =
 {
     name        = "[Timer] Teams",
@@ -285,7 +287,7 @@ Menu_SelectChallengeMate(client)
 		
 		if(IsFakeClient(i))
 		{
-			continue;
+			//continue;
 		}
 		
 		if(client == i)
@@ -334,6 +336,18 @@ public MenuHandlerChallenge(Handle:menu, MenuAction:action, creator, param2)
 		decl String:info[100], String:info2[100];
 		new bool:found = GetMenuItem(menu, param2, info, sizeof(info), _, info2, sizeof(info2));
 		new client = StringToInt(info);
+		
+		if(IsFakeClient(client))
+		{
+			StartChallenge(client, creator);
+			
+			Call_StartForward(g_OnChallengeConfirm);
+			Call_PushCell(client);
+			Call_PushCell(creator);
+			Call_PushCell(g_iBet[creator]);
+			Call_Finish();
+		}
+		
 		if(found)
 		{
 			if(IsClientInGame(client))
@@ -412,6 +426,9 @@ StartChallenge(client, target)
 	
 	g_iChallengeCountdown[client] = 5;
 	g_iChallengeCountdown[target] = 5;
+	
+	g_fLastRun[client] = 0.0;
+	g_fLastRun[client] = 0.0;
 	
 	Timer_SetBonus(client, 0);
 	Timer_SetBonus(target, 0);
@@ -631,11 +648,13 @@ public Action:CoopCountdown(Handle:timer, any:client)
 public Action:EndChallenge(client, force)
 {
 	new mate = Timer_GetClientTeammate(client);
+	new Float:fTime = GetGameTime();
+	new bool:fake_death = false;
 	
 	if(g_bClientChallenge[client] && g_bClientChallenge[mate])
 	{
 		//Failed?
-		if (force == 1)
+		if (force == 1 && fTime-g_fLastRun[client] > 1.0)
 		{
 			Call_StartForward(g_OnChallengeForceEnd);
 			Call_PushCell(client);
@@ -666,24 +685,13 @@ public Action:EndChallenge(client, force)
 			EmitSoundToClient(client, SND_TIMER_OWNED);
 			EmitSoundToClient(mate, SND_TIMER_OWNED);
 			
-			Timer_Reset(mate);
-			Timer_Reset(client);
-			
 			//Forward
 			Call_StartForward(g_OnChallengeWin);
 			Call_PushCell(client);
 			Call_PushCell(mate);
 			Call_Finish();
 			
-			//Fake death event
-			new Handle:event = CreateEvent("player_death");
-			if (event != INVALID_HANDLE)
-			{
-				SetEventInt(event, "userid", GetClientUserId(mate));
-				SetEventInt(event, "attacker", GetClientUserId(client));
-				SetEventString(event, "weapon", "weapon_challenge");
-				FireEvent(event, false);
-			}
+			fake_death = true;
 		}
 	}
 	
@@ -698,6 +706,23 @@ public Action:EndChallenge(client, force)
 	//Reset hide
 	Timer_SetClientHide(client, 0);
 	Timer_SetClientHide(mate, 0);
+	
+	g_fLastRun[client] = fTime;
+	
+	if(fake_death)
+	{
+		//Fake death event
+		new Handle:event = CreateEvent("player_death");
+		if (event != INVALID_HANDLE)
+		{
+			SetEventInt(event, "userid", GetClientUserId(mate));
+			SetEventInt(event, "attacker", GetClientUserId(client));
+			SetEventString(event, "weapon", "weapon_challenge");
+			FireEvent(event, false);
+		}
+	}
+	
+	Timer_Reset(client);
 }
 
 public Action:EndCoop(client, force)
