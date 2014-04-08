@@ -407,34 +407,23 @@ public OnAdminMenuReady(Handle:topmenu)
 	if (topmenu == hTopMenu) {
 		return;
 	}
- 
+	
 	// Save the Handle
 	hTopMenu = topmenu;
-		
-	if ((oMapZoneMenu = FindTopMenuCategory(topmenu, "Timer Management")) == INVALID_TOPMENUOBJECT)
+	
+	if ((oMapZoneMenu = FindTopMenuCategory(topmenu, "Timer Records")) == INVALID_TOPMENUOBJECT)
 	{
-		oMapZoneMenu = AddToTopMenu(hTopMenu,
-			"Timer Management",
-			TopMenuObject_Category,
-			AdminMenu_CategoryHandler,
-			INVALID_TOPMENUOBJECT);
+		oMapZoneMenu = AddToTopMenu(hTopMenu,"Timer Records",TopMenuObject_Category,AdminMenu_CategoryHandler,INVALID_TOPMENUOBJECT);
 	}
 		
-	AddToTopMenu(hTopMenu, 
-		"timer_delete",
-		TopMenuObject_Item,
-		AdminMenu_DeleteRecord,
-		oMapZoneMenu,
-		"timer_delete",
-		ADMFLAG_RCON);
+	AddToTopMenu(hTopMenu, "timer_delete",TopMenuObject_Item,AdminMenu_DeleteRecord,
+	oMapZoneMenu,"timer_delete",ADMFLAG_RCON);
 		
-	AddToTopMenu(hTopMenu, 
-		"timer_deletemaprecords",
-		TopMenuObject_Item,
-		AdminMenu_DeleteMapRecords,
-		oMapZoneMenu,
-		"timer_deletemaprecords",
-		ADMFLAG_RCON);		
+	AddToTopMenu(hTopMenu, "timer_deletemaprecords",TopMenuObject_Item,AdminMenu_DeleteMapRecords,
+	oMapZoneMenu,"timer_deletemaprecords",ADMFLAG_RCON);
+	
+	AddToTopMenu(hTopMenu, "sm_reloadcache", TopMenuObject_Item,AdminMenu_ReloadCache, 
+	oMapZoneMenu, "sm_reloadcache",ADMFLAG_CHANGEMAP);
 }
 
 public AdminMenu_CategoryHandler(Handle:topmenu, 
@@ -445,9 +434,9 @@ public AdminMenu_CategoryHandler(Handle:topmenu,
 			maxlength)
 {
 	if (action == TopMenuAction_DisplayTitle) {
-		FormatEx(buffer, maxlength, "%t", "Timer Management");
+		FormatEx(buffer, maxlength, "Timer Records");
 	} else if (action == TopMenuAction_DisplayOption) {
-		FormatEx(buffer, maxlength, "%t", "Timer Management");
+		FormatEx(buffer, maxlength, "Timer Records");
 	}
 }
 
@@ -459,13 +448,47 @@ public AdminMenu_DeleteMapRecords(Handle:topmenu,
 			maxlength)
 {
 	if (action == TopMenuAction_DisplayOption) {
-		FormatEx(buffer, maxlength, "%t", "Delete Map Records");
+		FormatEx(buffer, maxlength, "Delete Records");
 	} else if (action == TopMenuAction_SelectOption) {
 		decl String:map[32];
 		GetCurrentMap(map, sizeof(map));
 		
 		if(param == 0) DeleteMapRecords(map);
 		else DeleteMapRecordsMenu(param);
+	}
+}
+
+public AdminMenu_ReloadCache(Handle:topmenu, 
+			TopMenuAction:action,
+			TopMenuObject:object_id,
+			client,
+			String:buffer[],
+			maxlength)
+{
+	if (action == TopMenuAction_DisplayOption) 
+	{
+		FormatEx(buffer, maxlength, "Refresh Cache");
+	} else if (action == TopMenuAction_SelectOption) 
+	{
+		CPrintToChatAll("%s Worldrecord cache reloaded!", PLUGIN_PREFIX2);
+		RefreshCache();
+	}
+}
+
+public AdminMenu_DeleteRecord(Handle:topmenu, 
+			TopMenuAction:action,
+			TopMenuObject:object_id,
+			client,
+			String:buffer[],
+			maxlength)
+{
+	if (action == TopMenuAction_DisplayOption) 
+	{
+		FormatEx(buffer, maxlength, "Delete Single Record");
+	} else if (action == TopMenuAction_SelectOption) 
+	{
+		if(g_Settings[MultimodeEnable]) CreateAdminModeSelection(client);
+		else CreateAdminBonusSelection(client);
 	}
 }
 
@@ -504,23 +527,6 @@ public Handle_DeleteMapRecordsMenu(Handle:menu, MenuAction:action, client, itemN
 				DeleteMapRecords(map);
 			}
 		}
-	}
-}
-
-public AdminMenu_DeleteRecord(Handle:topmenu, 
-			TopMenuAction:action,
-			TopMenuObject:object_id,
-			client,
-			String:buffer[],
-			maxlength)
-{
-	if (action == TopMenuAction_DisplayOption) 
-	{
-		FormatEx(buffer, maxlength, "%t", "Delete Player Record");
-	} else if (action == TopMenuAction_SelectOption) 
-	{
-		if(g_Settings[MultimodeEnable]) CreateAdminModeSelection(client);
-		else CreateAdminBonusSelection(client);
 	}
 }
 

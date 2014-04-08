@@ -212,20 +212,18 @@ public OnPluginStart()
 	if (LibraryExists("adminmenu") && ((topmenu = GetAdminTopMenu()) != INVALID_HANDLE))
 	{
 		OnAdminMenuReady(topmenu);
-	}	
+	}
 	
-	RegAdminCmd("sm_zoneadmin", Command_Admin, ADMFLAG_RCON);
 	RegAdminCmd("sm_zoneadminmode", Command_LevelAdminMode, ADMFLAG_RCON);
 	RegAdminCmd("sm_zonename", Command_LevelName, ADMFLAG_RCON);
 	RegAdminCmd("sm_zoneid", Command_LevelID, ADMFLAG_RCON);
 	RegAdminCmd("sm_zonetype", Command_LevelType, ADMFLAG_RCON);
 	RegAdminCmd("sm_zonereload", Command_ReloadZones, ADMFLAG_SLAY);
 	RegAdminCmd("sm_npc_next", Command_NPC_Next, ADMFLAG_RCON);
+	RegAdminCmd("sm_zone", Command_AdminZone, ADMFLAG_ROOT);
 	
 	RegConsoleCmd("sm_levels", Command_Levels);
 	RegConsoleCmd("sm_stage", Command_Levels);
-	
-	RegAdminCmd("sm_zone", Command_AdminZone, ADMFLAG_ROOT);
 	
 	if(g_Settings[RestartEnable])
 	{
@@ -910,50 +908,6 @@ public CacheSounds()
 	PrepareSound(SND_TIMER_START);
 }
 
-public OnAdminMenuReady(Handle:topmenu)
-{
-	// Block this from being called twice
-	if (topmenu == hTopMenu) {
-		return;
-	}
-	
-	// Save the Handle
-	hTopMenu = topmenu;
-	
-	if ((oMapZoneMenu = FindTopMenuCategory(topmenu, "Timer Management")) == INVALID_TOPMENUOBJECT)
-	{
-		oMapZoneMenu = AddToTopMenu(hTopMenu,
-		"Timer Management",
-		TopMenuObject_Category,
-		AdminMenu_CategoryHandler,
-		INVALID_TOPMENUOBJECT);
-	}
-	
-	AddToTopMenu(hTopMenu, 
-	"timer_mapzones_add",
-	TopMenuObject_Item,
-	AdminMenu_AddMapZone,
-	oMapZoneMenu,
-	"timer_mapzones_add",
-	ADMFLAG_RCON);
-	
-	AddToTopMenu(hTopMenu, 
-	"timer_mapzones_remove",
-	TopMenuObject_Item,
-	AdminMenu_RemoveMapZone,
-	oMapZoneMenu,
-	"timer_mapzones_remove",
-	ADMFLAG_RCON);
-	AddToTopMenu(hTopMenu, 
-	"timer_mapzones_remove_all",
-	TopMenuObject_Item,
-	AdminMenu_RemoveAllMapZones,
-	oMapZoneMenu,
-	"timer_mapzones_remove_all",
-	ADMFLAG_RCON);
-	
-}
-
 public PrepareSound(String: sound[MAX_FILE_LEN])
 {
 	decl String:fileSound[MAX_FILE_LEN];
@@ -1277,29 +1231,66 @@ public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], a
 	LoadMapZones();
 }
 
+public OnAdminMenuReady(Handle:topmenu)
+{
+	// Block this from being called twice
+	if (topmenu == hTopMenu) {
+		return;
+	}
+	
+	// Save the Handle
+	hTopMenu = topmenu;
+	
+	if ((oMapZoneMenu = FindTopMenuCategory(topmenu, "Timer Zones")) == INVALID_TOPMENUOBJECT)
+	{
+		oMapZoneMenu = AddToTopMenu(hTopMenu,"Timer Zones",TopMenuObject_Category,AdminMenu_CategoryHandler,INVALID_TOPMENUOBJECT);
+	}
+	
+	AddToTopMenu(hTopMenu, "timer_mapzones_add",TopMenuObject_Item,AdminMenu_AddMapZone,
+	oMapZoneMenu,"timer_mapzones_add",ADMFLAG_RCON);
+	
+	AddToTopMenu(hTopMenu, "timer_mapzones_remove",TopMenuObject_Item,AdminMenu_RemoveMapZone,
+	oMapZoneMenu,"timer_mapzones_remove",ADMFLAG_RCON);
+	
+	AddToTopMenu(hTopMenu, "timer_mapzones_remove_all",TopMenuObject_Item,AdminMenu_RemoveAllMapZones,
+	oMapZoneMenu,"timer_mapzones_remove_all",ADMFLAG_RCON);
+	
+	AddToTopMenu(hTopMenu, "sm_npc_next",TopMenuObject_Item,AdminMenu_NPC,
+	oMapZoneMenu,"sm_npc_next",ADMFLAG_RCON);
+	
+	AddToTopMenu(hTopMenu, "sm_zoneadminmode",TopMenuObject_Item,AdminMenu_AdminMode,
+	oMapZoneMenu,"sm_zoneadminmode",ADMFLAG_CHANGEMAP);
+	
+	AddToTopMenu(hTopMenu, "sm_zonereload",TopMenuObject_Item,AdminMenu_Reload,
+	oMapZoneMenu,"sm_zonereload",ADMFLAG_CHANGEMAP);
+	
+	AddToTopMenu(hTopMenu, "sm_zone",TopMenuObject_Item,AdminMenu_Teleport,
+	oMapZoneMenu,"sm_zone",ADMFLAG_CHANGEMAP);
+}
+
 public AdminMenu_CategoryHandler(Handle:topmenu, 
-TopMenuAction:action,
-TopMenuObject:object_id,
-param,
-String:buffer[],
-maxlength)
+			TopMenuAction:action,
+			TopMenuObject:object_id,
+			param,
+			String:buffer[],
+			maxlength)
 {
 	if (action == TopMenuAction_DisplayTitle) {
-		FormatEx(buffer, maxlength, "%t", "Timer Management");
+		FormatEx(buffer, maxlength, "Timer Zones");
 	} else if (action == TopMenuAction_DisplayOption) {
-		FormatEx(buffer, maxlength, "%t", "Timer Management");
+		FormatEx(buffer, maxlength, "Timer Zones");
 	}
 }
 
 public AdminMenu_AddMapZone(Handle:topmenu, 
-TopMenuAction:action,
-TopMenuObject:object_id,
-param,
-String:buffer[],
-maxlength)
+			TopMenuAction:action,
+			TopMenuObject:object_id,
+			param,
+			String:buffer[],
+			maxlength)
 {
 	if (action == TopMenuAction_DisplayOption) {
-		FormatEx(buffer, maxlength, "%t", "Add Map Zone");
+		FormatEx(buffer, maxlength, "Add Map Zone");
 	} else if (action == TopMenuAction_SelectOption) {
 		RestartMapZoneEditor(param);
 		g_mapZoneEditors[param][Step] = 1;
@@ -1308,33 +1299,103 @@ maxlength)
 }
 
 public AdminMenu_RemoveMapZone(Handle:topmenu, 
-TopMenuAction:action,
-TopMenuObject:object_id,
-param,
-String:buffer[],
-maxlength)
+			TopMenuAction:action,
+			TopMenuObject:object_id,
+			param,
+			String:buffer[],
+			maxlength)
 {
 	if (action == TopMenuAction_DisplayOption) {
-		FormatEx(buffer, maxlength, "%t", "Delete Map Zone");
+		FormatEx(buffer, maxlength, "Delete Zone");
 	} else if (action == TopMenuAction_SelectOption) {
 		DeleteMapZone(param);
 	}
 }
 
 public AdminMenu_RemoveAllMapZones(Handle:topmenu, 
-TopMenuAction:action,
-TopMenuObject:object_id,
-param,
-String:buffer[],
-maxlength)
+			TopMenuAction:action,
+			TopMenuObject:object_id,
+			param,
+			String:buffer[],
+			maxlength)
 {
 	if (action == TopMenuAction_DisplayOption) {
-		FormatEx(buffer, maxlength, "%t", "Delete All Map Zones");
+		FormatEx(buffer, maxlength, "Delete All Zones");
 	} else if (action == TopMenuAction_SelectOption) 
 	{
 		if(param == 0)
 			DeleteAllMapZones(param);
 		else DeleteMapZonesMenu(param);
+	}
+}
+
+public AdminMenu_NPC(Handle:topmenu, 
+			TopMenuAction:action,
+			TopMenuObject:object_id,
+			param,
+			String:buffer[],
+			maxlength)
+{
+	if (action == TopMenuAction_DisplayOption) {
+		FormatEx(buffer, maxlength, "Create NPC Teleporter");
+	} else if (action == TopMenuAction_SelectOption) 
+	{
+		CreateNPC(param, 0);
+	}
+}
+
+public AdminMenu_AdminMode(Handle:topmenu, 
+			TopMenuAction:action,
+			TopMenuObject:object_id,
+			param,
+			String:buffer[],
+			maxlength)
+{
+	if (action == TopMenuAction_DisplayOption) {
+		FormatEx(buffer, maxlength, "Toggl Admin Mode");
+	} else if (action == TopMenuAction_SelectOption) 
+	{
+		if(adminmode == 0)
+		{
+			CPrintToChatAll("%s Adminmode enabled!", PLUGIN_PREFIX2);
+			adminmode = 1;
+		}
+		else 
+		{
+			CPrintToChatAll("%s Adminmode disabled!", PLUGIN_PREFIX2);
+			adminmode = 0;
+		}
+	}
+}
+
+public AdminMenu_Reload(Handle:topmenu, 
+			TopMenuAction:action,
+			TopMenuObject:object_id,
+			param,
+			String:buffer[],
+			maxlength)
+{
+	if (action == TopMenuAction_DisplayOption) {
+		FormatEx(buffer, maxlength, "Zone Reload");
+	} else if (action == TopMenuAction_SelectOption) 
+	{
+		CPrintToChatAll("%s Zones Reloaded!", PLUGIN_PREFIX2);
+		LoadMapZones();
+	}
+}
+
+public AdminMenu_Teleport(Handle:topmenu, 
+			TopMenuAction:action,
+			TopMenuObject:object_id,
+			param,
+			String:buffer[],
+			maxlength)
+{
+	if (action == TopMenuAction_DisplayOption) {
+		FormatEx(buffer, maxlength, "Zone Teleport");
+	} else if (action == TopMenuAction_SelectOption) 
+	{
+		AdminZoneTeleport(param);
 	}
 }
 
@@ -3156,62 +3217,6 @@ public Action:Timer_StopSpeed(Handle:timer, any:client)
 	return Plugin_Stop;
 }
 
-
-public Action:Command_Admin(client, args)
-{
-	Menu_Admin(client);
-	
-	return Plugin_Handled;	
-}
-
-Menu_Admin(client)
-{
-	if (0 < client < MaxClients)
-	{
-		new Handle:menu = CreateMenu(Handle_Menu_Admin);
-		
-		SetMenuTitle(menu, "Mapzone Admin Commands");
-		
-		AddMenuItem(menu, "adminmode", "Toggle admin mode");
-		AddMenuItem(menu, "forcereload", "Reload zones");
-		AddMenuItem(menu, "help", "List more commands");
-		
-		
-		DisplayMenu(menu, client, MENU_TIME_FOREVER);
-	}
-}
-
-public Handle_Menu_Admin(Handle:menu, MenuAction:action, client, itemNum)
-{
-	if ( action == MenuAction_Select )
-	{
-		decl String:info[100], String:info2[100];
-		new bool:found = GetMenuItem(menu, itemNum, info, sizeof(info), _, info2, sizeof(info2));
-		if(found)
-		{
-			if(StrEqual(info, "adminmode"))
-			{
-				if(adminmode == 1) FakeClientCommand(client, "sm_zoneadminmode 0");
-				else FakeClientCommand(client, "sm_zoneadminmode 1");
-			}
-			if(StrEqual(info, "forcereload"))
-			{
-				FakeClientCommand(client, "sm_zonereload");
-			}
-			if(StrEqual(info, "help"))
-			{
-				PrintToChat(client, "Timer-Mapzone module admin commands:");
-				PrintToChat(client, "sm_zoneadminmode [0|1]");
-				PrintToChat(client, "sm_zoneid [id]");
-				PrintToChat(client, "sm_zonename [name]");
-				PrintToChat(client, "sm_maptier [tier]");
-				PrintToChat(client, "sm_zonetype [type]");
-				PrintToChat(client, "sm_zonereload");
-			}
-		}
-	}
-}
-
 public Action:Command_LevelAdminMode(client, args)
 {
 	if (args != 1)
@@ -3617,6 +3622,12 @@ bool:Client_BonusRestart(client)
 
 public Action:Command_AdminZone(client, args)
 {
+	AdminZoneTeleport(client);
+	return Plugin_Handled;
+}
+
+AdminZoneTeleport(client)
+{
 	new Handle:menu = CreateMenu(MenuHandlerAdminZone);
 	SetMenuTitle(menu, "Zone Selection");
 	
@@ -3632,8 +3643,6 @@ public Action:Command_AdminZone(client, args)
 	
 	SetMenuExitButton(menu, true);
 	DisplayMenu(menu, client, MENU_TIME_FOREVER);
-	
-	return Plugin_Handled;
 }
 
 public MenuHandlerAdminZone(Handle:menu, MenuAction:action, client, param2)
