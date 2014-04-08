@@ -666,8 +666,8 @@ public Action:EndChallenge(client, force)
 			EmitSoundToClient(client, SND_TIMER_OWNED);
 			EmitSoundToClient(mate, SND_TIMER_OWNED);
 			
-			//Record winner
-			//Timer_FinishRound(client, g_currentMap, time, jumps, mode, fpsmax, bonus);
+			Timer_Reset(mate);
+			Timer_Reset(client);
 			
 			//Forward
 			Call_StartForward(g_OnChallengeWin);

@@ -1230,6 +1230,8 @@ ApplyDifficulty(client)
 		//stop timer
 		Timer_Stop(client);
 		
+		SetEntityGravity(client, g_Physics[mode][ModeGravity]);
+		
 		//stop him
 		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, Float:{0.0,0.0,-100.0});
 		
