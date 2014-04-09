@@ -48,6 +48,8 @@ new Handle:g_OnCoopForceEnd;
 
 new Float:g_fLastRun[MAXPLAYERS+1];
 
+new bool:g_timerPhysics = false;
+
 public Plugin:myinfo =
 {
     name        = "[Timer] Teams",
@@ -71,6 +73,8 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public OnPluginStart()
 {
+	g_timerPhysics = LibraryExists("timer-physics");
+	
 	LoadPhysics();
 	LoadTimerSettings();
 	
@@ -116,6 +120,22 @@ public OnMapStart()
 		g_clientTeammate[i] = 0;
 		g_fIgnoreTime[i] = 0.0;
 		g_fStartTime[i] = 0.0;
+	}
+}
+
+public OnLibraryAdded(const String:name[])
+{
+	if (StrEqual(name, "timer-physics"))
+	{
+		g_timerPhysics = true;
+	}
+}
+
+public OnLibraryRemoved(const String:name[])
+{	
+	if (StrEqual(name, "timer-physics"))
+	{
+		g_timerPhysics = false;
 	}
 }
 
@@ -287,7 +307,7 @@ Menu_SelectChallengeMate(client)
 		
 		if(IsFakeClient(i))
 		{
-			//continue;
+			continue;
 		}
 		
 		if(client == i)
@@ -684,6 +704,20 @@ public Action:EndChallenge(client, force)
 			//Play sounds
 			EmitSoundToClient(client, SND_TIMER_OWNED);
 			EmitSoundToClient(mate, SND_TIMER_OWNED);
+			
+			new bool:enabled = false;
+			new jumps = 0;
+			new Float:time;
+			new fpsmax;
+			
+			if (Timer_GetClientTimer(client, enabled, time, jumps, fpsmax))
+			{
+				new difficulty = 0;
+				if (g_timerPhysics)
+					difficulty = Timer_GetMode(client);
+				
+				Timer_FinishRound(client, g_currentMap, time, jumps, difficulty, fpsmax, 0);
+			}
 			
 			//Forward
 			Call_StartForward(g_OnChallengeWin);

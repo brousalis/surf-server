@@ -41,8 +41,8 @@
 #define PLUGIN_PREFIX2 " {lightred}[{green}Timer{lightred}]{green}"
 #else
 #include <morecolors>		//https://www.doctormckay.com/download/scripting/include/morecolors.inc
-#define PLUGIN_PREFIX "{green}[Timer] %t"
-#define PLUGIN_PREFIX2 "{green}[Timer]"
+#define PLUGIN_PREFIX "{yellow}[Timer] {green}%t"
+#define PLUGIN_PREFIX2 "{yellow}[Timer]{green}"
 #endif
 
 //Max-Length
