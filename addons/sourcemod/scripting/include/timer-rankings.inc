@@ -8,6 +8,8 @@
 forward OnPlayerGainPoints(client, points, added);  
 forward OnPlayerLostPoints(client, points, removed);  
 forward OnPlayerSetPoints(client, points, old);  
+forward OnPlayerPointsLoaded(client, points);  
+forward OnPlayerRankLoaded(client, rank);  
 
 /* Natives */
 native Timer_GetPoints(client);

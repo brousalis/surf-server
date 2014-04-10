@@ -117,6 +117,8 @@ new Float:g_fKickTime[MAXPLAYERS + 1];
 new Handle:g_timerGainPointsForward;
 new Handle:g_timerLostPointsForward;
 new Handle:g_timerSetPointsForward;
+new Handle:g_timerPointsLoadedForward;
+new Handle:g_timerRankLoadedForward;
 
 public Plugin:myinfo =
 {
@@ -223,6 +225,8 @@ public OnPluginStart()
 	g_timerGainPointsForward = CreateGlobalForward("OnPlayerGainPoints", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	g_timerLostPointsForward = CreateGlobalForward("OnPlayerLostPoints", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	g_timerSetPointsForward = CreateGlobalForward("OnPlayerSetPoints", ET_Event, Param_Cell, Param_Cell, Param_Cell);
+	g_timerPointsLoadedForward = CreateGlobalForward("OnPlayerPointsLoaded", ET_Event, Param_Cell, Param_Cell);
+	g_timerRankLoadedForward = CreateGlobalForward("OnPlayerRankLoaded", ET_Event, Param_Cell, Param_Cell);
 	
 	if(g_iDisplayMethod < 0)
 	{
@@ -1258,6 +1262,11 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 			UpdateClientTag(client);
 		}
 	}
+		
+	Call_StartForward(g_timerPointsLoadedForward);
+	Call_PushCell(client);
+	Call_PushCell(g_iCurrentPoints[client]);
+	Call_Finish();
 }
 
 public CallBack_LoadRank(Handle:owner, Handle:hndl, const String:error[], any:userid)
@@ -1271,6 +1280,7 @@ public CallBack_LoadRank(Handle:owner, Handle:hndl, const String:error[], any:us
 	if(SQL_FetchRow(hndl))
 	{
 		g_iCurrentRank[client] = SQL_FetchInt(hndl, 0);
+		
 		if(g_iCurrentRank[client] > g_iHighestRank)
 			g_iCurrentIndex[client] = iOutside;
 		else
@@ -1290,6 +1300,11 @@ public CallBack_LoadRank(Handle:owner, Handle:hndl, const String:error[], any:us
 		g_iCurrentIndex[client] = iOutside;
 
 	g_bLoadedSQL[client] = true;
+		
+	Call_StartForward(g_timerRankLoadedForward);
+	Call_PushCell(client);
+	Call_PushCell(g_iCurrentRank[client]);
+	Call_Finish();
 
 	UpdateClientStars(client);
 	UpdateClientTag(client);

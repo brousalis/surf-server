@@ -1137,21 +1137,6 @@ public Action:Event_Reset(Handle:event, const String:name[], bool:dontBroadcast)
 	
 	g_iJumps[client] = 0;
 	
-	new mate;
-	if(g_timerMapzones) mate = Timer_GetClientTeammate(client);
-
-	if(g_timerMapzones) Timer_SetClientTeammate(client, 0, 1);
-	
-	if(mate > 0)
-	{
-		if(g_timerMapzones) Timer_SetClientTeammate(mate, 0, 1);
-		new xmate = Timer_GetClientTeammate(mate);
-		if(xmate > 0)
-		{
-			if(g_timerMapzones) Timer_SetClientTeammate(xmate, 0, 1);
-		}
-	}
-	
 	if (g_hDelayJump[client] != INVALID_HANDLE)
 	{
 		CloseHandle(g_hDelayJump[client]);
