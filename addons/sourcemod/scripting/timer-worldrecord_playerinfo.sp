@@ -17,7 +17,6 @@ enum eTarget
 }
 
 new String:g_MapName[32];
-new g_RowCount[MAXPLAYERS+1];
 new g_PointRowCount[MAXPLAYERS+1];
 new g_TargetData[MAXPLAYERS+1][eTarget];
 
@@ -29,7 +28,6 @@ new g_MenuPos[MAXPLAYERS+1];
 
 new String:sql_QueryPlayerName[] = "SELECT name, auth FROM round WHERE name LIKE \"%%%s%%\" ORDER BY `round`.`name` ASC, `round`.`auth` ASC;";
 new String:sql_selectSingleRecord[] = "SELECT auth, name, jumps, time, date, rank, finishcount, avgspeed, maxspeed, finishspeed FROM round WHERE auth LIKE '%s' AND map = '%s' AND bonus = '0' AND `physicsdifficulty` = '%d';";
-new String:sql_selectPlayerRowCount[] = "SELECT name FROM round WHERE time <= (SELECT time FROM round WHERE auth = '%s' AND map = '%s' AND bonus = '%i') AND map = '%s' AND bonus = '%i' ORDER BY time AND `physicsdifficulty` = '%d'";
 new String:sql_selectPlayer_Points[] = "SELECT auth, lastname, points FROM ranks WHERE auth LIKE '%s' AND points NOT LIKE '0';";
 new String:sql_selectPlayerPRowCount[] = "SELECT lastname FROM ranks WHERE points >= (SELECT points FROM ranks WHERE auth = '%s' AND points NOT LIKE '0') AND points NOT LIKE '0' ORDER BY points;";
 
@@ -402,7 +400,7 @@ public SQL_ViewSingleRecordCallback(Handle:owner, Handle:hndl, const String:erro
 		decl String:LinePLSteam[128];
 		Format(LinePLSteam, 128, "Player: %s (%s)", PlayerName, SteamId);
 		decl String:LineRank[128];
-		Format(LineRank, 128, "Rank: #%i on %s [FR: #%i | FC: %i]", g_RowCount[client], MapName, rank, finishcount);
+		Format(LineRank, 128, "Rank: #%i on %s [Count: %i]", rank, MapName, finishcount);
 		decl String:LineTime[128];
 		decl String:Time[32];		
 		Timer_SecondsToTime(SQL_FetchFloat(hndl, 3), Time, 16, 2);
@@ -477,7 +475,7 @@ public SQL_ViewPlayerMapRecordCallback(Handle:owner, Handle:hndl, const String:e
 		decl String:LinePLSteam[128];
 		Format(LinePLSteam, 128, "Player: %s (%s)", PlayerName, SteamId);
 		decl String:LineRank[128];
-		Format(LineRank, 128, "Rank: #%i on %s [FR: #%i | FC: %i]", g_RowCount[client], MapName, rank, finishcount);
+		Format(LineRank, 128, "Rank: #%i on %s [Count: %i]", rank, MapName, finishcount);
 		decl String:LineTime[128];
 		decl String:Time[32];		
 		Timer_SecondsToTime(SQL_FetchFloat(hndl, 3), Time, 16, 2);
@@ -516,21 +514,6 @@ public SQL_PRowCountCallback(Handle:owner, Handle:hndl, const String:error[], an
 	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
 	{
 		g_PointRowCount[client] = SQL_GetRowCount(hndl);
-	}
-}
-
-public SQL_GetRowCountCallback(Handle:owner, Handle:hndl, const String:error[], any:data){
-	if(hndl == INVALID_HANDLE)
-		LogError("Error getting rowcount (%s)", error);
-		
-	new Handle:pack = data;
-	ResetPack(pack);
-	
-	new client = ReadPackCell(pack);
-	
-	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
-	{
-		g_RowCount[client] = SQL_GetRowCount(hndl);
 	}
 }
 
@@ -665,9 +648,6 @@ public Menu_PlayerSearch(Handle:menu, MenuAction:action, client, param2)
 {
 	if (action == MenuAction_Select)
 	{
-		new first_item = GetMenuSelectionPosition();
-		DisplayMenuAtItem(menu, client, first_item, MENU_TIME_FOREVER); 
-		
 		decl String:SteamID[256];
 		GetMenuItem(menu, param2, SteamID, sizeof(SteamID));
 		
@@ -680,12 +660,15 @@ public Menu_PlayerSearch(Handle:menu, MenuAction:action, client, param2)
 			Menu_PlayerInfo(client);
 		}
 		
-		CloseHandle(g_hPlayerSearch[client]);
-		g_hPlayerSearch[client] = INVALID_HANDLE;
+		if(g_hPlayerSearch[client] != INVALID_HANDLE)
+		{
+			CloseHandle(g_hPlayerSearch[client]);
+			g_hPlayerSearch[client] = INVALID_HANDLE;
+		}
 	}
 	else if (action == MenuAction_End)
 	{
-		//CloseHandle(menu); 	gives invalid handle error on playerselect
+		CloseHandle(menu);
 	}
 }
 
@@ -702,14 +685,11 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 			{
 				decl String:Query[255];
 				Format(Query, 255, sql_selectSingleRecord, g_TargetData[client][eTarget_SteamID], g_MapName, g_TargetData[client][eTarget_Style]);
-				decl String:Query2[255];
-				Format(Query2, 255, sql_selectPlayerRowCount, g_TargetData[client][eTarget_SteamID], g_MapName, 0, g_MapName, 0, g_TargetData[client][eTarget_Style]);
-				
+
 				new Handle:pack2 = CreateDataPack();
 				WritePackCell(pack2, client);
 				WritePackString(pack2, g_MapName);
 				
-				SQL_TQuery(g_hSQL, SQL_GetRowCountCallback, Query2, pack2);
 				SQL_TQuery(g_hSQL, SQL_ViewSingleRecordCallback, Query, pack2);
 			}
 			case 1:
@@ -840,10 +820,7 @@ public MapMenu_Stock_Handler(Handle:menu, MenuAction:action, client, param2)
 		
 		decl String:szQuery[255];
 		Format(szQuery, 255, sql_selectPlayerMapRecord, g_TargetData[client][eTarget_SteamID], MapName, Bonus, g_TargetData[client][eTarget_Style]);
-		decl String:Query2[255];
-		Format(Query2, 255, sql_selectPlayerRowCount, g_TargetData[client][eTarget_SteamID], MapName, Bonus, MapName, Bonus, g_TargetData[client][eTarget_Style]);
-
-		SQL_TQuery(g_hSQL, SQL_GetRowCountCallback, Query2, pack);
+		
 		SQL_TQuery(g_hSQL, SQL_ViewPlayerMapRecordCallback, szQuery, pack);
 	}
 	else if(action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
