@@ -184,6 +184,10 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	new bool:bAll = false;
 	
 	decl String:StyleString[128];
+	
+	if(g_ModeCount > 0 && !g_Settings[MultimodeEnable])
+		FormatEx(StyleString, sizeof(StyleString), " on {green}%s", g_Physics[mode][ModeName]);
+	
 	if(g_Settings[MultimodeEnable]) 
 		FormatEx(StyleString, sizeof(StyleString), " on {green}%s", g_Physics[mode][ModeName]);
 	
