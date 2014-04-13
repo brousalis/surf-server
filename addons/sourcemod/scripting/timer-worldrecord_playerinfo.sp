@@ -442,6 +442,9 @@ public SQL_ViewPlayerMapRecordCallback(Handle:owner, Handle:hndl, const String:e
 	ReadPackString(pack, SteamID, 256);
 	new Bonus = ReadPackCell(pack);
 	
+	CloseHandle(pack);
+	pack = INVALID_HANDLE;
+	
 	new Handle:menu = CreateMenu(Menu_Stock_Handler2);
 	if(!Bonus)
 	{
@@ -642,6 +645,9 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 			WritePackCell(pack2, bonus);
 			Format(buffer, sizeof(buffer), "%d", pack2);
 			
+			CloseHandle(pack2);
+			pack2 = INVALID_HANDLE;
+			
 			AddMenuItem(g_TargetData[client][eTarget_MapMenu], buffer, szValue);
 			i++;
 		}
@@ -676,6 +682,10 @@ public Menu_PlayerSearch(Handle:menu, MenuAction:action, client, param2)
 		
 		CloseHandle(g_hPlayerSearch[client]);
 		g_hPlayerSearch[client] = INVALID_HANDLE;
+	}
+	else if (action == MenuAction_End)
+	{
+		//CloseHandle(menu); 	gives invalid handle error on playerselect
 	}
 }
 
@@ -787,6 +797,10 @@ public Menu_Stock_Handler(Handle:menu, MenuAction:action, client, param2)
 	{
 		DisplayMenu(g_TargetData[client][eTarget_MainMenu], client, MENU_TIME_FOREVER);
 	}
+	else if (action == MenuAction_End)
+	{
+		CloseHandle(menu);
+	}
 }
 
 public Menu_Stock_Handler2(Handle:menu, MenuAction:action, client, param2)
@@ -799,6 +813,10 @@ public Menu_Stock_Handler2(Handle:menu, MenuAction:action, client, param2)
 	else if(action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
 	{
 		DisplayMenuAtItem(g_TargetData[client][eTarget_MapMenu], client, g_MenuPos[client], MENU_TIME_FOREVER);
+	}
+	else if (action == MenuAction_End)
+	{
+		CloseHandle(menu);
 	}
 }
 
@@ -923,6 +941,7 @@ public CallBack_IncompleteMaps(Handle:owner, Handle:hndl, const String:error[], 
 		}
 		
 		SetMenuExitButton(menu, true);
+		SetMenuExitBackButton(menu, true);
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
 	}
 }
@@ -932,6 +951,14 @@ public MenuHandler_Incompelte(Handle:menu, MenuAction:action, client, param2)
 	if (action == MenuAction_Select)
 	{
 		if(g_TargetData[client][eTarget_MainMenu] != INVALID_HANDLE) Menu_PlayerInfo(client);
+	}
+	else if(action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
+	{
+		DisplayMenu(g_TargetData[client][eTarget_MainMenu], client, MENU_TIME_FOREVER);
+	}
+	else if (action == MenuAction_End)
+	{
+		CloseHandle(menu);
 	}
 }
 
