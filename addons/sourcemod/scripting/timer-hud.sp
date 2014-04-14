@@ -1549,9 +1549,9 @@ UpdateHUD_CSS(client)
 		if (hudSettings[Rank][client] && g_Settings[HUDRankEnable])
 		{
 			if(rank < 1)
-				Format(centerText, sizeof(centerText), "%sRank: -/%s", hintText, sRankTotal);
+				Format(hintText, sizeof(hintText), "%sRank: -/%s\n", hintText, sRankTotal);
 			else
-				Format(centerText, sizeof(centerText), "%sRank: %d/%s", hintText, rank, sRankTotal);
+				Format(hintText, sizeof(hintText), "%sRank: %d/%s\n", hintText, rank, sRankTotal);
 		}
 		
 		if (hudSettings[PB][client] && g_Settings[HUDPBEnable])
@@ -1642,11 +1642,11 @@ UpdateHUD_CSS(client)
 				
 			// Is he pressing "space"?
 			if(iButtons & IN_JUMP || g_hDelayJump[iClientToShow] != INVALID_HANDLE)
-				Format(hintText, sizeof(hintText), "%sJ;", hintText);
+				Format(hintText, sizeof(hintText), "%sJP;", hintText);
 			
 			// Is he pressing "ctrl"?
 			if(iButtons & IN_DUCK)
-				Format(hintText, sizeof(hintText), "%sD;", hintText);
+				Format(hintText, sizeof(hintText), "%sDK;", hintText);
 				
 			// Is he pressing "shift"?
 			if(iButtons & IN_SPEED)
@@ -1698,11 +1698,11 @@ UpdateHUD_CSS(client)
 				
 			// Is he pressing "space"?
 			if(mbuttons & IN_JUMP || g_hDelayJump[mate] != INVALID_HANDLE)
-				Format(hintText, sizeof(hintText), "%sJ;", hintText);
+				Format(hintText, sizeof(hintText), "%sJP;", hintText);
 			
 			// Is he pressing "ctrl"?
 			if(mbuttons & IN_DUCK)
-				Format(hintText, sizeof(hintText), "%sD;", hintText);
+				Format(hintText, sizeof(hintText), "%sDK;", hintText);
 				
 			// Is he pressing "shift"?
 			if(mbuttons & IN_SPEED)
