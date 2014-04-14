@@ -30,11 +30,10 @@ public OnMapStart()
 	GetCurrentMap(g_sCurrentMap, sizeof(g_sCurrentMap));
 }
 
-public OnClientDisconnect(client)
+public OnClientDisconnect_Post(client)
 {
 	DisconnectStats(client);
 	g_bAuthed[client] = false;
-	g_bAuthed[client] = true;
 }
 
 public OnClientPostAdminCheck(client)
