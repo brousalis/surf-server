@@ -5,6 +5,7 @@
 #include <cstrike>
 #include <clientprefs>
 #include <smlib>
+#include <morecolors>
 #include <timer>
 #include <timer-logging>
 #include <timer-stocks>
@@ -2155,7 +2156,7 @@ Print_Specinfo(client)
 		}
 	}
 	
-	CPrintToChatAll("%s {lightred}%N {olive}has {lightred}%d {olive}spectators:{lightred}%s.", PLUGIN_PREFIX2, client, count, buffer);
+	CPrintToChatAll("%s {red}%N {olive}has {red}%d {olive}spectators:{red}%s.", PLUGIN_PREFIX2, client, count, buffer);
 }
 
 stock GetSpecCount(client)
