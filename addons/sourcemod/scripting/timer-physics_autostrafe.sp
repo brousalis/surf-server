@@ -14,7 +14,7 @@ new Float:AngDiff[MAXPLAYERS+1];
 public Plugin:myinfo = 
 {
 	name = "[Timer] Autostrafe",
-	author = "Zipcore, Credits: CloudRick",
+	author = "Zipcore, Credits: Mev",
 	description = "Strafehack for styles",
 	version = "1.0",
 	url = "https://forums.alliedmods.net/showthread.php?p=2074699"

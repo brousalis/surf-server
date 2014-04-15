@@ -194,6 +194,14 @@ public OnMapStart()
 
 public OnMapEnd()
 {
+	UpdateRanks();
+}
+
+UpdateRanks()
+{
+	if (g_hSQL == INVALID_HANDLE)
+		return;
+	
 	for(new bonus = 0; bonus < 2; bonus++) 
 	{
 		for(new style = 0; style < MAX_MODES-1; style++) 
