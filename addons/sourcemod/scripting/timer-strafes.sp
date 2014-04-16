@@ -12,7 +12,6 @@ enum PlayerState
 	bool:bOn,
 	bool:bLastBoosted,
 	nStrafes, // Count strafes
-	nStrafesReal,
 	nStrafesBoosted,
 	nStrafeDir,
 }
@@ -42,7 +41,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public Native_GetStrafeCount(Handle:plugin, numParams)
 {
-	return g_PlayerStates[GetNativeCell(1)][nStrafesReal];
+	return g_PlayerStates[GetNativeCell(1)][nStrafes];
 }
 
 public Native_GetBoostedStrafeCount(Handle:plugin, numParams)
@@ -52,12 +51,7 @@ public Native_GetBoostedStrafeCount(Handle:plugin, numParams)
 
 public OnClientPutInServer(client)
 {
-	g_PlayerStates[client][bOn] = true;
-}
-
-public Native_CancelJump(Handle:plugin, numParams)
-{
-	g_PlayerStates[GetNativeCell(1)][bOn] = true;
+	g_PlayerStates[client][bOn] = false;
 }
 
 public bool:WorldFilter(entity, mask)
@@ -73,6 +67,14 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 {
 	new bool:ongrund = bool:(GetEntityFlags(client) & FL_ONGROUND);
 	
+	if(!g_PlayerStates[client][bOn])
+	{
+		GetClientAbsOrigin(client, vLastOrigin[client]);
+		GetClientAbsAngles(client, vLastAngles[client]);
+		GetEntPropVector(client, Prop_Data, "m_vecVelocity", vLastVelocity[client]);
+		return;
+	}
+	
 	new bool:newstrafe = false;
 	
 	new nButtonCount;
@@ -87,22 +89,22 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	
 	if(nButtonCount == 1)
 	{
-		if(g_PlayerStates[client][nStrafeDir] != 1 && buttons & IN_MOVELEFT)
+		if(g_PlayerStates[client][nStrafeDir] != 1 && (buttons & IN_MOVELEFT || vel[1] < 0))
 		{
 			g_PlayerStates[client][nStrafeDir] = 1;
 			newstrafe = true;
 		}
-		else if(g_PlayerStates[client][nStrafeDir] != 2 && buttons & IN_MOVERIGHT)
+		else if(g_PlayerStates[client][nStrafeDir] != 2 && (buttons & IN_MOVERIGHT || vel[1] > 0))
 		{
 			g_PlayerStates[client][nStrafeDir] = 2;
 			newstrafe = true;
 		}
-		else if(g_PlayerStates[client][nStrafeDir] != 3 && buttons & IN_FORWARD)
+		else if(g_PlayerStates[client][nStrafeDir] != 3 && (buttons & IN_FORWARD || vel[0] > 0))
 		{
 			g_PlayerStates[client][nStrafeDir] = 3;
 			newstrafe = true;
 		}
-		else if(g_PlayerStates[client][nStrafeDir] != 4 && buttons & IN_BACK)
+		else if(g_PlayerStates[client][nStrafeDir] != 4 && (buttons & IN_BACK || vel[0] < 0))
 		{
 			g_PlayerStates[client][nStrafeDir] = 4;
 			newstrafe = true;
@@ -111,7 +113,6 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	
 	if(newstrafe)
 	{
-		g_PlayerStates[client][nStrafesReal]++;
 		g_PlayerStates[client][nStrafes]++;
 	}
 	
@@ -145,7 +146,7 @@ public OnClientStartTouchZoneType(client, MapZoneType:type)
 	if (type != ZtEnd && type != ZtBonusEnd)
 		return;
 	
-	g_PlayerStates[client][bOn] = true;
+	g_PlayerStates[client][bOn] = false;
 }
 
 public OnClientEndTouchZoneType(client, MapZoneType:type)
@@ -153,7 +154,7 @@ public OnClientEndTouchZoneType(client, MapZoneType:type)
 	if (type != ZtStart && type != ZtBonusStart)
 		return;
 	
-	g_PlayerStates[client][bOn] = false;
+	g_PlayerStates[client][bOn] = true;
 	
 	// Reset stuff
 	g_PlayerStates[client][nStrafeDir] = 0;

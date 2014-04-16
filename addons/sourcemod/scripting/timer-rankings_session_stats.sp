@@ -14,6 +14,7 @@ public Plugin:myinfo =
 new Handle:g_hSession = INVALID_HANDLE;
 
 new String:g_sAuth[MAXPLAYERS + 1][24];
+new String:g_sName[MAXPLAYERS + 1][32];
 new bool:g_bAuthed[MAXPLAYERS + 1];
 new bool:g_bCheck[MAXPLAYERS + 1];
 
@@ -44,6 +45,8 @@ public OnClientPostAdminCheck(client)
 	
 	g_bAuthed[client] = GetClientAuthString(client, g_sAuth[client], sizeof(g_sAuth[]));
 	g_bCheck[client] = true;
+	
+	if(g_bAuthed[client]) GetClientName(client, g_sName[client], sizeof(g_sName[]));
 }
 
 public OnPlayerPointsLoaded(client, points)
@@ -97,7 +100,7 @@ SessionStats(client)
 		new Handle:panel = CreatePanel();
 		DrawPanelText(panel, "[Timer] Player Session Stats");
 		DrawPanelItem(panel, "Name");
-		Format(text, sizeof(text), "%N", client);
+		Format(text, sizeof(text), "%s", g_sName[client]);
 		DrawPanelText(panel, text);
 		DrawPanelItem(panel, "Points");
 		Format(text, sizeof(text), "%d (%s%d)", points, (points-points_start < 0 ? "" : "+"), points-points_start);
@@ -123,7 +126,7 @@ DisconnectStats(client)
 		if(points-points_start >= 0)
 			Format(sPre, sizeof(sPre), "+");
 		
-		CPrintToChatAll("%s %N disconnected with %d points (%s%d).", PLUGIN_PREFIX2, client, points, sPre, points-points_start);
+		CPrintToChatAll("%s %s disconnected with %d points (%s%d).", PLUGIN_PREFIX2, g_sName[client], points, sPre, points-points_start);
 	}
 	KvRewind(g_hSession);
 }
