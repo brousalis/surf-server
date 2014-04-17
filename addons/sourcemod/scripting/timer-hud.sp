@@ -2112,12 +2112,28 @@ UpdateHUD_CSGO(client)
 
 public Action:Cmd_SpecInfo(client, args)
 {
-	Print_Specinfo(client);
+	new owner = client;
+	if(!IsPlayerAlive(client) || IsClientObserver(client))
+	{
+		new iObserverMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
+		if(iObserverMode == SPECMODE_FIRSTPERSON || iObserverMode == SPECMODE_3RDPERSON)
+		{
+			new iTarget = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+			if(iTarget > 0)
+			{
+				Print_Specinfo(iTarget, owner);
+			}
+		}
+	}
+	else
+	{
+		Print_Specinfo(client, owner);
+	}
 	
 	return Plugin_Handled;	
 }
 
-Print_Specinfo(client)
+Print_Specinfo(client, owner)
 {
 	new String:buffer[1024];
 	
@@ -2156,7 +2172,7 @@ Print_Specinfo(client)
 		}
 	}
 	
-	CPrintToChatAll("%s {red}%N {olive}has {red}%d {olive}spectators:{red}%s.", PLUGIN_PREFIX2, client, count, buffer);
+	CPrintToChat(owner, "%s {red}%N {olive}has {red}%d {olive}spectators:{red}%s.", PLUGIN_PREFIX2, client, count, buffer);
 }
 
 stock GetSpecCount(client)
