@@ -120,6 +120,16 @@ new Handle:g_timerSetPointsForward;
 new Handle:g_timerPointsLoadedForward;
 new Handle:g_timerRankLoadedForward;
 
+
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * *
+//Session Statss
+//* * * * * * * * * * * * * * * * * * * * * * * * * *
+new Handle:g_hSession = INVALID_HANDLE;
+
+new String:g_sName[MAXPLAYERS + 1][32];
+new bool:g_bCheck[MAXPLAYERS + 1];
+
 public Plugin:myinfo =
 {
 	name        = "[Timer] Rankings",
@@ -218,6 +228,9 @@ public OnPluginStart()
 	RegAdminCmd("timer_setrankpoints", Command_SetRankPoints, ADMFLAG_CHEATS, "Usage: timer_setrankpoints <steam> <amount> | <steam> must exist otherwise the operation fails.");
 	RegAdminCmd("timer_changerankpoints", Command_ChangeRankPoints, ADMFLAG_CHEATS, "Usage: timer_changerankpoints <steam> <amount> | <steam> must exist otherwise the operation fails. | Positive to add, Negative to subtract.");
 	RegAdminCmd("timer_listranks", Command_ListRanks, ADMFLAG_KICK, "Queries the database for all ranking information and displays it to server console or issuing admin.");
+	
+	RegConsoleCmd("sm_session", Cmd_Session, "Session stats about player");
+	g_hSession = CreateKeyValues("data");
 	
 	HookEvent("player_spawn", Event_OnPlayerSpawn);
 	HookEvent("player_team", Event_OnPlayerTeam);
@@ -392,12 +405,14 @@ public OnClientPostAdminCheck(client)
 		return;
 
 	g_bShowConnectMsg[client] = true;
+	g_bCheck[client] = true;
 	
 	g_bAuthed[client] = GetClientAuthString(client, g_sAuth[client], sizeof(g_sAuth[]));
 	if(!g_bAuthed[client])
 		CreateTimer(2.0, Timer_AuthClient, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
 	else if(g_hDatabase != INVALID_HANDLE && !g_bInitalizing)
 	{
+		GetClientName(client, g_sName[client], sizeof(g_sName[]));
 		g_sAuth[client][6] = '0';
 		if(!g_bLoadedSQL[client])
 		{
@@ -453,6 +468,29 @@ public OnClientDisconnect(client)
 		return;
 
 	g_sAuth[client][0] = '\0';
+	
+	if(g_bAuthed[client] && KvJumpToKey(g_hSession, g_sAuth[client], false))
+	{
+		new points_start = KvGetNum(g_hSession, "points", 0);
+		new points = Timer_GetPoints(client);
+		KvSetFloat(g_hSession, "disconnec_time", GetEngineTime());
+		
+		new String:sPre[3];
+		if(points-points_start >= 0)
+			Format(sPre, sizeof(sPre), "+");
+		
+		decl String:sNameBuffer[1024];
+		GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[client], sNameBuffer, sizeof(sNameBuffer));
+		
+		#if defined LEGACY_COLORS
+		CFormat(sNameBuffer, 1024, client);
+		CPrintToChatAll("%s {lightred}%s {olive}disconnected with {lightred}%d {olive}points {lightred}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
+		#else
+		CReplaceColorCodes(sNameBuffer, client, false, 1024);
+		CPrintToChatAll("%s {red}%s {green}disconnected with {yellow}%d {green}points {yellow}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
+		#endif
+	}
+	KvRewind(g_hSession);
 
 	g_bAuthed[client] = false;
 	g_bLoadedSQL[client] = false;
@@ -1261,6 +1299,21 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 			UpdateClientStars(client);
 			UpdateClientTag(client);
 		}
+	}
+	
+	if(g_bAuthed[client] && g_bCheck[client])
+	{
+		if(KvJumpToKey(g_hSession, g_sAuth[client], false))
+		{
+			new Float:disconnec_time = GetEngineTime()-KvGetFloat(g_hSession, "disconnec_time", 0.0);
+			if(disconnec_time > 180.0)
+				CreateSession(client, g_iCurrentPoints[client], false);
+		}
+		else CreateSession(client, g_iCurrentPoints[client], true);
+		
+		KvRewind(g_hSession);
+		
+		g_bCheck[client] = false;
 	}
 		
 	Call_StartForward(g_timerPointsLoadedForward);
@@ -2213,6 +2266,7 @@ public Action:Timer_AuthClient(Handle:timer, any:userid)
 				return Plugin_Continue;
 
 			g_sAuth[client][6] = '0';
+			GetClientName(client, g_sName[client], sizeof(g_sName[]));
 			if(!g_bLoadedSQL[client])
 			{
 				decl String:sQuery[192];
@@ -2408,7 +2462,6 @@ public Native_RefreshPointsAll(Handle:plugin, numParams)
 	}
 }
 
-
 stock bool:Client_HasAdminFlags(client, flags=ADMFLAG_GENERIC)
 {
 	new AdminId:adminId = GetUserAdmin(client);
@@ -2461,4 +2514,57 @@ public Action:Timer_PrepareKick(Handle:timer, any:serial)
 	}
 	
 	return Plugin_Continue;
+}
+
+CreateSession(client, points, bool:create)
+{
+	KvJumpToKey(g_hSession, g_sAuth[client], create);
+	KvSetFloat(g_hSession, "connection_time", GetEngineTime());
+	KvSetFloat(g_hSession, "disconnec_time", 0.0);
+	KvSetNum(g_hSession, "points", points);
+	KvSetNum(g_hSession, "worldrecords", 0);
+	KvSetNum(g_hSession, "toprecords", 0);
+	KvSetNum(g_hSession, "records", 0);
+	KvRewind(g_hSession);
+	
+	CPrintToChat(client, "%s Session started. Type !session to see your session stats.", PLUGIN_PREFIX2);
+}
+
+public Action:Cmd_Session(client, args)
+{
+	SessionStats(client);
+	return Plugin_Handled;
+}
+
+SessionStats(client)
+{
+	if(KvJumpToKey(g_hSession, g_sAuth[client], false))
+	{
+		decl String:sTag[20];
+		GetArrayString(g_hCfgArray_DisplayTag, g_iCurrentIndex[client], sTag, sizeof(sTag));
+		
+		new points_start = KvGetNum(g_hSession, "points", 0);
+		new points = Timer_GetPoints(client);
+		new time_connected = RoundToFloor(GetEngineTime()-KvGetFloat(g_hSession, "connection_time", GetEngineTime()));
+		
+		decl String:text[256];
+		new Handle:panel = CreatePanel();
+		DrawPanelText(panel, "[Timer] Player Session Stats");
+		DrawPanelItem(panel, "[Tag] Name");
+		Format(text, sizeof(text), "[%s] %s", sTag, g_sName[client]);
+		DrawPanelText(panel, text);
+		DrawPanelItem(panel, "Points");
+		Format(text, sizeof(text), "%d (%s%d)", points, (points-points_start < 0 ? "" : "+"), points-points_start);
+		DrawPanelText(panel, text);
+		DrawPanelItem(panel, "Time played");
+		Format(text, sizeof(text), "%id %ih %im %is", time_connected / 86400,(time_connected % 86400) / 3600, (time_connected % 3600) / 60, time_connected % 60);
+		DrawPanelText(panel, text);
+		SendPanelToClient(panel, client, SessionHandler, 10);
+		CloseHandle(panel);
+	}
+	KvRewind(g_hSession);
+}
+
+public SessionHandler(Handle:menu, MenuAction:action, param1, param2)
+{
 }
