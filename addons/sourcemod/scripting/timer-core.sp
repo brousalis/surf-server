@@ -64,6 +64,8 @@ new Handle:g_hSQL;
 new String:g_currentMap[64];
 new g_reconnectCounter = 0;
 
+new g_GetPauseLevel[MAXPLAYERS+1];
+
 new g_timers[MAXPLAYERS+1][Timer];
 new g_bestTimeCache[MAXPLAYERS+1][BestTimeCacheEntity];
 
@@ -526,6 +528,7 @@ bool:PauseTimer(client)
 	
 	g_timers[client][IsPaused] = true;
 	g_timers[client][PauseStartTime] = GetGameTime();
+	g_GetPauseLevel[client] = Timer_GetClientLevel(client);
 	
 	CreateTimer(0.0, Timer_ValidatePause, client, TIMER_FLAG_NO_MAPCHANGE);
 	
@@ -610,6 +613,8 @@ bool:ResumeTimer(client)
 	
 	g_timers[client][IsPaused] = false;
 	g_timers[client][PauseTotalTime] += GetGameTime() - g_timers[client][PauseStartTime];
+	
+	Timer_SetClientLevel(client, g_GetPauseLevel[client]);
 
 	Call_StartForward(g_timerResumedForward);
 	Call_PushCell(client);
