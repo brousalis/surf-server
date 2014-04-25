@@ -124,6 +124,9 @@ Here are all setings you can use for a style:
 //Hover force
 "hover_scale"			"20.0"		//Default = 0.0
 
+//Strafe booster (requires strafe booster module)
+"strafe_boost"			"0"			//Default = 0
+
 //Enable server-side strafehack (requires autostrafe module)
 "auto_strafe"			"1"			//Default = 0
 

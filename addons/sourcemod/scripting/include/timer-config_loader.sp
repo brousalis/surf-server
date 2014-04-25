@@ -232,7 +232,8 @@ enum PhysicModes
 	bool:ModeAllowWorldDamage,
 	ModeSpawnHealth,
 	ModeAutoStrafe,
-	ModeQuakeBhop
+	ModeQuakeBhop,
+	ModeStrafeBoost
 }
 
 new g_Physics[MAX_MODES][PhysicModes];
@@ -536,6 +537,7 @@ stock LoadPhysics()
 			g_Physics[g_ModeCount][ModeMaxSpeed] = KvGetFloat(hKv, "max_speed", 0.0);
 			g_Physics[g_ModeCount][ModeAutoStrafe] = KvGetNum(hKv, "auto_strafe", 0);
 			g_Physics[g_ModeCount][ModeQuakeBhop] = KvGetNum(hKv, "quake_bhop", 0);
+			g_Physics[g_ModeCount][ModeStrafeBoost] = KvGetNum(hKv, "strafe_boost", 0);
 			g_Physics[g_ModeCount][ModePunishType] = KvGetNum(hKv, "punish_type", 1);
 			g_Physics[g_ModeCount][ModeAntiBhop] = bool:KvGetNum(hKv, "anti_bhop", 0);
 			
