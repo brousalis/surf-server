@@ -1352,7 +1352,7 @@ public AdminMenu_AdminMode(Handle:topmenu,
 			maxlength)
 {
 	if (action == TopMenuAction_DisplayOption) {
-		FormatEx(buffer, maxlength, "Toggl Admin Mode");
+		FormatEx(buffer, maxlength, "Toggle Admin Mode");
 	} else if (action == TopMenuAction_SelectOption) 
 	{
 		if(adminmode == 0)
