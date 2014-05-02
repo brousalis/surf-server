@@ -484,10 +484,10 @@ public OnClientDisconnect(client)
 		
 		#if defined LEGACY_COLORS
 		CFormat(sNameBuffer, 1024, client);
-		CPrintToChatAll("%s {lightred}%s {olive}disconnected with {lightred}%d {olive}points {lightred}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
+		CPrintToChatAll("%s{lightred}%s {olive}disconnected with {lightred}%d {olive}points {lightred}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
 		#else
 		CReplaceColorCodes(sNameBuffer, client, false, 1024);
-		CPrintToChatAll("%s {red}%s {green}disconnected with {yellow}%d {green}points {yellow}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
+		CPrintToChatAll("%s{red}%s {green}disconnected with {yellow}%d {green}points {yellow}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
 		#endif
 	}
 	KvRewind(g_hSession);
@@ -1386,10 +1386,10 @@ ShowConnectMsg(client)
 	
 	#if defined LEGACY_COLORS
 	CFormat(sNameBuffer, 1024, client);
-	CPrintToChatAll("%s %N {olive}[{lightred}%d points{olive}] connected.", sNameBuffer, client, g_iCurrentPoints[client]);
+	CPrintToChatAll("%s%N {olive}[{lightred}%d points{olive}] connected.", sNameBuffer, client, g_iCurrentPoints[client]);
 	#else
 	CReplaceColorCodes(sNameBuffer, client, false, 1024);
-	CPrintToChatAll("%s %N {green}[{yellow}%d points{green}] connected.", sNameBuffer, client, g_iCurrentPoints[client]);
+	CPrintToChatAll("%s%N {green}[{yellow}%d points{green}] connected.", sNameBuffer, client, g_iCurrentPoints[client]);
 	#endif
 }
 
