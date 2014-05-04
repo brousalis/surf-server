@@ -3936,7 +3936,14 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 		return Plugin_Continue;
 	}
 	
-	if(GetClientTeam(victim) == GetClientTeam(attacker))
+	if (attacker == 0 || attacker >= MaxClients)
+	{
+		if(g_Physics[mode][ModeAllowWorldDamage])
+		{
+			return Plugin_Continue;
+		}
+	}
+	else if(GetClientTeam(victim) == GetClientTeam(attacker))
 	{
 		if(ff)
 		{
