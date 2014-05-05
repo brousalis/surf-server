@@ -1579,6 +1579,9 @@ public Native_GetRankID(Handle:plugin, numParams)
 	new bonus = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
+	if(rank > MAX_CACHE)
+		return false;
+	
 	if(rank > 0)
 		return g_cache[mode][bonus][rank-1][Id];
 	else return -1;
@@ -1590,6 +1593,9 @@ public Native_GetRecordHolderName(Handle:plugin, numParams)
 	new bonus = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
+	
+	if(rank > MAX_CACHE)
+		return false;
 	
 	if (nlen <= 0)
 		return false;
@@ -1612,6 +1618,9 @@ public Native_GetRecordDate(Handle:plugin, numParams)
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
 	
+	if(rank > MAX_CACHE)
+		return false;
+	
 	if (nlen <= 0)
 		return false;
 
@@ -1632,6 +1641,9 @@ public Native_GetFinishCount(Handle:plugin, numParams)
 	new bonus = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
+	if(rank > MAX_CACHE)
+		return false;
+	
 	if(rank > 0)
 		return g_cache[mode][bonus][rank-1][FinishCount];
 		
@@ -1645,6 +1657,9 @@ public Native_GetRecordTimeInfo(Handle:plugin, numParams)
 	new rank = GetNativeCell(3);
 	
 	new nlen = GetNativeCell(6);
+	
+	if(rank > MAX_CACHE)
+		return false;
 	
 	if (nlen <= 0)
 		return false;
@@ -1669,6 +1684,9 @@ public Native_GetRecordSpeedInfo(Handle:plugin, numParams)
 	new bonus = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
+	if(rank > MAX_CACHE)
+		return false;
+	
 	if(rank > 0)
 	{
 		SetNativeCellRef(4, g_cache[mode][bonus][rank-1][AvgSpeed]);
@@ -1684,6 +1702,9 @@ public Native_GetRecordStrafeJumpInfo(Handle:plugin, numParams)
 	new mode = GetNativeCell(1);
 	new bonus = GetNativeCell(2);
 	new rank = GetNativeCell(3);
+	
+	if(rank > MAX_CACHE)
+		return false;
 	
 	if(rank > 0)
 	{
@@ -1702,6 +1723,9 @@ public Native_GetReplayPath(Handle:plugin, numParams)
 	new bonus = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
+	
+	if(rank > MAX_CACHE)
+		return false;
 	
 	if (nlen <= 0)
 		return false;
@@ -1724,6 +1748,9 @@ public Native_GetCustom1(Handle:plugin, numParams)
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
 	
+	if(rank > MAX_CACHE)
+		return false;
+	
 	if (nlen <= 0)
 		return false;
 
@@ -1744,6 +1771,9 @@ public Native_GetCustom2(Handle:plugin, numParams)
 	new bonus = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
+	
+	if(rank > MAX_CACHE)
+		return false;
 	
 	if (nlen <= 0)
 		return false;
@@ -1766,6 +1796,9 @@ public Native_GetCustom3(Handle:plugin, numParams)
 	new bonus = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
+	
+	if(rank > MAX_CACHE)
+		return false;
 	
 	if (nlen <= 0)
 		return false;

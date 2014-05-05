@@ -72,10 +72,8 @@ new bool:g_bGlobalMessage;
 new bool:g_bSettingsMenu;
 new g_iConnectTopOnly;
 new g_iEnabled;
-new g_iTotalDiff;
 new g_iTotalRanks;
 new g_iTotalPlayers;
-new g_iDiffPoints[32];
 new g_iHighestRank;
 new g_iDisplayMethod;
 new g_iRequiredPoints;
@@ -85,7 +83,6 @@ new g_iDebugIndex = 1;
 new g_iCurrentDebug = -1;
 new g_iLimitTopPerPage;
 new Float:g_fAdvertisement;
-new Float:g_fDiffFactor[32];
 new String:g_sLoadingScoreTag[1024];
 new String:g_sLoadingChatTag[1024];
 new String:g_sLoadingChatColor[1024];
@@ -167,7 +164,7 @@ public OnPluginStart()
 	LoadTranslations("timer-rankings.phrases");
 	AutoExecConfig_CreateConVar("timer_ranks_version", PL_VERSION, "[Timer] Rankings: Version", FCVAR_PLUGIN|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
-	g_hEnabled = AutoExecConfig_CreateConVar("timer_ranks_enabled", "2", "Determines operating mode of the plugin. (0 = Disabled, 1 = Enabled, 2 = Debug)", FCVAR_NONE, true, 0.0, true, 2.0);
+	g_hEnabled = AutoExecConfig_CreateConVar("timer_ranks_enabled", "1", "Determines operating mode of the plugin. (0 = Disabled, 1 = Enabled, 2 = Debug)", FCVAR_NONE, true, 0.0, true, 2.0);
 	HookConVarChange(g_hEnabled, OnCVarChange);
 	g_iEnabled = GetConVarInt(g_hEnabled);
 
@@ -338,7 +335,6 @@ public OnConfigsExecuted()
 	if(!g_iEnabled)
 		return;
 
-	Parse_Difficulties();
 	Parse_Points();
 
 	if(g_bLateLoad)
@@ -469,7 +465,7 @@ public OnClientDisconnect(client)
 
 	g_sAuth[client][0] = '\0';
 	
-	if(g_bAuthed[client] && KvJumpToKey(g_hSession, g_sAuth[client], false))
+	if(g_bAuthed[client] && KvJumpToKey(g_hSession, g_sAuth[client], false) && g_iCurrentIndex[client] >= 0)
 	{
 		new points_start = KvGetNum(g_hSession, "points", 0);
 		new points = Timer_GetPoints(client);
@@ -2113,32 +2109,6 @@ Parse_Points()
 	CloseHandle(hKeyValues);
 	for(new i = 0; i <= 6; i++)
 		CloseHandle(hTemp[i]);
-}
-
-Parse_Difficulties()
-{
-	g_iTotalDiff = 0;
-	decl String:sPath[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/timer/difficulties.cfg");
-
-	new Handle:hKeyValues = CreateKeyValues("timer.difficulties");
-	if (!FileToKeyValues(hKeyValues, sPath) || !KvGotoFirstSubKey(hKeyValues))
-		CloseHandle(hKeyValues);
-	else
-	{
-		do
-		{
-			KvGetSectionName(hKeyValues, sPath, sizeof(sPath));
-			new iIndex = StringToInt(sPath);
-			g_iDiffPoints[iIndex] = KvGetNum(hKeyValues, "points", 0);
-			g_fDiffFactor[iIndex] = KvGetFloat(hKeyValues, "map_factor", 1.0);
-
-			g_iTotalDiff++;
-		}
-		while (KvGotoNextKey(hKeyValues));
-
-		CloseHandle(hKeyValues);
-	}
 }
 
 public Action:Command_PrintRanks(args)

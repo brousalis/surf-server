@@ -399,6 +399,12 @@ public MenuHandlerChallengeConfirm(Handle:menu, MenuAction:action, client, param
 		new bool:found = GetMenuItem(menu, param2, info, sizeof(info), _, info2, sizeof(info2));
 		new target = StringToInt(info);
 		
+		if(!target || target <= 0)
+		{
+			CPrintToChat(client, "%s Invalid target. Something went wrong, sry.", PLUGIN_PREFIX2);
+			return;
+		}
+		
 		if(StrEqual(info, "no"))
 		{
 			g_fIgnoreTime[client] = GetGameTime()+g_Settings[ChallengeIgnoreCooldown];
@@ -411,21 +417,15 @@ public MenuHandlerChallengeConfirm(Handle:menu, MenuAction:action, client, param
 					CPrintToChat(target, "%s %N rejected your challenge request.", PLUGIN_PREFIX2, client);
 		}
 		else if(found)
-		{	
-			if(!target || target <= 0)
-			{
-			}
-			else
-			{
-				g_iBet[client] = g_iBet[target];
-				StartChallenge(client, target);
-				
-				Call_StartForward(g_OnChallengeConfirm);
-				Call_PushCell(client);
-				Call_PushCell(target);
-				Call_PushCell(g_iBet[target]);
-				Call_Finish();
-			}
+		{
+			g_iBet[client] = g_iBet[target];
+			StartChallenge(client, target);
+			
+			Call_StartForward(g_OnChallengeConfirm);
+			Call_PushCell(client);
+			Call_PushCell(target);
+			Call_PushCell(g_iBet[target]);
+			Call_Finish();
 		}
 	}
 }
