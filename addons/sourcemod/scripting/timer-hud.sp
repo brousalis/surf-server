@@ -269,6 +269,9 @@ public OnClientCookiesCached(client)
 
 loadClientCookiesFor(client)
 {
+	if(cookieHudPref == INVALID_HANDLE)
+		return;
+	
 	decl String:buffer[5];
 	
 	//Master HUD
