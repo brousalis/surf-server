@@ -178,7 +178,6 @@ native bool:Timer_Pause(client);
 native bool:Timer_Restart(client);
 native bool:Timer_AddPenaltyTime(client, Float:penaltytime);
 
-native bool:Timer_GetBestRound(client, mode, bonus, &Float:time, &jumps);
 native bool:Timer_GetClientTimer(client, &enabled, &Float:time, &jumps, &fpsmax);
 
 native Timer_FinishRound(client, const String:map[], Float:time, jumps, physicsDifficulty, fpsmax, bonus);
@@ -213,12 +212,8 @@ public __pl_timer_SetNTVOpt()
 	MarkNativeAsOptional("Timer_Restart");
 	MarkNativeAsOptional("Timer_Reset");
 	MarkNativeAsOptional("Timer_AddPenaltyTime");
-
-	MarkNativeAsOptional("Timer_GetBestRound");
 	MarkNativeAsOptional("Timer_GetClientTimer");
-
 	MarkNativeAsOptional("Timer_FinishRound");
-
 	MarkNativeAsOptional("Timer_GetStatus");
 	MarkNativeAsOptional("Timer_GetBonus");
 	MarkNativeAsOptional("Timer_GetMapFinishCount");

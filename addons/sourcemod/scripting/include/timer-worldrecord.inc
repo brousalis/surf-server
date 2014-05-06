@@ -9,6 +9,7 @@ native Timer_GetDifficultyRecordTime(mode, bonus, &cacheid, &Float:time, &total)
 native Timer_GetNewPossibleRank(mode, bonus, Float:time);
 native Timer_GetRankID(mode, bonus, rank);
 
+native bool:Timer_GetBestRound(client, mode, bonus, &Float:time, &jumps);
 native Timer_GetDifficultyTotalRank(mode, bonus);
 native Timer_GetDifficultyRank(client, bonus, mode);
 native Timer_GetRecordHolderName(mode, bonus, rank, String:name[], length);
@@ -40,6 +41,7 @@ public __pl_timer_worldrecord_SetNTVOptional()
 	MarkNativeAsOptional("Timer_GetNewPossibleRank");
 	MarkNativeAsOptional("Timer_GetDifficultyRank");
 	MarkNativeAsOptional("Timer_GetDifficultyTotalRank");
+	MarkNativeAsOptional("Timer_GetBestRound");
 	MarkNativeAsOptional("Timer_GetRankID");
 	MarkNativeAsOptional("Timer_GetRecordHolderName");
 	MarkNativeAsOptional("Timer_GetFinishCount");
