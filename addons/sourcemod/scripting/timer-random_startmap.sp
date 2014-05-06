@@ -88,4 +88,9 @@ public SQL_GetMapsCallback(Handle:owner, Handle:hndl, const String:error[], any:
 			ForceChangeLevel(sMap[random], "Random startmap");
 		}
 	}
+	
+	if (g_hSQL != INVALID_HANDLE)
+	{
+		CloseHandle(g_hSQL);
+	}
 }

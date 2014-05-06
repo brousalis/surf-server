@@ -18,11 +18,9 @@ enum RecordCache
 	Id,
 	String:Name[32],
 	String:Auth[32],
-	
 	Float:Time,
 	String:TimeString[16],
 	String:Date[32],
-	
 	Style,
 	Jumps,
 	Float:JumpAcc,
@@ -31,24 +29,14 @@ enum RecordCache
 	Float:AvgSpeed,
 	Float:MaxSpeed,
 	Float:FinishSpeed,
-	
 	Flashbangcount,
-	
 	LevelProcess,
-	
 	CurrentRank,
-	//LastSeenRank,
-	//BestRank,
-	
 	FinishCount,
-	//PersonalRecordCount,
-	
 	String:ReplayPath[32],
-	
 	String:Custom1[32],
 	String:Custom2[32],
 	String:Custom3[32],
-	
 	bool:Ignored
 }
 
@@ -707,6 +695,7 @@ RefreshCache()
 			g_cacheLoaded[mode][0] = false;
 			g_cacheLoaded[mode][1] = false;
 			g_cacheLoaded[mode][2] = false;
+			
 			decl String:query[512];
 			FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_NORMAL, MAX_CACHE);	
 			
