@@ -1161,7 +1161,9 @@ public LoadMapZonesCallback(Handle:owner, Handle:hndl, const String:error[], any
 ConnectSQL()
 {
 	if (g_hSQL != INVALID_HANDLE)
+	{
 		CloseHandle(g_hSQL);
+	}
 	
 	g_hSQL = INVALID_HANDLE;
 	

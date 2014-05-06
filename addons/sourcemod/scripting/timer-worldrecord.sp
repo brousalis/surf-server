@@ -856,10 +856,12 @@ CollectBestCache(bonus, any:mode)
 
 ConnectSQL(bool:refreshCache)
 {
-    if (g_hSQL != INVALID_HANDLE)
-        CloseHandle(g_hSQL);
-	
-    g_hSQL = INVALID_HANDLE;
+	if (g_hSQL != INVALID_HANDLE)
+	{
+		CloseHandle(g_hSQL);
+	}
+
+	g_hSQL = INVALID_HANDLE;
 
     if (SQL_CheckConfig("timer"))
 	{

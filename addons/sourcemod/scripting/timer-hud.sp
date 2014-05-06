@@ -1041,7 +1041,7 @@ public Action:Cmd_HideMyAss(client, args)
 
 public OnConfigsExecuted()
 {
-	HookConVarChange(g_cvarTimeLimit, ConVarChange_TimeLimit);
+	if(g_cvarTimeLimit != INVALID_HANDLE) HookConVarChange(g_cvarTimeLimit, ConVarChange_TimeLimit);
 }
 
 public ConVarChange_TimeLimit(Handle:cvar, const String:oldVal[], const String:newVal[])
