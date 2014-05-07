@@ -38,11 +38,11 @@ $Copyright: (c) Simple Plugins 2008-2009$
 #undef REQUIRE_PLUGIN
 #include <updater>
 
-#define PLUGIN_VERSION				"2.0.0"
+#define PLUGIN_VERSION				"2.0.2 (modified by Zipcore)"
 #define SENDER_WORLD			0
 #define MAXLENGTH_INPUT			1024 	// Inclues \0 and is the size of the chat input box.
-#define MAXLENGTH_NAME			1024 	// This is backwords math to get compability.  Sourcemod has it set at 32, but there is room for more.
-#define MAXLENGTH_MESSAGE		1024		// This is based upon the SDK and the length of the entire message, including tags, name, : etc.
+#define MAXLENGTH_NAME			1024	// This is backwords math to get compability.  Sourcemod has it set at 32, but there is room for more.
+#define MAXLENGTH_MESSAGE		1024	// This is based upon the SDK and the length of the entire message, including tags, name, : etc.
 
 #define CHATFLAGS_INVALID		0
 #define CHATFLAGS_ALL			(1 << 0)
@@ -52,7 +52,7 @@ $Copyright: (c) Simple Plugins 2008-2009$
 
 #define ADDSTRING(%1) SetTrieValue(g_hChatFormats, %1, 1)
 
-#define UPDATE_URL "http://dev.xadgaming.com/simple-chat-processor/raw/master/updater.txt"
+#define UPDATE_URL "http://dl.dropboxusercontent.com/u/83581539/ChatProcessor/updater.txt"
 
 enum eMods
 {
@@ -335,7 +335,7 @@ public Action:OnSayText2(UserMsg:msg_id, Handle:bf, const clients[], numClients,
 	decl String:cpSender_Name[MAXLENGTH_NAME];
 	if (bProtobuf)
 	{
-		PbReadString(bf, "params", cpSender_Name, sizeof(cpSender_Name));
+		PbReadString(bf, "params", cpSender_Name, sizeof(cpSender_Name), 0);
 	}
 	else if (BfGetNumBytesLeft(bf))
 	{
@@ -816,7 +816,7 @@ stock eMods:GetCurrentMod()
 	}
 	if (StrEqual(sGameType, "hl2mp", false))
 	{
-		return GameType_FF;
+		return GameType_HL2DM;
 	}
 	if (StrEqual(sGameType, "insurgency", false) || StrEqual(sGameType, "ins", false))
 	{
