@@ -860,14 +860,14 @@ ConnectSQL(bool:refreshCache)
 	{
 		CloseHandle(g_hSQL);
 	}
-
+	
 	g_hSQL = INVALID_HANDLE;
-
-    if (SQL_CheckConfig("timer"))
+	
+	if (SQL_CheckConfig("timer"))
 	{
 		SQL_TConnect(ConnectSQLCallback, "timer", refreshCache);
 	}
-    else
+	else
 	{
 		SetFailState("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
 	}

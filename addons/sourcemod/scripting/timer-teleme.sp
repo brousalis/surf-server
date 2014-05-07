@@ -93,11 +93,11 @@ public Action:Command_TeleMe(client, args)
 			SetMenuExitButton(menu, true);
 			DisplayMenu(menu, client, 20);
 		}
-		else PrintToChat(client, "%s No target found", PLUGIN_PREFIX2);
+		else CPrintToChat(client, "%s No target found", PLUGIN_PREFIX2);
 	}
 	else
 	{
-		PrintToChat(client, "%s You have to be alive", PLUGIN_PREFIX2);
+		CPrintToChat(client, "%s You have to be alive", PLUGIN_PREFIX2);
 	}
 	
 	return Plugin_Handled;
