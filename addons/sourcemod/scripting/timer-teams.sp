@@ -208,9 +208,9 @@ public OnClientStartTouchZoneType(client, MapZoneType:type)
 	if (type == ZtEnd)
 	{
 		if(g_bClientChallenge[client]) 
-			EndChallenge(client,0);
+			EndChallenge(client, 0);
 		else if (g_bClientCoop[client] && Timer_IsPlayerTouchingZoneType(mate, ZtEnd)) 
-			EndCoop(client,0);
+			EndCoop(client, 0);
 	}
 }
 
@@ -685,7 +685,8 @@ public Action:EndChallenge(client, force)
 			{
 				CPrintToChat(client, "%s You have surrendered this challenge.", PLUGIN_PREFIX2);
 				CPrintToChat(mate, "%s %N has surrendered this challenge.", PLUGIN_PREFIX2, client);
-				EndChallenge(mate, 0); //Mate Wins
+				
+				EndChallenge(mate, 2); //Mate Wins
 			}
 			else
 			{
@@ -710,7 +711,7 @@ public Action:EndChallenge(client, force)
 			new Float:time;
 			new fpsmax;
 			
-			if (Timer_GetClientTimer(client, enabled, time, jumps, fpsmax))
+			if (g_Settings[ChallengeSaveRecords] && Timer_GetClientTimer(client, enabled, time, jumps, fpsmax))
 			{
 				new difficulty = 0;
 				if (g_timerPhysics)
@@ -718,6 +719,25 @@ public Action:EndChallenge(client, force)
 				
 				Timer_FinishRound(client, g_currentMap, time, jumps, difficulty, fpsmax, 0);
 			}
+			
+			//Forward
+			Call_StartForward(g_OnChallengeWin);
+			Call_PushCell(client);
+			Call_PushCell(mate);
+			Call_Finish();
+			
+			fake_death = true;
+		}
+		else if(force == 2)
+		{
+			decl String:pname[32], String:pname2[32];	
+			
+			FormatEx(pname, sizeof(pname), "%N", client);
+			FormatEx(pname2, sizeof(pname2), "%N", mate);
+			
+			//Play sounds
+			EmitSoundToClient(client, SND_TIMER_OWNED);
+			EmitSoundToClient(mate, SND_TIMER_OWNED);
 			
 			//Forward
 			Call_StartForward(g_OnChallengeWin);

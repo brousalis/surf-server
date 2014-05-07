@@ -97,6 +97,7 @@ enum TimerSettings
 	bool:ChallengeEnable,
 	Float:ChallengeIgnoreCooldown,
 	Float:ChallengeAbortTime,
+	bool:ChallengeSaveRecords,
 	ChallengeBet1,
 	ChallengeBet2,
 	ChallengeBet3,
@@ -370,6 +371,7 @@ stock LoadTimerSettings()
 			g_Settings[ChallengeEnable] = bool:KvGetNum(hKv, "challenge_enable", 0);
 			g_Settings[ChallengeIgnoreCooldown] = KvGetFloat(hKv, "challenge_ignore_cooldown", 60.0);
 			g_Settings[ChallengeAbortTime] = KvGetFloat(hKv, "challenge_abort_time", 10.0);
+			g_Settings[ChallengeSaveRecords] = bool:KvGetNum(hKv, "challenge_save_records", 1);
 			g_Settings[ChallengeBet1] = KvGetNum(hKv, "challenge_bet_option_1", 25);
 			g_Settings[ChallengeBet2] = KvGetNum(hKv, "challenge_bet_option_2", 50);
 			g_Settings[ChallengeBet3] = KvGetNum(hKv, "challenge_bet_option_3", 75);
