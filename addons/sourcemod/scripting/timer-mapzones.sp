@@ -1024,7 +1024,6 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	}
 }
 
-
 public Action_OnSettingsChange(Handle:cvar, const String:oldvalue[], const String:newvalue[])
 {
 	if (cvar == g_startMapZoneColor)
