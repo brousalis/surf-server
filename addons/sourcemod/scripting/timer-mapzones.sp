@@ -1004,7 +1004,7 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	Timer_Resume(client);
 	Timer_Stop(client, false);
 	
-	for (new i = 0; i < 127; i++)
+	for (new i = 0; i < 2047; i++)
 	{
 		g_bZone[i][client] = false;
 	}
@@ -2720,7 +2720,6 @@ DeleteAllZoneEntitys()
 			DeleteEntity(i);
 		}
 		
-		
 		for (new client = 1; client <= MaxClients; client++)
 		{
 			g_bZone[i][client] = false;
@@ -3811,7 +3810,7 @@ public Native_IsPlayerTouchingZoneType(Handle:plugin, numParams)
 	new client = GetNativeCell(1);
 	new MapZoneType:type = GetNativeCell(2);
 	
-	for (new i = 0; i < g_mapZonesCount; i++)
+	for (new i = 0; i < 2047; i++)
 	{
 		if(g_mapZones[i][Type] != type)
 			continue;
