@@ -43,12 +43,8 @@ new g_MapZoneEntityZID[2048];
 */
 new Handle:g_hSQL;
 
-new Handle:g_hFF;
-
 new adminmode = 0;
 new bool:g_bZonesLoaded = false;
-
-new bool:g_bHurt[MAXPLAYERS+1] = {false, ...};
 new bool:g_bZone[2048][MAXPLAYERS+1];
 
 new Float:g_fCord_Old[MAXPLAYERS+1][3];
@@ -155,8 +151,6 @@ public OnPluginStart()
 {
 	LoadPhysics();
 	LoadTimerSettings();
-	
-	g_hFF = FindConVar("mp_friendlyfire");
 
 	g_timerPhysics = LibraryExists("timer-physics");
 	g_timerTeams = LibraryExists("timer-teams");
@@ -300,11 +294,6 @@ public OnLibraryRemoved(const String:name[])
 	{
 		hTopMenu = INVALID_HANDLE;
 	}
-}
-
-public OnClientPutInServer(client)
-{
-	SDKHook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage);
 }
 
 public OnGameFrame()
@@ -697,17 +686,9 @@ public Action:StartTouchTrigger(caller, activator)
 	{
 		CheckVelocity(client, 3, 10000.0);
 	}
-	else if (g_mapZones[zone][Type] == ZtArena)
-	{
-		g_bHurt[client] = true;
-	}
 	else if (g_mapZones[zone][Type] == ZtBounceBack)
 	{
 		CheckVelocity(client, 2, 10000.0);
-	}
-	else if (g_mapZones[zone][Type] == ZtJail)
-	{
-		g_bHurt[client] = true;
 	}
 	else if (g_mapZones[zone][Type] == ZtBulletTime)
 	{
@@ -840,14 +821,9 @@ public Action:EndTouchTrigger(caller, activator)
 	{
 		if(g_timerLjStats) SetLJMode(client, false);
 	}
-	else if (g_mapZones[zone][Type] == ZtArena)
-	{
-		g_bHurt[client] = false;
-	}
 	else if (g_mapZones[zone][Type] == ZtJail)
 	{
 		Tele_Zone(client, zone);
-		g_bHurt[client] = false;
 	}
 	else if (g_mapZones[zone][Type] == ZtBulletTime)
 	{
@@ -970,7 +946,6 @@ public Action:CheckEntitysLoaded(Handle:timer)
 
 public OnClientDisconnect_Post(client)
 {
-	g_bHurt[client] = false;
 	g_iIgnoreEndTouchStart[client] = 0;
 	g_iTargetNPC[client] = 0;
 	Timer_Resume(client);
@@ -998,7 +973,6 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
 	g_clientLevel[client] = 0;
-	g_bHurt[client] = false;
 	g_iIgnoreEndTouchStart[client] = 0;
 	g_iTargetNPC[client] = 0;
 	Timer_Resume(client);
@@ -3903,64 +3877,4 @@ public Action:Hook_NormalSound(clients[64], &numClients, String:sample[PLATFORM_
 		return Plugin_Stop;
 	
 	return Plugin_Continue;
-}
-
-public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype)
-{
-	new bool:ff = GetConVarBool(g_hFF); 
-	new mode = Timer_GetMode(victim);
-
-	if (g_Settings[Godmode])
-	{
-		if (attacker == 0 || attacker >= MaxClients)
-		{
-			if(g_Physics[mode][ModeAllowWorldDamage])
-			{
-				return Plugin_Continue;
-			}
-		
-			return Plugin_Handled;
-		}
-	
-		//Player can hurt each other
-		if(g_bHurt[victim] && g_bHurt[attacker])
-		{
-			return Plugin_Continue;
-		}
-
-		return Plugin_Handled;
-	}
-
-	if(g_bHurt[victim] && g_bHurt[attacker])
-	{
-		return Plugin_Continue;
-	}
-	
-	if (attacker == 0 || attacker >= MaxClients)
-	{
-		if(g_Physics[mode][ModeAllowWorldDamage])
-		{
-			return Plugin_Continue;
-		}
-	}
-	else if(GetClientTeam(victim) == GetClientTeam(attacker))
-	{
-		if(ff)
-		{
-			return Plugin_Continue;
-		}
-		
-		return Plugin_Handled;
-	}
-	
-	return Plugin_Continue;
-}
-
-stock RemovePunchAngle(client)
-{
-	if(GetGameMod() == MOD_CSS)
-	{
-		SetEntPropVector(client, Prop_Send, "m_vecPunchAngle", NULL_VECTOR);
-		SetEntPropVector(client, Prop_Send, "m_vecPunchAngleVel", NULL_VECTOR);
-	}
 }
