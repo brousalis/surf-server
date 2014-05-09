@@ -309,8 +309,6 @@ public OnClientPutInServer(client)
 	
 	ResetBhopAvoid(client);
 	ResetBhopCollect(client);
-	
-	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 }
 
 public OnClientEndTouchZoneType(client, MapZoneType:zonetype)
@@ -477,26 +475,6 @@ public Action:DelayedSlowDown(Handle:timer, any:client)
 public Action:DelayedSlowDownDefault(Handle:timer, any:client)
 {
 	CheckVelocity(client, 1, 1.0);
-}
-
-public Action:OnTraceAttack(victim, &attacker, &inflictor, &Float:damage, &damagetype, &ammotype, hitbox, hitgroup)
-{
-	if(!Client_IsValid(victim))
-		return Plugin_Continue;
-	
-	if(!Client_IsValid(attacker))
-		return Plugin_Continue;
-	
-	if(GetClientTeam(victim) > 1)
-	{
-		decl String:CWeapon[128];
-		Client_GetActiveWeaponName(attacker, CWeapon, sizeof(CWeapon));
-		DealDamage(victim, RoundToFloor(damage), attacker, DMG_BULLET, CWeapon);
-		
-		return Plugin_Handled;
-	}
-	
-	return Plugin_Continue;
 }
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon, &subtype, &cmdnum, &tickcount, &seed, mouse[2])
