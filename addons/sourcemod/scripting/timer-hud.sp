@@ -5,7 +5,6 @@
 #include <cstrike>
 #include <clientprefs>
 #include <smlib>
-#include <morecolors>
 #include <timer>
 #include <timer-logging>
 #include <timer-stocks>
