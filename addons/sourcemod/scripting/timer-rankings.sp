@@ -1,5 +1,6 @@
 #include <sourcemod>
 #include <sdktools>
+#include <geoip>
 #include <cstrike>
 #include <basecomm>
 #include <timer>
@@ -1378,14 +1379,40 @@ ShowConnectMsg(client)
 	g_bShowConnectMsg[client] = false;
 	
 	decl String:sNameBuffer[1024];
+	decl String:s_Country[32];
+	decl String:s_address[32];		
+	GetClientIP(client, s_address, 32);
+	Format(s_Country, 100, "Unknown");
 	GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[client], sNameBuffer, sizeof(sNameBuffer));
+	
+	if(!IsFakeClient(client))
+	{
+		GeoipCountry(s_address, s_Country, 100);     
+		if(!strcmp(s_Country, NULL_STRING))
+			Format( s_Country, 100, "The Moon", s_Country );
+		else				
+			if( StrContains( s_Country, "United", false ) != -1 || 
+				StrContains( s_Country, "Republic", false ) != -1 || 
+				StrContains( s_Country, "Federation", false ) != -1 || 
+				StrContains( s_Country, "Island", false ) != -1 || 
+				StrContains( s_Country, "Netherlands", false ) != -1 || 
+				StrContains( s_Country, "Isle", false ) != -1 || 
+				StrContains( s_Country, "Bahamas", false ) != -1 || 
+				StrContains( s_Country, "Maldives", false ) != -1 || 
+				StrContains( s_Country, "Philippines", false ) != -1 || 
+				StrContains( s_Country, "Vatican", false ) != -1 )
+			{
+				Format( s_Country, 100, "The %s", s_Country );
+			}				
+		
+	}
 	
 	#if defined LEGACY_COLORS
 	CFormat(sNameBuffer, 1024, client);
-	CPrintToChatAll("%s%N {olive}[{lightred}%d points{olive}] connected.", sNameBuffer, client, g_iCurrentPoints[client]);
+	CPrintToChatAll("%s%N {olive}[{lightred}%d points{olive}] joined from %s.", sNameBuffer, client, g_iCurrentPoints[client], s_Country);
 	#else
 	CReplaceColorCodes(sNameBuffer, client, false, 1024);
-	CPrintToChatAll("%s%N {green}[{yellow}%d points{green}] connected.", sNameBuffer, client, g_iCurrentPoints[client]);
+	CPrintToChatAll("%s%N {green}[{yellow}%d points{green}] joined from %s.", sNameBuffer, client, g_iCurrentPoints[client], s_Country);
 	#endif
 }
 
