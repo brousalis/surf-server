@@ -62,8 +62,6 @@ new Handle:g_hLimitTopPerPage = INVALID_HANDLE;
 new Handle:g_hConnectTopOnly = INVALID_HANDLE;
 new Handle:g_hKickMsg = INVALID_HANDLE;
 new Handle:g_hKickDelay = INVALID_HANDLE;
-new Handle:g_CvarShowConnectionMsg = INVALID_HANDLE;
-new Handle:g_CvarShowDisonnectionMsg = INVALID_HANDLE;
 //* * * * * * * * * * * * * * * * * * * * * * * * * *
 //Variables
 //* * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -215,14 +213,6 @@ public OnPluginStart()
 	HookConVarChange(g_hKickMsg, OnCVarChange);
 	GetConVarString(g_hKickMsg, g_sKickMsg, sizeof(g_sKickMsg));
 	
-	g_CvarShowConnectionMsg = AutoExecConfig_CreateConVar("timer_rank_showstandard", "0", "shows standard player connected message", FCVAR_NONE);
-	HookConVarChange(g_CvarShowConnectionMsg, OnCVarChange);
-	g_CvarShowConnectionMsg = GetConVarInt(g_CvarShowConnectionMsg);
-	
-	g_CvarShowDisonnectionMsg = AutoExecConfig_CreateConVar("timer_rank_showstandarddisconnect", "0", "shows standard player discconnected message", FCVAR_NONE);
-	HookConVarChange(g_CvarShowDisonnectionMsg, OnCVarChange);
-	g_CvarShowDisonnectionMsg = GetConVarInt(g_CvarShowDisonnectionMsg);
-	
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
 
@@ -242,7 +232,9 @@ public OnPluginStart()
 	
 	HookEvent("player_spawn", Event_OnPlayerSpawn);
 	HookEvent("player_team", Event_OnPlayerTeam);
-	HookEvent("player_connect", event_PlayerConnect, EventHookMode_Pre);
+
+	HookEvent("player_connect", event_connect, EventHookMode_Pre);
+	HookEvent("player_disconnect", event_disconnect, EventHookMode_Pre);
 
 	g_timerGainPointsForward = CreateGlobalForward("OnPlayerGainPoints", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	g_timerLostPointsForward = CreateGlobalForward("OnPlayerLostPoints", ET_Event, Param_Cell, Param_Cell, Param_Cell);
@@ -2577,50 +2569,49 @@ public SessionHandler(Handle:menu, MenuAction:action, param1, param2)
 {
 }
 
-public Action:event_PlayerConnect(Handle:event, const String:name[], bool:dontBroadcast)
+public Action:event_connect(Handle:hEvent, const String:szEventName[], bool:bDontBroadcast)
 {
-    if (!dontBroadcast && !GetConVarInt(g_CvarShowConnectionMsg))
+	if(!bDontBroadcast)
     {
-        decl String:clientName[33], String:networkID[22], String:address[32];
-        GetEventString(event, "name", clientName, sizeof(clientName));
-        GetEventString(event, "networkid", networkID, sizeof(networkID));
-        GetEventString(event, "address", address, sizeof(address));
-
-        new Handle:newEvent = CreateEvent("player_connect", true);
-        SetEventString(newEvent, "name", clientName);
-        SetEventInt(newEvent, "index", GetEventInt(event, "index"));
-        SetEventInt(newEvent, "userid", GetEventInt(event, "userid"));
-        SetEventString(newEvent, "networkid", networkID);
-        SetEventString(newEvent, "address", address);
-
-        FireEvent(newEvent, true);
-
-        return Plugin_Handled;
-    }
-
-    return Plugin_Continue;
+		decl String:szName[32], String:szNetworkID[22], String:szAddress[26];
+		GetEventString(hEvent, "name", szName, sizeof(szName)-1);
+		GetEventString(hEvent, "networkid", szNetworkID, sizeof(szNetworkID)-1);
+		GetEventString(hEvent, "address", szAddress, sizeof(szAddress)-1);
+		
+		new Handle:hNewEvent = CreateEvent("player_connect", true);
+		SetEventString(hNewEvent, "name", szName);
+		SetEventInt(hNewEvent, "index", GetEventInt(hEvent, "index"));
+		SetEventInt(hNewEvent, "userid", GetEventInt(hEvent, "userid"));
+		SetEventString(hNewEvent, "networkid", szNetworkID);
+		SetEventString(hNewEvent, "address", szAddress);
+		
+		FireEvent(hNewEvent, true);
+		
+		return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
 }
 
-
-public Action:event_PlayerDisconnect(Handle:event, const String:name[], bool:dontBroadcast)
+public Action:event_disconnect(Handle:hEvent, const String:szEventName[], bool:bDontBroadcast)
 {
-    if (!dontBroadcast && !GetConVarInt(g_CvarShowDisonnectionMsg))
+	if(!bDontBroadcast)
     {
-        decl String:clientName[33], String:networkID[22], String:reason[65];
-        GetEventString(event, "name", clientName, sizeof(clientName));
-        GetEventString(event, "networkid", networkID, sizeof(networkID));
-        GetEventString(event, "reason", reason, sizeof(reason));
-
-        new Handle:newEvent = CreateEvent("player_disconnect", true);
-        SetEventInt(newEvent, "userid", GetEventInt(event, "userid"));
-        SetEventString(newEvent, "reason", reason);
-        SetEventString(newEvent, "name", clientName);        
-        SetEventString(newEvent, "networkid", networkID);
-
-        FireEvent(newEvent, true);
-
-        return Plugin_Handled;
-    }
-
-    return Plugin_Continue;
+		decl String:szReason[22], String:szName[32], String:szNetworkID[22];
+		GetEventString(hEvent, "reason", szReason, sizeof(szReason)-1);
+		GetEventString(hEvent, "name", szName, sizeof(szName)-1);
+		GetEventString(hEvent, "networkid", szNetworkID, sizeof(szNetworkID)-1);
+		
+		new Handle:hNewEvent = CreateEvent("player_disconnect", true);
+		SetEventInt(hNewEvent, "userid", GetEventInt(hEvent, "userid"));
+		SetEventString(hNewEvent, "reason", szReason);
+		SetEventString(hNewEvent, "name", szName);
+		SetEventString(hNewEvent, "networkid", szNetworkID);
+		
+		FireEvent(hNewEvent, true);
+		
+		return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
 }
