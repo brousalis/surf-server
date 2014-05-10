@@ -712,7 +712,7 @@ CalculateBlockGap(client, Float:origin[3], Float:target[3])
 	g_BlockDist[client] = RoundToNearest(distance);
 	if(g_BlockDist[client] >= g_Stop_Block_LJ)
 	{
-		PrintToChat(client, "\x01[\x05LJstats\x01]\x03%d Unit Block registered (\x01ß\x03)", g_BlockDist[client]);
+		PrintToChat(client, "\x01[\x05LJstats\x01]\x03%d Unit Block registered (\x01ï¿½\x03)", g_BlockDist[client]);
 		g_bLJBlock[client] = true;
 	}
 	else
@@ -824,12 +824,12 @@ stock CalculateBlockGap2(client, Float:origin[2][3], Float:target[2][3])
 	
 	if(g_BlockDist[client] >= g_Stop_Block_LJ)
 	{
-		PrintToChat(client, "\x01[\x05LJstats\x01]\x03%d Unit Block registered (\x01ß\x03)", g_BlockDist[client]);
+		PrintToChat(client, "\x01[\x05LJstats\x01]\x03%d Unit Block registered (\x01ï¿½\x03)", g_BlockDist[client]);
 		g_bLJBlock[client] = true;
 	}
 	else
 	{
-		PrintToChat(client, "\x01[\x05LJstats\x01]\x03You can regiter block more than %.0f units. (\x01ß\x03)", g_Stop_Block_LJ);
+		PrintToChat(client, "\x01[\x05LJstats\x01]\x03You can regiter block more than %.0f units. (\x01ï¿½\x03)", g_Stop_Block_LJ);
 	}
 	TE_SetupBeamPoints(origin[0], origin[1], g_Beam[0], 0, 0, 0, 10.0, 1.0, 1.0, 10, 0.0, {0,255,255,212}, 0);
 	TE_SendToAll();
@@ -1478,12 +1478,12 @@ public Action:LJStats(client, bool:fail)
 	SetMenuTitle(menu, "Stats-%N", client);
 	if(J_type == JumpType_Ladder)
 	{
-		Format(hint, 255, "%s%s\n [Distance] %.2f\n [Height] %.2f\n [PreStrafe] %.2f\n [Strafe] %d\n [MaxSpeed] %.2f\n%.2f",JumpName[J_type], postfix, width, height, PreStrafe[client], g_Strafe[client], LJ_MaxSpeed[client], LJ_SyncRate[client]);
+		Format(hint, 255, "%s%s\n [Distance] %.2f\n [Height] %.2f\n [PreStrafe] %.2f\n [Strafe] %d\n [MaxSpeed] %.2f\n [Sync] %.2f",JumpName[J_type], postfix, width, height, PreStrafe[client], g_Strafe[client], LJ_MaxSpeed[client], LJ_SyncRate[client]);
 		Format(cns, 255, "%s%s Distance : %.2f, Height : %.2f, PreStrafe : %.2f, Strafe : %d, MaxSpeed : %.2f, Sync : %.2f%s",JumpName[J_type], postfix, width, height, PreStrafe[client], g_Strafe[client], LJ_MaxSpeed[client], LJ_SyncRate[client], edge);
 	}
 	else
 	{
-		Format(hint, 255, "%s%s\n [Distance] %.2f\n [PreStrafe] %.2f\n [Strafe] %d\n [MaxSpeed] %.2f\n%.2f",JumpName[J_type], postfix, distance, PreStrafe[client], g_Strafe[client], LJ_MaxSpeed[client], LJ_SyncRate[client]);
+		Format(hint, 255, "%s%s\n [Distance] %.2f\n [PreStrafe] %.2f\n [Strafe] %d\n [MaxSpeed] %.2f\n [Sync] %.2f",JumpName[J_type], postfix, distance, PreStrafe[client], g_Strafe[client], LJ_MaxSpeed[client], LJ_SyncRate[client]);
 		Format(cns, 1024, "%s%s Distance : %.2f, PreStrafe : %.2f Strafe : %d, MaxSpeed : %.2f, Sync : %.2f%s",JumpName[J_type], postfix, distance, PreStrafe[client], g_Strafe[client], LJ_MaxSpeed[client], LJ_SyncRate[client], edge);
 	}
 	
