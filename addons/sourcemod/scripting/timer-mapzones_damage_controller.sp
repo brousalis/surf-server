@@ -26,10 +26,19 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public OnPluginStart()
 {
+	LoadTimerSettings();
+	LoadPhysics();
+	
 	g_hFF = FindConVar("mp_friendlyfire");
 	
 	HookEvent("player_death", Event_Player_Death, EventHookMode_Pre);
 	HookEvent("player_spawn", Event_PlayerSpawn);
+}
+
+public OnMapStart()
+{
+	LoadTimerSettings();
+	LoadPhysics();	
 }
 
 public OnClientPutInServer(client)
