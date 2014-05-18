@@ -180,7 +180,6 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	
 	new String:RankString[128], String:RankPwndString[128];
 
-	new String:JumpString[128];
 	new bool:bAll = false;
 	
 	decl String:StyleString[128];
@@ -194,7 +193,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	if(NewWorldRecord)
 	{
 		bAll = true;
-		FormatEx(RankString, sizeof(RankString), "{magenta}NEW WORLD RECORD");
+		FormatEx(RankString, sizeof(RankString), "\n{magenta}NEW WORLD RECORD");
 		
 		if(wrtime > 0.0)
 		{
@@ -206,25 +205,20 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	}
 	else if(newrank > 5000)
 	{
-		FormatEx(RankString, sizeof(RankString), "{yellow}#%d+ / %d", newrank, RankTotal);
+		FormatEx(RankString, sizeof(RankString), "{yellow}#%d+/%d", newrank, RankTotal);
 	}
 	else if(NewPersonalRecord || FirstRecord)
 	{
 		bAll = true;
-		FormatEx(RankString, sizeof(RankString), "{yellow}#%d / %d", newrank, RankTotal);
+		FormatEx(RankString, sizeof(RankString), "{yellow}#%d/%d", newrank, RankTotal);
 		
 		if(newrank < currentrank) Format(RankPwndString, sizeof(RankPwndString), "{blue}Beaten {Red}%s{blue}! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrName, WrTime, wrdiff);
 	}	
 	else if(NewPersonalRecord)
 	{
-		FormatEx(RankString, sizeof(RankString), "{orange}#%d / %d", newrank, RankTotal);
+		FormatEx(RankString, sizeof(RankString), "{orange}#%d/%d", newrank, RankTotal);
 		
 		FormatEx(RankPwndString, sizeof(RankPwndString), "You have improved {red}yourself! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrTime, wrdiff);
-	}
-	
-	if(g_Settings[JumpsEnable])
-	{
-		Format(JumpString, sizeof(JumpString), "{blue} and {yellow}%d jumps [%.2f ⁰⁄₀]", jumps, jumpacc);
 	}
 	
 	if(ranked)
@@ -233,14 +227,12 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 		{
 			if(bAll)
 			{
-				CPrintToChatAll("%s {blue}Player {red}%s{blue} has finished%s{blue}%s{blue}.", PLUGIN_PREFIX2, name, BonusString, StyleString);
-				CPrintToChatAll("{blue}Time: {yellow}[%ss]%s %s", TimeString, JumpString, RankString);
+				CPrintToChatAll("%s {red}%s{blue} has finished%s{blue}%s{blue}. {blue}Time: {yellow}[%ss] %s", PLUGIN_PREFIX2, name, BonusString, StyleString, TimeString, RankString);
 				CPrintToChatAll("%s", RankPwndString);
 			}
 			else
 			{
-				CPrintToChat(client, "%s {red}You{blue} have finished%s{blue}%s{blue}.", PLUGIN_PREFIX2, BonusString, StyleString);
-				CPrintToChat(client, "{blue}Time: {yellow}[%ss]%s %s", TimeString, JumpString, RankString);
+				CPrintToChat(client, "%s {red}You{blue} have finished%s{blue}%s{blue}. {blue}Time: {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
 				CPrintToChat(client, "%s", RankPwndString);
 			}
 		}
@@ -248,25 +240,23 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 		{
 			if(bAll)
 			{
-				CPrintToChatAll("%s {blue}Player {red}%s{blue} has finished%s{blue}%s{blue}.", PLUGIN_PREFIX2, name, BonusString, StyleString);
-				CPrintToChatAll("{blue}Time: {yellow}[%ss] improved by [%.2fs]%s %s", TimeString, time-lasttime, JumpString, RankString);
+				CPrintToChatAll("%s {red}%s{blue} has finished%s{blue}%s{blue}. {blue}Time: {yellow}[%ss] %s", PLUGIN_PREFIX2, name, BonusString, StyleString, TimeString, RankString);
 				CPrintToChatAll("%s", RankPwndString);
 			}
 			else
 			{
-				CPrintToChat(client, "%s {red}You{blue} have finished%s{blue}%s{blue}.", PLUGIN_PREFIX2, BonusString, StyleString);
-				CPrintToChat(client, "{blue}Time: {yellow}[%ss] improved by [%.2fs]%s %s", TimeString, time-lasttime, JumpString, RankString);
+				CPrintToChat(client, "%s {red}You{blue} have finished%s{blue}%s{blue}. {blue}Time: {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
 				CPrintToChat(client, "%s", RankPwndString);
 			}
 		}
 		else
 		{
-			CPrintToChat(client, "%s {red}You{blue} have finished%s{blue}%s{blue}. Time: {yellow}[%ss]%s %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, JumpString, RankString);
+			CPrintToChat(client, "%s {red}You{blue} have finished%s{blue}%s{blue}. Time: {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
 		}
 	}
 	else
 	{
 		CPrintToChat(client, "%s {red}You{blue} have finished%s{blue}%s{blue}.", PLUGIN_PREFIX2, BonusString, StyleString);
-		CPrintToChat(client, "{blue}Time: {yellow}[%ss] %s", TimeString, JumpString);
+		CPrintToChat(client, "{blue}Time: {yellow}[%ss]", TimeString);
 	}
 }
