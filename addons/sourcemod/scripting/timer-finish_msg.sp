@@ -82,11 +82,10 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	new bool:NewWorldRecord = false;
 	new bool:FirstRecord = false;
 	
-	new bool:ranked, Float:jumpacc;
+	new bool:ranked;
 	if(g_timerPhysics) 
 	{
 		ranked = bool:Timer_IsModeRanked(mode);
-		Timer_GetJumpAccuracy(client, jumpacc);
 	}
 	
 	new bool:enabled = false;
@@ -171,11 +170,11 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	
 	if(bonus == 1)
 	{
-		FormatEx(BonusString, sizeof(BonusString), " {green}bonus");
+		FormatEx(BonusString, sizeof(BonusString), " {green}[bonus]");
 	}
 	else if(bonus == 2)
 	{
-		FormatEx(BonusString, sizeof(BonusString), " {green}short");
+		FormatEx(BonusString, sizeof(BonusString), " {green}[short]");
 	}	
 	
 	new String:RankString[128], String:RankPwndString[128];
@@ -185,10 +184,10 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	decl String:StyleString[128];
 	
 	if(g_ModeCount > 0 && !g_Settings[MultimodeEnable])
-		FormatEx(StyleString, sizeof(StyleString), " on {green}%s", g_Physics[mode][ModeName]);
+		FormatEx(StyleString, sizeof(StyleString), " {green}[%s]", g_Physics[mode][ModeName]);
 	
 	if(g_Settings[MultimodeEnable]) 
-		FormatEx(StyleString, sizeof(StyleString), " on {green}%s", g_Physics[mode][ModeName]);
+		FormatEx(StyleString, sizeof(StyleString), " {green}[%s]", g_Physics[mode][ModeName]);
 	
 	if(NewWorldRecord)
 	{
@@ -227,12 +226,12 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 		{
 			if(bAll)
 			{
-				CPrintToChatAll("%s {red}%s{blue} has finished%s{blue}%s{blue}. {blue}Time: {yellow}[%ss] %s", PLUGIN_PREFIX2, name, BonusString, StyleString, TimeString, RankString);
+				CPrintToChatAll("%s%s%s {red}%s{blue} finished in {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, name, TimeString, RankString);
 				CPrintToChatAll("%s", RankPwndString);
 			}
 			else
 			{
-				CPrintToChat(client, "%s {red}You{blue} have finished%s{blue}%s{blue}. {blue}Time: {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
+				CPrintToChat(client, "%s%s%s {red}You{blue} finished in {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
 				CPrintToChat(client, "%s", RankPwndString);
 			}
 		}
@@ -240,23 +239,18 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 		{
 			if(bAll)
 			{
-				CPrintToChatAll("%s {red}%s{blue} has finished%s{blue}%s{blue}. {blue}Time: {yellow}[%ss] %s", PLUGIN_PREFIX2, name, BonusString, StyleString, TimeString, RankString);
+				CPrintToChatAll("%s%s%s {red}%s{blue} finished in {yellow}[%ss] {blue}[WR %.2fs] %s", PLUGIN_PREFIX2, BonusString, StyleString, name, TimeString, time-lasttime, RankString);
 				CPrintToChatAll("%s", RankPwndString);
 			}
 			else
 			{
-				CPrintToChat(client, "%s {red}You{blue} have finished%s{blue}%s{blue}. {blue}Time: {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
+				CPrintToChat(client, "%s%s%s {red}You{blue} finished in {yellow}[%ss] {blue}[WR %.2fs] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, time-lasttime, RankString);
 				CPrintToChat(client, "%s", RankPwndString);
 			}
 		}
 		else
 		{
-			CPrintToChat(client, "%s {red}You{blue} have finished%s{blue}%s{blue}. Time: {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
+			CPrintToChat(client, "%s%s%s {red}You{blue} finished in {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
 		}
-	}
-	else
-	{
-		CPrintToChat(client, "%s {red}You{blue} have finished%s{blue}%s{blue}.", PLUGIN_PREFIX2, BonusString, StyleString);
-		CPrintToChat(client, "{blue}Time: {yellow}[%ss]", TimeString);
 	}
 }
