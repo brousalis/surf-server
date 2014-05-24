@@ -1376,7 +1376,7 @@ ShowConnectMsg(client)
 	if(!g_bShowConnectMsg[client])
 		return;
 	
-	if(g_iCurrentPoints[client] < 1)
+	if(g_iCurrentPoints[client] < 0)
 		return;
 	
 	g_bShowConnectMsg[client] = false;
