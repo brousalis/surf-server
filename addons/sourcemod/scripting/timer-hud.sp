@@ -1424,25 +1424,24 @@ UpdateHUD_CSS(client)
 			Format(centerText, sizeof(centerText), "%s%t: %d\n", centerText, "Jumps", jumps);
 	}
 	
-	if(!enabled)
-	{
-		if (hudSettings[Speed][client])
-		{
-			Format(centerText, sizeof(centerText), "%s%t: %5.2f", centerText, "HUD Speed", currentspeed);
-			if(g_Settings[HUDSpeedUnit] == 1)
-			{
-				Format(centerText, sizeof(centerText), "%s km/h", centerText);
-			}
-		}
-	}
-	else 
-	{
-		if (hudSettings[Speed][client] && hudSettings[SpeedMax][client])
-			//Format(centerText, sizeof(centerText), "%s%t: %5.2f [max:%5.2f|avg:%5.2f]", centerText, "HUD Speed", currentspeed, maxspeed, avgspeed);
-			Format(centerText, sizeof(centerText), "%s%t: %5.2f", centerText, "HUD Speed", currentspeed);
-		if (hudSettings[Speed][client] && !hudSettings[SpeedMax][client])
-			Format(centerText, sizeof(centerText), "%s%t: %5.2f", centerText, "HUD Speed", currentspeed);
-	}
+    if(!enabled)
+    {
+        if (hudSettings[Speed][client])
+        {
+            Format(centerText, sizeof(centerText), "%s%t: %d", centerText, "HUD Speed", RoundToFloor(currentspeed));
+            if(g_Settings[HUDSpeedUnit] == 1)
+            {
+                Format(centerText, sizeof(centerText), "%s km/h", centerText);
+            }
+        }
+    }
+    else 
+    {
+        if (hudSettings[Speed][client] && hudSettings[SpeedMax][client])
+            Format(centerText, sizeof(centerText), "%s%t: %d", centerText, "HUD Speed", RoundToFloor(currentspeed));
+        if (hudSettings[Speed][client] && !hudSettings[SpeedMax][client])
+            Format(centerText, sizeof(centerText), "%s%t: %d", centerText, "HUD Speed", RoundToFloor(currentspeed));
+    }
 	
 	if (g_Settings[HUDCenterEnable] && hudSettings[Main][client])
 	{
