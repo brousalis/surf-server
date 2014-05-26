@@ -17,7 +17,7 @@ public OnPluginStart()
  
 public Action:HideCommands(client, const String:command[], argc)
 {
-         if(IsChatTrigger())
+        if(IsChatTrigger())
                 return Plugin_Handled
        
         return Plugin_Continue
