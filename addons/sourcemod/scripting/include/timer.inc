@@ -13,7 +13,7 @@
 #define MAX_CACHE 1000
 
 //Uncomment this to use colors.inc and disable morecolors.inc
-#define LEGACY_COLORS "CS:GO Color Support"
+//#define LEGACY_COLORS "CS:GO Color Support"
 
 //Max number of styles (default 32 ID:0-31)
 #define MAX_MODES	32
