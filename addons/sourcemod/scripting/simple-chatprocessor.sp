@@ -35,8 +35,6 @@ $Copyright: (c) Simple Plugins 2008-2009$
 */
 
 #include <sourcemod>
-#undef REQUIRE_PLUGIN
-#include <updater>
 
 #define PLUGIN_VERSION				"2.0.2 (modified by Zipcore)"
 #define SENDER_WORLD			0
@@ -51,8 +49,6 @@ $Copyright: (c) Simple Plugins 2008-2009$
 #define CHATFLAGS_DEAD			(1 << 3)
 
 #define ADDSTRING(%1) SetTrieValue(g_hChatFormats, %1, 1)
-
-#define UPDATE_URL "http://dl.dropboxusercontent.com/u/83581539/ChatProcessor/updater.txt"
 
 enum eMods
 {
@@ -213,7 +209,6 @@ public OnAllPluginsLoaded()
 	new Handle:convar;
 	if (LibraryExists("updater")) 
 	{
-		Updater_AddPlugin(UPDATE_URL);
 		decl String:newVersion[10];
 		FormatEx(newVersion, sizeof(newVersion), "%sA", PLUGIN_VERSION);
 		convar = CreateConVar("scp_version", newVersion, "Plugin Version", FCVAR_DONTRECORD|FCVAR_NOTIFY|FCVAR_CHEAT);
@@ -230,14 +225,6 @@ public Callback_VersionConVarChanged(Handle:convar, const String:oldValue[], con
 	ResetConVar(convar);
 }
 
-public OnLibraryAdded(const String:name[])
-{
-	if (!strcmp(name, "updater"))
-	{
-		Updater_AddPlugin(UPDATE_URL);
-	}
-}
-
 public Action:Updater_OnPluginDownloading()
 {
 	if (!g_bAutoUpdate)
@@ -245,11 +232,6 @@ public Action:Updater_OnPluginDownloading()
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
-}
-
-public Updater_OnPluginUpdated() 
-{
-	ReloadPlugin();
 }
 
 public Action:OnSayText2(UserMsg:msg_id, Handle:bf, const clients[], numClients, bool:reliable, bool:init)
