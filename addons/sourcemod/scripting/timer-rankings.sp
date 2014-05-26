@@ -1412,10 +1412,10 @@ ShowConnectMsg(client)
 	
 	#if defined LEGACY_COLORS
 	CFormat(sNameBuffer, 1024, client);
-	CPrintToChatAll("%s%N {olive}[{lightred}%d points{olive}] joined from %s.", sNameBuffer, client, g_iCurrentPoints[client], s_Country);
+	CPrintToChatAll("%s%N {olive}[{lightred}%d points{olive}] connected from %s.", sNameBuffer, client, g_iCurrentPoints[client], s_Country);
 	#else
 	CReplaceColorCodes(sNameBuffer, client, false, 1024);
-	CPrintToChatAll("%s%N {green}[{yellow}%d points{green}] joined from %s.", sNameBuffer, client, g_iCurrentPoints[client], s_Country);
+	CPrintToChatAll("%s%N {green}[{yellow}%d points{green}] connected from %s.", sNameBuffer, client, g_iCurrentPoints[client], s_Country);
 	#endif
 }
 
