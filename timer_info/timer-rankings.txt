@@ -2,6 +2,7 @@ Timer-Rankings
 
 This plugin ranks players by points and gives chat-tags for players rank.
 
-Chatranks-CFG: cfg/sourcemod/timer-rankings.cfg
+The config file is in addons/sourcemod/configs/timer/rankings.cfg
+The ranking system is not enabled by default, please read the the text in rankings.cfg to setup your rankings for css or csgo.
 
 !!! Requires simple chat processor to work(plugins/disabled)
