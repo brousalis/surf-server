@@ -192,14 +192,14 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	if(NewWorldRecord)
 	{
 		bAll = true;
-		FormatEx(RankString, sizeof(RankString), "\n{magenta}NEW WORLD RECORD");
+		FormatEx(RankString, sizeof(RankString), "\n{magenta}New WR!");
 		
 		if(wrtime > 0.0)
 		{
 			if(self)
-				FormatEx(RankPwndString, sizeof(RankPwndString), "{blue}Improved {Red}%s{blue}! {yellow}[%s]{blue} by {yellow}[%.2fs]", "himself", WrTime, wrdiff);
+				FormatEx(RankPwndString, sizeof(RankPwndString), "{blue}Improved {blue}%s! {yellow}[%s]{blue} by {yellow}[%.2fs]", "himself", WrTime, wrdiff);
 			else
-				FormatEx(RankPwndString, sizeof(RankPwndString), "{blue}Beaten {Red}%s{blue}! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrName, WrTime, wrdiff);
+				FormatEx(RankPwndString, sizeof(RankPwndString), "{blue}Beaten {blue}%s! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrName, WrTime, wrdiff);
 		}
 	}
 	else if(newrank > 5000)
@@ -211,13 +211,13 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 		bAll = true;
 		FormatEx(RankString, sizeof(RankString), "{yellow}#%d/%d", newrank, RankTotal);
 		
-		if(newrank < currentrank) Format(RankPwndString, sizeof(RankPwndString), "{blue}Beaten {Red}%s{blue}! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrName, WrTime, wrdiff);
+		if(newrank < currentrank) Format(RankPwndString, sizeof(RankPwndString), "{blue}Beaten {blue}%s{blue}! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrName, WrTime, wrdiff);
 	}	
 	else if(NewPersonalRecord)
 	{
 		FormatEx(RankString, sizeof(RankString), "{orange}#%d/%d", newrank, RankTotal);
 		
-		FormatEx(RankPwndString, sizeof(RankPwndString), "You have improved {red}yourself! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrTime, wrdiff);
+		FormatEx(RankPwndString, sizeof(RankPwndString), "You have improved yourself! {yellow}[%s]{blue} by {yellow}[%.2fs]", WrTime, wrdiff);
 	}
 	
 	if(ranked)
@@ -226,12 +226,12 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 		{
 			if(bAll)
 			{
-				CPrintToChatAll("%s%s%s {red}%s{blue} finished in {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, name, TimeString, RankString);
+				CPrintToChatAll("%s%s%s {blue}%s finished in {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, name, TimeString, RankString);
 				CPrintToChatAll("%s", RankPwndString);
 			}
 			else
 			{
-				CPrintToChat(client, "%s%s%s {red}You{blue} finished in {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
+				CPrintToChat(client, "%s%s%s {blue}You finished in {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
 				CPrintToChat(client, "%s", RankPwndString);
 			}
 		}
@@ -239,18 +239,18 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 		{
 			if(bAll)
 			{
-				CPrintToChatAll("%s%s%s {red}%s{blue} finished in {yellow}[%ss] {blue}[WR %.2fs] %s", PLUGIN_PREFIX2, BonusString, StyleString, name, TimeString, time-lasttime, RankString);
+				CPrintToChatAll("%s%s%s {blue}%s finished in {yellow}[%ss] {blue}[WR %.2fs] %s", PLUGIN_PREFIX2, BonusString, StyleString, name, TimeString, time-lasttime, RankString);
 				CPrintToChatAll("%s", RankPwndString);
 			}
 			else
 			{
-				CPrintToChat(client, "%s%s%s {red}You{blue} finished in {yellow}[%ss] {blue}[WR %.2fs] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, time-lasttime, RankString);
+				CPrintToChat(client, "%s%s%s {blue}You finished in {yellow}[%ss] {blue}[WR %.2fs] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, time-lasttime, RankString);
 				CPrintToChat(client, "%s", RankPwndString);
 			}
 		}
 		else
 		{
-			CPrintToChat(client, "%s%s%s {red}You{blue} finished in {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
+			CPrintToChat(client, "%s%s%s {blue}You finished in {yellow}[%ss] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, RankString);
 		}
 	}
 }
