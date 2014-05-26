@@ -1,0 +1,3 @@
+Timer-Hidecmds
+
+This plugin prevents all server commands such as !r, !wr, !menu etc.. from being displayed in the chat, so your chat will stay clean.
