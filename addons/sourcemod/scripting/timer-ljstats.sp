@@ -1338,6 +1338,7 @@ public Action:LJStats(client, bool:fail)
 	{
 		distance = GetVectorDistance(temp1, temp2) + 32.0;
 	}
+	
 	LJ_SyncRate[client] = 0.0;
 	new good, total;
 	for(new i = 0; i <= g_Strafe[client]; i++)
@@ -1446,7 +1447,7 @@ public Action:LJStats(client, bool:fail)
 			}
 		}
 	}
-	if(distance < 200.0)
+	if(distance < 200.0 || (distance > 260 && g_Strafe[client] < 3))
 	{
 		return Plugin_Handled;
 	}
