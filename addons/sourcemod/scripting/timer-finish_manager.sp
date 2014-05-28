@@ -19,6 +19,7 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	cvarMode = CreateConVar("timer_finish_mode", "0", "0:Disable 1:Slay player 2:slay all other players 3:Slay all players 4:Teleport to bonusstart zone");
+	AutoExecConfig(true, "timer/finish_manager.cfg");
 }
 
 public OnClientStartTouchZoneType(client, MapZoneType:type)
