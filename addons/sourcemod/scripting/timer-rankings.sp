@@ -1379,6 +1379,9 @@ ShowConnectMsg(client)
 	if(g_iCurrentPoints[client] < 0)
 		return;
 	
+	if(g_iCurrentIndex[client] < 0)
+		return;
+	
 	g_bShowConnectMsg[client] = false;
 	
 	decl String:sNameBuffer[1024];
