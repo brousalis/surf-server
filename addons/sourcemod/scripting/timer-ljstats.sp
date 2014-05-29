@@ -52,17 +52,17 @@ enum ReadyType
 new String:JumpName[JumpType][128] = 
 {
 	"None",
-	"LongJump",
-	"DropJump",
-	"UpJump",
-	"LadderStrafe",
-	"WeirdJump",
-	"WeirdJump-Drop",
-	"WeirdJump+Up",
-	"BhopJump",
-	"BhopUpJump",
-	"BlockLongJump",
-	"BlockBhopJump"
+	"Long Jump",
+	"Drop Jump",
+	"Up Jump",
+	"Ladder Strafe",
+	"Weird Jump",
+	"Weird Jump -Drop",
+	"Weird Jump +Up",
+	"Bhop Jump",
+	"Bhop Up Jump",
+	"Block Long Jump",
+	"Block Bhop Jump"
 };
 
 /**********************
@@ -1586,14 +1586,14 @@ public Action:LJStats(client, bool:fail)
 	{
 		if(distance >= g_Print_WJ)
 		{
-			PrintToChatLJ("\x04[\x01%s\x04]\x03%N - \x01%.3f\x04units!",JumpName[J_type],client,distance);
+			PrintToChatLJ("\x04[\x01%s\x04] \x03%N - \x01%.3f\x04 units!",JumpName[J_type],client,distance);
 		}
 	}
 	else if(J_type == JumpType_LongJump)
 	{
 		if(distance >= g_Print_LJ)
 		{
-			PrintToChatLJ("\x04[\x01%s\x04]\x03%N - \x01%.3f\x04units!",JumpName[J_type],client,distance);
+			PrintToChatLJ("\x04[\x01%s\x04] \x03%N - \x01%.3f\x04 units!",JumpName[J_type],client,distance);
 			PlayLJSound(client, distance);
 		}
 	}
@@ -1601,7 +1601,7 @@ public Action:LJStats(client, bool:fail)
 	{
 		if(blockdistance >= g_Print_Block_LJ)
 		{
-			PrintToChatLJ("\x04[\x01%s\x04]\x03%N - \x01%.0f\x04units!\n (actual : %.3f, Edge : %.3f)",JumpName[J_type],client,blockdistance, distance, g_EdgeDist[client]);
+			PrintToChatLJ("\x04[\x01%s\x04] \x03%N - \x01%.0f\x04 units!\n (actual : %.3f, Edge : %.3f)",JumpName[J_type],client,blockdistance, distance, g_EdgeDist[client]);
 			PlayLJSound(client, distance);
 		}
 	}
@@ -1609,14 +1609,14 @@ public Action:LJStats(client, bool:fail)
 	{
 		if(blockdistance >= g_Print_Block_BJ)
 		{
-			PrintToChatLJ("\x04[\x01%s\x04]\x03%N - \x01%.0f\x04units!\n (actual : %.3f, Edge : %.3f)",JumpName[J_type],client,blockdistance, distance, g_EdgeDist[client]);
+			PrintToChatLJ("\x04[\x01%s\x04] \x03%N - \x01%.0f\x04 units!\n (actual : %.3f, Edge : %.3f)",JumpName[J_type],client,blockdistance, distance, g_EdgeDist[client]);
 		}
 	}
 	else if(J_type == JumpType_BhopJump||J_type == JumpType_BhopUpJump)
 	{
 		if(distance >= g_Print_BJ)
 		{
-			PrintToChatLJ("\x04[\x05%s\x04]\x03%N - \x01%.3f\x04units!",JumpName[J_type],client,distance);
+			PrintToChatLJ("\x04[\x05%s\x04] \x03%N - \x01%.3f\x04 units!",JumpName[J_type],client,distance);
 		}
 	}
 	
