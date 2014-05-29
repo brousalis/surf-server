@@ -170,11 +170,11 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	
 	if(bonus == 1)
 	{
-		FormatEx(BonusString, sizeof(BonusString), " {green}[bonus]");
+		FormatEx(BonusString, sizeof(BonusString), " {green}[Bonus]");
 	}
 	else if(bonus == 2)
 	{
-		FormatEx(BonusString, sizeof(BonusString), " {green}[short]");
+		FormatEx(BonusString, sizeof(BonusString), " {green}[Short]");
 	}	
 	
 	new String:RankString[128], String:RankPwndString[128];
