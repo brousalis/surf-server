@@ -542,7 +542,7 @@ public Action:Command_ljmode(client, args)
 			if(result != Plugin_Handled&&result != Plugin_Stop)
 			{
 				g_bLJmode[client] = false;
-				PrintToChat(client, "\x01[\x05LJstats\x01]\x03LJ\x01 is now turned off.");
+				PrintToChat(client, "\x01[\x05LJstats\x01] \x03LJ \x01 is now turned off.");
 			}
 		}
 		else if(!g_bLJmode[client])
@@ -563,7 +563,7 @@ public Action:Command_ljmode(client, args)
 				{
 					g_bLJmode[client] = true;
 					g_bLJBlock[client] = false;
-					PrintToChat(client, "\x01[\x05LJstats\x01]\x03LJ\x01 is now turned on.");
+					PrintToChat(client, "\x01[\x05LJstats\x01] \x03LJ\x01  is now turned on.");
 				}
 			}
 		}
@@ -1251,7 +1251,7 @@ StartJumpStats(client, JumpType:type, Float:pos[3], Float:vel)
 	GetClientWeapon(client, weapon_name, sizeof(weapon_name));
 	if(StrEqual(weapon_name, "weapon_scout")||strlen(weapon_name)==0)
 	{
-		PrintToChat(client, "\x01[\x05LJstats\x01]\x03Wrong : \x01Check your weapon.");
+		PrintToChat(client, "\x01[\x05LJstats\x01] \x03Wrong : \x01Check your weapon.");
 		return;
 	}
 	new Float:gravity = GetEntityGravity(client);
@@ -1397,7 +1397,7 @@ public Action:LJStats(client, bool:fail)
 				PlayerReadyType[client] = ReadyType_BhopJump;
 				if(PreStrafe[client] >= g_InvalidUnit||distance >= g_InvalidUnit)
 				{
-					PrintToChat(client, "\x01[\x05LJstats\x01]\x03Wrong jump.");
+					PrintToChat(client, "\x01[\x05LJstats\x01] \x03Wrong jump.");
 					return Plugin_Handled;
 				}
 				if(distance <= g_Stop_LJ && !fail)
