@@ -34,6 +34,7 @@ public OnMapStart()
 	
 	new maxEnt = GetMaxEntities();
 	decl String:sClassName[64];
+	
 	for (new i = MaxClients; i < maxEnt; i++)
 	{
 		if (IsValidEdict(i) && IsValidEntity(i) && GetEdictClassname(i, sClassName, sizeof(sClassName)))
@@ -51,7 +52,7 @@ public OnMapStart()
 		}
 	}
 	
-	if(CTspawns < minspawns)
+	if(CTspawns && CTspawns < minspawns)
 	{
 		
 		for(new i=CTspawns; i<=minspawns ;i++)
@@ -64,9 +65,8 @@ public OnMapStart()
 		}
 	}
 	
-	if(Tspawns < minspawns)
+	if(Tspawns && Tspawns < minspawns)
 	{
-		
 		for(new i=Tspawns; i<=minspawns ;i++)
 		{
 			new entity = CreateEntityByName("info_player_terrorist");
