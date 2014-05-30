@@ -873,6 +873,18 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 	if(!g_iEnabled || g_hDatabase == INVALID_HANDLE || !g_bAuthed[author] || !g_iDisplayMethod)
 		return Plugin_Continue;
 
+	if(author && GetClientTeam(author) <= CS_TEAM_SPECTATOR)
+	{
+		ClearArray(recipients);
+		for (new i = 1; i <= MaxClients; i++)
+		{
+			if (IsValidClient(i))
+			{
+				PushArrayCell(recipients, i);
+			}
+		}
+	}
+	
 	if(g_iDisplayMethod < 0)
 	{
 		new iDisplay = (g_iDisplayMethod * -1);
@@ -2617,4 +2629,13 @@ public Action:event_disconnect(Handle:hEvent, const String:szEventName[], bool:b
 	}
 	
 	return Plugin_Continue;
+}
+
+stock bool:IsValidClient(client, bool:nobots = true)
+{
+	if (client <= 0 || client > MaxClients || !IsClientConnected(client) || (nobots && IsFakeClient(client)))
+	{
+		return false;
+	}
+	return IsClientInGame(client);
 }
