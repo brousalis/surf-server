@@ -43,7 +43,10 @@ enum MapZoneType
 	ZtNoAuto, //34
 	ZtHover, //35
 	ZtReset, //36
-	ZtFreeStyle //37
+	ZtFreeStyle, //37
+	ZtBlockUse, //38
+	ZtBlockDuck, //39
+	ZtBlockAttack //40
 }
 
 /* Forwards */

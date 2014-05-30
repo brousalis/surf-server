@@ -330,6 +330,21 @@ public OnTimerStarted(client)
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
+	if(buttons & IN_USE && IsPlayerTouchingZoneType(client, ZtBlockUse))
+	{
+		buttons &= ~IN_USE;
+	}
+	
+	if(buttons & IN_DUCK && IsPlayerTouchingZoneType(client, ZtBlockDuck))
+	{
+		buttons &= ~IN_DUCK;
+	}
+	
+	if(buttons & IN_ATTACK && IsPlayerTouchingZoneType(client, ZtBlockAttack))
+	{
+		buttons &= ~IN_ATTACK;
+	}
+	
 	if(g_mapZoneEditors[client][Step] == 0)
 		return Plugin_Continue;
 	
@@ -1536,6 +1551,7 @@ DisplaySelectZoneTypeMenu(client, category)
 		AddMenuItem(menu, "cat_teleport", "Teleport");
 		AddMenuItem(menu, "cat_control", "Control");
 		AddMenuItem(menu, "cat_speed", "Speed");
+		AddMenuItem(menu, "cat_block", "Block Keys");
 		AddMenuItem(menu, "cat_other", "Other");
 	}
 	else if(category == 1)
@@ -1594,6 +1610,12 @@ DisplaySelectZoneTypeMenu(client, category)
 	}
 	else if(category == 8)
 	{
+		AddMenuItem(menu, "blockuse", "Block Use");
+		AddMenuItem(menu, "blockduck", "Block Duck");
+		AddMenuItem(menu, "blockattack", "Block Attack");
+	}
+	else if(category == 9)
+	{
 		AddMenuItem(menu, "longjump", "Long Jump Stats");
 		AddMenuItem(menu, "arena", "PvP Arena");
 		AddMenuItem(menu, "jail", "Jail");
@@ -1648,9 +1670,13 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			{
 				DisplaySelectZoneTypeMenu(client, 7);
 			}
-			else if(StrEqual(info, "cat_other"))
+			else if(StrEqual(info, "cat_block"))
 			{
 				DisplaySelectZoneTypeMenu(client, 8);
+			}
+			else if(StrEqual(info, "cat_other"))
+			{
+				DisplaySelectZoneTypeMenu(client, 9);
 			}
 			else if(StrEqual(info, "start"))
 			{
@@ -1907,6 +1933,24 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			{
 				zonetype = ZtFreeStyle;
 				ZoneName = "Freestyle Zone";
+				valid = true;
+			}
+			else if(StrEqual(info, "blockuse"))
+			{
+				zonetype = ZtBlockUse;
+				ZoneName = "Block Use";
+				valid = true;
+			}
+			else if(StrEqual(info, "blockduck"))
+			{
+				zonetype = ZtBlockDuck;
+				ZoneName = "Block Duck";
+				valid = true;
+			}
+			else if(StrEqual(info, "blockattack"))
+			{
+				zonetype = ZtBlockAttack;
+				ZoneName = "Block Attack";
 				valid = true;
 			}
 			
@@ -3783,6 +3827,11 @@ public Native_IsPlayerTouchingZoneType(Handle:plugin, numParams)
 	new client = GetNativeCell(1);
 	new MapZoneType:type = GetNativeCell(2);
 	
+	return IsPlayerTouchingZoneType(client, type);
+}
+
+IsPlayerTouchingZoneType(client, MapZoneType:type)
+{
 	for (new i = 0; i < g_mapZonesCount; i++)
 	{
 		if(g_mapZones[i][Type] != type)
@@ -3791,6 +3840,7 @@ public Native_IsPlayerTouchingZoneType(Handle:plugin, numParams)
 		if(g_bZone[i][client])
 			return 1;
 	}
+	
 	return 0;
 }
 
