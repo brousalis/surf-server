@@ -204,11 +204,11 @@ public OnPluginStart()
 	
 	g_BeamSpeed = CreateConVar("timer_beam_speed", "0", "Moving speed of beam sprite.");
 	
-	g_BeamDefaultPath = CreateConVar("timer_beam_sprite_default", "materials/sprites/laserbeam.vmt", "The laser sprite for zones (default sprite).");
-	g_BeamBonusEndZonePath = CreateConVar("timer_beam_sprite_bonus_end", "materials/sprites/laserbeam.vmt", "The laser sprite for zones (bonus end zone).");
-	g_BeamBonusStartZonePath = CreateConVar("timer_beam_sprite_bonus_start", "materials/sprites/laserbeam.vmt", "The laser sprite for zones (bonus start zone).");
-	g_BeamEndZonePath = CreateConVar("timer_beam_sprite_end", "materials/sprites/laserbeam.vmt", "The laser sprite for zones (end zone).");
-	g_BeamStartZonePath = CreateConVar("timer_beam_sprite_start", "materials/sprites/laserbeam.vmt", "The laser sprite for zones (start zone).");
+	g_BeamDefaultPath = CreateConVar("timer_beam_sprite_default", "materials/sprites/laserbeam", "The laser sprite for zones (default sprite).");
+	g_BeamBonusEndZonePath = CreateConVar("timer_beam_sprite_bonus_end", "materials/sprites/laserbeam", "The laser sprite for zones (bonus end zone).");
+	g_BeamBonusStartZonePath = CreateConVar("timer_beam_sprite_bonus_start", "materials/sprites/laserbeam", "The laser sprite for zones (bonus start zone).");
+	g_BeamEndZonePath = CreateConVar("timer_beam_sprite_end", "materials/sprites/laserbeam", "The laser sprite for zones (end zone).");
+	g_BeamStartZonePath = CreateConVar("timer_beam_sprite_start", "materials/sprites/laserbeam", "The laser sprite for zones (start zone).");
 	
 	Sound_TeleLast = CreateConVar("timer_sound_tele_last", "ui/freeze_cam.wav", "");
 	Sound_TeleNext = CreateConVar("timer_sound_tele_next", "ui/freeze_cam.wav", "");
@@ -977,18 +977,67 @@ public OnMapStart()
 	CreateTimer(1.0, DrawZones, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 	CreateTimer(4.0, CheckEntitysLoaded, _, TIMER_FLAG_NO_MAPCHANGE);
 	
-	precache_laser_default = PrecacheModel("materials/sprites/laserbeam.vmt");
+	new String:spritebuffer[256];
 	
-	if(!IsModelPrecached(g_sBeamBonusEndZonePath))
-		precache_laser_bonus_end = PrecacheModel(g_sBeamBonusEndZonePath);
-	if(!IsModelPrecached(g_sBeamBonusStartZonePath))
-		precache_laser_bonus_start = PrecacheModel(g_sBeamBonusStartZonePath);
-	if(!IsModelPrecached(g_sBeamEndZonePath))
-		precache_laser_end = PrecacheModel(g_sBeamEndZonePath);
-	if(!IsModelPrecached(g_sBeamStartZonePath))
-		precache_laser_start = PrecacheModel(g_sBeamStartZonePath);
-	if(!IsModelPrecached(g_sBeamShortEndZonePath))
-		precache_laser_short_end = PrecacheModel(g_sBeamShortEndZonePath);
+	//default sprite
+	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamDefaultPath);
+	if(!IsModelPrecached(spritebuffer))
+	{
+		precache_laser_default = PrecacheModel(spritebuffer);
+		AddFileToDownloadsTable(spritebuffer);
+		Format(spritebuffer, sizeof(spritebuffer), "%s.vtf", g_sBeamDefaultPath);
+		AddFileToDownloadsTable(spritebuffer);
+	}
+	
+	//start sprite
+	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamStartZonePath);
+	if(!IsModelPrecached(spritebuffer))
+	{
+		precache_laser_default = PrecacheModel(spritebuffer);
+		AddFileToDownloadsTable(spritebuffer);
+		Format(spritebuffer, sizeof(spritebuffer), "%s.vtf", g_sBeamStartZonePath);
+		AddFileToDownloadsTable(spritebuffer);
+	}
+	
+	//end sprite
+	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamEndZonePath);
+	if(!IsModelPrecached(spritebuffer))
+	{
+		precache_laser_default = PrecacheModel(spritebuffer);
+		AddFileToDownloadsTable(spritebuffer);
+		Format(spritebuffer, sizeof(spritebuffer), "%s.vtf", g_sBeamEndZonePath);
+		AddFileToDownloadsTable(spritebuffer);
+	}
+	
+	//short sprite
+	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamShortEndZonePath);
+	if(!IsModelPrecached(spritebuffer))
+	{
+		precache_laser_default = PrecacheModel(spritebuffer);
+		AddFileToDownloadsTable(spritebuffer);
+		Format(spritebuffer, sizeof(spritebuffer), "%s.vtf", g_sBeamShortEndZonePath);
+		AddFileToDownloadsTable(spritebuffer);
+	}
+	
+	//bonus start sprite
+	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamBonusStartZonePath);
+	if(!IsModelPrecached(spritebuffer))
+	{
+		precache_laser_default = PrecacheModel(spritebuffer);
+		AddFileToDownloadsTable(spritebuffer);
+		Format(spritebuffer, sizeof(spritebuffer), "%s.vtf", g_sBeamBonusStartZonePath);
+		AddFileToDownloadsTable(spritebuffer);
+	}
+	
+	//bonus end sprite
+	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamBonusEndZonePath);
+	if(!IsModelPrecached(spritebuffer))
+	{
+		precache_laser_default = PrecacheModel(spritebuffer);
+		AddFileToDownloadsTable(spritebuffer);
+		Format(spritebuffer, sizeof(spritebuffer), "%s.vtf", g_sBeamBonusEndZonePath);
+		AddFileToDownloadsTable(spritebuffer);
+	}
 	
 	for (new i = 1; i < MAXPLAYERS; i++)
 	{
