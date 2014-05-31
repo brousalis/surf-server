@@ -95,6 +95,21 @@ new g_bonuslevelColor[4] = { 0, 0, 255, 255 };
 new Handle:g_freeStyleZoneColor = INVALID_HANDLE;
 new g_freeStyleColor[4] = { 20, 20, 255, 200 };
 
+new Handle:g_BeamDefaultPath = INVALID_HANDLE;
+new String:g_sBeamDefaultPath[256];
+
+new Handle:g_BeamStartZonePath = INVALID_HANDLE;
+new String:g_sBeamStartZonePath[256];
+
+new Handle:g_BeamEndZonePath = INVALID_HANDLE;
+new String:g_sBeamEndZonePath[256];
+
+new Handle:g_BeamBonusStartZonePath = INVALID_HANDLE;
+new String:g_sBeamBonusStartZonePath[256];
+
+new Handle:g_BeamBonusEndZonePath = INVALID_HANDLE;
+new String:g_sBeamBonusEndZonePath[256];
+
 new Handle:Sound_TeleLast = INVALID_HANDLE;
 new String:SND_TELE_LAST[MAX_FILE_LEN];
 new Handle:Sound_TeleNext = INVALID_HANDLE;
@@ -175,6 +190,12 @@ public OnPluginStart()
 	g_shortEndZoneColor = CreateConVar("timer_shortendcolor", "255 99 25 255", "The color of the short end zone.");
 	g_freeStyleZoneColor = CreateConVar("timer_freestylecolor", "20 20 255 200", "The color of the short end zone.");
 	
+	g_BeamDefaultPath = CreateConVar("timer_beam_sprite_default", "materials/sprites/laserbeam.vmt", "The laser sprite for zones (default sprite).");
+	g_BeamBonusEndZonePath = CreateConVar("timer_beam_sprite_bonus_end", "materials/sprites/laserbeam.vmt", "The laser sprite for zones (bonus end zone).");
+	g_BeamBonusStartZonePath = CreateConVar("timer_beam_sprite_bonus_start", "materials/sprites/laserbeam.vmt", "The laser sprite for zones (bonus start zone).");
+	g_BeamEndZonePath = CreateConVar("timer_beam_sprite_end", "materials/sprites/laserbeam.vmt", "The laser sprite for zones (end zone).");
+	g_BeamStartZonePath = CreateConVar("timer_beam_sprite_start", "materials/sprites/laserbeam.vmt", "The laser sprite for zones (start zone).");
+	
 	Sound_TeleLast = CreateConVar("timer_sound_tele_last", "ui/freeze_cam.wav", "");
 	Sound_TeleNext = CreateConVar("timer_sound_tele_next", "ui/freeze_cam.wav", "");
 	Sound_TimerStart = CreateConVar("timer_sound_start", "ui/freeze_cam.wav", "");
@@ -197,6 +218,12 @@ public OnPluginStart()
 	HookConVarChange(Sound_TeleLast, Action_OnSettingsChange);
 	HookConVarChange(Sound_TeleNext, Action_OnSettingsChange);
 	HookConVarChange(Sound_TimerStart, Action_OnSettingsChange);
+	
+	HookConVarChange(g_BeamBonusEndZonePath, Action_OnSettingsChange);
+	HookConVarChange(g_BeamBonusStartZonePath, Action_OnSettingsChange);
+	HookConVarChange(g_BeamDefaultPath, Action_OnSettingsChange);
+	HookConVarChange(g_BeamEndZonePath, Action_OnSettingsChange);
+	HookConVarChange(g_BeamStartZonePath, Action_OnSettingsChange);
 	
 	AutoExecConfig(true, "timer/timer-mapzones");
 	
@@ -933,7 +960,7 @@ public OnMapStart()
 	CreateTimer(1.0, DrawZones, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 	CreateTimer(4.0, CheckEntitysLoaded, _, TIMER_FLAG_NO_MAPCHANGE);
 	
-	precache_laser = PrecacheModel("materials/sprites/laserbeam.vmt");
+	precache_laser = PrecacheModel("materials/sprites/testregenbogen.vmt");
 	
 	for (new i = 1; i < MAXPLAYERS; i++)
 	{
@@ -1049,6 +1076,20 @@ public Action_OnSettingsChange(Handle:cvar, const String:oldvalue[], const Strin
 		g_bPreSpeedStart = GetConVarBool(g_PreSpeedStart);
 	else if (cvar == g_PreSpeedBonusStart)
 		g_bPreSpeedBonusStart = GetConVarBool(g_PreSpeedBonusStart);
+	else if (cvar == g_BeamBonusEndZonePath)
+		FormatEx(g_sBeamBonusEndZonePath, sizeof(g_sBeamBonusEndZonePath) ,"%s", newvalue);
+	
+	else if (cvar == g_BeamBonusStartZonePath)
+		FormatEx(g_sBeamBonusStartZonePath, sizeof(g_sBeamBonusStartZonePath) ,"%s", newvalue);
+	
+	else if (cvar == g_BeamDefaultPath)
+		FormatEx(g_sBeamDefaultPath, sizeof(g_sBeamDefaultPath) ,"%s", newvalue);
+	
+	else if (cvar == g_BeamEndZonePath)
+		FormatEx(g_sBeamEndZonePath, sizeof(g_sBeamEndZonePath) ,"%s", newvalue);
+	
+	else if (cvar == g_BeamStartZonePath)
+		FormatEx(g_sBeamStartZonePath, sizeof(g_sBeamStartZonePath) ,"%s", newvalue);
 }
 
 AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:point1[3], Float:point2[3])
@@ -2364,6 +2405,10 @@ IsInsideBox(Float:fPCords[3], Float:fbsx, Float:fbsy, Float:fbsz, Float:fbex, Fl
 
 DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 {
+	color[0] = 255;
+	color[1] = 255;
+	color[2] = 255;
+	
 	if(g_Settings[ZoneEffects])
 	{
 		//initialize tempoary variables bottom front
@@ -2433,24 +2478,25 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat)
 		fRightTopBack[2] = fFrom[2];
 		
 		//create the box
-		TE_SetupBeamPoints(lefttopfront,righttopfront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,10,0.0,color,0);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(lefttopfront,fLeftTopBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,10,0.0,color,0);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(fRightTopBack,fLeftTopBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,10,0.0,color,0);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(fRightTopBack,righttopfront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,10,0.0,color,0);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(righttopfront,lefttopfront,precache_laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,5);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(lefttopfront,fLeftTopBack,precache_laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,5);TE_SendToAll(0.0);
+		
+		TE_SetupBeamPoints(fLeftTopBack,fRightTopBack,precache_laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,5);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fRightTopBack,righttopfront,precache_laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,5);TE_SendToAll(0.0);
 		
 		if(!flat)
 		{
-			TE_SetupBeamPoints(fLeftBottomFront,fRightBottomFront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fLeftBottomFront,fLeftBottomBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fLeftBottomFront,lefttopfront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftBottomFront,fRightBottomFront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftBottomFront,fLeftBottomBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftBottomFront,lefttopfront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
 			
 			
-			TE_SetupBeamPoints(fRightBottomBack,fLeftBottomBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fRightBottomBack,fRightBottomFront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fRightBottomBack,fRightTopBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightBottomBack,fLeftBottomBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightBottomBack,fRightBottomFront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightBottomBack,fRightTopBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
 			
-			TE_SetupBeamPoints(fRightBottomFront,righttopfront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fLeftBottomBack,fLeftTopBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],1.0,0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightBottomFront,righttopfront,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftBottomBack,fLeftTopBack,precache_laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
 		}
 	}
 }
