@@ -18,7 +18,7 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	cvarSpawns = CreateConVar("timer_enforce_spawns", "32", "Amount of spawnpoints to enforce each team");
-	AutoExecConfig(true, "timer/unlimited_spawnpoints.cfg");
+	AutoExecConfig(true, "timer/unlimited_spawnpoints");
 }
 
 public OnMapStart()
