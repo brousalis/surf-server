@@ -202,9 +202,10 @@ public OnPluginStart()
 	g_shortEndZoneColor = CreateConVar("timer_shortendcolor", "255 99 25 255", "The color of the short end zone.");
 	g_freeStyleZoneColor = CreateConVar("timer_freestylecolor", "20 20 255 200", "The color of the short end zone.");
 	
-	g_BeamSpeed = CreateConVar("timer_beam_speed", "0", "Moving speed of beam sprite.");
+	g_BeamSpeed = CreateConVar("timer_beam_speed", "10", "Moving speed of beam sprite.");
 	
 	g_BeamDefaultPath = CreateConVar("timer_beam_sprite_default", "materials/sprites/laserbeam", "The laser sprite for zones (default sprite).");
+	g_BeamShortEndZonePath = CreateConVar("timer_beam_sprite_short_end", "materials/sprites/laserbeam", "The laser sprite for zones (bonus end zone).");
 	g_BeamBonusEndZonePath = CreateConVar("timer_beam_sprite_bonus_end", "materials/sprites/laserbeam", "The laser sprite for zones (bonus end zone).");
 	g_BeamBonusStartZonePath = CreateConVar("timer_beam_sprite_bonus_start", "materials/sprites/laserbeam", "The laser sprite for zones (bonus start zone).");
 	g_BeamEndZonePath = CreateConVar("timer_beam_sprite_end", "materials/sprites/laserbeam", "The laser sprite for zones (end zone).");
@@ -928,10 +929,46 @@ public Action:NPC_Use(caller, activator)
 
 public OnConfigsExecuted()
 {
+	//Sounds
 	CacheSounds();
+	
+	//Sprites
+	GetConVarString(g_BeamDefaultPath, g_sBeamDefaultPath, sizeof(g_sBeamDefaultPath));
+	GetConVarString(g_BeamStartZonePath, g_sBeamStartZonePath, sizeof(g_sBeamStartZonePath));
+	GetConVarString(g_BeamEndZonePath, g_sBeamEndZonePath, sizeof(g_sBeamEndZonePath));
+	GetConVarString(g_BeamBonusStartZonePath, g_sBeamBonusStartZonePath, sizeof(g_sBeamBonusStartZonePath));
+	GetConVarString(g_BeamBonusEndZonePath, g_sBeamBonusEndZonePath, sizeof(g_sBeamBonusEndZonePath));
+	GetConVarString(g_BeamShortEndZonePath, g_sBeamShortEndZonePath, sizeof(g_sBeamShortEndZonePath));
+	
+	InitZoneSprites();
+	
+	//Colors
+	new String:buffer[128];
+	GetConVarString(g_startMapZoneColor, buffer, sizeof(buffer));
+	ParseColor(buffer, g_startColor);
+	GetConVarString(g_endMapZoneColor, buffer, sizeof(buffer));
+	ParseColor(buffer, g_endColor);
+	GetConVarString(g_startBonusZoneColor, buffer, sizeof(buffer));
+	ParseColor(buffer, g_bonusstartColor);
+	GetConVarString(g_endBonusZoneColor, buffer, sizeof(buffer));
+	ParseColor(buffer, g_bonusendColor);
+	GetConVarString(g_glitch1ZoneColor, buffer, sizeof(buffer));
+	ParseColor(buffer, g_stopColor);
+	GetConVarString(g_glitch2ZoneColor, buffer, sizeof(buffer));
+	ParseColor(buffer, g_restartColor);
+	GetConVarString(g_glitch3ZoneColor, buffer, sizeof(buffer));
+	ParseColor(buffer, g_telelastColor);
+	GetConVarString(g_glitch4ZoneColor, buffer, sizeof(buffer));
+	ParseColor(buffer, g_telenextColor);
+	GetConVarString(g_levelZoneColor, buffer, sizeof(buffer));
+	ParseColor(buffer, g_levelColor);
+	GetConVarString(g_bonusLevelZoneColor, buffer, sizeof(buffer));
+	ParseColor(buffer, g_bonuslevelColor);
+	GetConVarString(g_freeStyleZoneColor, buffer, sizeof(buffer));
+	ParseColor(buffer, g_freeStyleColor);
 }
 
-public CacheSounds()
+CacheSounds()
 {
 	GetConVarString(Sound_TeleLast, SND_TELE_LAST, sizeof(SND_TELE_LAST));
 	PrepareSound(SND_TELE_LAST);
@@ -965,6 +1002,8 @@ public OnMapStart()
 	LoadPhysics();
 	LoadTimerSettings();
 	
+	InitZoneSprites();
+	
 	if(g_Settings[TerminateRoundEnd]) ServerCommand("mp_ignore_round_win_conditions 1");
 	else ServerCommand("mp_ignore_round_win_conditions 0");
 	
@@ -977,9 +1016,20 @@ public OnMapStart()
 	CreateTimer(1.0, DrawZones, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 	CreateTimer(4.0, CheckEntitysLoaded, _, TIMER_FLAG_NO_MAPCHANGE);
 	
+	for (new i = 1; i < MAXPLAYERS; i++)
+	{
+		g_clientLevel[i] = 0;
+	}
+	
+	PrecacheModel("models/props_junk/wood_crate001a.mdl", true);
+}
+
+InitZoneSprites()
+{
 	new String:spritebuffer[256];
 	
 	//default sprite
+	GetConVarString(g_BeamDefaultPath, g_sBeamDefaultPath, sizeof(g_sBeamDefaultPath));
 	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamDefaultPath);
 	if(!IsModelPrecached(spritebuffer))
 	{
@@ -990,61 +1040,59 @@ public OnMapStart()
 	}
 	
 	//start sprite
+	GetConVarString(g_BeamStartZonePath, g_sBeamStartZonePath, sizeof(g_sBeamStartZonePath));
 	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamStartZonePath);
 	if(!IsModelPrecached(spritebuffer))
 	{
-		precache_laser_default = PrecacheModel(spritebuffer);
+		precache_laser_start = PrecacheModel(spritebuffer);
 		AddFileToDownloadsTable(spritebuffer);
 		Format(spritebuffer, sizeof(spritebuffer), "%s.vtf", g_sBeamStartZonePath);
 		AddFileToDownloadsTable(spritebuffer);
 	}
 	
 	//end sprite
+	GetConVarString(g_BeamEndZonePath, g_sBeamEndZonePath, sizeof(g_sBeamEndZonePath));
 	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamEndZonePath);
 	if(!IsModelPrecached(spritebuffer))
 	{
-		precache_laser_default = PrecacheModel(spritebuffer);
+		precache_laser_end = PrecacheModel(spritebuffer);
 		AddFileToDownloadsTable(spritebuffer);
 		Format(spritebuffer, sizeof(spritebuffer), "%s.vtf", g_sBeamEndZonePath);
 		AddFileToDownloadsTable(spritebuffer);
 	}
 	
 	//short sprite
+	GetConVarString(g_BeamShortEndZonePath, g_sBeamShortEndZonePath, sizeof(g_sBeamShortEndZonePath));
 	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamShortEndZonePath);
 	if(!IsModelPrecached(spritebuffer))
 	{
-		precache_laser_default = PrecacheModel(spritebuffer);
+		precache_laser_short_end = PrecacheModel(spritebuffer);
 		AddFileToDownloadsTable(spritebuffer);
 		Format(spritebuffer, sizeof(spritebuffer), "%s.vtf", g_sBeamShortEndZonePath);
 		AddFileToDownloadsTable(spritebuffer);
 	}
 	
 	//bonus start sprite
+	GetConVarString(g_BeamBonusStartZonePath, g_sBeamBonusStartZonePath, sizeof(g_sBeamBonusStartZonePath));
 	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamBonusStartZonePath);
 	if(!IsModelPrecached(spritebuffer))
 	{
-		precache_laser_default = PrecacheModel(spritebuffer);
+		precache_laser_bonus_start = PrecacheModel(spritebuffer);
 		AddFileToDownloadsTable(spritebuffer);
 		Format(spritebuffer, sizeof(spritebuffer), "%s.vtf", g_sBeamBonusStartZonePath);
 		AddFileToDownloadsTable(spritebuffer);
 	}
 	
 	//bonus end sprite
+	GetConVarString(g_BeamBonusEndZonePath, g_sBeamBonusEndZonePath, sizeof(g_sBeamBonusEndZonePath));
 	Format(spritebuffer, sizeof(spritebuffer), "%s.vmt", g_sBeamBonusEndZonePath);
 	if(!IsModelPrecached(spritebuffer))
 	{
-		precache_laser_default = PrecacheModel(spritebuffer);
+		precache_laser_bonus_end = PrecacheModel(spritebuffer);
 		AddFileToDownloadsTable(spritebuffer);
 		Format(spritebuffer, sizeof(spritebuffer), "%s.vtf", g_sBeamBonusEndZonePath);
 		AddFileToDownloadsTable(spritebuffer);
 	}
-	
-	for (new i = 1; i < MAXPLAYERS; i++)
-	{
-		g_clientLevel[i] = 0;
-	}
-	
-	PrecacheModel("models/props_junk/wood_crate001a.mdl", true);
 }
 
 public Action:CheckEntitysLoaded(Handle:timer)
@@ -1144,29 +1192,59 @@ public Action_OnSettingsChange(Handle:cvar, const String:oldvalue[], const Strin
 	else if (cvar == g_freeStyleZoneColor)
 		ParseColor(newvalue, g_freeStyleColor);
 	else if (cvar == Sound_TeleLast)
+	{
 		FormatEx(SND_TELE_LAST, sizeof(SND_TELE_LAST) ,"%s", newvalue);
+	}
 	else if (cvar == Sound_TeleNext)
+	{
 		FormatEx(SND_TELE_NEXT, sizeof(SND_TELE_NEXT) ,"%s", newvalue);
+	}
 	else if (cvar == Sound_TimerStart)
+	{
 		FormatEx(SND_TIMER_START, sizeof(SND_TIMER_START) ,"%s", newvalue);
+	}
 	else if (cvar == g_PreSpeedStart)
+	{
 		g_bPreSpeedStart = GetConVarBool(g_PreSpeedStart);
+	}
 	else if (cvar == g_PreSpeedBonusStart)
+	{
 		g_bPreSpeedBonusStart = GetConVarBool(g_PreSpeedBonusStart);
+	}
 	else if (cvar == g_BeamSpeed)
+	{
 		g_iBeamSpeed = StringToInt(newvalue);
+	}
 	else if (cvar == g_BeamShortEndZonePath)
+	{
 		FormatEx(g_sBeamShortEndZonePath, sizeof(g_sBeamShortEndZonePath) ,"%s", newvalue);
+		InitZoneSprites();
+	}
 	else if (cvar == g_BeamBonusEndZonePath)
+	{
 		FormatEx(g_sBeamBonusEndZonePath, sizeof(g_sBeamBonusEndZonePath) ,"%s", newvalue);
+		InitZoneSprites();
+	}
 	else if (cvar == g_BeamBonusStartZonePath)
+	{
 		FormatEx(g_sBeamBonusStartZonePath, sizeof(g_sBeamBonusStartZonePath) ,"%s", newvalue);
+		InitZoneSprites();
+	}
 	else if (cvar == g_BeamDefaultPath)
+	{
 		FormatEx(g_sBeamDefaultPath, sizeof(g_sBeamDefaultPath) ,"%s", newvalue);
+		InitZoneSprites();
+	}
 	else if (cvar == g_BeamEndZonePath)
+	{
 		FormatEx(g_sBeamEndZonePath, sizeof(g_sBeamEndZonePath) ,"%s", newvalue);
+		InitZoneSprites();
+	}
 	else if (cvar == g_BeamStartZonePath)
+	{
 		FormatEx(g_sBeamStartZonePath, sizeof(g_sBeamStartZonePath) ,"%s", newvalue);
+		InitZoneSprites();
+	}
 }
 
 AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:point1[3], Float:point2[3])
@@ -2554,24 +2632,24 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat, laser = 
 		fRightTopBack[2] = fFrom[2];
 		
 		//create the box
-		TE_SetupBeamPoints(righttopfront,lefttopfront,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(lefttopfront,fLeftTopBack,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(fLeftTopBack,fRightTopBack,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(fRightTopBack,righttopfront,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(lefttopfront,righttopfront,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fLeftTopBack,lefttopfront,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fRightTopBack,fLeftTopBack,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(righttopfront,fRightTopBack,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
 		
 		if(!flat)
 		{
-			TE_SetupBeamPoints(fLeftBottomFront,fRightBottomFront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fLeftBottomFront,fLeftBottomBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fLeftBottomFront,lefttopfront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightBottomFront,fLeftBottomFront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftBottomBack,fLeftBottomFront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(lefttopfront,fLeftBottomFront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
 			
 			
-			TE_SetupBeamPoints(fRightBottomBack,fLeftBottomBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fRightBottomBack,fRightBottomFront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fRightBottomBack,fRightTopBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftBottomBack,fRightBottomBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightBottomFront,fRightBottomBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightTopBack,fRightBottomBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
 			
-			TE_SetupBeamPoints(fRightBottomFront,righttopfront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fLeftBottomBack,fLeftTopBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(righttopfront,fRightBottomFront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftTopBack,fLeftBottomBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
 		}
 	}
 }
