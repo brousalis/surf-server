@@ -2,23 +2,25 @@ Timer-Rankings
 
 This plugin ranks players by points and gives chat-tags for players rank. ( Requires simple chat processor )
 
-*Csgo*
 
-If you want to use the ranking system for csgo, follow these steps:
+
+
+// Csgo 
+
+If you want to use the chat rank system for csgo:
 
 1. Go to addons/sourcemod/configs/timer and change the name rankings-csgo.cfg to rankings.cfg
-2. Go to addons/sourcemod/scripting/include/timer.inc
-3. Find the line: //#define LEGACY_COLORS "CS:GO Color Support"
-4. Remove the // in front of #define and save the file.
-5. Go to cfg/sourcemod/timer/rankings.cfg for the rankings config.
+2. Make sure that you have enabled the csgo color support. Read the Readme.md for that!
 
 
-*Css*
 
-If you want to use the ranking system for css, follow these steps:
+
+
+// Css
+
+If you want to use the chat rank system for css:
 
 1. Go to addons/sourcemod/configs/timer and change the name rankings-css.cfg to rankings.cfg
-2. Go to cfg/sourcemod/timer/rankings.cfg for the rankings config.
 
 
 

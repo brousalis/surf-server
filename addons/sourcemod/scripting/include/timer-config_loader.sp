@@ -332,7 +332,7 @@ stock LoadTimerSettings()
 			g_Settings[ZoneResize] = KvGetFloat(hKv, "trigger_resize", 16.0);
 			g_Settings[ZoneTeleportZ] = KvGetFloat(hKv, "teleport_z", 10.0);
 			g_Settings[ZoneBeamHeight] = KvGetFloat(hKv, "beam_height", 0.0);
-			g_Settings[ZoneBeamThickness] = KvGetFloat(hKv, "beam_thickness", 1.0);
+			g_Settings[ZoneBeamThickness] = KvGetFloat(hKv, "beam_thickness", 4.0);
 			KvGetString(hKv, "npc_model", g_Settings[NPC_Path], 32);
 			KvGetString(hKv, "npc_double_model", g_Settings[NPC_Double_Path], 32);
 		}

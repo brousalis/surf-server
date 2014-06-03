@@ -37,7 +37,9 @@ with
 
 7.) Upload all files to your webserver.
 
-8.) Restart your server and have fun creating zones.
+8.) Upload the sound and materials folder to your fast download server.
+
+9.) Restart your server and have fun creating zones.
 (It's possible to import your old Timer 1.0.x Zones)
 
 #Update instructions
