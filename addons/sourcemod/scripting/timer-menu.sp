@@ -82,7 +82,7 @@ public Init_Commands()
 	Add_Command("!tpto - Teleport to another player", "timer-teleme.smx", g_Settings[PlayerTeleportEnable]);
 	Add_Command("!stuck - Teleport last stage (penalty time)", "timer-mapzones.smx", g_Settings[PlayerTeleportEnable]);
 	Add_Command("!hide - Hide other players", "timer-hide.smx");
-	Add_Command("!noclipme - Turn On/Off noclip mode", "timer-mapzones.smx", g_Settings[NoclipEnable]);
+	Add_Command("!nc - Turn On/Off noclip mode", "timer-mapzones.smx", g_Settings[NoclipEnable]);
 	Add_Command("!hud - Customize your HUD", "timer-hud.smx");
 	Add_Command("!challenge - Challenge another player [Steal points]", "timer-teams.smx", g_Settings[ChallengeEnable]);
 	Add_Command("!coop - Do it together ", "timer-teams.smx", g_Settings[CoopEnable]);
