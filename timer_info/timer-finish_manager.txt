@@ -1,0 +1,1 @@
+Allows to take a specific action when a player reaches end zone.
