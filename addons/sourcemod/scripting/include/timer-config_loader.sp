@@ -62,6 +62,8 @@ enum TimerSettings
 	Float:ZoneBeamThickness,
 	Float:ZoneResize,
 	Float:ZoneTeleportZ,
+	bool:DisableButtonSounds,
+	bool:DisableDoorSounds,
 	
 	//HUD
 	HUDUseMVPStars,
@@ -335,6 +337,8 @@ stock LoadTimerSettings()
 			g_Settings[ZoneBeamThickness] = KvGetFloat(hKv, "beam_thickness", 4.0);
 			KvGetString(hKv, "npc_model", g_Settings[NPC_Path], 32);
 			KvGetString(hKv, "npc_double_model", g_Settings[NPC_Double_Path], 32);
+			g_Settings[DisableButtonSounds] = bool:KvGetNum(hKv, "disable_button_sounds", 1);
+			g_Settings[DisableDoorSounds] = bool:KvGetNum(hKv, "disable_door_sounds", 1);
 		}
 		else if(StrEqual(sSectionName, "Hud"))
 		{

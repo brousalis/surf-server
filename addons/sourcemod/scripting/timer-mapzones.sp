@@ -4119,9 +4119,11 @@ stock SetPush(entity)
 
 public Action:Hook_NormalSound(clients[64], &numClients, String:sample[PLATFORM_MAX_PATH], &entity, &channel, &Float:volume, &level, &pitch, &flags)
 {
+	if (g_Settings[DisableDoorSounds])
 	if (StrContains(sample, "door") != -1)
 		return Plugin_Stop;
 	
+	if (g_Settings[DisableButtonSounds])
 	if (StrContains(sample, "button") != -1)
 		return Plugin_Stop;
 	
