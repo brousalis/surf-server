@@ -1088,7 +1088,11 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 							}
 						}
 						
-						Client_PrintHintText(client, "Prestrafe\n%.2f%s", newvelo, edgeinfo);
+						if(GetEngineVersion() == Engine_CSGO)
+							PrintHintText(client, "Prestrafe\n%.2f%s", newvelo, edgeinfo);
+						else if(GetEngineVersion() == Engine_CSS)
+							Client_PrintHintText(client, "Prestrafe\n%.2f%s", newvelo, edgeinfo);
+						
 						for (new i = 1; i <= MaxClients; i++)
 						{
 							if (IsClientInGame(i))
@@ -1106,7 +1110,10 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 										if(target <= 0 || target > MaxClients)
 											continue;
 										
-										Client_PrintHintText(i, "Prestrafe\n%.2f%s", newvelo, edgeinfo);
+										if(GetEngineVersion() == Engine_CSGO)
+											PrintHintText(client, "Prestrafe\n%.2f%s", newvelo, edgeinfo);
+										else if(GetEngineVersion() == Engine_CSS)
+											Client_PrintHintText(client, "Prestrafe\n%.2f%s", newvelo, edgeinfo);
 									}
 									else
 									{
@@ -1245,6 +1252,7 @@ ResetLJStats(client)
 		LJ_MaxSpeedStrafe[client][i] = 0.0;
 	}
 }
+
 StartJumpStats(client, JumpType:type, Float:pos[3], Float:vel)
 {
 	decl String:weapon_name[64];
@@ -1277,8 +1285,11 @@ StartJumpStats(client, JumpType:type, Float:pos[3], Float:vel)
 		}
 		Format(msg, 512, "%s\nEdge : %f", msg, g_EdgeDist[client]);
 	}
-
-	Client_PrintHintText(client, msg);
+	
+	if(GetEngineVersion() == Engine_CSGO)
+		PrintHintText(client, msg);
+	else if(GetEngineVersion() == Engine_CSS)
+		Client_PrintHintText(client, msg);
 	
 	for (new i = 1; i <= MaxClients; i++)
 	{
@@ -1297,7 +1308,10 @@ StartJumpStats(client, JumpType:type, Float:pos[3], Float:vel)
 					if(target <= 0 || target > MaxClients)
 						continue;
 					
-					Client_PrintHintText(i, msg);
+					if(GetEngineVersion() == Engine_CSGO)
+						PrintHintText(i, msg);
+					else if(GetEngineVersion() == Engine_CSS)
+						Client_PrintHintText(i, msg);
 				}
 				else
 				{
