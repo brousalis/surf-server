@@ -1578,7 +1578,7 @@ UpdateHUD_CSS(client)
 		{
 			Format(hintText,sizeof(hintText),"%sTimeleft: %d:%02d\n", hintText, g_iMap_TimeLeft/60, g_iMap_TimeLeft%60);
 		}
-		else Format(hintText,sizeof(hintText),"%sOvertime: %d:%02d\n", hintText, (RoundToFloor(g_iMap_TimeLeft*-1.0))/60, (RoundToFloor(g_iMap_TimeLeft*-1.0))%60);
+		else Format(hintText,sizeof(hintText),"%sTimeleft: %d:%02d\n", hintText, (RoundToFloor(g_iMap_TimeLeft*-1.0))/60, (RoundToFloor(g_iMap_TimeLeft*-1.0))%60);
 	}
 	
 	//speclist

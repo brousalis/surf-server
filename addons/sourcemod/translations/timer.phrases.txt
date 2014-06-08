@@ -460,21 +460,21 @@
 	
 	"No Target"
 	{
-		"en"			"No target."
+		"en"			"Invalid target"
 	}
 	
 	"Not Alive"
 	{
-		"en"			"You need to be alive to use this command."
+		"en"			"Spawn in order to use this command."
 	}
 	
 	"Hide Enabled"
 	{
-		"en"			"Hide other players enabled."
+		"en"			"Other players are now hidden."
 	}
 	
 	"Hide Disabled"
 	{
-		"en"			"Hide other players disabled."
+		"en"			"Other players are now visible."
 	}
 }
