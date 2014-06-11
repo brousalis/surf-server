@@ -44,7 +44,7 @@ public Action:PlayerJump(Handle:event, const String:name[], bool:dontBroadcast)
 {   
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
-	if(g_Physics[Timer_GetMode(client)][ModeQuakeBhop] == 1 && g_bIsSliding[client] == true)
+	if(g_Physics[Timer_GetStyle(client)][StyleQuakeBhop] == 1 && g_bIsSliding[client] == true)
 	{
 		new Float:finalvec[3];
 		finalvec[0]=g_fSpeed[client][0] * GetConVarFloat(g_cvJumpPercent);
@@ -62,7 +62,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	if(!IsPlayerAlive(client))
 		return Plugin_Continue;
 	
-	if(g_Physics[Timer_GetMode(client)][ModeQuakeBhop] != 1)
+	if(g_Physics[Timer_GetStyle(client)][StyleQuakeBhop] != 1)
 		return Plugin_Continue;
 	
 	if(GetEntityFlags(client) & FL_ONGROUND)

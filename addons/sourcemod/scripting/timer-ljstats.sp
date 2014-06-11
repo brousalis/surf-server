@@ -208,7 +208,7 @@ public Native_SetLJMode(Handle:plugin, numParams)
 	new client = GetNativeCell(1);
 	new bool:on = GetNativeCell(2);
 	
-	if(on && !g_Physics[Timer_GetMode(client)][ModeLJStats])
+	if(on && !g_Physics[Timer_GetStyle(client)][StyleLJStats])
 	{
 		//Don't allow wrong modes
 	}
@@ -555,7 +555,7 @@ public Action:Command_ljmode(client, args)
 				{
 					PrintToChat(client, "\x01[\x05LJstats\x01]\x03Can't turn LJmode on while this gravity.");
 				}
-				else if(!g_Physics[Timer_GetMode(client)][ModeLJStats])
+				else if(!g_Physics[Timer_GetStyle(client)][StyleLJStats])
 				{
 					PrintToChat(client, "\x01[\x05LJstats\x01]\x03Can't turn LJmode on while on this mode.");
 				}
@@ -1636,9 +1636,9 @@ public Action:LJStats(client, bool:fail)
 	
 	if(distance >= g_DB_Record)
 	{
-		new mode = Timer_GetMode(client);
+		new style = Timer_GetStyle(client);
 		
-		if(g_Physics[mode][ModeLJStats])
+		if(g_Physics[style][StyleLJStats])
 		{
 			if(IsValidType(J_type))
 			{

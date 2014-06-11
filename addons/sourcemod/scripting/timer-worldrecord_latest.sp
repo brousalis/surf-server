@@ -15,7 +15,7 @@
 enum Record
 {
 	String:RecordMap[64],
-	RecordBonus,
+	RecordTrack,
 	RecordStyle,
 	String:RecordAuth[32],
 	String:RecordName[64],
@@ -106,7 +106,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 	LoadLatestRecords();
 }
 
-public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank)
+public OnTimerRecord(client, track, mode, Float:time, Float:lasttime, currentrank, newrank)
 {
 	if(lasttime == 0.0 || time < lasttime) LoadLatestRecords();
 }
@@ -137,7 +137,7 @@ public LoadLatestRecordsCallback(Handle:owner, Handle:hndl, const String:error[]
 	while (SQL_FetchRow(hndl))
 	{
 		SQL_FetchString(hndl, 0, g_latestRecords[recordtype][recordCounter][RecordMap], 64);
-		g_latestRecords[recordtype][recordCounter][RecordBonus] = SQL_FetchInt(hndl, 1);
+		g_latestRecords[recordtype][recordCounter][RecordTrack] = SQL_FetchInt(hndl, 1);
 		g_latestRecords[recordtype][recordCounter][RecordStyle] = SQL_FetchInt(hndl, 2);
 		SQL_FetchString(hndl, 3, g_latestRecords[recordtype][recordCounter][RecordAuth], 32);
 		SQL_FetchString(hndl, 4, g_latestRecords[recordtype][recordCounter][RecordName], 64);
@@ -231,9 +231,9 @@ Menu_Latest(client, type)
 			decl String:buffer[512];
 			Format(buffer, sizeof(buffer), "[#%d] %s", i+1, sTime);
 			
-			if(g_latestRecords[type][i][RecordBonus] == 1)
+			if(g_latestRecords[type][i][RecordTrack] == TRACK_BONUS)
 				Format(buffer, sizeof(buffer), "%s [B]", buffer);
-			else if(g_latestRecords[type][i][RecordBonus] == 2)
+			else if(g_latestRecords[type][i][RecordTrack] == TRACK_SHORT)
 				Format(buffer, sizeof(buffer), "%s [S]", buffer);
 			
 			Format(buffer, sizeof(buffer), "%s - %s", buffer, g_latestRecords[type][i][RecordName]);
@@ -271,12 +271,12 @@ public Handle_Latest(Handle:menu, MenuAction:action, client, itemNum)
 			new String:buffer[512];
 			
 			Format(buffer, sizeof(buffer), "Map: %s", g_latestRecords[RECORD_ANY][id][RecordMap]);
-			if(g_latestRecords[RECORD_ANY][id][RecordBonus] == 1) Format(buffer, sizeof(buffer), "%s [Bonus]", buffer);
+			if(g_latestRecords[RECORD_ANY][id][RecordTrack] == TRACK_BONUS) Format(buffer, sizeof(buffer), "%s [Bonus]", buffer);
 			AddMenuItem(menu2, "any", buffer);
 			
 			if(g_Settings[MultimodeEnable])
 			{
-				Format(buffer, sizeof(buffer), "Style: %s", g_Physics[g_latestRecords[RECORD_ANY][id][RecordStyle]][ModeName]);
+				Format(buffer, sizeof(buffer), "Style: %s", g_Physics[g_latestRecords[RECORD_ANY][id][RecordStyle]][StyleName]);
 				AddMenuItem(menu2, "any", buffer);
 			}
 			
@@ -312,12 +312,12 @@ public Handle_LatestTop(Handle:menu, MenuAction:action, client, itemNum)
 			new String:buffer[512];
 			
 			Format(buffer, sizeof(buffer), "Map: %s", g_latestRecords[RECORD_TOP][id][RecordMap]);
-			if(g_latestRecords[RECORD_TOP][id][RecordBonus] == 1) Format(buffer, sizeof(buffer), "%s [Bonus]", buffer);
+			if(g_latestRecords[RECORD_TOP][id][RecordTrack] == TRACK_BONUS) Format(buffer, sizeof(buffer), "%s [Bonus]", buffer);
 			AddMenuItem(menu2, "top", buffer);
 			
 			if(g_Settings[MultimodeEnable])
 			{
-				Format(buffer, sizeof(buffer), "Style: %s", g_Physics[g_latestRecords[RECORD_TOP][id][RecordStyle]][ModeName]);
+				Format(buffer, sizeof(buffer), "Style: %s", g_Physics[g_latestRecords[RECORD_TOP][id][RecordStyle]][StyleName]);
 				AddMenuItem(menu2, "top", buffer);
 			}
 			
@@ -353,12 +353,12 @@ public Handle_LatestWorld(Handle:menu, MenuAction:action, client, itemNum)
 			new String:buffer[512];
 			
 			Format(buffer, sizeof(buffer), "Map: %s", g_latestRecords[RECORD_WORLD][id][RecordMap]);
-			if(g_latestRecords[RECORD_WORLD][id][RecordBonus] == 1) Format(buffer, sizeof(buffer), "%s [Bonus]", buffer);
+			if(g_latestRecords[RECORD_WORLD][id][RecordTrack] == TRACK_BONUS) Format(buffer, sizeof(buffer), "%s [Bonus]", buffer);
 			AddMenuItem(menu2, "world", buffer);
 			
 			if(g_Settings[MultimodeEnable])
 			{
-				Format(buffer, sizeof(buffer), "Style: %s", g_Physics[g_latestRecords[RECORD_WORLD][id][RecordStyle]][ModeName]);
+				Format(buffer, sizeof(buffer), "Style: %s", g_Physics[g_latestRecords[RECORD_WORLD][id][RecordStyle]][StyleName]);
 				AddMenuItem(menu2, "world", buffer);
 			}
 			

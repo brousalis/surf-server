@@ -25,7 +25,7 @@ public OnMapStart()
 	LoadTimerSettings();
 }
 
-public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank)
+public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentrank, newrank)
 {
 	new String:buffer[512];
 	decl String:auth[32];
@@ -33,7 +33,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	decl String:name[MAX_NAME_LENGTH];
 	GetClientName(client, name, sizeof(name));
 	
-	FormatEx(buffer, sizeof(buffer), "%s", g_Physics[mode][ModeOnFinishExec]);
+	FormatEx(buffer, sizeof(buffer), "%s", g_Physics[style][StyleOnFinishExec]);
 	
 	ReplaceString(buffer, sizeof(buffer), "{steamid}", auth, true);
 	ReplaceString(buffer, sizeof(buffer), "{playername}", name, true);

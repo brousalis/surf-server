@@ -40,7 +40,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	if(!IsPlayerAlive(client))
 		return Plugin_Continue;
 	
-	if(g_Physics[Timer_GetMode(client)][ModeAutoStrafe] != 1)
+	if(g_Physics[Timer_GetStyle(client)][StyleAutoStrafe] != 1)
 		return Plugin_Continue;
 	
 	if(GetEntityFlags(client) & FL_ONGROUND)

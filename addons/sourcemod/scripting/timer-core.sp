@@ -40,9 +40,9 @@ enum Timer
 	Float:PauseLastVelocity[3],
 	Float:PauseLastAngles[3],
 	Float:PauseTotalTime,
-	CurrentMode,
+	CurrentStyle,
 	FpsMax,
-	Bonus,
+	Track,
 	FinishCount,
 	BonusFinishCount,
 	ShortFinishCount,
@@ -109,12 +109,12 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Timer_GetStatus", Native_GetStatus);
 	CreateNative("Timer_GetPauseStatus", Native_GetPauseStatus);
 	
-	CreateNative("Timer_SetMode", Native_SetMode);
-	CreateNative("Timer_GetMode", Native_GetMode);
-	CreateNative("Timer_IsModeRanked", Native_IsModeRanked);
+	CreateNative("Timer_SetStyle", Native_SetStyle);
+	CreateNative("Timer_GetStyle", Native_GetStyle);
+	CreateNative("Timer_IsStyleRanked", Native_IsStyleRanked);
 	
-	CreateNative("Timer_GetBonus", Native_GetBonus);
-	CreateNative("Timer_SetBonus", Native_SetBonus);
+	CreateNative("Timer_GetTrack", Native_GetTrack);
+	CreateNative("Timer_SetTrack", Native_SetTrack);
 	
 	CreateNative("Timer_GetMapFinishCount", Native_GetMapFinishCount);
 	CreateNative("Timer_GetMapFinishBonusCount", Native_GetMapFinishBonusCount);
@@ -287,7 +287,7 @@ ClearFinishCounts()
 		g_timers[i][FinishCount] = 0;	
 		g_timers[i][BonusFinishCount] = 0;
 		g_timers[i][ShortFinishCount] = 0;
-		g_timers[i][Bonus] = 0;
+		g_timers[i][Track] = 0;
 	}
 }
 
@@ -661,7 +661,7 @@ ClearClientCache(client)
 	g_bestTimeCache[client][Time] = 0.0;	
 }
 
-FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
+FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 {
 	if (!IsClientInGame(client))
 		return;
@@ -673,16 +673,16 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	
 	//ignore unranked
 	if(g_timerPhysics) 
-		if (g_Physics[mode][ModeCategory] != MCategory_Ranked || !(bool:Timer_IsModeRanked(mode)))
+		if (g_Physics[style][StyleCategory] != MCategory_Ranked || !(bool:Timer_IsStyleRanked(style)))
 			return;
 	
 	//short end already triggered
-	if (g_timers[client][ShortEndReached] && bonus == 2)
+	if (g_timers[client][ShortEndReached] && track == 2)
 		return;
 	
 	if (time < 1.0)
 	{
-		Timer_Log(Timer_LogLevelWarning, "Detected illegal record by %N on %s [time:%.2f|mode:%d|bonus:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, mode, bonus, jumps, auth);
+		Timer_Log(Timer_LogLevelWarning, "Detected illegal record by %N on %s [time:%.2f|style:%d|track:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, style, track, jumps, auth);
 		return;
 	}
 	
@@ -690,12 +690,12 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	{
 		if (Timer_IsScripter(client))
 		{
-			Timer_Log(Timer_LogLevelWarning, "Detected scripter record by %N on %s [time:%.2f|mode:%d|bonus:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, mode, bonus, jumps, auth);
+			Timer_Log(Timer_LogLevelWarning, "Detected scripter record by %N on %s [time:%.2f|style:%d|track:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, style, track, jumps, auth);
 			return;
 		}
 	}
 	
-	if(bonus == 2) g_timers[client][ShortEndReached] = true;
+	if(track == TRACK_SHORT) g_timers[client][ShortEndReached] = true;
 	
 	//Record Info
 	new RecordId;
@@ -706,8 +706,8 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	new currentrank, newrank;	
 	if(g_timerWorldRecord) 
 	{
-		currentrank = Timer_GetDifficultyRank(client, bonus, mode);	
-		newrank = Timer_GetNewPossibleRank(mode, bonus, time);
+		currentrank = Timer_GetStyleRank(client, track, style);	
+		newrank = Timer_GetNewPossibleRank(style, track, time);
 	}
 	
 	new Float:LastTime;
@@ -755,7 +755,7 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	SQL_EscapeString(g_hSQL, name, safeName, 2 * strlen(name) + 1);
 	
 	/* Get Personal Record */
-	if(g_timerWorldRecord && Timer_GetBestRound(client, mode, bonus, LastTime, LastJumps))
+	if(g_timerWorldRecord && Timer_GetBestRound(client, style, track, LastTime, LastJumps))
 	{
 		LastTimeStatic = LastTime;
 		LastTime -= time;			
@@ -787,7 +787,7 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	}
 
 	/* Get World Record */
-	if(g_timerWorldRecord) Timer_GetDifficultyRecordTime(mode, bonus, RecordId, RecordTime, RankTotal);
+	if(g_timerWorldRecord) Timer_GetStyleRecordTime(style, track, RecordId, RecordTime, RankTotal);
 	
 	/* Detect Record Type */
 	if(RecordTime == 0.0 || time < RecordTime)
@@ -806,22 +806,22 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 		
 		//Save record
 		decl String:query[2048];
-		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, mode, safeName, fpsmax, bonus, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc);
+		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc);
 			
 		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
 	}
 	else
 	{
 		decl String:query[512];
-		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE name = '%s', finishcount = finishcount + 1;", map, auth, time, jumps, mode, safeName, fpsmax, bonus, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, safeName);
+		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE name = '%s', finishcount = finishcount + 1;", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, safeName);
 		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
 	}
 	
 	/* Forwards */
 	Call_StartForward(g_timerRecordForward);
 	Call_PushCell(client);
-	Call_PushCell(bonus);
-	Call_PushCell(mode);
+	Call_PushCell(track);
+	Call_PushCell(style);
 	Call_PushCell(time);
 	Call_PushCell(LastTimeStatic);
 	Call_PushCell(currentrank);
@@ -832,8 +832,8 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	{
 		Call_StartForward(g_timerWorldRecordForward);
 		Call_PushCell(client);
-		Call_PushCell(bonus);
-		Call_PushCell(mode);
+		Call_PushCell(track);
+		Call_PushCell(style);
 		Call_PushCell(time);
 		Call_PushCell(LastTimeStatic);
 		Call_PushCell(currentrank);
@@ -845,8 +845,8 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	{
 		Call_StartForward(g_timerPersonalRecordForward);
 		Call_PushCell(client);
-		Call_PushCell(bonus);
-		Call_PushCell(mode);
+		Call_PushCell(track);
+		Call_PushCell(style);
 		Call_PushCell(time);
 		Call_PushCell(LastTimeStatic);
 		Call_PushCell(currentrank);
@@ -858,8 +858,8 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	{
 		Call_StartForward(g_timerTop10RecordForward);
 		Call_PushCell(client);
-		Call_PushCell(bonus);
-		Call_PushCell(mode);
+		Call_PushCell(track);
+		Call_PushCell(style);
 		Call_PushCell(time);
 		Call_PushCell(LastTimeStatic);
 		Call_PushCell(currentrank);
@@ -871,8 +871,8 @@ FinishRound(client, const String:map[], Float:time, jumps, mode, fpsmax, bonus)
 	{
 		Call_StartForward(g_timerFirstRecordForward);
 		Call_PushCell(client);
-		Call_PushCell(bonus);
-		Call_PushCell(mode);
+		Call_PushCell(track);
+		Call_PushCell(style);
 		Call_PushCell(time);
 		Call_PushCell(LastTimeStatic);
 		Call_PushCell(currentrank);
@@ -1056,11 +1056,11 @@ public Native_FinishRound(Handle:plugin, numParams)
 	
 	new Float:time = GetNativeCell(3);
 	new jumps = GetNativeCell(4);
-	new mode = GetNativeCell(5);
+	new style = GetNativeCell(5);
 	new fpsmax = GetNativeCell(6);
-	new bonus = GetNativeCell(7);
+	new track = GetNativeCell(7);
 	
-	FinishRound(client, map, time, jumps, mode, fpsmax, bonus);
+	FinishRound(client, map, time, jumps, style, fpsmax, track);
 }
 
 public Native_ForceClearCacheBest(Handle:plugin, numParams)
@@ -1068,14 +1068,14 @@ public Native_ForceClearCacheBest(Handle:plugin, numParams)
 	ClearCache();
 }
 
-public Native_SetBonus(Handle:plugin, numParams)
+public Native_SetTrack(Handle:plugin, numParams)
 {
-	g_timers[GetNativeCell(1)][Bonus] = GetNativeCell(2);
+	g_timers[GetNativeCell(1)][Track] = GetNativeCell(2);
 }
 
-public Native_GetBonus(Handle:plugin, numParams)
+public Native_GetTrack(Handle:plugin, numParams)
 {
-	return g_timers[GetNativeCell(1)][Bonus];
+	return g_timers[GetNativeCell(1)][Track];
 }
 
 public Native_GetMapFinishCount(Handle:plugin, numParams)
@@ -1088,11 +1088,11 @@ public Native_GetMapFinishBonusCount(Handle:plugin, numParams)
 	return g_timers[GetNativeCell(1)][BonusFinishCount];
 }
 
-public Native_SetMode(Handle:plugin, numParams)
+public Native_SetStyle(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
 	
-	g_timers[client][CurrentMode] = GetNativeCell(2);
+	g_timers[client][CurrentStyle] = GetNativeCell(2);
 	if(g_timerPhysics) Timer_ApplyPhysics(client);
 }
 
@@ -1102,9 +1102,9 @@ public Native_AddPenaltyTime(Handle:plugin, numParams)
 	return TimerPenalty(GetNativeCell(1), penaltytime);
 }
 
-public Native_GetMode(Handle:plugin, numParams)
+public Native_GetStyle(Handle:plugin, numParams)
 {
-	return g_timers[GetNativeCell(1)][CurrentMode];
+	return g_timers[GetNativeCell(1)][CurrentStyle];
 }
 
 public Native_GetStatus(Handle:plugin, numParams)
@@ -1118,9 +1118,9 @@ public Native_GetPauseStatus(Handle:plugin, numParams)
 	return (g_timers[GetNativeCell(1)][IsPaused]);
 }
 
-public Native_IsModeRanked(Handle:plugin, numParams)
+public Native_IsStyleRanked(Handle:plugin, numParams)
 {
-	return (g_Physics[GetNativeCell(1)][ModeCategory] == MCategory_Ranked);
+	return (g_Physics[GetNativeCell(1)][StyleCategory] == MCategory_Ranked);
 }
 
 /**

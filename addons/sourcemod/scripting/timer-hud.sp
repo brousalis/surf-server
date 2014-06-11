@@ -907,7 +907,7 @@ ShowHudMenu(client, start_item)
 			}
 		}
 		
-		if(g_Settings[HUDModeEnable])
+		if(g_Settings[HUDStyleEnable])
 		{
 			if(hudSettings[Mode][client] == 0)
 			{
@@ -1259,11 +1259,11 @@ UpdateHUD_CSS(client)
 	
 	Timer_GetClientTimer(iClientToShow, enabled, time, jumps, fpsmax);
 	
-	new mode, ranked;	
+	new style, ranked;	
 	if(g_timerPhysics) 
 	{
-		mode = Timer_GetMode(iClientToShow);	
-		ranked = Timer_IsModeRanked(mode);
+		style = Timer_GetStyle(iClientToShow);	
+		ranked = Timer_IsStyleRanked(style);
 	}
 		
 	//get current player level
@@ -1281,7 +1281,7 @@ UpdateHUD_CSS(client)
 	//get bhop mode
 	if (g_timerPhysics) 
 	{
-		if(g_timerWorldRecord) Timer_GetDifficultyRecordTime(mode, bonus, RecordId, RecordTime, RankTotal);
+		if(g_timerWorldRecord) Timer_GetStyleRecordTime(style, bonus, RecordId, RecordTime, RankTotal);
 		//correct fail format
 		Timer_SecondsToTime(time, buffer, sizeof(buffer), 0);
 	}
@@ -1314,7 +1314,7 @@ UpdateHUD_CSS(client)
 	
 	if(ranked) 
 	{
-		if(g_timerWorldRecord) Timer_GetBestRound(iClientToShow, mode, bonus, bestTime, bestJumps);
+		if(g_timerWorldRecord) Timer_GetBestRound(iClientToShow, style, bonus, bestTime, bestJumps);
 		Timer_SecondsToTime(bestTime, bestbuffer, sizeof(bestbuffer), 2);
 	}
 	
@@ -1332,7 +1332,7 @@ UpdateHUD_CSS(client)
 	if(ranked && g_timerWorldRecord) 
 	{
 		//get rank
-		rank = Timer_GetDifficultyRank(iClientToShow, bonus, mode);	
+		rank = Timer_GetStyleRank(iClientToShow, bonus, style);	
 	}
 	
 	new prank;
@@ -1379,11 +1379,11 @@ UpdateHUD_CSS(client)
 			{
 				if(!enabled && !ranked)
 				{
-					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[mode][ModeTagName], tagbuffer);
+					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[style][StyleTagName], tagbuffer);
 				}
 				else
 				{
-					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[mode][ModeTagShortName], tagbuffer);
+					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[style][StyleTagShortName], tagbuffer);
 				}
 			}
 			
@@ -1418,7 +1418,7 @@ UpdateHUD_CSS(client)
 			Format(centerText, sizeof(centerText), "%sTime: %s\n", centerText, timeString);
 			//Format(centerText, sizeof(centerText), "%s%t: %s\n", centerText, "Time", timeString);
 		
-		if ((hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable]) && (hudSettings[JumpAcc][client] && g_Settings[HUDJumpAccEnable]) && !g_Physics[mode][ModeAuto])
+		if ((hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable]) && (hudSettings[JumpAcc][client] && g_Settings[HUDJumpAccEnable]) && !g_Physics[style][StyleAuto])
 			Format(centerText, sizeof(centerText), "%s%t: %d [%.2f %%]\n", centerText, "Jumps", jumps, accuracy);
 		else if (hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable])
 			Format(centerText, sizeof(centerText), "%s%t: %d\n", centerText, "Jumps", jumps);
@@ -1504,8 +1504,8 @@ UpdateHUD_CSS(client)
 	
 	if (g_timerPhysics && g_Settings[MultimodeEnable]) 
 	{	
-		if (hudSettings[Mode][client] && g_Settings[HUDModeEnable])
-			Format(hintText, sizeof(hintText), "%sStyle: %s\n", hintText, g_Physics[mode][ModeName]);
+		if (hudSettings[Mode][client] && g_Settings[HUDStyleEnable])
+			Format(hintText, sizeof(hintText), "%sStyle: %s\n", hintText, g_Physics[style][StyleName]);
 	}
 	
 	if(ranked)
@@ -1839,7 +1839,7 @@ UpdateHUD_CSGO(client)
 	new bestJumps; //best round jumps
 	new jumps; //current jump count
 	new fpsmax; //fps settings
-	new bool:bonus = false; //bonus timer running
+	new bool:bonus = false; //track timer running
 	new Float:time; //current time
 	new RecordId;
 	new Float:RecordTime;
@@ -1847,10 +1847,10 @@ UpdateHUD_CSGO(client)
 	
 	if(g_timerWorldRecord) Timer_GetClientTimer(iClientToShow, enabled, time, jumps, fpsmax);
 	
-	new mode;	
-	if(g_timerPhysics) mode = Timer_GetMode(iClientToShow);	
+	new style;	
+	if(g_timerPhysics) style = Timer_GetStyle(iClientToShow);	
 	new ranked;
-	if(g_timerPhysics) ranked = Timer_IsModeRanked(mode);
+	if(g_timerPhysics) ranked = Timer_IsStyleRanked(style);
 		
 	//get current player level
 	new currentLevel = 0;
@@ -1866,7 +1866,7 @@ UpdateHUD_CSGO(client)
 	//get bhop mode
 	if (g_timerPhysics) 
 	{
-		Timer_GetDifficultyRecordTime(mode, bonus, RecordId, RecordTime, RankTotal);
+		Timer_GetStyleRecordTime(style, bonus, RecordId, RecordTime, RankTotal);
 		//correct fail format
 		Timer_SecondsToTime(time, buffer, sizeof(buffer), 0);
 	}
@@ -1893,7 +1893,7 @@ UpdateHUD_CSGO(client)
 	
 	if(ranked) 
 	{
-		if(g_timerWorldRecord) Timer_GetBestRound(iClientToShow, mode, bonus, bestTime, bestJumps);
+		if(g_timerWorldRecord) Timer_GetBestRound(iClientToShow, style, bonus, bestTime, bestJumps);
 		Timer_SecondsToTime(bestTime, bestbuffer, sizeof(bestbuffer), 2);
 	}
 	
@@ -1920,7 +1920,7 @@ UpdateHUD_CSGO(client)
 	if(ranked && g_timerWorldRecord) 
 	{
 		//get rank
-		rank = Timer_GetDifficultyRank(iClientToShow, bonus, mode);	
+		rank = Timer_GetStyleRank(iClientToShow, bonus, style);	
 	}
 	
 	new prank;
@@ -1967,11 +1967,11 @@ UpdateHUD_CSGO(client)
 			{
 				if(!enabled && !ranked)
 				{
-					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[mode][ModeTagName], tagbuffer);
+					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[style][StyleTagName], tagbuffer);
 				}
 				else
 				{
-					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[mode][ModeTagShortName], tagbuffer);
+					Format(tagbuffer, sizeof(tagbuffer), "%s%s", g_Physics[style][StyleTagShortName], tagbuffer);
 				}
 			}
 			
@@ -2066,7 +2066,7 @@ UpdateHUD_CSGO(client)
 	
 		if(hudSettings[PB][client]) 
 		{
-			Timer_GetBestRound(iClientToShow, mode, bonus, bestTime, bestJumps);
+			Timer_GetBestRound(iClientToShow, style, bonus, bestTime, bestJumps);
 			Timer_SecondsToTime(bestTime, bestbuffer, sizeof(bestbuffer), 2);
 			
 			Format(centerText, sizeof(centerText), "%sRecord: %s", centerText, bestbuffer);
@@ -2080,7 +2080,7 @@ UpdateHUD_CSGO(client)
 	//Third Line
 	if (hudSettings[Mode][client] && g_Settings[MultimodeEnable])
 	{
-		Format(centerText, sizeof(centerText), "%sStyle: %s", centerText, g_Physics[mode][ModeName]);
+		Format(centerText, sizeof(centerText), "%sStyle: %s", centerText, g_Physics[style][StyleName]);
 		if(hudSettings[Speed][client]) Format(centerText, sizeof(centerText), "%s | ", centerText);
 	}
 	else if (hudSettings[Level][client] && !g_Settings[MultimodeEnable])

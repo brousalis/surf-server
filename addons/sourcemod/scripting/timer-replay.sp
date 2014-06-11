@@ -110,11 +110,11 @@ public OnClientEndTouchZoneType(client, MapZoneType:type)
 	}
 }
 
-public OnTimerWorldRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank)
+public OnTimerWorldRecord(client, track, style, Float:time, Float:lasttime, currentrank, newrank)
 {
 	if(client != 0)
 	{
-		if (mode == g_ModeDefault && bonus == 0)
+		if (style == g_StyleDefault && track == 0)
 		{
 			CreateTimer(0.0, SaveRecording, client);
 		}
@@ -209,13 +209,13 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 		{
 			
 			new String:name[128];
-			Timer_GetRecordHolderName(g_ModeDefault, 0, 1, name, 128);
+			Timer_GetRecordHolderName(g_StyleDefault, 0, 1, name, 128);
 			
 			new cacheid, total;
 			new Float:time;
 			new String:timestring[32];
 			
-			Timer_GetDifficultyRecordTime(g_ModeDefault, 0, cacheid, time, total);
+			Timer_GetStyleRecordTime(g_StyleDefault, 0, cacheid, time, total);
 			Timer_SecondsToTime(time, timestring, sizeof(timestring), 2);
 			
 			new String:buffer[128];
@@ -623,13 +623,13 @@ public DodgyFix()
 	if(iBot != -1)
 	{
 		new String:name[32];
-		Timer_GetRecordHolderName(g_ModeDefault, 0, 1, name, 32);
+		Timer_GetRecordHolderName(g_StyleDefault, 0, 1, name, 32);
 		
 		new cacheid, total;
 		new Float:time;
 		new String:timestring[32];
 		
-		Timer_GetDifficultyRecordTime(g_ModeDefault, 0, cacheid, time, total);
+		Timer_GetStyleRecordTime(g_StyleDefault, 0, cacheid, time, total);
 		Timer_SecondsToTime(time, timestring, sizeof(timestring), 2);
 		
 		new String:buffer[64];
@@ -642,7 +642,7 @@ public DodgyFix()
 		g_iBotMimicsRecord[iBot] = 0;
 		g_iBotMimicTick[iBot] = 0;
 		Timer_Restart(iBot);
-		Timer_SetMode(iBot, g_ModeDefault);
+		Timer_SetStyle(iBot, g_StyleDefault);
 	
 	}
 	else 

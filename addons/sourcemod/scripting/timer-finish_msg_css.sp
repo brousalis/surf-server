@@ -63,7 +63,7 @@ public OnMapStart()
 	LoadTimerSettings();
 }
 
-public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank)
+public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentrank, newrank)
 {
 	decl String:name[MAX_NAME_LENGTH];
 	GetClientName(client, name, sizeof(name));
@@ -85,7 +85,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	new bool:ranked;
 	if(g_timerPhysics) 
 	{
-		ranked = bool:Timer_IsModeRanked(mode);
+		ranked = bool:Timer_IsStyleRanked(style);
 	}
 	
 	new bool:enabled = false;
@@ -97,7 +97,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	if(g_timerWorldRecord) 
 	{
 		/* Get Personal Record */
-		if(Timer_GetBestRound(client, mode, bonus, LastTime, LastJumps))
+		if(Timer_GetBestRound(client, style, track, LastTime, LastJumps))
 		{
 			LastTimeStatic = LastTime;
 			LastTime -= time;			
@@ -137,11 +137,11 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	
 	if(g_timerWorldRecord)
 	{
-		Timer_GetRecordTimeInfo(mode, bonus, newrank, wrtime, WrTime, 32);
-		Timer_GetRecordHolderName(mode, bonus, newrank, WrName, 32);
+		Timer_GetRecordTimeInfo(style, track, newrank, wrtime, WrTime, 32);
+		Timer_GetRecordHolderName(style, track, newrank, WrName, 32);
 	
 		/* Get World Record */
-		Timer_GetDifficultyRecordTime(mode, bonus, RecordId, RecordTime, RankTotal);
+		Timer_GetStyleRecordTime(style, track, RecordId, RecordTime, RankTotal);
 	}
 	
 	/* Detect Record Type */
@@ -168,11 +168,11 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	
 	new String:BonusString[32];
 	
-	if(bonus == 1)
+	if(track == TRACK_BONUS)
 	{
 		FormatEx(BonusString, sizeof(BonusString), " {green}[Bonus]");
 	}
-	else if(bonus == 2)
+	else if(track == TRACK_SHORT)
 	{
 		FormatEx(BonusString, sizeof(BonusString), " {green}[Short]");
 	}	
@@ -183,11 +183,11 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 	
 	decl String:StyleString[128];
 	
-	if(g_ModeCount > 0 && !g_Settings[MultimodeEnable])
-		FormatEx(StyleString, sizeof(StyleString), " {green}[%s]", g_Physics[mode][ModeName]);
+	if(g_StyleCount > 0 && !g_Settings[MultimodeEnable])
+		FormatEx(StyleString, sizeof(StyleString), " {green}[%s]", g_Physics[style][StyleName]);
 	
 	if(g_Settings[MultimodeEnable]) 
-		FormatEx(StyleString, sizeof(StyleString), " {green}[%s]", g_Physics[mode][ModeName]);
+		FormatEx(StyleString, sizeof(StyleString), " {green}[%s]", g_Physics[style][StyleName]);
 	
 	if(NewWorldRecord)
 	{

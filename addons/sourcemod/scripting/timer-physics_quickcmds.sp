@@ -21,13 +21,13 @@ public OnPluginStart()
 	LoadPhysics();
 	LoadTimerSettings();
 
-	for(new i = 0; i < MAX_MODES-1; i++) 
+	for(new i = 0; i < MAX_STYLES-1; i++) 
 	{
-		if(StrEqual(g_Physics[i][ModeQuickCommand], ""))
+		if(StrEqual(g_Physics[i][StyleQuickCommand], ""))
 			continue;
 		
-		RegConsoleCmd(g_Physics[i][ModeQuickCommand], Callback_Empty);
-		AddCommandListener(Hook_Command, g_Physics[i][ModeQuickCommand]);
+		RegConsoleCmd(g_Physics[i][StyleQuickCommand], Callback_Empty);
+		AddCommandListener(Hook_Command, g_Physics[i][StyleQuickCommand]);
 	}
 }
 
@@ -48,15 +48,15 @@ public Action:Hook_Command(client, const String:sCommand[], argc)
 	{
 		return Plugin_Continue;
 	}
-	for(new i = 0; i < MAX_MODES-1; i++) 
+	for(new i = 0; i < MAX_STYLES-1; i++) 
 	{
-		if(!g_Physics[i][ModeEnable])
+		if(!g_Physics[i][StyleEnable])
 			continue;
-		if(StrEqual(g_Physics[i][ModeQuickCommand], ""))
+		if(StrEqual(g_Physics[i][StyleQuickCommand], ""))
 			continue;
-		if(StrEqual(g_Physics[i][ModeQuickCommand], sCommand))
+		if(StrEqual(g_Physics[i][StyleQuickCommand], sCommand))
 		{
-			Timer_SetMode(client, i);
+			Timer_SetStyle(client, i);
 			
 			return Plugin_Handled;
 		}

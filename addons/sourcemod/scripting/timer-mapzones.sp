@@ -366,9 +366,9 @@ public OnTimerStarted(client)
 {
 	if(IsClientInGame(client) && IsPlayerAlive(client))
 	{
-		if(GetClientHealth(client) < g_Physics[Timer_GetMode(client)][ModeSpawnHealth])
+		if(GetClientHealth(client) < g_Physics[Timer_GetStyle(client)][StyleSpawnHealth])
 		{
-			SetEntityHealth(client, g_Physics[Timer_GetMode(client)][ModeSpawnHealth]);
+			SetEntityHealth(client, g_Physics[Timer_GetStyle(client)][StyleSpawnHealth]);
 		}
 	}
 }
@@ -526,7 +526,7 @@ public Action:StartTouchTrigger(caller, activator)
 			g_clientLevel[client] = zone;
 			
 			Timer_Stop(client, false);
-			Timer_SetBonus(client, 0);
+			Timer_SetTrack(client, TRACK_NORMAL);
 		}
 	}
 	else if (g_mapZones[zone][Type] == ZtBonusStart)
@@ -535,7 +535,7 @@ public Action:StartTouchTrigger(caller, activator)
 		g_clientLevel[client] = zone;
 		
 		Timer_Stop(client, false);
-		Timer_SetBonus(client, 1);
+		Timer_SetTrack(client, TRACK_BONUS);
 		
 		if(g_timerLjStats) SetLJMode(client, false);
 	}
@@ -551,7 +551,7 @@ public Action:StartTouchTrigger(caller, activator)
 			{
 				Timer_Stop(client, false);
 			}
-			else if(Timer_GetBonus(client) == 0)
+			else if(Timer_GetTrack(client) == TRACK_NORMAL)
 			{
 				g_clientLevel[client] = zone;
 				
@@ -566,7 +566,7 @@ public Action:StartTouchTrigger(caller, activator)
 					{
 						new difficulty = 0;
 						if (g_timerPhysics)
-							difficulty = Timer_GetMode(client);
+							difficulty = Timer_GetStyle(client);
 						
 						Timer_FinishRound(client, g_currentMap, time, jumps, difficulty, fpsmax, 0);
 					}
@@ -583,7 +583,7 @@ public Action:StartTouchTrigger(caller, activator)
 			{
 				Timer_Stop(client, false);
 			}
-			else if(Timer_GetBonus(client) == 0)
+			else if(Timer_GetTrack(client) == TRACK_NORMAL)
 			{
 				g_clientLevel[client] = zone;
 				
@@ -594,11 +594,11 @@ public Action:StartTouchTrigger(caller, activator)
 				
 				if (Timer_GetClientTimer(client, enabled, time, jumps, fpsmax))
 				{
-					new mode = 0;
+					new style = 0;
 					if (g_timerPhysics)
-						mode = Timer_GetMode(client);
+						style = Timer_GetStyle(client);
 					
-					Timer_FinishRound(client, g_currentMap, time, jumps, mode, fpsmax, 2);
+					Timer_FinishRound(client, g_currentMap, time, jumps, style, fpsmax, 2);
 				}
 			}
 		}
@@ -612,7 +612,7 @@ public Action:StartTouchTrigger(caller, activator)
 			{
 				Timer_Stop(client, false);
 			}
-			else if(Timer_GetBonus(client) == 1)
+			else if(Timer_GetTrack(client) == TRACK_BONUS)
 			{
 				g_clientLevel[client] = zone;
 				
@@ -627,7 +627,7 @@ public Action:StartTouchTrigger(caller, activator)
 					{
 						new difficulty = 0;
 						if (g_timerPhysics)
-							difficulty = Timer_GetMode(client);
+							difficulty = Timer_GetStyle(client);
 						
 						Timer_FinishRound(client, g_currentMap, time, jumps, difficulty, fpsmax, 1);
 					}
@@ -641,7 +641,7 @@ public Action:StartTouchTrigger(caller, activator)
 	}
 	else if (g_mapZones[zone][Type] == ZtRestart)
 	{
-		if(Timer_GetBonus(client) == 1) 
+		if(Timer_GetTrack(client) == TRACK_BONUS) 
 		{
 			Tele_Level(client, 1001);
 		}
@@ -652,14 +652,14 @@ public Action:StartTouchTrigger(caller, activator)
 	}
 	else if (g_mapZones[zone][Type] == ZtRestartNormalTimer)
 	{
-		if(Timer_GetBonus(client) == 0) 
+		if(Timer_GetTrack(client) == TRACK_NORMAL) 
 		{
 			Tele_Level(client, 1);
 		}
 	}
 	else if (g_mapZones[zone][Type] == ZtRestartBonusTimer)
 	{
-		if(Timer_GetBonus(client) == 1) 
+		if(Timer_GetTrack(client) == TRACK_BONUS) 
 		{
 			Tele_Level(client, 1001);
 		}
@@ -702,7 +702,7 @@ public Action:StartTouchTrigger(caller, activator)
 	}
 	else if (g_mapZones[zone][Type] == ZtLevel)
 	{
-		if(Timer_GetBonus(client) == 0)
+		if(Timer_GetTrack(client) == TRACK_NORMAL)
 		{
 			new lastlevel = g_mapZones[g_clientLevel[client]][Level_Id];
 			g_clientLevel[client] = zone;
@@ -716,7 +716,7 @@ public Action:StartTouchTrigger(caller, activator)
 	}
 	else if (g_mapZones[zone][Type] == ZtBonusLevel)
 	{
-		if(Timer_GetBonus(client) == 1)
+		if(Timer_GetTrack(client) == TRACK_BONUS)
 		{
 			new lastlevel = g_mapZones[g_clientLevel[client]][Level_Id];
 			g_clientLevel[client] = zone;
@@ -851,7 +851,7 @@ public Action:EndTouchTrigger(caller, activator)
 				EmitSoundToClient(client, SND_TIMER_START);
 			
 			Timer_Restart(client);
-			Timer_SetBonus(client, 0);
+			Timer_SetTrack(client, TRACK_NORMAL);
 		}
 	}
 	else if(g_mapZones[zone][Type] == ZtBonusStart)
@@ -869,7 +869,7 @@ public Action:EndTouchTrigger(caller, activator)
 		}
 		if(IsClientConnected(client)) EmitSoundToClient(client, SND_TIMER_START);
 		Timer_Restart(client);
-		Timer_SetBonus(client, 1);
+		Timer_SetTrack(client, TRACK_BONUS);
 	}
 	else if (g_mapZones[zone][Type] == ZtBlock)
 	{
@@ -2454,8 +2454,8 @@ ChangePlayerVelocity(client)
 	new Float:vec[3];
 	GetClientAbsOrigin(client, vec);
 	
-	new mode = Timer_GetMode(client);
-	new Float:maxspeed = g_Physics[mode][ModeBlockPreSpeeding];
+	new style = Timer_GetStyle(client);
+	new Float:maxspeed = g_Physics[style][StyleBlockPreSpeeding];
 	
 	if(!IsPlayerTouchingSpeedZone(client))
 		return;
@@ -3411,11 +3411,11 @@ stock Tele_Zone(client, zone)
 			&& g_mapZones[zone][Type] != ZtStart && g_mapZones[zone][Type] != ZtBonusStart)
 		Timer_SetIgnoreEndTouchStart(client, 1);
 		
-		new mode = Timer_GetMode(client);
+		new style = Timer_GetStyle(client);
 		
 		//Anti-Chat
-		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[mode][ModeTimeScale]);
-		SetEntityGravity(client, g_Physics[mode][ModeGravity]);
+		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[style][StyleTimeScale]);
+		SetEntityGravity(client, g_Physics[style][StyleGravity]);
 		TeleportEntity(client, center, NULL_VECTOR, zero);
 		CreateTimer(0.0, Timer_StopSpeed, client, TIMER_FLAG_NO_MAPCHANGE);
 	}
@@ -3723,7 +3723,7 @@ bool:Client_Start(client)
 		else Timer_LogError("No spawn points for %s", g_currentMap);
 	}
 	
-	new mode = Timer_GetMode(client);
+	new style = Timer_GetStyle(client);
 	
 	//Stop timer
 	Timer_Reset(client);
@@ -3736,8 +3736,8 @@ bool:Client_Start(client)
 	else
 	{
 		//Anti-Chat
-		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[mode][ModeTimeScale]);
-		SetEntityGravity(client, g_Physics[mode][ModeGravity]);
+		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[style][StyleTimeScale]);
+		SetEntityGravity(client, g_Physics[style][StyleGravity]);
 	}
 	
 	//Teleport player to starzone
@@ -3763,7 +3763,7 @@ bool:Client_Restart(client)
 		else Timer_LogError("No spawn points for %s", g_currentMap);
 	}
 	
-	new mode = Timer_GetMode(client);
+	new style = Timer_GetStyle(client);
 	
 	//Stop timer
 	Timer_Reset(client);
@@ -3779,8 +3779,8 @@ bool:Client_Restart(client)
 	else
 	{
 		//Anti-Chat
-		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[mode][ModeTimeScale]);
-		SetEntityGravity(client, g_Physics[mode][ModeGravity]);
+		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[style][StyleTimeScale]);
+		SetEntityGravity(client, g_Physics[style][StyleGravity]);
 	}
 	
 	//Teleport player to starzone
@@ -3814,7 +3814,7 @@ bool:Client_BonusRestart(client)
 		else Timer_LogError("No spawn points for %s", g_currentMap);
 	}
 	
-	new mode = Timer_GetMode(client);
+	new style = Timer_GetStyle(client);
 	
 	//Stop timer
 	Timer_Reset(client);
@@ -3827,8 +3827,8 @@ bool:Client_BonusRestart(client)
 	else
 	{
 		//Anti-Chat
-		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[mode][ModeTimeScale]);
-		SetEntityGravity(client, g_Physics[mode][ModeGravity]);
+		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[style][StyleTimeScale]);
+		SetEntityGravity(client, g_Physics[style][StyleGravity]);
 	}
 	
 	//Teleport player to bonus-starzone

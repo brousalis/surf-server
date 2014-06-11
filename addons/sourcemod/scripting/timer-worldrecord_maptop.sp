@@ -105,7 +105,7 @@ public Action:Cmd_MapTop_Record(client, args)
 		GetCmdArg(1, sMapName, sizeof(sMapName));
 		
 		if(g_Settings[MultimodeEnable]) TopStylePanel(client, sMapName);
-		else SQL_TopPanel(client, sMapName, g_ModeDefault, TRACK_NORMAL);
+		else SQL_TopPanel(client, sMapName, g_StyleDefault, TRACK_NORMAL);
 	}
 	else if(args == 2 && g_Settings[MultimodeEnable])
 	{
@@ -114,16 +114,16 @@ public Action:Cmd_MapTop_Record(client, args)
 		decl String:sStyle[64];
 		GetCmdArg(2, sStyle, sizeof(sStyle));
 		
-		for(new i = 0; i < MAX_MODES-1; i++) 
+		for(new i = 0; i < MAX_STYLES-1; i++) 
 		{
-			if(!g_Physics[i][ModeEnable])
+			if(!g_Physics[i][StyleEnable])
 				continue;
-			if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+			if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 				continue;
-			if(StrEqual(g_Physics[i][ModeQuickCommand], ""))
+			if(StrEqual(g_Physics[i][StyleQuickCommand], ""))
 				continue;
 			
-			if(StrEqual(g_Physics[i][ModeQuickCommand], sStyle))
+			if(StrEqual(g_Physics[i][StyleQuickCommand], sStyle))
 			{
 				SQL_TopPanel(client, sMapName, i, TRACK_NORMAL);
 				return Plugin_Handled;
@@ -144,17 +144,17 @@ TopStylePanel(client, String:sMapName[64])
 		
 		SetMenuExitButton(menu, true);
 
-		for(new i = 0; i < MAX_MODES-1; i++) 
+		for(new i = 0; i < MAX_STYLES-1; i++) 
 		{
-			if(!g_Physics[i][ModeEnable])
+			if(!g_Physics[i][StyleEnable])
 				continue;
-			if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+			if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 				continue;
 			
 			new String:buffer[8];
 			IntToString(i, buffer, sizeof(buffer));
 				
-			AddMenuItem(menu, buffer, g_Physics[i][ModeName]);
+			AddMenuItem(menu, buffer, g_Physics[i][StyleName]);
 		}	
 
 		Format(g_SelectedMap[client], 64, sMapName);
@@ -193,7 +193,7 @@ public Action:Cmd_MapBonusTop_Record(client, args)
 		GetCmdArg(1, sMapName, sizeof(sMapName));
 		
 		if(g_Settings[MultimodeEnable]) BonusTopStylePanel(client, sMapName);
-		else SQL_TopPanel(client, sMapName, g_ModeDefault, TRACK_BONUS);
+		else SQL_TopPanel(client, sMapName, g_StyleDefault, TRACK_BONUS);
 	}
 	else if(args == 2 && g_Settings[MultimodeEnable])
 	{
@@ -202,16 +202,16 @@ public Action:Cmd_MapBonusTop_Record(client, args)
 		decl String:sStyle[64];
 		GetCmdArg(2, sStyle, sizeof(sStyle));
 		
-		for(new i = 0; i < MAX_MODES-1; i++) 
+		for(new i = 0; i < MAX_STYLES-1; i++) 
 		{
-			if(!g_Physics[i][ModeEnable])
+			if(!g_Physics[i][StyleEnable])
 				continue;
-			if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+			if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 				continue;
-			if(StrEqual(g_Physics[i][ModeQuickCommand], ""))
+			if(StrEqual(g_Physics[i][StyleQuickCommand], ""))
 				continue;
 			
-			if(StrEqual(g_Physics[i][ModeQuickCommand], sStyle))
+			if(StrEqual(g_Physics[i][StyleQuickCommand], sStyle))
 			{
 				SQL_TopPanel(client, sMapName, i, TRACK_BONUS);
 				return Plugin_Handled;
@@ -232,17 +232,17 @@ BonusTopStylePanel(client, String:sMapName[64])
 		
 		SetMenuExitButton(menu, true);
 
-		for(new i = 0; i < MAX_MODES-1; i++) 
+		for(new i = 0; i < MAX_STYLES-1; i++) 
 		{
-			if(!g_Physics[i][ModeEnable])
+			if(!g_Physics[i][StyleEnable])
 				continue;
-			if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+			if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 				continue;
 			
 			new String:buffer[8];
 			IntToString(i, buffer, sizeof(buffer));
 				
-			AddMenuItem(menu, buffer, g_Physics[i][ModeName]);
+			AddMenuItem(menu, buffer, g_Physics[i][StyleName]);
 		}	
 
 		Format(g_SelectedMap[client], 64, sMapName);
@@ -281,7 +281,7 @@ public Action:Cmd_MapShortTop_Record(client, args)
 		GetCmdArg(1, sMapName, sizeof(sMapName));
 		
 		if(g_Settings[MultimodeEnable]) ShortTopStylePanel(client, sMapName);
-		else SQL_TopPanel(client, sMapName, g_ModeDefault, TRACK_SHORT);
+		else SQL_TopPanel(client, sMapName, g_StyleDefault, TRACK_SHORT);
 	}
 	else if(args == 2 && g_Settings[MultimodeEnable])
 	{
@@ -290,16 +290,16 @@ public Action:Cmd_MapShortTop_Record(client, args)
 		decl String:sStyle[64];
 		GetCmdArg(2, sStyle, sizeof(sStyle));
 		
-		for(new i = 0; i < MAX_MODES-1; i++) 
+		for(new i = 0; i < MAX_STYLES-1; i++) 
 		{
-			if(!g_Physics[i][ModeEnable])
+			if(!g_Physics[i][StyleEnable])
 				continue;
-			if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+			if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 				continue;
-			if(StrEqual(g_Physics[i][ModeQuickCommand], ""))
+			if(StrEqual(g_Physics[i][StyleQuickCommand], ""))
 				continue;
 			
-			if(StrEqual(g_Physics[i][ModeQuickCommand], sStyle))
+			if(StrEqual(g_Physics[i][StyleQuickCommand], sStyle))
 			{
 				SQL_TopPanel(client, sMapName, i, TRACK_SHORT);
 				return Plugin_Handled;
@@ -320,17 +320,17 @@ ShortTopStylePanel(client, String:sMapName[64])
 		
 		SetMenuExitButton(menu, true);
 
-		for(new i = 0; i < MAX_MODES-1; i++) 
+		for(new i = 0; i < MAX_STYLES-1; i++) 
 		{
-			if(!g_Physics[i][ModeEnable])
+			if(!g_Physics[i][StyleEnable])
 				continue;
-			if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+			if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 				continue;
 			
 			new String:buffer[8];
 			IntToString(i, buffer, sizeof(buffer));
 				
-			AddMenuItem(menu, buffer, g_Physics[i][ModeName]);
+			AddMenuItem(menu, buffer, g_Physics[i][StyleName]);
 		}	
 
 		Format(g_SelectedMap[client], 64, sMapName);
@@ -382,7 +382,7 @@ public SQL_SelectTopCallback(Handle:owner, Handle:hndl, const String:error[], an
 	CloseHandle(pack);
 	
 	decl String:sStyle[64];
-	Format(sStyle, sizeof(sStyle), "%s", g_Physics[style][ModeName]);
+	Format(sStyle, sizeof(sStyle), "%s", g_Physics[style][StyleName]);
 	decl String:sTopMap[64];
 	Format(sTopMap, sizeof(sTopMap), "Map: %s", sMapName);
 	

@@ -69,7 +69,7 @@ new bool:g_bAutoDisable[MAXPLAYERS+1] = {false, ...};
 new bool:g_bAuto[MAXPLAYERS+1] = {false, ...};
 new Float:g_fBoost[MAXPLAYERS+1] = {0.0, ...};
 
-new bool:g_bPickedMode[MAXPLAYERS+1] = {false, ...};
+new bool:g_bPickedStyle[MAXPLAYERS+1] = {false, ...};
 
 new bool:g_bCustomAuto[MAXPLAYERS+1] = {false, ...};
 new bool:g_bCustomBoost[MAXPLAYERS+1] = {false, ...};
@@ -140,8 +140,8 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
 	RegPluginLibrary("timer-physics");
 	
-	CreateNative("Timer_GetForceMode", Native_GetForceMode);
-	CreateNative("Timer_GetPickedMode", Native_GetPickedMode);
+	CreateNative("Timer_GetForceStyle", Native_GetForceStyle);
+	CreateNative("Timer_GetPickedStyle", Native_GetPickedStyle);
 	CreateNative("Timer_ApplyPhysics", Native_ApplyPhysics);
 	CreateNative("Timer_GetJumpAccuracy", Native_GetJumpAccuracy);
 	CreateNative("Timer_GetCurrentSpeed", Native_GetCurrentSpeed);
@@ -332,7 +332,7 @@ stock ResetStats(client)
 	g_iCommandCount[client] = 0;
 }
 
-Teleport(client, bhop, mode)
+Teleport(client, bhop, style)
 {
 	
 	decl i;
@@ -362,7 +362,7 @@ Teleport(client, bhop, mode)
 	}
 
 	//set teleport destination
-	if(tele != -1 && IsValidEntity(tele) && g_Physics[mode][ModeMultiBhop] != 2) 
+	if(tele != -1 && IsValidEntity(tele) && g_Physics[style][StyleMultiBhop] != 2) 
 	{
 		SDKCall(g_hSDK_Touch,tele,client);
 	}
@@ -401,14 +401,14 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 		if(GetClientTeam(client) < 2)
 			return;
 		
-		g_bPickedMode[client] = false;
+		g_bPickedStyle[client] = false;
 		
-		if(g_ModeDefault == -1) Timer_LogError("PhysicsCFG: No default mode found");
-		else Timer_SetMode(client, g_ModeDefault);	
+		if(g_StyleDefault == -1) Timer_LogError("PhysicsCFG: No default style found");
+		else Timer_SetStyle(client, g_StyleDefault);	
 		
 		ApplyDifficulty(client);
 		
-		Timer_SetBonus(client, 0);
+		Timer_SetTrack(client, TRACK_NORMAL);
 
 		if (g_Settings[StyleMenuOnSpawn])
 		{
@@ -428,7 +428,7 @@ public Action:Event_PlayerJump(Handle:event, const String:name[], bool:dontBroad
 	
 	new Float:time = GetGameTime();
 	
-	new mode = Timer_GetMode(client);
+	new style = Timer_GetStyle(client);
 	
 	g_fLastJump[client] = time;
 	
@@ -439,15 +439,15 @@ public Action:Event_PlayerJump(Handle:event, const String:name[], bool:dontBroad
 		SetEntPropFloat(client, Prop_Send, "m_flStamina", g_fStamina[client]);
 	}
 	
-	if(g_Physics[mode][ModeBoostForward] != 1.0)
+	if(g_Physics[style][StyleBoostForward] != 1.0)
 		CreateTimer(0.0, Timer_Boost, client, TIMER_FLAG_NO_MAPCHANGE);
 	
-	if(g_Physics[mode][ModeMaxSpeed] != 0.0)
+	if(g_Physics[style][StyleMaxSpeed] != 0.0)
 	{
 		CreateTimer(0.05, DelayedSlowDown, client);
 	}
 	
-	if(g_Physics[mode][ModeAntiBhop])
+	if(g_Physics[style][StyleAntiBhop])
 	{
 		new Float:timediff = time - g_userJumps[client][LastJumpTimes][2];
 		g_userJumps[client][LastJumpTimes][2] = g_userJumps[client][LastJumpTimes][1];
@@ -468,8 +468,8 @@ public Action:Event_PlayerJump(Handle:event, const String:name[], bool:dontBroad
 
 public Action:DelayedSlowDown(Handle:timer, any:client)
 {
-	new mode = Timer_GetMode(client);
-	CheckVelocity(client, 1, g_Physics[mode][ModeMaxSpeed]);
+	new style = Timer_GetStyle(client);
+	CheckVelocity(client, 1, g_Physics[style][StyleMaxSpeed]);
 }
 
 public Action:DelayedSlowDownDefault(Handle:timer, any:client)
@@ -484,7 +484,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	if(!IsPlayerAlive(client))
 		return Plugin_Continue;
 	
-	new style = Timer_GetMode(client);
+	new style = Timer_GetStyle(client);
 	new Float:fGameTime = GetGameTime();
 	new bool:abuse = false;
 	new bool:oldgroundstatus = g_bStayOnGround[client];
@@ -531,7 +531,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	{
 		if(!Timer_IsPlayerTouchingZoneType(client, ZtFreeStyle))
 		{
-			if(g_Physics[style][ModeForceMoveforward])
+			if(g_Physics[style][StyleForceMoveforward])
 			{
 				if (!(buttons & IN_FORWARD))
 				{
@@ -539,7 +539,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[style][ModePreventMoveleft])
+			if(g_Physics[style][StylePreventMoveleft])
 			{
 				if (buttons & IN_MOVELEFT || vel[1] < 0)
 				{
@@ -547,7 +547,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[style][ModePreventMoveright])
+			if(g_Physics[style][StylePreventMoveright])
 			{
 				if (buttons & IN_MOVERIGHT || vel[1] > 0)
 				{
@@ -555,7 +555,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[style][ModePreventPlusleft])
+			if(g_Physics[style][StylePreventPlusleft])
 			{
 				if (buttons & IN_LEFT) //Can't disable
 				{
@@ -566,7 +566,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[style][ModePreventPlusright])
+			if(g_Physics[style][StylePreventPlusright])
 			{
 				if (buttons & IN_RIGHT) //Can't disable 
 				{
@@ -577,7 +577,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[style][ModePreventMoveforward])
+			if(g_Physics[style][StylePreventMoveforward])
 			{
 				if (buttons & IN_FORWARD || vel[0] > 0)
 				{
@@ -585,7 +585,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[style][ModePreventMoveback])
+			if(g_Physics[style][StylePreventMoveback])
 			{
 				if (buttons & IN_BACK || vel[0] < 0)
 				{
@@ -593,10 +593,10 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 			
-			if(g_Physics[style][ModeBlockMovementDirection] != 0)
+			if(g_Physics[style][StyleBlockMovementDirection] != 0)
 			{
 				//backwards
-				if(g_Physics[style][ModeBlockMovementDirection] == 1)
+				if(g_Physics[style][StyleBlockMovementDirection] == 1)
 				{
 					if (GetClientMovingDirection(client) > 0.45)
 					{
@@ -604,7 +604,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 					}
 				}
 				//forward
-				else if(g_Physics[style][ModeBlockMovementDirection] == 2)
+				else if(g_Physics[style][StyleBlockMovementDirection] == 2)
 				{
 					if (GetClientMovingDirection(client) < -0.45)
 					{
@@ -614,7 +614,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			}
 		}
 		
-		if(g_Physics[style][ModePreventPlusleft])
+		if(g_Physics[style][StylePreventPlusleft])
 		{
 			if(buttons & IN_LEFT)
 			{
@@ -622,7 +622,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			}
 		}
 		
-		if(g_Physics[style][ModePreventPlusright])
+		if(g_Physics[style][StylePreventPlusright])
 		{
 			if(buttons & IN_RIGHT)
 			{
@@ -630,13 +630,13 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			}
 		}
 		
-		if(g_Physics[style][ModeHoverScale] != 0.0)
+		if(g_Physics[style][StyleHoverScale] != 0.0)
 		{
 			if(fVelocity[2] < 0.0)
 			{
 				if((mouse[0] || mouse[1]))
 				{
-					Client_Push(client, Float:{-90.0,0.0,0.0}, g_Physics[style][ModeHoverScale], VelocityOverride:{VelocityOvr_None,VelocityOvr_None,VelocityOvr_None});
+					Client_Push(client, Float:{-90.0,0.0,0.0}, g_Physics[style][StyleHoverScale], VelocityOverride:{VelocityOvr_None,VelocityOvr_None,VelocityOvr_None});
 				}
 			}
 		}
@@ -816,9 +816,9 @@ CreatePhysicsMenu(client, MCategory:category)
 	{
 		new Handle:menu = CreateMenu(MenuHandler_Physics);
 
-		if(category == MCategory_Ranked) SetMenuTitle(menu, "Ranked Modes", client);
-		else if(category == MCategory_Fun) SetMenuTitle(menu, "Fun Modes", client);
-		else if(category == MCategory_Practise) SetMenuTitle(menu, "Practise Modes", client);
+		if(category == MCategory_Ranked) SetMenuTitle(menu, "Ranked Styles", client);
+		else if(category == MCategory_Fun) SetMenuTitle(menu, "Fun Styles", client);
+		else if(category == MCategory_Practise) SetMenuTitle(menu, "Practise Styles", client);
 		
 		SetMenuExitBackButton(menu, true);
 		SetMenuExitButton(menu, true);
@@ -828,28 +828,28 @@ CreatePhysicsMenu(client, MCategory:category)
 		
 		new maxorder[3] = {0, ...};
 
-		for (new i = 0; i < MAX_MODES-1; i++) 
+		for (new i = 0; i < MAX_STYLES-1; i++) 
 		{
-			if(!g_Physics[i][ModeEnable])
+			if(!g_Physics[i][StyleEnable])
 				continue;
-			if(g_Physics[i][ModeCategory] != category)
+			if(g_Physics[i][StyleCategory] != category)
 				continue;
 			
-			if(g_Physics[i][ModeOrder] > maxorder[category])
-				maxorder[category] = g_Physics[i][ModeOrder];
+			if(g_Physics[i][StyleOrder] > maxorder[category])
+				maxorder[category] = g_Physics[i][StyleOrder];
 			
 			count++;
 		}
 		
 		for (new order = 0; order <= maxorder[category]; order++) 
 		{
-			for (new i = 0; i < MAX_MODES-1; i++) 
+			for (new i = 0; i < MAX_STYLES-1; i++) 
 			{
-				if(!g_Physics[i][ModeEnable])
+				if(!g_Physics[i][StyleEnable])
 					continue;
-				if(g_Physics[i][ModeCategory] != category)
+				if(g_Physics[i][StyleCategory] != category)
 					continue;
-				if(g_Physics[i][ModeOrder] != order)
+				if(g_Physics[i][StyleOrder] != order)
 					continue;
 				
 				found++;
@@ -857,7 +857,7 @@ CreatePhysicsMenu(client, MCategory:category)
 				new String:buffer[8];
 				IntToString(i, buffer, sizeof(buffer));
 				
-				AddMenuItem(menu, buffer, g_Physics[i][ModeName]);
+				AddMenuItem(menu, buffer, g_Physics[i][StyleName]);
 			}
 			
 			if(found == count)
@@ -887,21 +887,21 @@ public MenuHandler_Physics(Handle:menu, MenuAction:action, client, itemNum)
 		new bool:found = GetMenuItem(menu, itemNum, info, sizeof(info), _, info2, sizeof(info2));
 		if(found)
 		{
-			new mode = StringToInt(info);
+			new style = StringToInt(info);
 			
-			if(0 <= mode < MAX_MODES-1 && g_Physics[mode][ModeEnable])
+			if(0 <= style < MAX_STYLES-1 && g_Physics[style][StyleEnable])
 			{
-				if((g_iBhopButtonCount == 0 && g_iBhopDoorCount == 0) && g_Physics[mode][ModeMultiBhop] > 0)
+				if((g_iBhopButtonCount == 0 && g_iBhopDoorCount == 0) && g_Physics[style][StyleMultiBhop] > 0)
 				{
 					CPrintToChat(client, "%s Multihop and Nohop are not available on this map.", PLUGIN_PREFIX2);
 					if(IsClientInGame(client)) FakeClientCommand(client, "sm_style");
 				}
 				else
 				{
-					g_bPickedMode[client] = true;
-					Timer_SetMode(client, mode);
+					g_bPickedStyle[client] = true;
+					Timer_SetStyle(client, style);
 					
-					if(g_Physics[mode][ModeCustom])
+					if(g_Physics[style][StyleCustom])
 					{
 						CreateCustomMenu(client);
 					}
@@ -919,31 +919,31 @@ CreateDifficultyMenu(client)
 {
 	if(0 < client < MaxClients && g_Settings[MultimodeEnable])
 	{
-		if(g_ModeCountEnabled > 0)
+		if(g_StyleCountEnabled > 0)
 		{
-			if(g_ModeCountRankedEnabled > 0 && g_ModeCountFunEnabled <= 0 && g_ModeCountPractiseEnabled <= 0)
+			if(g_StyleCountRankedEnabled > 0 && g_StyleCountFunEnabled <= 0 && g_StyleCountPractiseEnabled <= 0)
 			{
-				//Skip category menu if there are only ranked modes available
+				//Skip category menu if there are only ranked styles available
 				CreatePhysicsMenu(client, MCategory_Ranked);
 			}
 			else
 			{
 				new Handle:menu = CreateMenu(MenuHandler_Difficulty);
 
-				SetMenuTitle(menu, "Bhop Modes", client);
+				SetMenuTitle(menu, "Bhop Styles", client);
 				SetMenuExitButton(menu, true);
 				
-				if(g_ModeCountRankedEnabled > 0)
+				if(g_StyleCountRankedEnabled > 0)
 				{
-					AddMenuItem(menu, "timed", "Ranked Modes");
+					AddMenuItem(menu, "timed", "Ranked Styles");
 				}
-				if(g_ModeCountFunEnabled > 0)
+				if(g_StyleCountFunEnabled > 0)
 				{
-					AddMenuItem(menu, "fun", "Fun Modes");
+					AddMenuItem(menu, "fun", "Fun Styles");
 				}
-				if(g_ModeCountPractiseEnabled > 0)
+				if(g_StyleCountPractiseEnabled > 0)
 				{
-					AddMenuItem(menu, "practise", "Practise Modes");
+					AddMenuItem(menu, "practise", "Practise Styles");
 				}
 				
 				AddMenuItem(menu, "main", "Back");
@@ -951,7 +951,7 @@ CreateDifficultyMenu(client)
 				DisplayMenu(menu, client, MENU_TIME_FOREVER);
 			}
 		}
-		else CPrintToChatAll("%s No modes enabled.", PLUGIN_PREFIX2);
+		else CPrintToChatAll("%s No styles enabled.", PLUGIN_PREFIX2);
 	}
 }
 
@@ -1180,27 +1180,27 @@ ApplyDifficulty(client)
 {
 	if (IsClientInGame(client) && IsClientConnected(client) && !IsClientSourceTV(client))
 	{
-		new mode = Timer_GetMode(client);
+		new style = Timer_GetStyle(client);
 		
-		if(g_Physics[mode][ModeCustom])
+		if(g_Physics[style][StyleCustom])
 		{
 			if(g_bCustomFullStamina[client]) g_fStamina[client] = STAMINA_FULL;
 			else  g_fStamina[client] = STAMINA_DISABLED;
 			
-			if(g_bCustomBoost[client]) g_fBoost[client] = g_Physics[mode][ModeBoost];
+			if(g_bCustomBoost[client]) g_fBoost[client] = g_Physics[style][StyleBoost];
 			else  g_fBoost[client] = 0.0;
 			
 			g_bAuto[client] = g_bCustomAuto[client];
 		}
 		else
 		{
-			g_fStamina[client] = g_Physics[mode][ModeStamina];
-			g_bAuto[client] = g_Physics[mode][ModeAuto];
-			g_fBoost[client] = g_Physics[mode][ModeBoost];
+			g_fStamina[client] = g_Physics[style][StyleStamina];
+			g_bAuto[client] = g_Physics[style][StyleAuto];
+			g_fBoost[client] = g_Physics[style][StyleBoost];
 		}
 		
 		//only allow on normal
-		if(!g_Physics[mode][ModeLJStats] && g_timerLjStats)
+		if(!g_Physics[style][StyleLJStats] && g_timerLjStats)
 		{
 			SetLJMode(client, false);
 		}
@@ -1208,40 +1208,40 @@ ApplyDifficulty(client)
 		//stop timer
 		Timer_Stop(client);
 		
-		SetEntityGravity(client, g_Physics[mode][ModeGravity]);
+		SetEntityGravity(client, g_Physics[style][StyleGravity]);
 		
 		//stop him
 		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, Float:{0.0,0.0,-100.0});
 		
-		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[mode][ModeTimeScale]);
+		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[style][StyleTimeScale]);
 		
-		SetEntProp(client, Prop_Send, "m_iFOV", g_Physics[mode][ModeFOV]);
-		SetEntProp(client, Prop_Send, "m_iDefaultFOV", g_Physics[mode][ModeFOV]);
+		SetEntProp(client, Prop_Send, "m_iFOV", g_Physics[style][StyleFOV]);
+		SetEntProp(client, Prop_Send, "m_iDefaultFOV", g_Physics[style][StyleFOV]);
 		
 		decl String:auth[32];
 		GetClientAuthString(client, auth, sizeof(auth));
 		
-		if(StrEqual(g_Physics[mode][ModeDesc], ""))
+		if(StrEqual(g_Physics[style][StyleDesc], ""))
 		{
 			
 		}
 		else
 		{
-			CPrintToChat(client, "%s %s", PLUGIN_PREFIX2, g_Physics[mode][ModeDesc]);
+			CPrintToChat(client, "%s %s", PLUGIN_PREFIX2, g_Physics[style][StyleDesc]);
 		}
 		
 		if(g_Settings[TeleportOnStyleChanged])
 		{
-			if(Timer_GetBonus(client) == 1)
+			if(Timer_GetTrack(client) == TRACK_BONUS)
 				FakeClientCommand(client, "sm_b");
 			else FakeClientCommand(client, "sm_start");
 		}
 	}
 }
 
-public Native_GetPickedMode(Handle:plugin, numParams)
+public Native_GetPickedStyle(Handle:plugin, numParams)
 {
-	return g_bPickedMode[GetNativeCell(1)];
+	return g_bPickedStyle[GetNativeCell(1)];
 }
 
 public Native_GetJumpAccuracy(Handle:plugin, numParams)
@@ -1270,7 +1270,7 @@ public Native_GetAvgSpeed(Handle:plugin, numParams)
 	return true;
 }
 
-public Native_GetForceMode(Handle:plugin, numParams)
+public Native_GetForceStyle(Handle:plugin, numParams)
 {
 	return g_Settings[ForceStyle];
 }
@@ -1311,7 +1311,7 @@ public Entity_Touch(bhop,client)
 	//bhop = entity
 	if(0 < client <= MaxClients) 
 	{
-		new mode = Timer_GetMode(client);
+		new style = Timer_GetStyle(client);
 		
 		if(g_Settings[VegasEnable])
 		{
@@ -1414,14 +1414,14 @@ public Entity_Touch(bhop,client)
 		}
 		else if(diff > g_Settings[MultiBhopDelay]) 
 		{
-			if(g_Physics[mode][ModeMultiBhop] == 1 && time - g_fLastJump[client] > (g_Settings[MultiBhopCooldown] + g_Settings[MultiBhopDelay]))
+			if(g_Physics[style][StyleMultiBhop] == 1 && time - g_fLastJump[client] > (g_Settings[MultiBhopCooldown] + g_Settings[MultiBhopDelay]))
 			{
-				Teleport(client, iLastBlock[client], mode);
+				Teleport(client, iLastBlock[client], style);
 				iLastBlock[client] = -1;
 			}
-			else if(g_Physics[mode][ModeMultiBhop] != 1)
+			else if(g_Physics[style][StyleMultiBhop] != 1)
 			{
-				Teleport(client, iLastBlock[client], mode);
+				Teleport(client, iLastBlock[client], style);
 				iLastBlock[client] = -1;
 			}
 		}
@@ -1861,15 +1861,15 @@ public Action:Timer_UpdateGravity(Handle:timer)
 				continue;
 			
 			//gravity update
-			new mode = Timer_GetMode(client);
-			if(g_Physics[mode][ModeCustom] && !g_bCustomLowGravity[client])
+			new style = Timer_GetStyle(client);
+			if(g_Physics[style][StyleCustom] && !g_bCustomLowGravity[client])
 			{
 				SetEntityGravity(client, 1.0);
 				continue;
 			}
-			else if(g_Physics[mode][ModeGravity] != 1.0 && g_Physics[mode][ModeGravity] > 0.0)
+			else if(g_Physics[style][StyleGravity] != 1.0 && g_Physics[style][StyleGravity] > 0.0)
 			{
-				SetEntityGravity(client, g_Physics[mode][ModeGravity]);
+				SetEntityGravity(client, g_Physics[style][StyleGravity]);
 				continue;
 			}
 			
@@ -2037,8 +2037,8 @@ stock Push_Client(client)
 
 public Action:Timer_Boost(Handle:timer, any:client)
 {
-	new mode = Timer_GetMode(client);
-	Client_BoostForward(client, g_Physics[mode][ModeBoostForward], g_Physics[mode][ModeBoostForwardMax]);
+	new style = Timer_GetStyle(client);
+	Client_BoostForward(client, g_Physics[style][StyleBoostForward], g_Physics[style][StyleBoostForwardMax]);
 	
 	return Plugin_Stop;
 }
@@ -2059,38 +2059,38 @@ Client_BoostForward(client, Float:scale, Float:maxspeed)
 
 PunishAbuse(client)
 {
-	new style = Timer_GetMode(client);
+	new style = Timer_GetStyle(client);
 	
-	if(g_Physics[style][ModePunishType] == 0)
+	if(g_Physics[style][StylePunishType] == 0)
 		return;
 	
 	//Block controls
-	if(g_Physics[style][ModePunishType] == 1)
+	if(g_Physics[style][StylePunishType] == 1)
 	{
 		Block_MovementControl(client);
 	}
 	//Stop movement
-	else if(g_Physics[style][ModePunishType] == 2)
+	else if(g_Physics[style][StylePunishType] == 2)
 	{
 		CheckVelocity(client, 1, 250.0);
 	}
 	//Reset timer
-	else if(g_Physics[style][ModePunishType] == 3)
+	else if(g_Physics[style][StylePunishType] == 3)
 	{
 		Timer_Reset(client);
 	}
 	//Teleport to startzone
-	else if(g_Physics[style][ModePunishType] == 4)
+	else if(g_Physics[style][StylePunishType] == 4)
 	{
 		Timer_Restart(client);
 	}
 	//Suiside
-	else if(g_Physics[style][ModePunishType] == 5)
+	else if(g_Physics[style][StylePunishType] == 5)
 	{
 		ForcePlayerSuicide(client);
 	}
 	else
 	{
-		Timer_LogError("%d is not a valid punish type", g_Physics[style][ModePunishType]);
+		Timer_LogError("%d is not a valid punish type", g_Physics[style][StylePunishType]);
 	}
 }

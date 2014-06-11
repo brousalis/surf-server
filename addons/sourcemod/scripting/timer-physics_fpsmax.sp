@@ -69,63 +69,63 @@ public FPSCheck(QueryCookie:cookie, client, ConVarQueryResult:result, const Stri
 	if (enabled)
 	{
 		fpsmax = StringToInt(cvarValue);
-		new mode = Timer_GetMode(client);
+		new style = Timer_GetStyle(client);
 
-		if (g_Physics[mode][ModeFPSMin] == g_Physics[mode][ModeFPSMax] && g_Physics[mode][ModeFPSMin] > 0)
+		if (g_Physics[style][StyleFPSMin] == g_Physics[style][StyleFPSMax] && g_Physics[style][StyleFPSMin] > 0)
 		{
-			if (fpsmax != g_Physics[mode][ModeFPSMin])
+			if (fpsmax != g_Physics[style][StyleFPSMin])
 			{
-				if (g_Physics[mode][ModeFPSRedirectStyle] != -1)
+				if (g_Physics[style][StyleFPSRedirectStyle] != -1)
 				{
-					Timer_SetMode(client, g_Physics[mode][ModeFPSRedirectStyle]);
+					Timer_SetStyle(client, g_Physics[style][StyleFPSRedirectStyle]);
 				}
-				else if (g_ModeDefault != -1)
+				else if (g_StyleDefault != -1)
 				{
-					Timer_SetMode(client, g_ModeDefault);
+					Timer_SetStyle(client, g_StyleDefault);
 				}
 
 				Timer_Restart(client);
 
-				CPrintToChat(client, "%s {default}You have been switched to FPSMAX mode, if you like to play in NORMAL set fps_max to %d.", PLUGIN_PREFIX2, g_Physics[mode][ModeFPSMax]);
+				CPrintToChat(client, "%s {default}You have been switched to FPSMAX style, if you like to play in NORMAL set fps_max to %d.", PLUGIN_PREFIX2, g_Physics[style][StyleFPSMax]);
 			}
 		}
 		else
 		{
-			if (g_Physics[mode][ModeFPSMin] > 0)
+			if (g_Physics[style][StyleFPSMin] > 0)
 			{
-				if(fpsmax < g_Physics[mode][ModeFPSMin] && fpsmax != 0)
+				if(fpsmax < g_Physics[style][StyleFPSMin] && fpsmax != 0)
 				{
-					if (g_Physics[mode][ModeFPSRedirectStyle] != -1)
+					if (g_Physics[style][StyleFPSRedirectStyle] != -1)
 					{
-						Timer_SetMode(client, g_Physics[mode][ModeFPSRedirectStyle]);
+						Timer_SetStyle(client, g_Physics[style][StyleFPSRedirectStyle]);
 					}
-					else if (g_ModeDefault != -1)
+					else if (g_StyleDefault != -1)
 					{
-						Timer_SetMode(client, g_ModeDefault);
+						Timer_SetStyle(client, g_StyleDefault);
 					}
 
 					Timer_Restart(client);
 
-					CPrintToChat(client, "%s {default}You have been switched to FPSMAX mode, if you like to play in NORMAL set fps_max higher than %d.", PLUGIN_PREFIX2, g_Physics[mode][ModeFPSMin]);
+					CPrintToChat(client, "%s {default}You have been switched to FPSMAX style, if you like to play in NORMAL set fps_max higher than %d.", PLUGIN_PREFIX2, g_Physics[style][StyleFPSMin]);
 				}
 			}
 			
-			if (g_Physics[mode][ModeFPSMax] > 0)
+			if (g_Physics[style][StyleFPSMax] > 0)
 			{
-				if(fpsmax > g_Physics[mode][ModeFPSMax])
+				if(fpsmax > g_Physics[style][StyleFPSMax])
 				{
-					if (g_Physics[mode][ModeFPSRedirectStyle] != -1)
+					if (g_Physics[style][StyleFPSRedirectStyle] != -1)
 					{
-						Timer_SetMode(client, g_Physics[mode][ModeFPSRedirectStyle]);
+						Timer_SetStyle(client, g_Physics[style][StyleFPSRedirectStyle]);
 					}
-					else if (g_ModeDefault != -1)
+					else if (g_StyleDefault != -1)
 					{
-						Timer_SetMode(client, g_ModeDefault);
+						Timer_SetStyle(client, g_StyleDefault);
 					}
 
 					Timer_Restart(client);
 
-					CPrintToChat(client, "%s {default}You have been switched to FPSMAX mode, if you like to play in NORMAL set fps_max lower than %d.", PLUGIN_PREFIX2, g_Physics[mode][ModeFPSMax]);
+					CPrintToChat(client, "%s {default}You have been switched to FPSMAX style, if you like to play in NORMAL set fps_max lower than %d.", PLUGIN_PREFIX2, g_Physics[style][StyleFPSMax]);
 				}
 			}
 		}

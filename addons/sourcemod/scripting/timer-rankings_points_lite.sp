@@ -45,22 +45,22 @@ public OnMapStart()
 }
 
 //public OnFinishRound(client, const String:map[], jumps, flashbangs, physicsDifficulty, fpsmax, const String:timeString[], const String:timeDiffString[], position, totalrank, bool:overwrite)
-public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank)
+public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentrank, newrank)
 {
 	if(IsFakeClient(client))
 		return;
 
-	new tier = Timer_GetTier(bonus);
-	if(bonus != 0) tier = 1;
+	new tier = Timer_GetTier(track);
+	if(track > TRACK_BONUS) tier = 1;
 	
-	new bool:ranked = bool:Timer_IsModeRanked(mode);
+	new bool:ranked = bool:Timer_IsStyleRanked(style);
 	
 	if(ranked)
 	{
-		new total = Timer_GetDifficultyTotalRank(mode, bonus);
-		new finishcount = Timer_GetFinishCount(mode, bonus, currentrank);
+		new total = Timer_GetStyleTotalRank(style, track);
+		new finishcount = Timer_GetFinishCount(style, track, currentrank);
 		
-		new points = GetRecordPoints(lasttime > time, bonus, mode, tier, finishcount, total, currentrank, newrank);
+		new points = GetRecordPoints(lasttime > time, track, style, tier, finishcount, total, currentrank, newrank);
 
 		Timer_AddPoints(client, points);
 		Timer_SavePoints(client);
@@ -71,7 +71,7 @@ public OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentran
 
 public Action:Command_PointsInfo(client, args)
 {
-	if(Timer_IsModeRanked(Timer_GetMode(client)))
+	if(Timer_IsStyleRanked(Timer_GetStyle(client)))
 		CPrintToChat(client, "%s You could earn between %d and %d points.", PLUGIN_PREFIX2, GetMinRecordPoints(client), GetMaxRecordPoints(client));
 
 	return Plugin_Handled;
@@ -79,24 +79,24 @@ public Action:Command_PointsInfo(client, args)
 
 stock GetMaxRecordPoints(client)
 {
-	new bonus = Timer_GetBonus(client);
-	new tier = Timer_GetTier(bonus);
-	new mode = Timer_GetMode(client);
-	new total = Timer_GetDifficultyTotalRank(mode, bonus);
-	new currentrank = Timer_GetDifficultyRank(client, bonus, mode);	
-	new finishcount = Timer_GetFinishCount(mode, bonus, currentrank);
+	new track = Timer_GetTrack(client);
+	new tier = Timer_GetTier(track);
+	new style = Timer_GetStyle(client);
+	new total = Timer_GetStyleTotalRank(style, track);
+	new currentrank = Timer_GetStyleRank(client, track, style);	
+	new finishcount = Timer_GetFinishCount(style, track, currentrank);
 	
-	return GetRecordPoints(true, bonus, mode, tier, finishcount, total, currentrank, 1);
+	return GetRecordPoints(true, track, style, tier, finishcount, total, currentrank, 1);
 }
 
 stock GetMinRecordPoints(client)
 {
-	new bonus = Timer_GetBonus(client);
-	new tier = Timer_GetTier(bonus);
-	new mode = Timer_GetMode(client);
-	new total = Timer_GetDifficultyTotalRank(mode, bonus);
-	new currentrank = Timer_GetDifficultyRank(client, bonus, mode);	
-	new finishcount = Timer_GetFinishCount(mode, bonus, currentrank);
+	new track = Timer_GetTrack(client);
+	new tier = Timer_GetTier(track);
+	new style = Timer_GetStyle(client);
+	new total = Timer_GetStyleTotalRank(style, track);
+	new currentrank = Timer_GetStyleRank(client, track, style);	
+	new finishcount = Timer_GetFinishCount(style, track, currentrank);
 	
 	new badrank;
 	
@@ -107,14 +107,14 @@ stock GetMinRecordPoints(client)
 	}
 	else badrank = currentrank;
 	
-	return GetRecordPoints(false, bonus, mode, tier, finishcount, total, currentrank, badrank);
+	return GetRecordPoints(false, track, style, tier, finishcount, total, currentrank, badrank);
 }
 
-stock GetRecordPoints(bool:timeimproved, bonus, mode, tier, finishcount, total, currentrank, newrank)
+stock GetRecordPoints(bool:timeimproved, track, style, tier, finishcount, total, currentrank, newrank)
 {
 	new Float:points = 0.0;
 	new totalbonus = GetTotalBonus(total);
-	new Float:style_scale = g_Physics[mode][ModePointsMulti];
+	new Float:style_scale = g_Physics[style][StylePointsMulti];
 	new Float:tier_scale = 1.0;
 	
 	if(tier == 1)
@@ -308,5 +308,5 @@ stock GetTotalBonus(total)
 		}
 	}
 	
-	return 1;
+	return 0;
 }

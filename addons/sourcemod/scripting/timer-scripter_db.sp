@@ -453,12 +453,12 @@ public Action:Command_ReloadScripters(client, argc)
 
  public OnTimerStarted(client)
  {
-	new mode = Timer_GetMode(client);
-	if (!g_Physics[mode][ModeAuto] && Timer_IsModeRanked(mode))
+	new style = Timer_GetStyle(client);
+	if (!g_Physics[style][StyleAuto] && Timer_IsStyleRanked(style))
 	{
 		if (Timer_IsScripter(client))
 		{
-			Timer_SetMode(client, g_ModeDefault);
+			Timer_SetStyle(client, g_StyleDefault);
 			PrintToChat(client, "[ScripterDB] You are not allowed to play ranked modes except AUTO! Visit our forums to request an unban.");
 		}
 	}	

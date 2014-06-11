@@ -375,7 +375,7 @@ public MenuHandlerChallenge(Handle:menu, MenuAction:action, creator, param2)
 				new Handle:menu2 = CreateMenu(MenuHandlerChallengeConfirm);
 				if(g_Settings[MultimodeEnable])
 				{
-					SetMenuTitle(menu2, "Confirm Challenge with %N on mode: %s.", creator, g_Physics[Timer_GetMode(creator)][ModeName]);
+					SetMenuTitle(menu2, "Confirm Challenge with %N on style: %s.", creator, g_Physics[Timer_GetStyle(creator)][StyleName]);
 				}
 				else SetMenuTitle(menu2, "Confirm Challenge with %N.", creator);
 			
@@ -436,7 +436,7 @@ StartChallenge(client, target)
 	FakeClientCommand(target, "sm_start");
 	
 	Timer_SetClientTeammate(client, target, 1);
-	Timer_SetMode(client, Timer_GetMode(target));
+	Timer_SetStyle(client, Timer_GetStyle(target));
 	
 	SetEntityMoveType(client, MOVETYPE_NONE);
 	SetEntityMoveType(target, MOVETYPE_NONE);
@@ -450,8 +450,8 @@ StartChallenge(client, target)
 	g_fLastRun[client] = 0.0;
 	g_fLastRun[client] = 0.0;
 	
-	Timer_SetBonus(client, 0);
-	Timer_SetBonus(target, 0);
+	Timer_SetTrack(client, TRACK_NORMAL);
+	Timer_SetTrack(target, TRACK_NORMAL);
 	
 	g_bClientChallenge[client] = true;
 	g_bClientChallenge[target] = true;
@@ -612,7 +612,7 @@ public MenuHandlerCoopConfirm(Handle:menu, MenuAction:action, client, param2)
 StartCoop(client, target)
 {
 	Timer_SetClientTeammate(client, target, 1);
-	Timer_SetMode(client, Timer_GetMode(target));
+	Timer_SetTrack(client, Timer_GetTrack(target));
 	
 	SetEntityMoveType(client, MOVETYPE_NONE);
 	SetEntityMoveType(target, MOVETYPE_NONE);
@@ -620,8 +620,8 @@ StartCoop(client, target)
 	g_iCoopCountdown[client] = 5;
 	g_iCoopCountdown[target] = 5;
 	
-	Timer_SetBonus(client, 0);
-	Timer_SetBonus(target, 0);
+	Timer_SetTrack(client, TRACK_NORMAL);
+	Timer_SetTrack(target, TRACK_NORMAL);
 	
 	g_bClientCoop[client] = false;
 	g_bClientCoop[target] = false;
@@ -713,11 +713,11 @@ public Action:EndChallenge(client, force)
 			
 			if (g_Settings[ChallengeSaveRecords] && Timer_GetClientTimer(client, enabled, time, jumps, fpsmax))
 			{
-				new difficulty = 0;
+				new style = 0;
 				if (g_timerPhysics)
-					difficulty = Timer_GetMode(client);
+					style = Timer_GetStyle(client);
 				
-				Timer_FinishRound(client, g_currentMap, time, jumps, difficulty, fpsmax, 0);
+				Timer_FinishRound(client, g_currentMap, time, jumps, style, fpsmax, 0);
 			}
 			
 			//Forward
@@ -811,15 +811,15 @@ public Action:EndCoop(client, force)
 			new bool:enabled; //tier running
 			new jumps; //current jump count
 			new fpsmax; //fps settings
-			new bool:bonus = false; //bonus timer running
+			new bool:track = false; //track timer running
 			new Float:time; //current time
 			
-			new mode = Timer_GetMode(client);
+			new style = Timer_GetStyle(client);
 			
 			Timer_GetClientTimer(client, enabled, time, jumps, fpsmax);
 			
-			Timer_FinishRound(client, g_currentMap, time, jumps, mode, fpsmax, bonus);
-			Timer_FinishRound(mate, g_currentMap, time, jumps, mode, fpsmax, bonus);
+			Timer_FinishRound(client, g_currentMap, time, jumps, style, fpsmax, track);
+			Timer_FinishRound(mate, g_currentMap, time, jumps, style, fpsmax, track);
 		}
 	}
 	

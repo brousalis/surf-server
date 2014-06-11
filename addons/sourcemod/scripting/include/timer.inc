@@ -31,8 +31,6 @@
 #define TEAMMODE_NONE					0
 #define TEAMMODE_CHALLENGE				1
 #define TEAMMODE_COOP					2
-#define TEAMMODE_RACE					3
-#define TEAMMODE_TRIKZ					4
 
 //Colors Includes
 #if defined LEGACY_COLORS
@@ -157,40 +155,259 @@ enum MapZone
 	NPC
 }
 
+/**
+ * Called when a timer starts.
+ *
+ * @param client The owner of the timer.
+ *
+ * @noreturn
+ */
 forward OnTimerStarted(client);
+
+/**
+ * Called when a timer stops.
+ *
+ * @param client The owner of the timer.
+ *
+ * @noreturn
+ */
 forward OnTimerStopped(client);
+
+/**
+ * Called when a timer resets. (all timer data get lost).
+ *
+ * @param client The owner of the timer.
+ *
+ * @noreturn
+ */
 forward OnTimerReseted(client);
+
+/**
+ * Called when a timer restarts.
+ *
+ * @param client The owner of the timer.
+ *
+ * @noreturn
+ */
 forward OnTimerRestart(client);
+
+/**
+ * Called when a timer pauses.
+ *
+ * @param client The owner of the timer.
+ *
+ * @noreturn
+ */
 forward OnTimerPaused(client);
+
+/**
+ * Called when a timer continues.
+ *
+ * @param client The owner of the timer.
+ *
+ * @noreturn
+ */
 forward OnTimerResumed(client);
 
-forward OnTimerWorldRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerPersonalRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerTop10Record(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerFirstRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
-forward OnTimerRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank);
+/**
+ * Called when a round finishes as world record.
+ *
+ * @param client The client who finished the round.
+ * @param track End zone type (0:normal 1:bonus 2:short)
+ * @param mode Style ID
+ * @param time Float record time
+ * @param lasttime Float last record time (0.0 if first record)
+ * @param currentrank Old position of player.
+ * @param newrank New position of player.
+ * @noreturn
+ */
+forward OnTimerWorldRecord(client, track, mode, Float:time, Float:lasttime, currentrank, newrank);
 
+/**
+ * Called when a round finishes as personal record.
+ *
+ * @param client The client who finished the round.
+ * @param track End zone type (0:normal 1:bonus 2:short)
+ * @param mode Style ID
+ * @param time Float record time
+ * @param lasttime Float last record time (0.0 if first record)
+ * @param currentrank Old position of player.
+ * @param newrank New position of player.
+ * @noreturn
+ */
+forward OnTimerPersonalRecord(client, track, mode, Float:time, Float:lasttime, currentrank, newrank);
+
+/**
+ * Called when a round finishes as top 10 record.
+ *
+ * @param client The client who finished the round.
+ * @param track End zone type (0:normal 1:bonus 2:short)
+ * @param mode Style ID
+ * @param time Float record time
+ * @param lasttime Float last record time (0.0 if first record)
+ * @param currentrank Old position of player.
+ * @param newrank New position of player.
+ * @noreturn
+ */
+forward OnTimerTop10Record(client, track, mode, Float:time, Float:lasttime, currentrank, newrank);
+
+/**
+ * Called when a round finishes first time.
+ *
+ * @param client The client who finished the round.
+ * @param track End zone type (0:normal 1:bonus 2:short)
+ * @param mode Style ID
+ * @param time Float record time
+ * @param lasttime Float last record time (0.0 if first record)
+ * @param currentrank Old position of player.
+ * @param newrank New position of player.
+ * @noreturn
+ */
+forward OnTimerFirstRecord(client, track, mode, Float:time, Float:lasttime, currentrank, newrank);
+
+/**
+ * Called when a round finishes.
+ *
+ * @param client The client who finished the round.
+ * @param track End zone type (0:normal 1:bonus 2:short)
+ * @param mode Style ID
+ * @param time Float record time
+ * @param lasttime Float last record time (0.0 if first record)
+ * @param currentrank Old position of player.
+ * @param newrank New position of player.
+ * @noreturn
+ */
+forward OnTimerRecord(client, track, mode, Float:time, Float:lasttime, currentrank, newrank);
+
+/**
+ * Reset a timer. (clear all data)
+ *
+ * @param client
+ * @return Bool success
+ */
 native bool:Timer_Reset(client);
+
+/**
+ * Start a player timer
+ *
+ * @param client
+ * @return Bool success
+ */
 native bool:Timer_Start(client);
+
+/**
+ * Stop a player timer
+ *
+ * @param client
+ * @param paused
+ * @return Bool success
+ */
 native bool:Timer_Stop(client, bool:stopPaused = true);
+
+/**
+ * Resume a player timer
+ *
+ * @param client
+ * @return Bool success
+ */
 native bool:Timer_Resume(client);
+
+/**
+ * Pause a player timer
+ *
+ * @param client
+ * @return Bool success
+ */
 native bool:Timer_Pause(client);
+
+/**
+ * Restart a player timer
+ *
+ * @param client
+ * @return Bool success
+ */
 native bool:Timer_Restart(client);
+
+/**
+ * Reset a player timer
+ *
+ * @param client
+ * @param penaltytime Float time to add to timer
+ * @return Bool success
+ */
 native bool:Timer_AddPenaltyTime(client, Float:penaltytime);
 
+
+/**
+ * Get a player timer
+ *
+ * @param client
+ * @param enabled Bool to store running state in
+ * @param time Float to store running time in
+ * @param jumps Integer to store jump count in
+ * @param fpsmax Integer to store fpsmax count in
+ * @return Bool success
+ */
 native bool:Timer_GetClientTimer(client, &enabled, &Float:time, &jumps, &fpsmax);
 
-native Timer_FinishRound(client, const String:map[], Float:time, jumps, physicsDifficulty, fpsmax, bonus);
+/**
+ * Finishes a round.
+ *
+ * @param client The client that finishes the round.
+ * @param map The map of the round.
+ * @param time The time of the round, in seconds.
+ * @param jumps The count of the jumps in that round.
+ * @param physicsDifficulty Style ID
+ * @param fpsmax The fpsmax value of the client.
+ * @param track The end zone type (0:normal 1:bonus 2:short).
+ *
+ * @noreturn
+ */
+native Timer_FinishRound(client, const String:map[], Float:time, jumps, track, fpsmax, bonus);
+
+/**
+ * Forces a player to a new bonus.
+ *
+ * @param client The target client
+ * @param mode The Style Id to check
+ * 
+ * @return track (0:normal 1:bonus 2:short).
+ */
+native Timer_SetTrack(client, track);
+
+/**
+ * Returns true if the given mode is configured as ranked.
+ *
+ * @param client The target client
+ * 
+ * @return The style ID.
+ */
+native Timer_GetStyle(client);
+
+/**
+ * Returns true if the given mode is configured as ranked.
+ *
+ * @param style The Style Id to check
+ * 
+ * @return Bool ranked or not.
+ */
+native Timer_IsStyleRanked(style);
+
+/**
+ * Forces a player to a new style and apply its physics.
+ *
+ * @param client The target client
+ * @param style The Style Id to check
+ * 
+ * @return Bool ranked or not.
+ */
+native Timer_SetStyle(client, style);
 
 native Timer_GetStatus(client);
 native Timer_GetPauseStatus(client);
-native Timer_GetBonus(client);
+native Timer_GetTrack(client);
 native Timer_GetMapFinishCount(client);
 native Timer_GetMapFinishBonusCount(client);
-native Timer_SetBonus(client, newmode);
-native Timer_GetMode(client);
-native Timer_IsModeRanked(mode);
-native Timer_SetMode(client, newmode);
 
 public SharedPlugin:__pl_timer = 
 {
@@ -215,11 +432,11 @@ public __pl_timer_SetNTVOpt()
 	MarkNativeAsOptional("Timer_GetClientTimer");
 	MarkNativeAsOptional("Timer_FinishRound");
 	MarkNativeAsOptional("Timer_GetStatus");
-	MarkNativeAsOptional("Timer_GetBonus");
+	MarkNativeAsOptional("Timer_GetTrack");
+	MarkNativeAsOptional("Timer_SetTrack");
 	MarkNativeAsOptional("Timer_GetMapFinishCount");
 	MarkNativeAsOptional("Timer_GetMapFinishBonusCount");
-	MarkNativeAsOptional("Timer_SetBonus");
-	MarkNativeAsOptional("Timer_GetMode");
-	MarkNativeAsOptional("Timer_IsModeRanked");
-	MarkNativeAsOptional("Timer_SetMode");	
+	MarkNativeAsOptional("Timer_GetStyle");
+	MarkNativeAsOptional("Timer_IsStyleRanked");
+	MarkNativeAsOptional("Timer_SetStyle");	
 }

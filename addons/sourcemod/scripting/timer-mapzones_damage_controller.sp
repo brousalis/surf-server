@@ -102,8 +102,8 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 	{
 		if (attacker == 0 || attacker >= MaxClients)
 		{
-			new mode = Timer_GetMode(victim);
-			if(g_Physics[mode][ModeAllowWorldDamage])
+			new style = Timer_GetStyle(victim);
+			if(g_Physics[style][StyleAllowWorldDamage])
 			{
 				return Plugin_Continue;
 			}
@@ -124,8 +124,8 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 	
 	if (attacker == 0 || attacker >= MaxClients)
 	{
-		new mode = Timer_GetMode(victim);
-		if(g_Physics[mode][ModeAllowWorldDamage])
+		new style = Timer_GetStyle(victim);
+		if(g_Physics[style][StyleAllowWorldDamage])
 		{
 			return Plugin_Continue;
 		}

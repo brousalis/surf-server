@@ -1,5 +1,5 @@
 #include <sdktools>
-     
+
 #pragma semicolon 1
 
 public Plugin:myinfo = 
@@ -11,25 +11,23 @@ public Plugin:myinfo =
 	url = "forums.alliedmods.net/showthread.php?p=2074699"
 };
 
-     
 //new String:EntityList[][] = {"logic_auto", "logic_timer", "team_round_timer", "logic_relay"};
 new String:EntityList[][] = {"logic_timer", "team_round_timer", "logic_relay"};
-     
+
 public OnPluginStart()
-	{
-		HookEvent("round_start", OnRoundStart);
-	}
-     
-     
+{
+	HookEvent("round_start", OnRoundStart);
+}
+
 public Action:OnRoundStart(Handle:event, const String:name[], bool:dontBroadcast)
-    {
-            new iEnt;
-            for(new i = 0; i < sizeof(EntityList); i++)
-            {
-                    while((iEnt = FindEntityByClassname(iEnt, EntityList[i])) != -1)
-                    {
-                            AcceptEntityInput(iEnt, "Disable");
-                            AcceptEntityInput(iEnt, "Kill");
-                    }
-            }
+{
+	new iEnt;
+	for(new i = 0; i < sizeof(EntityList); i++)
+	{
+		while((iEnt = FindEntityByClassname(iEnt, EntityList[i])) != -1)
+		{
+			AcceptEntityInput(iEnt, "Disable");
+			AcceptEntityInput(iEnt, "Kill");
+		}
 	}
+}

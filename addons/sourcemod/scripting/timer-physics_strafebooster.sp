@@ -181,14 +181,14 @@ stock StrafeBooster(client)
 		
 	new Float:currentspeed = SquareRoot(Pow(fVelocity[0],2.0)+Pow(fVelocity[1],2.0));
 	
-	new style = Timer_GetMode(client);
+	new style = Timer_GetStyle(client);
 	
-	if(g_Physics[style][ModeStrafeBoost] == 0)
+	if(g_Physics[style][StyleStrafeBoost] == 0)
 		return;
 	
 	if (!(GetEntityFlags(client) & FL_ONGROUND))
 	{
-		new Float:Multpl = currentspeed / (currentspeed+(float(g_Physics[style][ModeStrafeBoost])/1000000.0));	
+		new Float:Multpl = currentspeed / (currentspeed+(float(g_Physics[style][StyleStrafeBoost])/1000000.0));	
 		fVelocity[0] /= Multpl;
 		fVelocity[1] /= Multpl;
 		

@@ -54,7 +54,7 @@ public Event_PlayerJump(Handle:event, const String:name[], bool:dontBroadcast)
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	afAvgJumps[client] = ( afAvgJumps[client] * 9.0 + float(aiJumps[client]) ) / 10.0;
 
-	new mode = Timer_GetMode(client);
+	new style = Timer_GetStyle(client);
 	
 	decl Float:vec_vel[3];
 	GetEntPropVector(client, Prop_Data, "m_vecVelocity", vec_vel);
@@ -77,7 +77,7 @@ public Event_PlayerJump(Handle:event, const String:name[], bool:dontBroadcast)
 			aiPatternhits[client]++;
 			if ((aiPatternhits[client] > 15) && (!bBanFlagged[client]))
 			{
-				if(Timer_IsModeRanked(mode) && !Timer_IsPlayerTouchingZoneType(client, ZtAuto) && !g_Physics[mode][ModeAuto])
+				if(Timer_IsStyleRanked(style) && !Timer_IsPlayerTouchingZoneType(client, ZtAuto) && !g_Physics[style][StyleAuto])
 				{
 					AddScripter(client, "pat1");
 					bBanFlagged[client] = true;
@@ -111,7 +111,7 @@ public Event_PlayerJump(Handle:event, const String:name[], bool:dontBroadcast)
 			
 			if (aiAutojumps[client] >= 20)
 			{
-				if(Timer_IsModeRanked(mode) && !g_Physics[mode][ModeAuto] && !Timer_IsPlayerTouchingZoneType(client, ZtAuto)) 
+				if(Timer_IsStyleRanked(style) && !g_Physics[style][StyleAuto] && !Timer_IsPlayerTouchingZoneType(client, ZtAuto)) 
 				{
 					AddScripter(client, "hax1");
 				}
@@ -136,7 +136,7 @@ public Event_PlayerJump(Handle:event, const String:name[], bool:dontBroadcast)
 
 	if (afAvgPerfJumps[client] >= 0.94 && !bBanFlagged[client])
 	{
-		if(Timer_IsModeRanked(mode) && !g_Physics[mode][ModeAuto] && !Timer_IsPlayerTouchingZoneType(client, ZtAuto))
+		if(Timer_IsStyleRanked(style) && !g_Physics[style][StyleAuto] && !Timer_IsPlayerTouchingZoneType(client, ZtAuto))
 		{
 			AddScripter(client, "hax2");
 		}
@@ -190,8 +190,8 @@ public OnGameFrame()
 
 AddScripter(client, const String:type[])
 {
-	new mode = Timer_GetMode(client);
-	if(Timer_IsModeRanked(mode) && !g_Physics[mode][ModeAuto]) 
+	new style = Timer_GetStyle(client);
+	if(Timer_IsStyleRanked(style) && !g_Physics[style][StyleAuto]) 
 	{
 		new String:banstats[256];
 		GetClientStats(client, banstats, sizeof(banstats));
@@ -253,8 +253,8 @@ GetClientStats(client, String:string[], length)
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
-	new mode = Timer_GetMode(client);
-	if(Timer_IsModeRanked(mode) && !g_Physics[mode][ModeAuto]) 
+	new style = Timer_GetStyle(client);
+	if(Timer_IsStyleRanked(style) && !g_Physics[style][StyleAuto]) 
 	{
 		if(IsPlayerAlive(client))
 		{

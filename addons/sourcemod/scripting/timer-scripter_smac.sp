@@ -36,8 +36,8 @@ public OnMapStart()
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
-	new mode = Timer_GetMode(client);
-	if(Timer_IsModeRanked(mode) && !g_Physics[mode][ModeAuto] && !Timer_IsPlayerTouchingZoneType(client, ZtAuto)) 
+	new style = Timer_GetStyle(client);
+	if(Timer_IsStyleRanked(style) && !g_Physics[style][StyleAuto] && !Timer_IsPlayerTouchingZoneType(client, ZtAuto)) 
 	{
 		static iPrevButtons[MAXPLAYERS+1];
 

@@ -61,16 +61,16 @@ new g_reconnectCounter = 0;
 new Handle:hTopMenu = INVALID_HANDLE;
 new TopMenuObject:oMapZoneMenu;
 
-new g_cache[MAX_MODES][3][MAX_CACHE][RecordCache];
-new g_cachestats[MAX_MODES][3][RecordStats];
-new g_cacheCount[MAX_MODES][3];
-new bool:g_cacheLoaded[MAX_MODES][3];
+new g_cache[MAX_STYLES][3][MAX_CACHE][RecordCache];
+new g_cachestats[MAX_STYLES][3][RecordStats];
+new g_cacheCount[MAX_STYLES][3];
+new bool:g_cacheLoaded[MAX_STYLES][3];
 
 new g_deleteMenuSelection[MAXPLAYERS+1];
-new g_wrMenuMode[MAXPLAYERS+1];
+new g_wrStyleMode[MAXPLAYERS+1];
 
-new g_iAdminSelectedMode[MAXPLAYERS+1];
-new g_iAdminSelectedBonus[MAXPLAYERS+1];
+new g_iAdminSelectedStyle[MAXPLAYERS+1];
+new g_iAdminSelectedTrack[MAXPLAYERS+1];
 
 new bool:g_timerPhysics = false;
 
@@ -88,9 +88,9 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	RegPluginLibrary("timer-worldrecord");
 	
 	CreateNative("Timer_ForceReloadCache", Native_ForceReloadCache);
-	CreateNative("Timer_GetDifficultyRecordTime", Native_GetDifficultyRecordTime);
-	CreateNative("Timer_GetDifficultyRank", Native_GetDifficultyRank);
-	CreateNative("Timer_GetDifficultyTotalRank", Native_GetDifficultyTotalRank);
+	CreateNative("Timer_GetStyleRecordTime", Native_GetStyleRecordTime);
+	CreateNative("Timer_GetStyleRank", Native_GetStyleRank);
+	CreateNative("Timer_GetStyleTotalRank", Native_GetStyleTotalRank);
 	CreateNative("Timer_GetBestRound", Native_GetBestRound);
 	CreateNative("Timer_GetNewPossibleRank", Native_GetNewPossibleRank);
 	CreateNative("Timer_GetRankID", Native_GetRankID);
@@ -190,19 +190,19 @@ UpdateRanks()
 	if (g_hSQL == INVALID_HANDLE)
 		return;
 	
-	for(new bonus = 0; bonus < 2; bonus++) 
+	for(new track = 0; track < TRACK_SHORT; track++) 
 	{
-		for(new style = 0; style < MAX_MODES-1; style++) 
+		for(new style = 0; style < g_StyleCount-1; style++) 
 		{
-			if(!g_Physics[style][ModeEnable])
+			if(!g_Physics[style][StyleEnable])
 				continue;
 			
-			if(g_Physics[style][ModeCategory] == MCategory_Ranked)
+			if(g_Physics[style][StyleCategory] == MCategory_Ranked)
 			{
 				decl String:query[2048];
 				FormatEx(query, sizeof(query), "SET @r=0;");
 				SQL_TQuery(g_hSQL, UpdateRanksCallback, query, _, DBPrio_High);
-				FormatEx(query, sizeof(query), "UPDATE `round` SET `rank` = @r:= (@r+1) WHERE `map` = '%s' AND `physicsdifficulty` = %d AND `bonus` = %d  ORDER BY `time` ASC;", g_currentMap, style, bonus);
+				FormatEx(query, sizeof(query), "UPDATE `round` SET `rank` = @r:= (@r+1) WHERE `map` = '%s' AND `physicsdifficulty` = %d AND `bonus` = %d  ORDER BY `time` ASC;", g_currentMap, style, track);
 				SQL_TQuery(g_hSQL, UpdateRanksCallback, query, _, DBPrio_High);
 			}
 		}
@@ -223,7 +223,7 @@ public Action:Command_WorldRecord(client, args)
 	if (g_timerPhysics && g_Settings[MultimodeEnable])
 		CreateRankedWRMenu(client);
 	else
-		CreateWRMenu(client, g_ModeDefault, 0);
+		CreateWRMenu(client, g_StyleDefault, 0);
 	
 	return Plugin_Handled;
 }
@@ -233,7 +233,7 @@ public Action:Command_BonusWorldRecord(client, args)
 	if (g_timerPhysics && g_Settings[MultimodeEnable])
 		CreateRankedBWRMenu(client);
 	else
-		CreateWRMenu(client, g_ModeDefault, 1);
+		CreateWRMenu(client, g_StyleDefault, 1);
 	
 	return Plugin_Handled;
 }
@@ -243,7 +243,7 @@ public Action:Command_ShortWorldRecord(client, args)
 	if (g_timerPhysics && g_Settings[MultimodeEnable])
 		CreateRankedSWRMenu(client);
 	else
-		CreateWRMenu(client, g_ModeDefault, 2);
+		CreateWRMenu(client, g_StyleDefault, 2);
 	
 	return Plugin_Handled;
 }
@@ -283,19 +283,19 @@ public Action:Command_PersonalRecord(client, args)
 	}
 	else
 	{
-		new mode = Timer_GetMode(client);
+		new style = Timer_GetStyle(client);
 		
-		new bonus = Timer_GetBonus(client);
+		new track = Timer_GetTrack(client);
 		
 		decl String:auth[32];
 		GetClientAuthString(target, auth, sizeof(auth));
 
-		for (new t = 0; t < g_cacheCount[mode][bonus]; t++)
+		for (new t = 0; t < g_cacheCount[style][track]; t++)
 		{
-			if (StrEqual(g_cache[mode][bonus][t][Auth], auth))
+			if (StrEqual(g_cache[style][track][t][Auth], auth))
 			{
-				g_wrMenuMode[client] = mode;
-				CreatePlayerInfoMenu(client, g_cache[mode][bonus][t][Id], bonus);
+				g_wrStyleMode[client] = style;
+				CreatePlayerInfoMenu(client, g_cache[style][track][t][Id], track);
 				break;
 			}
 		}		
@@ -484,7 +484,7 @@ public AdminMenu_DeleteRecord(Handle:topmenu,
 	} else if (action == TopMenuAction_SelectOption) 
 	{
 		if(g_Settings[MultimodeEnable]) CreateAdminModeSelection(client);
-		else CreateAdminBonusSelection(client);
+		else CreateAdminTrackSelection(client);
 	}
 }
 
@@ -530,18 +530,18 @@ CreateAdminModeSelection(client)
 {
 	new Handle:menu = CreateMenu(MenuHandler_AdminModeSelection);
 
-	SetMenuTitle(menu, "Select Mode");
+	SetMenuTitle(menu, "Select Style");
 	SetMenuExitButton(menu, true);
 	
 	new items = 0;
 	
-	for(new i = 0; i < MAX_MODES-1; i++) 
+	for(new i = 0; i < MAX_STYLES-1; i++) 
 	{
-		if(!g_Physics[i][ModeEnable])
+		if(!g_Physics[i][StyleEnable])
 			continue;
 		
 		decl String:text[92];
-		FormatEx(text, sizeof(text), "%s", g_Physics[i][ModeName]);
+		FormatEx(text, sizeof(text), "%s", g_Physics[i][StyleName]);
 		
 		decl String:text2[32];
 		FormatEx(text2, sizeof(text2), "%d", i);
@@ -565,16 +565,16 @@ public MenuHandler_AdminModeSelection(Handle:menu, MenuAction:action, client, it
 	{
 		decl String:info[32];		
 		GetMenuItem(menu, itemNum, info, sizeof(info));
-		g_iAdminSelectedMode[client] = StringToInt(info);
-		CreateAdminBonusSelection(client);
+		g_iAdminSelectedStyle[client] = StringToInt(info);
+		CreateAdminTrackSelection(client);
 	}
 }
 
-CreateAdminBonusSelection(client)
+CreateAdminTrackSelection(client)
 {
-	new Handle:menu = CreateMenu(MenuHandler_AdminBonusSelection);
+	new Handle:menu = CreateMenu(MenuHandler_AdminTrackSelection);
 
-	SetMenuTitle(menu, "Select Mode");
+	SetMenuTitle(menu, "Select Style");
 	SetMenuExitButton(menu, true);
 	
 	AddMenuItem(menu, "0", "Normal");
@@ -586,7 +586,7 @@ CreateAdminBonusSelection(client)
 	DisplayMenu(menu, client, MENU_TIME_FOREVER);
 }
 
-public MenuHandler_AdminBonusSelection(Handle:menu, MenuAction:action, client, itemNum)
+public MenuHandler_AdminTrackSelection(Handle:menu, MenuAction:action, client, itemNum)
 {
 	if (action == MenuAction_End) 
 	{
@@ -597,12 +597,12 @@ public MenuHandler_AdminBonusSelection(Handle:menu, MenuAction:action, client, i
 	{
 		decl String:info[32];		
 		GetMenuItem(menu, itemNum, info, sizeof(info));
-		g_iAdminSelectedBonus[client] = StringToInt(info);
-		CreateAdminRecordSelection(client, g_iAdminSelectedMode[client], g_iAdminSelectedBonus[client]);
+		g_iAdminSelectedTrack[client] = StringToInt(info);
+		CreateAdminRecordSelection(client, g_iAdminSelectedStyle[client], g_iAdminSelectedTrack[client]);
 	}
 }
 
-CreateAdminRecordSelection(client, mode, bonus)
+CreateAdminRecordSelection(client, style, track)
 {
 	new Handle:menu = CreateMenu(MenuHandler_SelectPlayer);
 
@@ -611,19 +611,19 @@ CreateAdminRecordSelection(client, mode, bonus)
 	
 	new items = 0; 
 	
-	for (new cache = 0; cache < g_cacheCount[mode][bonus]; cache++)
+	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
 	{
-		if (g_cache[mode][bonus][cache][Ignored])
+		if (g_cache[style][track][cache][Ignored])
 			continue;
 		
 		decl String:text[92];
-		FormatEx(text, sizeof(text), "%s - %s", g_cache[mode][bonus][cache][TimeString], g_cache[mode][bonus][cache][Name]);
+		FormatEx(text, sizeof(text), "%s - %s", g_cache[style][track][cache][TimeString], g_cache[style][track][cache][Name]);
 		
 		if (g_Settings[JumpsEnable])
-			Format(text, sizeof(text), "%s (%d %T)", text, g_cache[mode][bonus][cache][Jumps], "Jumps", client);
+			Format(text, sizeof(text), "%s (%d %T)", text, g_cache[style][track][cache][Jumps], "Jumps", client);
 
 		decl String:text2[32];
-		FormatEx(text2, sizeof(text2), "%d", g_cache[mode][bonus][cache][Id]);
+		FormatEx(text2, sizeof(text2), "%d", g_cache[style][track][cache][Id]);
 		AddMenuItem(menu, text2, text);
 		items++;
 	}
@@ -685,34 +685,34 @@ RefreshCache()
 	}
 	else
 	{	
-		for (new mode = 0; mode < MAX_MODES-1; mode++)
+		for (new style = 0; style < MAX_STYLES-1; style++)
 		{
-			if(!g_Physics[mode][ModeEnable])
+			if(!g_Physics[style][StyleEnable])
 				continue;
-			if(g_Physics[mode][ModeCategory] != MCategory_Ranked)
+			if(g_Physics[style][StyleCategory] != MCategory_Ranked)
 				continue;
 			
-			g_cacheLoaded[mode][0] = false;
-			g_cacheLoaded[mode][1] = false;
-			g_cacheLoaded[mode][2] = false;
+			g_cacheLoaded[style][0] = false;
+			g_cacheLoaded[style][1] = false;
+			g_cacheLoaded[style][2] = false;
 			
 			decl String:query[512];
-			FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_NORMAL, MAX_CACHE);	
+			FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_NORMAL, MAX_CACHE);	
 			
-			SQL_TQuery(g_hSQL, RefreshCacheCallback, query, mode, DBPrio_Low);
+			SQL_TQuery(g_hSQL, RefreshCacheCallback, query, style, DBPrio_Low);
 			
 			if(g_Settings[BonusWrEnable])
 			{
-				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_BONUS, MAX_CACHE);	
+				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_BONUS, MAX_CACHE);	
 				
-				SQL_TQuery(g_hSQL, RefreshBonusCacheCallback, query, mode, DBPrio_Low);
+				SQL_TQuery(g_hSQL, RefreshBonusCacheCallback, query, style, DBPrio_Low);
 			}
 			
 			if(g_Settings[ShortWrEnable])
 			{
-				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, mode, TRACK_SHORT, MAX_CACHE);	
+				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_SHORT, MAX_CACHE);	
 				
-				SQL_TQuery(g_hSQL, RefreshShortCacheCallback, query, mode, DBPrio_Low);
+				SQL_TQuery(g_hSQL, RefreshShortCacheCallback, query, style, DBPrio_Low);
 			}
 		}
 	}
@@ -720,83 +720,82 @@ RefreshCache()
 
 ClearCache()
 {
-	for (new bonus = 0; bonus < 3; bonus++)
+	for (new track = 0; track < 3; track++)
 	{
-		//PrintToChatAll("Clear part %d/3", bonus+1);
 		new count = 0;
 		
-		for (new mode = 0; mode < MAX_MODES; mode++)
+		for (new style = 0; style < MAX_STYLES; style++)
 		{
 			for (new cache = 0; cache < MAX_CACHE; cache++)
 			{
-				if(!g_cache[mode][bonus][cache][Ignored])
+				if(!g_cache[style][track][cache][Ignored])
 					count++;
 				
-				g_cache[mode][bonus][cache][Ignored] = true;
+				g_cache[style][track][cache][Ignored] = true;
 				
-				FormatEx(g_cache[mode][bonus][cache][Name], 32, "");
-				FormatEx(g_cache[mode][bonus][cache][TimeString], 16, "");
-				FormatEx(g_cache[mode][bonus][cache][Date], 32, "");
-				FormatEx(g_cache[mode][bonus][cache][Auth], 32, "");
+				FormatEx(g_cache[style][track][cache][Name], 32, "");
+				FormatEx(g_cache[style][track][cache][TimeString], 16, "");
+				FormatEx(g_cache[style][track][cache][Date], 32, "");
+				FormatEx(g_cache[style][track][cache][Auth], 32, "");
 				
-				g_cache[mode][bonus][cache][Time] = 0.0;
-				g_cache[mode][bonus][cache][FinishCount] = 0;
-				g_cache[mode][bonus][cache][LevelProcess] = 0;
-				g_cache[mode][bonus][cache][Style] = 0;
-				g_cache[mode][bonus][cache][CurrentRank] = 0;
-				g_cache[mode][bonus][cache][Jumps] = 0;
-				g_cache[mode][bonus][cache][JumpAcc] = 0.0;
-				g_cache[mode][bonus][cache][Strafes] = 0;
-				g_cache[mode][bonus][cache][StrafeAcc] = 0.0;
-				g_cache[mode][bonus][cache][AvgSpeed] = 0.0;
-				g_cache[mode][bonus][cache][MaxSpeed] = 0.0;
-				g_cache[mode][bonus][cache][FinishSpeed] = 0.0;
-				g_cache[mode][bonus][cache][Flashbangcount] = 0;
+				g_cache[style][track][cache][Time] = 0.0;
+				g_cache[style][track][cache][FinishCount] = 0;
+				g_cache[style][track][cache][LevelProcess] = 0;
+				g_cache[style][track][cache][Style] = 0;
+				g_cache[style][track][cache][CurrentRank] = 0;
+				g_cache[style][track][cache][Jumps] = 0;
+				g_cache[style][track][cache][JumpAcc] = 0.0;
+				g_cache[style][track][cache][Strafes] = 0;
+				g_cache[style][track][cache][StrafeAcc] = 0.0;
+				g_cache[style][track][cache][AvgSpeed] = 0.0;
+				g_cache[style][track][cache][MaxSpeed] = 0.0;
+				g_cache[style][track][cache][FinishSpeed] = 0.0;
+				g_cache[style][track][cache][Flashbangcount] = 0;
 			}
 		}
 	}
 }
 
-CollectCache(bonus, any:mode, Handle:hndl)
+CollectCache(track, any:style, Handle:hndl)
 {
-	g_cacheCount[mode][bonus] = 0;
+	g_cacheCount[style][track] = 0;
 		
 	while (SQL_FetchRow(hndl))
 	{
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Id] = SQL_FetchInt(hndl, 0);
-		SQL_FetchString(hndl, 1, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Auth], 32);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Time] = SQL_FetchFloat(hndl, 2);
-		Timer_SecondsToTime(SQL_FetchFloat(hndl, 2), g_cache[mode][bonus][g_cacheCount[mode][bonus]][TimeString], 16, 2);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Jumps] = SQL_FetchInt(hndl, 3);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Style] = SQL_FetchInt(hndl, 4);
-		SQL_FetchString(hndl, 5, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Name], 32);
-		SQL_FetchString(hndl, 6, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Date], 32);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][FinishCount] = SQL_FetchInt(hndl, 7);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][LevelProcess] = SQL_FetchInt(hndl, 8);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][CurrentRank] = SQL_FetchInt(hndl, 9);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][JumpAcc] = SQL_FetchFloat(hndl, 10);
+		g_cache[style][track][g_cacheCount[style][track]][Id] = SQL_FetchInt(hndl, 0);
+		SQL_FetchString(hndl, 1, g_cache[style][track][g_cacheCount[style][track]][Auth], 32);
+		g_cache[style][track][g_cacheCount[style][track]][Time] = SQL_FetchFloat(hndl, 2);
+		Timer_SecondsToTime(SQL_FetchFloat(hndl, 2), g_cache[style][track][g_cacheCount[style][track]][TimeString], 16, 2);
+		g_cache[style][track][g_cacheCount[style][track]][Jumps] = SQL_FetchInt(hndl, 3);
+		g_cache[style][track][g_cacheCount[style][track]][Style] = SQL_FetchInt(hndl, 4);
+		SQL_FetchString(hndl, 5, g_cache[style][track][g_cacheCount[style][track]][Name], 32);
+		SQL_FetchString(hndl, 6, g_cache[style][track][g_cacheCount[style][track]][Date], 32);
+		g_cache[style][track][g_cacheCount[style][track]][FinishCount] = SQL_FetchInt(hndl, 7);
+		g_cache[style][track][g_cacheCount[style][track]][LevelProcess] = SQL_FetchInt(hndl, 8);
+		g_cache[style][track][g_cacheCount[style][track]][CurrentRank] = SQL_FetchInt(hndl, 9);
+		g_cache[style][track][g_cacheCount[style][track]][JumpAcc] = SQL_FetchFloat(hndl, 10);
 		
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][FinishSpeed] = SQL_FetchFloat(hndl, 11);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][MaxSpeed] = SQL_FetchFloat(hndl, 12);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][AvgSpeed] = SQL_FetchFloat(hndl, 13);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Strafes] = SQL_FetchInt(hndl, 14);
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][StrafeAcc] = SQL_FetchFloat(hndl, 15);
-		SQL_FetchString(hndl, 16, g_cache[mode][bonus][g_cacheCount[mode][bonus]][ReplayPath], 32);
-		SQL_FetchString(hndl, 17, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom1], 32);
-		SQL_FetchString(hndl, 18, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom2], 32);
-		SQL_FetchString(hndl, 19, g_cache[mode][bonus][g_cacheCount[mode][bonus]][Custom3], 32);
+		g_cache[style][track][g_cacheCount[style][track]][FinishSpeed] = SQL_FetchFloat(hndl, 11);
+		g_cache[style][track][g_cacheCount[style][track]][MaxSpeed] = SQL_FetchFloat(hndl, 12);
+		g_cache[style][track][g_cacheCount[style][track]][AvgSpeed] = SQL_FetchFloat(hndl, 13);
+		g_cache[style][track][g_cacheCount[style][track]][Strafes] = SQL_FetchInt(hndl, 14);
+		g_cache[style][track][g_cacheCount[style][track]][StrafeAcc] = SQL_FetchFloat(hndl, 15);
+		SQL_FetchString(hndl, 16, g_cache[style][track][g_cacheCount[style][track]][ReplayPath], 32);
+		SQL_FetchString(hndl, 17, g_cache[style][track][g_cacheCount[style][track]][Custom1], 32);
+		SQL_FetchString(hndl, 18, g_cache[style][track][g_cacheCount[style][track]][Custom2], 32);
+		SQL_FetchString(hndl, 19, g_cache[style][track][g_cacheCount[style][track]][Custom3], 32);
 		
-		g_cache[mode][bonus][g_cacheCount[mode][bonus]][Ignored] = false;
+		g_cache[style][track][g_cacheCount[style][track]][Ignored] = false;
 		
-		g_cacheCount[mode][bonus]++;
+		g_cacheCount[style][track]++;
 	}
 		
-	g_cacheLoaded[mode][bonus] = true;
+	g_cacheLoaded[style][track] = true;
 
-	CollectBestCache(bonus, mode);
+	CollectBestCache(track, style);
 }
 
-public RefreshCacheCallback(Handle:owner, Handle:hndl, const String:error[], any:mode)
+public RefreshCacheCallback(Handle:owner, Handle:hndl, const String:error[], any:style)
 {
 	if (hndl == INVALID_HANDLE)
 	{
@@ -804,10 +803,10 @@ public RefreshCacheCallback(Handle:owner, Handle:hndl, const String:error[], any
 		return;
 	}
 	
-	CollectCache(TRACK_NORMAL, mode, hndl);
+	CollectCache(TRACK_NORMAL, style, hndl);
 }
 
-public RefreshBonusCacheCallback(Handle:owner, Handle:hndl, const String:error[], any:mode)
+public RefreshBonusCacheCallback(Handle:owner, Handle:hndl, const String:error[], any:style)
 {
 	if (hndl == INVALID_HANDLE)
 	{
@@ -815,10 +814,10 @@ public RefreshBonusCacheCallback(Handle:owner, Handle:hndl, const String:error[]
 		return;
 	}
 	
-	CollectCache(TRACK_BONUS, mode, hndl);
+	CollectCache(TRACK_BONUS, style, hndl);
 }
 
-public RefreshShortCacheCallback(Handle:owner, Handle:hndl, const String:error[], any:mode)
+public RefreshShortCacheCallback(Handle:owner, Handle:hndl, const String:error[], any:style)
 {
 	if (hndl == INVALID_HANDLE)
 	{
@@ -826,30 +825,30 @@ public RefreshShortCacheCallback(Handle:owner, Handle:hndl, const String:error[]
 		return;
 	}
 	
-	CollectCache(TRACK_SHORT, mode, hndl);
+	CollectCache(TRACK_SHORT, style, hndl);
 }
 
-CollectBestCache(bonus, any:mode)
+CollectBestCache(track, any:style)
 {
-	g_cachestats[mode][bonus][RecordStatsCount] = 0;
-	g_cachestats[mode][bonus][RecordStatsID] = 0;
-	g_cachestats[mode][bonus][RecordStatsBestTime] = 0.0;
-	FormatEx(g_cachestats[mode][bonus][RecordStatsName], 32, "");
-	FormatEx(g_cachestats[mode][bonus][RecordStatsBestTimeString], 32, "");
+	g_cachestats[style][track][RecordStatsCount] = 0;
+	g_cachestats[style][track][RecordStatsID] = 0;
+	g_cachestats[style][track][RecordStatsBestTime] = 0.0;
+	FormatEx(g_cachestats[style][track][RecordStatsName], 32, "");
+	FormatEx(g_cachestats[style][track][RecordStatsBestTimeString], 32, "");
 	
-	for (new i = 0; i < g_cacheCount[mode][bonus]; i++)
+	for (new i = 0; i < g_cacheCount[style][track]; i++)
 	{
-		if(g_cache[mode][bonus][i][Time] <= 0.0)
+		if(g_cache[style][track][i][Time] <= 0.0)
 			continue;
 		
-		g_cachestats[mode][bonus][RecordStatsCount]++;
+		g_cachestats[style][track][RecordStatsCount]++;
 		
-		if(g_cachestats[mode][bonus][RecordStatsBestTime] == 0.0 || g_cachestats[mode][bonus][RecordStatsBestTime] > g_cache[mode][bonus][i][Time])
+		if(g_cachestats[style][track][RecordStatsBestTime] == 0.0 || g_cachestats[style][track][RecordStatsBestTime] > g_cache[style][track][i][Time])
 		{
-			g_cachestats[mode][bonus][RecordStatsID] = g_cache[mode][bonus][i][Id];
-			g_cachestats[mode][bonus][RecordStatsBestTime] = g_cache[mode][bonus][i][Time];
-			FormatEx(g_cachestats[mode][bonus][RecordStatsBestTimeString], 32, "%s", g_cache[mode][bonus][i][TimeString]);
-			FormatEx(g_cachestats[mode][bonus][RecordStatsName], 32, "%s", g_cache[mode][bonus][i][Name]);
+			g_cachestats[style][track][RecordStatsID] = g_cache[style][track][i][Id];
+			g_cachestats[style][track][RecordStatsBestTime] = g_cache[style][track][i][Time];
+			FormatEx(g_cachestats[style][track][RecordStatsBestTimeString], 32, "%s", g_cache[style][track][i][TimeString]);
+			FormatEx(g_cachestats[style][track][RecordStatsName], 32, "%s", g_cache[style][track][i][Name]);
 		}
 	}
 }
@@ -923,28 +922,28 @@ CreateRankedWRMenu(client)
 		
 		new maxorder[3] = {0, ...};
 
-		for(new i = 0; i < MAX_MODES-1; i++) 
+		for(new i = 0; i < MAX_STYLES-1; i++) 
 		{
-			if(!g_Physics[i][ModeEnable])
+			if(!g_Physics[i][StyleEnable])
 				continue;
-			if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+			if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 				continue;
 			
-			if(g_Physics[i][ModeOrder] > maxorder[MCategory_Ranked])
-				maxorder[MCategory_Ranked] = g_Physics[i][ModeOrder];
+			if(g_Physics[i][StyleOrder] > maxorder[MCategory_Ranked])
+				maxorder[MCategory_Ranked] = g_Physics[i][StyleOrder];
 			
 			count++;
 		}
 		
 		for(new order = 0; order <= maxorder[MCategory_Ranked]; order++) 
 		{
-			for(new i = 0; i < MAX_MODES-1; i++) 
+			for(new i = 0; i < MAX_STYLES-1; i++) 
 			{
-				if(!g_Physics[i][ModeEnable])
+				if(!g_Physics[i][StyleEnable])
 					continue;
-				if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+				if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 					continue;
-				if(g_Physics[i][ModeOrder] != order)
+				if(g_Physics[i][StyleOrder] != order)
 					continue;
 				
 				found++;
@@ -952,7 +951,7 @@ CreateRankedWRMenu(client)
 				new String:buffer[8];
 				IntToString(i, buffer, sizeof(buffer));
 				
-				AddMenuItem(menu, buffer, g_Physics[i][ModeName]);
+				AddMenuItem(menu, buffer, g_Physics[i][StyleName]);
 			}
 			
 			if(found == count)
@@ -994,28 +993,28 @@ CreateRankedBWRMenu(client)
 		
 		new maxorder[3] = {0, ...};
 
-		for(new i = 0; i < MAX_MODES-1; i++) 
+		for(new i = 0; i < MAX_STYLES-1; i++) 
 		{
-			if(!g_Physics[i][ModeEnable])
+			if(!g_Physics[i][StyleEnable])
 				continue;
-			if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+			if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 				continue;
 			
-			if(g_Physics[i][ModeOrder] > maxorder[MCategory_Ranked])
-				maxorder[MCategory_Ranked] = g_Physics[i][ModeOrder];
+			if(g_Physics[i][StyleOrder] > maxorder[MCategory_Ranked])
+				maxorder[MCategory_Ranked] = g_Physics[i][StyleOrder];
 			
 			count++;
 		}
 		
 		for(new order = 0; order <= maxorder[MCategory_Ranked]; order++) 
 		{
-			for(new i = 0; i < MAX_MODES-1; i++) 
+			for(new i = 0; i < MAX_STYLES-1; i++) 
 			{
-				if(!g_Physics[i][ModeEnable])
+				if(!g_Physics[i][StyleEnable])
 					continue;
-				if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+				if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 					continue;
-				if(g_Physics[i][ModeOrder] != order)
+				if(g_Physics[i][StyleOrder] != order)
 					continue;
 				
 				found++;
@@ -1023,7 +1022,7 @@ CreateRankedBWRMenu(client)
 				new String:buffer[8];
 				IntToString(i, buffer, sizeof(buffer));
 				
-				AddMenuItem(menu, buffer, g_Physics[i][ModeName]);
+				AddMenuItem(menu, buffer, g_Physics[i][StyleName]);
 			}
 			
 			if(found == count)
@@ -1065,28 +1064,28 @@ CreateRankedSWRMenu(client)
 		
 		new maxorder[3] = {0, ...};
 
-		for(new i = 0; i < MAX_MODES-1; i++) 
+		for(new i = 0; i < MAX_STYLES-1; i++) 
 		{
-			if(!g_Physics[i][ModeEnable])
+			if(!g_Physics[i][StyleEnable])
 				continue;
-			if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+			if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 				continue;
 			
-			if(g_Physics[i][ModeOrder] > maxorder[MCategory_Ranked])
-				maxorder[MCategory_Ranked] = g_Physics[i][ModeOrder];
+			if(g_Physics[i][StyleOrder] > maxorder[MCategory_Ranked])
+				maxorder[MCategory_Ranked] = g_Physics[i][StyleOrder];
 			
 			count++;
 		}
 		
 		for(new order = 0; order <= maxorder[MCategory_Ranked]; order++) 
 		{
-			for(new i = 0; i < MAX_MODES-1; i++) 
+			for(new i = 0; i < MAX_STYLES-1; i++) 
 			{
-				if(!g_Physics[i][ModeEnable])
+				if(!g_Physics[i][StyleEnable])
 					continue;
-				if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+				if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 					continue;
-				if(g_Physics[i][ModeOrder] != order)
+				if(g_Physics[i][StyleOrder] != order)
 					continue;
 				
 				found++;
@@ -1094,7 +1093,7 @@ CreateRankedSWRMenu(client)
 				new String:buffer[8];
 				IntToString(i, buffer, sizeof(buffer));
 				
-				AddMenuItem(menu, buffer, g_Physics[i][ModeName]);
+				AddMenuItem(menu, buffer, g_Physics[i][StyleName]);
 			}
 			
 			if(found == count)
@@ -1120,23 +1119,23 @@ public MenuHandler_RankedSWR(Handle:menu, MenuAction:action, client, itemNum)
 	}
 }
 
-CreateWRMenu(client, mode, bonus)
+CreateWRMenu(client, style, track)
 {
 	new Handle:menu;
 
-	new total = g_cacheCount[mode][bonus];
+	new total = g_cacheCount[style][track];
 	
-	if(bonus == 0)
+	if(track == TRACK_NORMAL)
 	{
 		menu = CreateMenu(MenuHandler_WR);
 		SetMenuTitle(menu, "Top players on %s [%d total]", g_currentMap, total);
 	}
-	else if (bonus == 1) 
+	else if (track == TRACK_BONUS) 
 	{
 		menu = CreateMenu(MenuHandler_BonusWR);
 		SetMenuTitle(menu, "Bonus-Top players on %s [%d total]", g_currentMap, total);
 	}
-	else if (bonus == 2) 
+	else if (track == TRACK_SHORT) 
 	{
 		menu = CreateMenu(MenuHandler_ShortWR);
 		SetMenuTitle(menu, "Short-Top players on %s [%d total]", g_currentMap, total);
@@ -1149,18 +1148,18 @@ CreateWRMenu(client, mode, bonus)
 		
 	new items = 0;
 		
-	for (new cache = 0; cache < g_cacheCount[mode][bonus]; cache++)
+	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
 	{
-		if (mode != -1)
+		if (style != -1)
 		{
 			decl String:id[64];
-			IntToString(g_cache[mode][bonus][cache][Id], id, sizeof(id));
+			IntToString(g_cache[style][track][cache][Id], id, sizeof(id));
 			
 			decl String:text[92];
-			FormatEx(text, sizeof(text), "#%d | %s - %s", cache+1, g_cache[mode][bonus][cache][Name], g_cache[mode][bonus][cache][TimeString]);
+			FormatEx(text, sizeof(text), "#%d | %s - %s", cache+1, g_cache[style][track][cache][Name], g_cache[style][track][cache][TimeString]);
 			
 			if (g_Settings[JumpsEnable])
-				Format(text, sizeof(text), "%s (%d jumps)", text, g_cache[mode][bonus][cache][Jumps]);
+				Format(text, sizeof(text), "%s (%d jumps)", text, g_cache[style][track][cache][Jumps]);
 			
 			AddMenuItem(menu, id, text);
 			items++;
@@ -1171,7 +1170,7 @@ CreateWRMenu(client, mode, bonus)
 	{
 		CloseHandle(menu);
 		
-		if (mode == -1)
+		if (style == -1)
 			CPrintToChat(client, PLUGIN_PREFIX, "No Records");	
 		else
 		{
@@ -1179,15 +1178,15 @@ CreateWRMenu(client, mode, bonus)
 			
 			if(g_Settings[MultimodeEnable])
 			{
-				if(bonus == 1) CreateRankedBWRMenu(client);
-				else if(bonus == 2) CreateRankedSWRMenu(client);
+				if(track == TRACK_BONUS) CreateRankedBWRMenu(client);
+				else if(track == TRACK_SHORT) CreateRankedSWRMenu(client);
 				else CreateRankedWRMenu(client);
 			}
 		}
 	}
 	else
 	{
-		g_wrMenuMode[client] = mode;
+		g_wrStyleMode[client] = style;
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
 	}
 }
@@ -1261,71 +1260,71 @@ public MenuHandler_ShortWR(Handle:menu, MenuAction:action, param1, param2)
 	}
 }
 
-CreatePlayerInfoMenu(client, id, bonus)
+CreatePlayerInfoMenu(client, id, track)
 {
 	new Handle:menu;
 
-	if(bonus == 0)
+	if(track == TRACK_NORMAL)
 	{
 		menu = CreateMenu(MenuHandler_RankedWR);
 	}
-	else if(bonus == 1)
+	else if(track == TRACK_BONUS)
 	{
 		menu = CreateMenu(MenuHandler_RankedBWR);
 	}
-	else if(bonus == 2)
+	else if(track == TRACK_SHORT)
 	{
 		menu = CreateMenu(MenuHandler_RankedSWR);
 	}
 	
-	new mode = g_wrMenuMode[client];
+	new style = g_wrStyleMode[client];
 
 	SetMenuExitButton(menu, true);
 
-	for (new cache = 0; cache < g_cacheCount[mode][bonus]; cache++)
+	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
 	{
-		if (g_cache[mode][bonus][cache][Id] == id)
+		if (g_cache[style][track][cache][Id] == id)
 		{
-			decl String:difficulty[5];
-			IntToString(mode, difficulty, sizeof(difficulty));
+			decl String:sStyle[5];
+			IntToString(style, sStyle, sizeof(sStyle));
 					
 			decl String:text[92];
 
 			SetMenuTitle(menu, "Record Info [ID: %d]\n \n", id);
 
-			FormatEx(text, sizeof(text), "Date: %s", g_cache[mode][bonus][cache][Date]);
-			AddMenuItem(menu, difficulty, text);
+			FormatEx(text, sizeof(text), "Date: %s", g_cache[style][track][cache][Date]);
+			AddMenuItem(menu, sStyle, text);
 			
-			FormatEx(text, sizeof(text), "Player: %s (%s)", g_cache[mode][bonus][cache][Name], g_cache[mode][bonus][cache][Auth]);
-			AddMenuItem(menu, difficulty, text);
+			FormatEx(text, sizeof(text), "Player: %s (%s)", g_cache[style][track][cache][Name], g_cache[style][track][cache][Auth]);
+			AddMenuItem(menu, sStyle, text);
 
-			FormatEx(text, sizeof(text), "Rank: #%d (#%d) [FC: %d]", cache + 1, g_cache[mode][bonus][cache][CurrentRank], g_cache[mode][bonus][cache][FinishCount]);
-			AddMenuItem(menu, difficulty, text);
+			FormatEx(text, sizeof(text), "Rank: #%d (#%d) [FC: %d]", cache + 1, g_cache[style][track][cache][CurrentRank], g_cache[style][track][cache][FinishCount]);
+			AddMenuItem(menu, sStyle, text);
 
-			FormatEx(text, sizeof(text), "Time: %s", g_cache[mode][bonus][cache][TimeString]);
-			AddMenuItem(menu, difficulty, text);
+			FormatEx(text, sizeof(text), "Time: %s", g_cache[style][track][cache][TimeString]);
+			AddMenuItem(menu, sStyle, text);
 			
-			FormatEx(text, sizeof(text), "Speed [Avg: %.2f | Max: %.2f | Fin: %.2f]", g_cache[mode][bonus][cache][AvgSpeed], g_cache[mode][bonus][cache][MaxSpeed], g_cache[mode][bonus][cache][FinishSpeed]);
-			AddMenuItem(menu, difficulty, text);
+			FormatEx(text, sizeof(text), "Speed [Avg: %.2f | Max: %.2f | Fin: %.2f]", g_cache[style][track][cache][AvgSpeed], g_cache[style][track][cache][MaxSpeed], g_cache[style][track][cache][FinishSpeed]);
+			AddMenuItem(menu, sStyle, text);
 			
 			if (g_Settings[JumpsEnable])
 			{
-				FormatEx(text, sizeof(text), "Jumps: %d", g_cache[mode][bonus][cache][Jumps]);
-				Format(text, sizeof(text), "%s [%.2f ⁰⁄₀]", text, g_cache[mode][bonus][cache][JumpAcc]);
-				AddMenuItem(menu, difficulty, text);
+				FormatEx(text, sizeof(text), "Jumps: %d", g_cache[style][track][cache][Jumps]);
+				Format(text, sizeof(text), "%s [%.2f ⁰⁄₀]", text, g_cache[style][track][cache][JumpAcc]);
+				AddMenuItem(menu, sStyle, text);
 			}
 			
 			if (g_Settings[StrafesEnable])
 			{
-				FormatEx(text, sizeof(text), "Strafes: %d", g_cache[mode][bonus][cache][Strafes]);
-				Format(text, sizeof(text), "%s [%.2f ⁰⁄₀]", text, g_cache[mode][bonus][cache][StrafeAcc]);
-				AddMenuItem(menu, difficulty, text);
+				FormatEx(text, sizeof(text), "Strafes: %d", g_cache[style][track][cache][Strafes]);
+				Format(text, sizeof(text), "%s [%.2f ⁰⁄₀]", text, g_cache[style][track][cache][StrafeAcc]);
+				AddMenuItem(menu, sStyle, text);
 			}
 			
 			if (g_Settings[MultimodeEnable])
 			{
-				FormatEx(text, sizeof(text), "%Mode: %s", g_Physics[mode][ModeName]);
-				AddMenuItem(menu, difficulty, text);
+				FormatEx(text, sizeof(text), "%Style: %s", g_Physics[style][StyleName]);
+				AddMenuItem(menu, sStyle, text);
 			}			
 
 			break;
@@ -1336,7 +1335,6 @@ CreatePlayerInfoMenu(client, id, bonus)
 	DisplayMenu(menu, client, MENU_TIME_FOREVER);	
 }
 
-//g_cache[mode][bonus][cache][Ignored]
 CreateDeleteMenu(client, target, String:targetmap[64], ignored = -1)
 {	
 	decl String:buffer[128];
@@ -1405,7 +1403,7 @@ public CreateDeleteMenuCallback(Handle:owner, Handle:hndl, const String:error[],
 		Timer_SecondsToTime(SQL_FetchFloat(hndl, 1), time, sizeof(time), 3);
 		
 		decl String:value[92];
-		FormatEx(value, sizeof(value), "%s %s", time, g_Physics[SQL_FetchInt(hndl, 3)][ModeName]);
+		FormatEx(value, sizeof(value), "%s %s", time, g_Physics[SQL_FetchInt(hndl, 3)][StyleName]);
 		
 		if (g_Settings[JumpsEnable])
 			Format(value, sizeof(value), "%s %T: %d", value, "Jumps", client, SQL_FetchInt(hndl, 2));
@@ -1453,18 +1451,18 @@ public Native_ForceReloadCache(Handle:plugin, numParams)
 	RefreshCache();
 }
 
-public Native_GetDifficultyRank(Handle:plugin, numParams)
+public Native_GetStyleRank(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
-	new mode = GetNativeCell(3);
+	new track = GetNativeCell(2);
+	new style = GetNativeCell(3);
 	
 	decl String:auth[32];
 	GetClientAuthString(client, auth, sizeof(auth));
 	
-	for (new cache = 0; cache < g_cacheCount[mode][bonus]; cache++)
+	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
 	{
-		if (StrEqual(g_cache[mode][bonus][cache][Auth], auth))
+		if (StrEqual(g_cache[style][track][cache][Auth], auth))
 		{
 			return cache+1;
 		}
@@ -1474,19 +1472,19 @@ public Native_GetDifficultyRank(Handle:plugin, numParams)
 	return 0;
 }
 
-public Native_GetDifficultyTotalRank(Handle:plugin, numParams)
+public Native_GetStyleTotalRank(Handle:plugin, numParams)
 {
 	return g_cacheCount[GetNativeCell(1)][GetNativeCell(2)]; 
 }
 
-public Native_GetDifficultyRecordTime(Handle:plugin, numParams)
+public Native_GetStyleRecordTime(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	
-	SetNativeCellRef(3, g_cachestats[mode][bonus][RecordStatsID]);
-	SetNativeCellRef(4, g_cachestats[mode][bonus][RecordStatsBestTime]);
-	SetNativeCellRef(5, g_cachestats[mode][bonus][RecordStatsCount]);
+	SetNativeCellRef(3, g_cachestats[style][track][RecordStatsID]);
+	SetNativeCellRef(4, g_cachestats[style][track][RecordStatsBestTime]);
+	SetNativeCellRef(5, g_cachestats[style][track][RecordStatsCount]);
 	
 	return true;
 }
@@ -1494,18 +1492,18 @@ public Native_GetDifficultyRecordTime(Handle:plugin, numParams)
 public Native_GetBestRound(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
-	new mode = GetNativeCell(2);
-	new bonus = GetNativeCell(3);
+	new style = GetNativeCell(2);
+	new track = GetNativeCell(3);
 	
 	decl String:auth[32];
 	GetClientAuthString(client, auth, sizeof(auth));
 	
-	for (new cache = 0; cache < g_cacheCount[mode][bonus]; cache++)
+	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
 	{
-		if (StrEqual(g_cache[mode][bonus][cache][Auth], auth))
+		if (StrEqual(g_cache[style][track][cache][Auth], auth))
 		{
-			SetNativeCellRef(4, g_cache[mode][bonus][cache][Time]);
-			SetNativeCellRef(5, g_cache[mode][bonus][cache][Jumps]);
+			SetNativeCellRef(4, g_cache[style][track][cache][Time]);
+			SetNativeCellRef(5, g_cache[style][track][cache][Jumps]);
 			return true;
 		}
 		
@@ -1516,25 +1514,25 @@ public Native_GetBestRound(Handle:plugin, numParams)
 
 public Native_GetNewPossibleRank(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new Float:time = GetNativeCell(3);
 	
 	if(time == 0.0)
 		return -1;
 	
-	if(g_cache[mode][bonus][0][Time] == 0.0)
+	if(g_cache[style][track][0][Time] == 0.0)
 		return 1;
 	
-	for (new cache = 0; cache < g_cacheCount[mode][bonus]; cache++)
+	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
 	{
-		if (g_cache[mode][bonus][cache][Time] > time)
+		if (g_cache[style][track][cache][Time] > time)
 		{
 			return cache+1;
 		}
 	}
 	
-	return g_cacheCount[mode][bonus]+1;
+	return g_cacheCount[style][track]+1;
 }
 
 public Native_GetCacheMapName(Handle:plugin, numParams)
@@ -1566,22 +1564,22 @@ public Native_SetCacheMapName(Handle:plugin, numParams)
 
 public Native_GetRankID(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
 	if(rank > MAX_CACHE)
 		return false;
 	
 	if(rank > 0)
-		return g_cache[mode][bonus][rank-1][Id];
+		return g_cache[style][track][rank-1][Id];
 	else return -1;
 }
 
 public Native_GetRecordHolderName(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
 	
@@ -1591,10 +1589,10 @@ public Native_GetRecordHolderName(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 
-	if(rank > 0 && bonus >= 0)
+	if(rank > 0 && track >= 0)
 	{
 		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Name]);
+		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Name]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
@@ -1604,8 +1602,8 @@ public Native_GetRecordHolderName(Handle:plugin, numParams)
 
 public Native_GetRecordDate(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
 	
@@ -1615,10 +1613,10 @@ public Native_GetRecordDate(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 
-	if(rank > 0 && bonus >= 0)
+	if(rank > 0 && track >= 0)
 	{
 		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Date]);
+		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Date]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
@@ -1628,23 +1626,23 @@ public Native_GetRecordDate(Handle:plugin, numParams)
 
 public Native_GetFinishCount(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
 	if(rank > MAX_CACHE)
 		return false;
 	
 	if(rank > 0)
-		return g_cache[mode][bonus][rank-1][FinishCount];
+		return g_cache[style][track][rank-1][FinishCount];
 		
 	return 0;
 }
 
 public Native_GetRecordTimeInfo(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
 	new nlen = GetNativeCell(6);
@@ -1657,10 +1655,10 @@ public Native_GetRecordTimeInfo(Handle:plugin, numParams)
 	
 	if(rank > 0)
 	{
-		SetNativeCellRef(4, g_cache[mode][bonus][rank-1][Time]);
+		SetNativeCellRef(4, g_cache[style][track][rank-1][Time]);
 		
 		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][TimeString]);
+		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][TimeString]);
 		
 		if (SetNativeString(5, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
@@ -1671,8 +1669,8 @@ public Native_GetRecordTimeInfo(Handle:plugin, numParams)
 
 public Native_GetRecordSpeedInfo(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
 	if(rank > MAX_CACHE)
@@ -1680,9 +1678,9 @@ public Native_GetRecordSpeedInfo(Handle:plugin, numParams)
 	
 	if(rank > 0)
 	{
-		SetNativeCellRef(4, g_cache[mode][bonus][rank-1][AvgSpeed]);
-		SetNativeCellRef(5, g_cache[mode][bonus][rank-1][MaxSpeed]);
-		SetNativeCellRef(6, g_cache[mode][bonus][rank-1][FinishSpeed]);
+		SetNativeCellRef(4, g_cache[style][track][rank-1][AvgSpeed]);
+		SetNativeCellRef(5, g_cache[style][track][rank-1][MaxSpeed]);
+		SetNativeCellRef(6, g_cache[style][track][rank-1][FinishSpeed]);
 	}	
 
 	return true;
@@ -1690,8 +1688,8 @@ public Native_GetRecordSpeedInfo(Handle:plugin, numParams)
 
 public Native_GetRecordStrafeJumpInfo(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
 	if(rank > MAX_CACHE)
@@ -1699,10 +1697,10 @@ public Native_GetRecordStrafeJumpInfo(Handle:plugin, numParams)
 	
 	if(rank > 0)
 	{
-		SetNativeCellRef(4, g_cache[mode][bonus][rank-1][Strafes]);
-		SetNativeCellRef(5, g_cache[mode][bonus][rank-1][StrafeAcc]);
-		SetNativeCellRef(6, g_cache[mode][bonus][rank-1][Jumps]);
-		SetNativeCellRef(7, g_cache[mode][bonus][rank-1][JumpAcc]);
+		SetNativeCellRef(4, g_cache[style][track][rank-1][Strafes]);
+		SetNativeCellRef(5, g_cache[style][track][rank-1][StrafeAcc]);
+		SetNativeCellRef(6, g_cache[style][track][rank-1][Jumps]);
+		SetNativeCellRef(7, g_cache[style][track][rank-1][JumpAcc]);
 	}	
 
 	return true;
@@ -1710,8 +1708,8 @@ public Native_GetRecordStrafeJumpInfo(Handle:plugin, numParams)
 
 public Native_GetReplayPath(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
 	
@@ -1721,10 +1719,10 @@ public Native_GetReplayPath(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 
-	if(rank > 0 && bonus >= 0)
+	if(rank > 0 && track >= 0)
 	{
 		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][ReplayPath]);
+		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][ReplayPath]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
@@ -1734,8 +1732,8 @@ public Native_GetReplayPath(Handle:plugin, numParams)
 
 public Native_GetCustom1(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
 	
@@ -1745,10 +1743,10 @@ public Native_GetCustom1(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 
-	if(rank > 0 && bonus >= 0)
+	if(rank > 0 && track >= 0)
 	{
 		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom1]);
+		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Custom1]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
@@ -1758,8 +1756,8 @@ public Native_GetCustom1(Handle:plugin, numParams)
 
 public Native_GetCustom2(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
 	
@@ -1769,10 +1767,10 @@ public Native_GetCustom2(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 
-	if(rank > 0 && bonus >= 0)
+	if(rank > 0 && track >= 0)
 	{
 		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom2]);
+		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Custom2]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
@@ -1783,8 +1781,8 @@ public Native_GetCustom2(Handle:plugin, numParams)
 
 public Native_GetCustom3(Handle:plugin, numParams)
 {
-	new mode = GetNativeCell(1);
-	new bonus = GetNativeCell(2);
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
 	
@@ -1794,10 +1792,10 @@ public Native_GetCustom3(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 
-	if(rank > 0 && bonus >= 0)
+	if(rank > 0 && track >= 0)
 	{
 		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[mode][bonus][rank-1][Custom3]);
+		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Custom3]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}

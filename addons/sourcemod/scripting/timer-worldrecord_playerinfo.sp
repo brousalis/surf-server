@@ -147,8 +147,8 @@ public SQL_CountMapCallback(Handle:owner, Handle:hndl, const String:error[], any
 	
 	if(SQL_GetRowCount(hndl))
 	{
-		new bonus = data;
-		g_iMapCount[bonus] = 0;
+		new track = data;
+		g_iMapCount[track] = 0;
 		
 		new String:sMap[128];
 		new Handle:Kv = CreateKeyValues("data");
@@ -160,10 +160,10 @@ public SQL_CountMapCallback(Handle:owner, Handle:hndl, const String:error[], any
 			KvJumpToKey(Kv, sMap, true);
 			KvRewind(Kv);
 			
-			g_iMapCount[bonus]++;
+			g_iMapCount[track]++;
 		}
 		
-		g_hMaps[bonus] = CloneHandle(Kv);
+		g_hMaps[track] = CloneHandle(Kv);
 	}
 }
 
@@ -174,7 +174,7 @@ public Action:Client_PlayerInfo(client, args)
 		GetClientAuthString(client, g_TargetData[client][eTarget_SteamID], 32);
 		GetClientName(client, g_TargetData[client][eTarget_Name], 256);
 		
-		g_TargetData[client][eTarget_Style] = g_ModeDefault;
+		g_TargetData[client][eTarget_Style] = g_StyleDefault;
 		
 		g_TargetData[client][eTarget_Active] = true;
 		
@@ -206,7 +206,7 @@ public Action:Client_PlayerInfo(client, args)
 		}
 		else
 		{
-			g_TargetData[client][eTarget_Style] = g_ModeDefault;
+			g_TargetData[client][eTarget_Style] = g_StyleDefault;
 			QueryPlayerName(client, g_TargetData[client][eTarget_Name]);
 		}
 	}
@@ -223,17 +223,17 @@ StylePanel(client)
 		
 		SetMenuExitButton(menu, true);
 
-		for(new i = 0; i < MAX_MODES-1; i++) 
+		for(new i = 0; i < MAX_STYLES-1; i++) 
 		{
-			if(!g_Physics[i][ModeEnable])
+			if(!g_Physics[i][StyleEnable])
 				continue;
-			if(g_Physics[i][ModeCategory] != MCategory_Ranked)
+			if(g_Physics[i][StyleCategory] != MCategory_Ranked)
 				continue;
 			
 			new String:buffer[8];
 			IntToString(i, buffer, sizeof(buffer));
 				
-			AddMenuItem(menu, buffer, g_Physics[i][ModeName]);
+			AddMenuItem(menu, buffer, g_Physics[i][StyleName]);
 		}
 		
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
@@ -353,7 +353,7 @@ public Menu_PlayerInfo(client)
 	if(g_Settings[MultimodeEnable]) 
 	{
 		decl String:buffer[512];
-		Format(buffer, sizeof(buffer), "Change style [current: %s]", g_Physics[g_TargetData[client][eTarget_Style]][ModeName]);
+		Format(buffer, sizeof(buffer), "Change style [current: %s]", g_Physics[g_TargetData[client][eTarget_Style]][StyleName]);
 		AddMenuItem(g_TargetData[client][eTarget_MainMenu], "style", buffer);
 	}
 	SetMenuExitButton(g_TargetData[client][eTarget_MainMenu], true);
@@ -438,13 +438,13 @@ public SQL_ViewPlayerMapRecordCallback(Handle:owner, Handle:hndl, const String:e
 	ReadPackString(pack, MapName, 32);
 	decl String:SteamID[256];
 	ReadPackString(pack, SteamID, 256);
-	new Bonus = ReadPackCell(pack);
+	new track = ReadPackCell(pack);
 	
 	CloseHandle(pack);
 	pack = INVALID_HANDLE;
 	
 	new Handle:menu = CreateMenu(Menu_Stock_Handler2);
-	if(!Bonus)
+	if(!track)
 	{
 		SetMenuTitle(menu, "Record Info\n ");
 	}
@@ -569,7 +569,7 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 	ResetPack(pack);
 	
 	new client = ReadPackCell(pack);
-	new bonus = ReadPackCell(pack);
+	new track = ReadPackCell(pack);
 	
 	CloseHandle(pack);
 	pack = INVALID_HANDLE;
@@ -591,7 +591,7 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 	/// Calc Percent
 	new Float: mapcom_fl = float(mapscomplete);
 	new Float: mapcou_fl;
-	if(!bonus)
+	if(!track)
 	{
 		mapcou_fl = float(g_iMapCount[0]);
 	}
@@ -601,7 +601,7 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 	}
 	new Float: Com_Per_fl = (mapcom_fl/mapcou_fl)*100;
 	
-	if(!bonus)
+	if(!track)
 	{
 		SetMenuTitle(g_TargetData[client][eTarget_MapMenu], "%i of %i (%.2f%%) Maps completed\nRecords:\n ", mapscomplete, g_iMapCount[0], Com_Per_fl);
 	}
@@ -625,7 +625,7 @@ public SQL_ViewPlayerMapsCallback(Handle:owner, Handle:hndl, const String:error[
 			WritePackCell(pack2, client);
 			WritePackString(pack2, szMapName);
 			WritePackString(pack2, SteamID);
-			WritePackCell(pack2, bonus);
+			WritePackCell(pack2, track);
 			Format(buffer, sizeof(buffer), "%d", pack2);
 			
 			CloseHandle(pack2);
@@ -707,10 +707,10 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 			}
 			case 2:
 			{
-				new bool: bonus = false;
+				new bool: track = false;
 				new Handle:pack4 = CreateDataPack();
 				WritePackCell(pack4, client);
-				WritePackCell(pack4, bonus);
+				WritePackCell(pack4, track);
 				
 				
 				decl String:szQuery[255];
@@ -719,10 +719,10 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 			}
 			case 3:
 			{
-				new bool: bonus = true;
+				new bool: track = true;
 				new Handle:pack5 = CreateDataPack();
 				WritePackCell(pack5, client);
-				WritePackCell(pack5, bonus);
+				WritePackCell(pack5, track);
 				
 				decl String:szQuery[255];
 				Format(szQuery, 255, sql_selectPlayerMapsBonus, g_TargetData[client][eTarget_SteamID], g_TargetData[client][eTarget_Style]);
@@ -730,10 +730,10 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 			}
 			case 4:
 			{
-				new bool: bonus = false;
+				new bool: track = false;
 				new Handle:pack5 = CreateDataPack();
 				WritePackCell(pack5, client);
-				WritePackCell(pack5, bonus);
+				WritePackCell(pack5, track);
 				
 				decl String:szQuery[255];
 				Format(szQuery, 255, sql_selectPlayerWRs, g_TargetData[client][eTarget_Style], g_TargetData[client][eTarget_SteamID]);
@@ -741,10 +741,10 @@ public Menu_PlayerInfo_Handler(Handle:menu, MenuAction:action, client, param2)
 			}
 			case 5:
 			{
-				new bool: bonus = true;
+				new bool: track = true;
 				new Handle:pack5 = CreateDataPack();
 				WritePackCell(pack5, client);
-				WritePackCell(pack5, bonus);
+				WritePackCell(pack5, track);
 				
 				decl String:szQuery[255];
 				Format(szQuery, 255, sql_selectPlayerWRsBonus, g_TargetData[client][eTarget_Style], g_TargetData[client][eTarget_SteamID]);
@@ -816,10 +816,10 @@ public MapMenu_Stock_Handler(Handle:menu, MenuAction:action, client, param2)
 		ReadPackString(pack, MapName, 256);
 		decl String:SteamID[256];
 		ReadPackString(pack, SteamID, 256);
-		new Bonus = ReadPackCell(pack);
+		new track = ReadPackCell(pack);
 		
 		decl String:szQuery[255];
-		Format(szQuery, 255, sql_selectPlayerMapRecord, g_TargetData[client][eTarget_SteamID], MapName, Bonus, g_TargetData[client][eTarget_Style]);
+		Format(szQuery, 255, sql_selectPlayerMapRecord, g_TargetData[client][eTarget_SteamID], MapName, track, g_TargetData[client][eTarget_Style]);
 		
 		SQL_TQuery(g_hSQL, SQL_ViewPlayerMapRecordCallback, szQuery, pack);
 	}
@@ -829,19 +829,19 @@ public MapMenu_Stock_Handler(Handle:menu, MenuAction:action, client, param2)
 	}
 }
 
-GetIncompleteMaps(client, String:auth[], bonus, style)
+GetIncompleteMaps(client, String:auth[], track, style)
 {
 	new Handle:pack = CreateDataPack();
 	WritePackCell(pack, client);
 	WritePackString(pack, auth);
-	WritePackCell(pack, bonus);
+	WritePackCell(pack, track);
 	WritePackCell(pack, style);
 	
 	decl String:sQuery[255];
 	if(style > -1)
-		Format(sQuery, sizeof(sQuery), "SELECT DISTINCT map FROM round WHERE bonus = %d AND auth = '%s' AND physicsdifficulty = %d ORDER BY map", bonus, auth, style);
+		Format(sQuery, sizeof(sQuery), "SELECT DISTINCT map FROM round WHERE bonus = %d AND auth = '%s' AND physicsdifficulty = %d ORDER BY map", track, auth, style);
 	else
-		Format(sQuery, sizeof(sQuery), "SELECT DISTINCT map FROM round WHERE bonus = %d AND auth = '%s' ORDER BY map", bonus, auth);
+		Format(sQuery, sizeof(sQuery), "SELECT DISTINCT map FROM round WHERE bonus = %d AND auth = '%s' ORDER BY map", track, auth);
 	SQL_TQuery(g_hSQL, CallBack_IncompleteMaps, sQuery, pack, DBPrio_Low);
 }
 
@@ -864,7 +864,7 @@ public CallBack_IncompleteMaps(Handle:owner, Handle:hndl, const String:error[], 
 		new client = ReadPackCell(pack);
 		decl String:sAuth[64];
 		ReadPackString(pack, sAuth, sizeof(sAuth));
-		new bonus = ReadPackCell(pack);
+		new track = ReadPackCell(pack);
 		new style = ReadPackCell(pack);
 		CloseHandle(pack);
 		pack = INVALID_HANDLE;
@@ -886,35 +886,35 @@ public CallBack_IncompleteMaps(Handle:owner, Handle:hndl, const String:error[], 
 		
 		new Handle:menu = CreateMenu(MenuHandler_Incompelte);
 		
-		KvRewind(g_hMaps[bonus]);
-		KvGotoFirstSubKey(g_hMaps[bonus], true);
+		KvRewind(g_hMaps[track]);
+		KvGotoFirstSubKey(g_hMaps[track], true);
 		do
 		{
-			KvGetSectionName(g_hMaps[bonus], sMap, sizeof(sMap));
+			KvGetSectionName(g_hMaps[track], sMap, sizeof(sMap));
 			if(!KvJumpToKey(Kv, sMap, false))
 			{
 				iCountIncomplete++;
 				AddMenuItem(menu, "", sMap);
 			}
 			KvRewind(Kv);
-        } while (KvGotoNextKey(g_hMaps[bonus], false));
+        } while (KvGotoNextKey(g_hMaps[track], false));
 		
 		if(iCountIncomplete == 0)
 			AddMenuItem(menu, "", "All maps compelte, awesome!");
 		
-		if(bonus == TRACK_BONUS)
+		if(track == TRACK_BONUS)
 		{
 			if(style == -1 || !g_Settings[MultimodeEnable])
-				SetMenuTitle(menu, "%i of %i (%.2f%%) Bonus Maps incomplete\n ", iCountIncomplete, g_iMapCount[bonus], 100.0*(float(iCountIncomplete)/float(g_iMapCount[bonus])));
+				SetMenuTitle(menu, "%i of %i (%.2f%%) Bonus Maps incomplete\n ", iCountIncomplete, g_iMapCount[track], 100.0*(float(iCountIncomplete)/float(g_iMapCount[track])));
 			else
-				SetMenuTitle(menu, "%i of %i (%.2f%%) Bonus Maps incomplete\nStyle: %s\n ", iCountIncomplete, g_iMapCount[bonus], 100.0*(float(iCountIncomplete)/float(g_iMapCount[bonus])), g_Physics[style][ModeName]);
+				SetMenuTitle(menu, "%i of %i (%.2f%%) Bonus Maps incomplete\nStyle: %s\n ", iCountIncomplete, g_iMapCount[track], 100.0*(float(iCountIncomplete)/float(g_iMapCount[track])), g_Physics[style][StyleName]);
 		}
-		else if(bonus == TRACK_NORMAL)
+		else if(track == TRACK_NORMAL)
 		{
 			if(style == -1 || !g_Settings[MultimodeEnable])
-				SetMenuTitle(menu, "%i of %i (%.2f%%) Maps incomplete\n ", iCountIncomplete, g_iMapCount[bonus], 100.0*(float(iCountIncomplete)/float(g_iMapCount[bonus])));
+				SetMenuTitle(menu, "%i of %i (%.2f%%) Maps incomplete\n ", iCountIncomplete, g_iMapCount[track], 100.0*(float(iCountIncomplete)/float(g_iMapCount[track])));
 			else
-				SetMenuTitle(menu, "%i of %i (%.2f%%) Maps incomplete\nStyle: %s\n ", iCountIncomplete, g_iMapCount[bonus], 100.0*(float(iCountIncomplete)/float(g_iMapCount[bonus])), g_Physics[style][ModeName]);
+				SetMenuTitle(menu, "%i of %i (%.2f%%) Maps incomplete\nStyle: %s\n ", iCountIncomplete, g_iMapCount[track], 100.0*(float(iCountIncomplete)/float(g_iMapCount[track])), g_Physics[style][StyleName]);
 		}
 		
 		SetMenuExitButton(menu, true);
