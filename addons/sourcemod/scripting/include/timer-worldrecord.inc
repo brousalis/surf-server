@@ -4,16 +4,118 @@
 #define _timer_worldrecord_included
 
 /* Natives */
+
+/**
+ * Refetch the world records from the database.
+ * @noreturn
+ */
 native Timer_ForceReloadCache();
-native Timer_GetStyleRecordTime(style, track, &cacheid, &Float:time, &total);
+
+/**
+ * Returns world record stats for a given style and track.
+ *
+ * @param style
+ * @param track
+ * @param cacheid A reference to the cacheid of the world record.
+ * @param time A reference to the record time of the world record.
+ * @param total A reference to the total amount of record of style & track.
+ *
+ * @noreturn
+ */
+native Timer_GetStyleRecordWRStats(style, track, &cacheid, &Float:time, &total);
+
+/**
+ * Returns a possible rank for a given time
+ *
+ * @param style
+ * @param track
+ * @param time
+ *
+ * @return The possible rank
+ */
 native Timer_GetNewPossibleRank(style, track, Float:time);
+
+/**
+ * Returns a database Id for given style/track/rank
+ *
+ * @param style
+ * @param track
+ * @param rank
+ *
+ * @return The database ID
+ */
 native Timer_GetRankID(style, track, rank);
 
+/**
+ * Returns world record stats for a given style and track.
+ *
+ * @param client
+ * @param style
+ * @param track
+ * @param time A reference to the record time.
+ * @param jumps A reference to the total amount of jumps.
+ *
+ * @return True if success
+ */
 native bool:Timer_GetBestRound(client, style, track, &Float:time, &jumps);
+
+/**
+ * Returns a total amount of records for given style/track/rank
+ *
+ * @param style
+ * @param track
+ * @param rank
+ *
+ * @return The total amount of records
+ */
 native Timer_GetStyleTotalRank(style, track);
+
+/**
+ * Returns a record rank for a client
+ *
+ * @param client
+ * @param style
+ * @param track
+ *
+ * @return The current record rank (0 for no record)
+ */
 native Timer_GetStyleRank(client, track, style);
+
+/**
+ * Returns a record holder nickname for a given style/track/rank
+ *
+ * @param style
+ * @param track
+ * @param rank
+ * @param name A reference to the record time.
+ * @param length Name reference string length (max 32)
+ *
+ * @return True if success
+ */
 native Timer_GetRecordHolderName(style, track, rank, String:name[], length);
+
+/**
+ * Returns a total amount of finishes for given style/track/rank
+ *
+ * @param style
+ * @param track
+ * @param rank
+ *
+ * @return The total amount of records
+ */
 native Timer_GetFinishCount(style, track, rank);
+
+/**
+ * Returns a record formatted data for a given style/track/rank
+ *
+ * @param style
+ * @param track
+ * @param rank
+ * @param date A reference to the record date.
+ * @param length Date reference string length (max 32)
+ *
+ * @return True if success
+ */
 native Timer_GetRecordDate(style, track, rank, String:date[], length);
 native Timer_GetRecordTimeInfo(style, track, rank, &Float:time, String:timestring[], length);
 native Timer_GetRecordSpeedInfo(style, track, rank, &Float:avgspeed, &Float:maxspeed, &Float:finishspeed);

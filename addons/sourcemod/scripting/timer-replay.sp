@@ -215,7 +215,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			new Float:time;
 			new String:timestring[32];
 			
-			Timer_GetStyleRecordTime(g_StyleDefault, 0, cacheid, time, total);
+			Timer_GetStyleRecordWRStats(g_StyleDefault, 0, cacheid, time, total);
 			Timer_SecondsToTime(time, timestring, sizeof(timestring), 2);
 			
 			new String:buffer[128];
@@ -629,7 +629,7 @@ public DodgyFix()
 		new Float:time;
 		new String:timestring[32];
 		
-		Timer_GetStyleRecordTime(g_StyleDefault, 0, cacheid, time, total);
+		Timer_GetStyleRecordWRStats(g_StyleDefault, 0, cacheid, time, total);
 		Timer_SecondsToTime(time, timestring, sizeof(timestring), 2);
 		
 		new String:buffer[64];

@@ -156,7 +156,7 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		Timer_GetRecordHolderName(style, track, newrank, WrName, 32);
 	
 		/* Get World Record */
-		Timer_GetStyleRecordTime(style, track, RecordId, RecordTime, RankTotal);
+		Timer_GetStyleRecordWRStats(style, track, RecordId, RecordTime, RankTotal);
 	}
 	
 	/* Detect Record Type */

@@ -765,7 +765,7 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 	}
 
 	/* Get World Record */
-	if(g_timerWorldRecord) Timer_GetStyleRecordTime(style, track, RecordId, RecordTime, RankTotal);
+	if(g_timerWorldRecord) Timer_GetStyleRecordWRStats(style, track, RecordId, RecordTime, RankTotal);
 	
 	/* Detect Record Type */
 	if(RecordTime == 0.0 || time < RecordTime)

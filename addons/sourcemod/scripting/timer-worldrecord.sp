@@ -88,7 +88,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	RegPluginLibrary("timer-worldrecord");
 	
 	CreateNative("Timer_ForceReloadCache", Native_ForceReloadCache);
-	CreateNative("Timer_GetStyleRecordTime", Native_GetStyleRecordTime);
+	CreateNative("Timer_GetStyleRecordWRStats", Native_GetStyleRecordWRStats);
 	CreateNative("Timer_GetStyleRank", Native_GetStyleRank);
 	CreateNative("Timer_GetStyleTotalRank", Native_GetStyleTotalRank);
 	CreateNative("Timer_GetBestRound", Native_GetBestRound);
@@ -1477,7 +1477,7 @@ public Native_GetStyleTotalRank(Handle:plugin, numParams)
 	return g_cacheCount[GetNativeCell(1)][GetNativeCell(2)]; 
 }
 
-public Native_GetStyleRecordTime(Handle:plugin, numParams)
+public Native_GetStyleRecordWRStats(Handle:plugin, numParams)
 {
 	new style = GetNativeCell(1);
 	new track = GetNativeCell(2);

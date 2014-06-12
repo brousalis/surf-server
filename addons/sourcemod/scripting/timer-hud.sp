@@ -1281,7 +1281,7 @@ UpdateHUD_CSS(client)
 	//get bhop mode
 	if (g_timerPhysics) 
 	{
-		if(g_timerWorldRecord) Timer_GetStyleRecordTime(style, bonus, RecordId, RecordTime, RankTotal);
+		if(g_timerWorldRecord) Timer_GetStyleRecordWRStats(style, bonus, RecordId, RecordTime, RankTotal);
 		//correct fail format
 		Timer_SecondsToTime(time, buffer, sizeof(buffer), 0);
 	}
@@ -1866,7 +1866,7 @@ UpdateHUD_CSGO(client)
 	//get bhop mode
 	if (g_timerPhysics) 
 	{
-		Timer_GetStyleRecordTime(style, bonus, RecordId, RecordTime, RankTotal);
+		Timer_GetStyleRecordWRStats(style, bonus, RecordId, RecordTime, RankTotal);
 		//correct fail format
 		Timer_SecondsToTime(time, buffer, sizeof(buffer), 0);
 	}
