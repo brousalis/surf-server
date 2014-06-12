@@ -84,7 +84,7 @@ enum TimerSettings
 	bool:HUDSpeedEnable,
 	bool:HUDSpeedMaxEnable,
 	bool:HUDMapEnable,
-	bool:HUDModeEnable,
+	bool:HUDStyleEnable,
 	bool:HUDWREnable,
 	bool:HUDPBEnable,
 	bool:HUDTTWREnable,
@@ -180,77 +180,77 @@ enum TimerSettings
 	bool:AllowKnifeDrop
 }
 
-enum PhysicModes
+enum Styles
 {
 	//General
-	bool:ModeEnable,
-	MCategory:ModeCategory,
-	ModeOrder,
-	bool:ModeIsDefault,
-	String:ModeName[32],
-	String:ModeTagName[32],
-	String:ModeTagShortName[32],
-	String:ModeQuickCommand[32],
-	String:ModeDesc[128],
+	bool:StyleEnable,
+	MCategory:StyleCategory,
+	StyleOrder,
+	bool:StyleIsDefault,
+	String:StyleName[32],
+	String:StyleTagName[32],
+	String:StyleTagShortName[32],
+	String:StyleQuickCommand[32],
+	String:StyleDesc[128],
 	
 	//HUD
-	bool:ModeHUDEnable,
+	bool:StyleHUDEnable,
 	
 	//Buttons
-	bool:ModePreventMoveleft,
-	bool:ModePreventMoveright,
-	bool:ModePreventPlusleft,
-	bool:ModePreventPlusright,
-	bool:ModePreventMoveforward,
-	bool:ModePreventMoveback,
-	bool:ModeForceMoveforward,
+	bool:StylePreventMoveleft,
+	bool:StylePreventMoveright,
+	bool:StylePreventPlusleft,
+	bool:StylePreventPlusright,
+	bool:StylePreventMoveforward,
+	bool:StylePreventMoveback,
+	bool:StyleForceMoveforward,
 	
 	//Movement
-	ModeBlockMovementDirection,
-	Float:ModeBlockPreSpeeding,
+	StyleBlockMovementDirection,
+	Float:StyleBlockPreSpeeding,
 	
 	//Physics
-	ModeMultiBhop,
-	Float:ModeStamina,
-	bool:ModeAuto,
-	Float:ModeBoost,
-	Float:ModeBoostForward,
-	Float:ModeBoostForwardMax,
-	Float:ModeGravity,
-	Float:ModeTimeScale,
-	ModeFOV,
-	Float:ModePointsMulti,
-	Float:ModeHoverScale,
-	Float:ModeMaxSpeed,
-	ModePunishType,
-	bool:ModeAntiBhop,
+	StyleMultiBhop,
+	Float:StyleStamina,
+	bool:StyleAuto,
+	Float:StyleBoost,
+	Float:StyleBoostForward,
+	Float:StyleBoostForwardMax,
+	Float:StyleGravity,
+	Float:StyleTimeScale,
+	StyleFOV,
+	Float:StylePointsMulti,
+	Float:StyleHoverScale,
+	Float:StyleMaxSpeed,
+	StylePunishType,
+	bool:StyleAntiBhop,
 	
 	//other
-	bool:ModeLJStats,
-	bool:ModeCustom,
-	String:ModeOnFinishExec[128],
-	ModeFPSMax,
-	ModeFPSMin,
-	ModeFPSRedirectStyle,
-	bool:ModeAllowWorldDamage,
-	ModeSpawnHealth,
-	ModeAutoStrafe,
-	ModeQuakeBhop,
-	ModeStrafeBoost
+	bool:StyleLJStats,
+	bool:StyleCustom,
+	String:StyleOnFinishExec[128],
+	StyleFPSMax,
+	StyleFPSMin,
+	StyleFPSRedirectStyle,
+	bool:StyleAllowWorldDamage,
+	StyleSpawnHealth,
+	StyleAutoStrafe,
+	StyleQuakeBhop,
+	StyleStrafeBoost
 }
 
-new g_Physics[MAX_MODES][PhysicModes];
+new g_Physics[MAX_STYLES][Styles];
 new g_Settings[TimerSettings];
 
-new g_ModeCount = 0;
-new g_ModeCountEnabled = 0;
-new g_ModeCountRanked = 0;
-new g_ModeCountRankedEnabled = 0;
-new g_ModeCountFun = 0;
-new g_ModeCountFunEnabled = 0;
-new g_ModeCountPractise = 0;
-new g_ModeCountPractiseEnabled = 0;
-new g_ModeDefault = -1;
+new g_StyleCount = 0;
+new g_StyleCountEnabled = 0;
+new g_StyleCountRanked = 0;
+new g_StyleCountRankedEnabled = 0;
+new g_StyleCountFun = 0;
+new g_StyleCountFunEnabled = 0;
+new g_StyleCountPractise = 0;
+new g_StyleCountPractiseEnabled = 0;
+new g_StyleDefault = -1;
 
 stock LoadTimerSettings()
 {
@@ -357,7 +357,7 @@ stock LoadTimerSettings()
 			g_Settings[HUDJumpsEnable] = bool:KvGetNum(hKv, "hud_show_jumps", 1);
 			g_Settings[HUDJumpAccEnable] = bool:KvGetNum(hKv, "hud_show_jumpacc", 1);
 			g_Settings[HUDMapEnable] = bool:KvGetNum(hKv, "hud_show_mapname", 1);
-			g_Settings[HUDModeEnable] = bool:KvGetNum(hKv, "hud_show_style", 1);
+			g_Settings[HUDStyleEnable] = bool:KvGetNum(hKv, "hud_show_style", 1);
 			g_Settings[HUDWREnable] = bool:KvGetNum(hKv, "hud_show_wr", 1);
 			g_Settings[HUDPBEnable] = bool:KvGetNum(hKv, "hud_show_pb", 1);
 			g_Settings[HUDTTWREnable] = bool:KvGetNum(hKv, "hud_show_wwtr", 1);
@@ -480,13 +480,13 @@ stock LoadPhysics()
 		return;
 	}
 	
-	g_ModeCount = 0;
-	g_ModeCountEnabled = 0;
-	g_ModeCountRanked = 0;
-	g_ModeCountRankedEnabled = 0;
-	g_ModeDefault = -1;
+	g_StyleCount = 0;
+	g_StyleCountEnabled = 0;
+	g_StyleCountRanked = 0;
+	g_StyleCountRankedEnabled = 0;
+	g_StyleDefault = -1;
 	
-	new modeID = -1;
+	new StyleID = -1;
 
 	if (!KvGotoFirstSubKey(hKv))
 	{
@@ -499,91 +499,91 @@ stock LoadPhysics()
 		decl String:sSectionName[32];
 		KvGetSectionName(hKv, sSectionName, sizeof(sSectionName));
 
-		modeID = StringToInt(sSectionName);
+		StyleID = StringToInt(sSectionName);
 		
-		if(MAX_MODES-1 > modeID >= 0)
+		if(MAX_STYLES-1 > StyleID >= 0)
 		{
-			KvGetString(hKv, "name", g_Physics[g_ModeCount][ModeName], 32);
+			KvGetString(hKv, "name", g_Physics[g_StyleCount][StyleName], 32);
 			
-			g_Physics[g_ModeCount][ModeEnable] = bool:KvGetNum(hKv, "enable", 0);
-			g_Physics[g_ModeCount][ModeOrder] = KvGetNum(hKv, "order", 0);
+			g_Physics[g_StyleCount][StyleEnable] = bool:KvGetNum(hKv, "enable", 0);
+			g_Physics[g_StyleCount][StyleOrder] = KvGetNum(hKv, "order", 0);
 			
-			g_Physics[g_ModeCount][ModeHUDEnable] = bool:KvGetNum(hKv, "hud_enable", 0);
-			g_Physics[g_ModeCount][ModeIsDefault] = bool:KvGetNum(hKv, "default", 0);
-			g_Physics[g_ModeCount][ModeCategory] = MCategory:KvGetNum(hKv, "category", 0);
+			g_Physics[g_StyleCount][StyleHUDEnable] = bool:KvGetNum(hKv, "hud_enable", 0);
+			g_Physics[g_StyleCount][StyleIsDefault] = bool:KvGetNum(hKv, "default", 0);
+			g_Physics[g_StyleCount][StyleCategory] = MCategory:KvGetNum(hKv, "category", 0);
 			
-			g_Physics[g_ModeCount][ModeStamina] = KvGetFloat(hKv, "stamina", -1.0);
-			g_Physics[g_ModeCount][ModeTimeScale] = KvGetFloat(hKv, "timescale", 1.0);
+			g_Physics[g_StyleCount][StyleStamina] = KvGetFloat(hKv, "stamina", -1.0);
+			g_Physics[g_StyleCount][StyleTimeScale] = KvGetFloat(hKv, "timescale", 1.0);
 			
-			g_Physics[g_ModeCount][ModeBoost] = KvGetFloat(hKv, "boost", 0.0);
-			g_Physics[g_ModeCount][ModeBoostForward] = KvGetFloat(hKv, "boost_forward", 1.0);
-			g_Physics[g_ModeCount][ModeBoostForwardMax] = KvGetFloat(hKv, "boost_forward_max", 500.0);
-			g_Physics[g_ModeCount][ModeGravity] = KvGetFloat(hKv, "gravity", 1.0);
-			g_Physics[g_ModeCount][ModeAuto] = bool:KvGetNum(hKv, "auto", 0);
-			g_Physics[g_ModeCount][ModeLJStats] = bool:KvGetNum(hKv, "ljstats", 0);
-			g_Physics[g_ModeCount][ModeMultiBhop] = KvGetNum(hKv, "multimode", 0);
-			g_Physics[g_ModeCount][ModeFOV] = KvGetNum(hKv, "fov", 90);
-			g_Physics[g_ModeCount][ModeBlockMovementDirection] = KvGetNum(hKv, "block_direction", 0);
-			g_Physics[g_ModeCount][ModePreventMoveleft] = bool:KvGetNum(hKv, "prevent_moveleft", 0);
-			g_Physics[g_ModeCount][ModePreventMoveright] = bool:KvGetNum(hKv, "prevent_moveright", 0);
-			g_Physics[g_ModeCount][ModePreventPlusleft] = bool:KvGetNum(hKv, "prevent_plusleft", 0);
-			g_Physics[g_ModeCount][ModePreventPlusright] = bool:KvGetNum(hKv, "prevent_plusright", 0);
-			g_Physics[g_ModeCount][ModePreventMoveback] = bool:KvGetNum(hKv, "prevent_back", 0);
-			g_Physics[g_ModeCount][ModePreventMoveforward] = bool:KvGetNum(hKv, "prevent_forward", 0);
-			g_Physics[g_ModeCount][ModeForceMoveforward] = bool:KvGetNum(hKv, "force_forward", 0);
-			g_Physics[g_ModeCount][ModeCustom] = bool:KvGetNum(hKv, "custom", 0);
-			g_Physics[g_ModeCount][ModeFPSMax] = KvGetNum(hKv, "fps_max", 0);
-			g_Physics[g_ModeCount][ModeFPSMin] = KvGetNum(hKv, "fps_min", 0);
-			g_Physics[g_ModeCount][ModeFPSRedirectStyle] = KvGetNum(hKv, "fps_redirect_style", -1);
-			g_Physics[g_ModeCount][ModeAllowWorldDamage] = bool:KvGetNum(hKv, "allow_world_damage", 0);
-			g_Physics[g_ModeCount][ModeSpawnHealth] = KvGetNum(hKv, "spawn_health", 100);
-			g_Physics[g_ModeCount][ModeBlockPreSpeeding] = KvGetFloat(hKv, "prespeed", 0.0);
-			g_Physics[g_ModeCount][ModePointsMulti] = KvGetFloat(hKv, "points_multi", 1.0);
-			g_Physics[g_ModeCount][ModeHoverScale] = KvGetFloat(hKv, "hover_scale", 0.0);
-			g_Physics[g_ModeCount][ModeMaxSpeed] = KvGetFloat(hKv, "max_speed", 0.0);
-			g_Physics[g_ModeCount][ModeAutoStrafe] = KvGetNum(hKv, "auto_strafe", 0);
-			g_Physics[g_ModeCount][ModeQuakeBhop] = KvGetNum(hKv, "quake_bhop", 0);
-			g_Physics[g_ModeCount][ModeStrafeBoost] = KvGetNum(hKv, "strafe_boost", 0);
-			g_Physics[g_ModeCount][ModePunishType] = KvGetNum(hKv, "punish_type", 1);
-			g_Physics[g_ModeCount][ModeAntiBhop] = bool:KvGetNum(hKv, "anti_bhop", 0);
+			g_Physics[g_StyleCount][StyleBoost] = KvGetFloat(hKv, "boost", 0.0);
+			g_Physics[g_StyleCount][StyleBoostForward] = KvGetFloat(hKv, "boost_forward", 1.0);
+			g_Physics[g_StyleCount][StyleBoostForwardMax] = KvGetFloat(hKv, "boost_forward_max", 500.0);
+			g_Physics[g_StyleCount][StyleGravity] = KvGetFloat(hKv, "gravity", 1.0);
+			g_Physics[g_StyleCount][StyleAuto] = bool:KvGetNum(hKv, "auto", 0);
+			g_Physics[g_StyleCount][StyleLJStats] = bool:KvGetNum(hKv, "ljstats", 0);
+			g_Physics[g_StyleCount][StyleMultiBhop] = KvGetNum(hKv, "multimode", 0);
+			g_Physics[g_StyleCount][StyleFOV] = KvGetNum(hKv, "fov", 90);
+			g_Physics[g_StyleCount][StyleBlockMovementDirection] = KvGetNum(hKv, "block_direction", 0);
+			g_Physics[g_StyleCount][StylePreventMoveleft] = bool:KvGetNum(hKv, "prevent_moveleft", 0);
+			g_Physics[g_StyleCount][StylePreventMoveright] = bool:KvGetNum(hKv, "prevent_moveright", 0);
+			g_Physics[g_StyleCount][StylePreventPlusleft] = bool:KvGetNum(hKv, "prevent_plusleft", 0);
+			g_Physics[g_StyleCount][StylePreventPlusright] = bool:KvGetNum(hKv, "prevent_plusright", 0);
+			g_Physics[g_StyleCount][StylePreventMoveback] = bool:KvGetNum(hKv, "prevent_back", 0);
+			g_Physics[g_StyleCount][StylePreventMoveforward] = bool:KvGetNum(hKv, "prevent_forward", 0);
+			g_Physics[g_StyleCount][StyleForceMoveforward] = bool:KvGetNum(hKv, "force_forward", 0);
+			g_Physics[g_StyleCount][StyleCustom] = bool:KvGetNum(hKv, "custom", 0);
+			g_Physics[g_StyleCount][StyleFPSMax] = KvGetNum(hKv, "fps_max", 0);
+			g_Physics[g_StyleCount][StyleFPSMin] = KvGetNum(hKv, "fps_min", 0);
+			g_Physics[g_StyleCount][StyleFPSRedirectStyle] = KvGetNum(hKv, "fps_redirect_style", -1);
+			g_Physics[g_StyleCount][StyleAllowWorldDamage] = bool:KvGetNum(hKv, "allow_world_damage", 0);
+			g_Physics[g_StyleCount][StyleSpawnHealth] = KvGetNum(hKv, "spawn_health", 100);
+			g_Physics[g_StyleCount][StyleBlockPreSpeeding] = KvGetFloat(hKv, "prespeed", 0.0);
+			g_Physics[g_StyleCount][StylePointsMulti] = KvGetFloat(hKv, "points_multi", 1.0);
+			g_Physics[g_StyleCount][StyleHoverScale] = KvGetFloat(hKv, "hover_scale", 0.0);
+			g_Physics[g_StyleCount][StyleMaxSpeed] = KvGetFloat(hKv, "max_speed", 0.0);
+			g_Physics[g_StyleCount][StyleAutoStrafe] = KvGetNum(hKv, "auto_strafe", 0);
+			g_Physics[g_StyleCount][StyleQuakeBhop] = KvGetNum(hKv, "quake_bhop", 0);
+			g_Physics[g_StyleCount][StyleStrafeBoost] = KvGetNum(hKv, "strafe_boost", 0);
+			g_Physics[g_StyleCount][StylePunishType] = KvGetNum(hKv, "punish_type", 1);
+			g_Physics[g_StyleCount][StyleAntiBhop] = bool:KvGetNum(hKv, "anti_bhop", 0);
 			
-			KvGetString(hKv, "tag_name", g_Physics[g_ModeCount][ModeTagName], 32);
-			KvGetString(hKv, "tag_shortname", g_Physics[g_ModeCount][ModeTagShortName], 32);
-			KvGetString(hKv, "chat_command", g_Physics[g_ModeCount][ModeQuickCommand], 32);
-			KvGetString(hKv, "exec_onfinish", g_Physics[g_ModeCount][ModeOnFinishExec], 128);
-			KvGetString(hKv, "desc", g_Physics[g_ModeCount][ModeDesc], 128);
+			KvGetString(hKv, "tag_name", g_Physics[g_StyleCount][StyleTagName], 32);
+			KvGetString(hKv, "tag_shortname", g_Physics[g_StyleCount][StyleTagShortName], 32);
+			KvGetString(hKv, "chat_command", g_Physics[g_StyleCount][StyleQuickCommand], 32);
+			KvGetString(hKv, "exec_onfinish", g_Physics[g_StyleCount][StyleOnFinishExec], 128);
+			KvGetString(hKv, "desc", g_Physics[g_StyleCount][StyleDesc], 128);
 			
-			if (g_Physics[g_ModeCount][ModeIsDefault] && g_ModeDefault != g_ModeCount)
+			if (g_Physics[g_StyleCount][StyleIsDefault] && g_StyleDefault != g_StyleCount)
 			{
-				if(g_ModeDefault != -1) 
-					Timer_LogError("PhysicsCFG: More than one default mode detected!");
+				if(g_StyleDefault != -1) 
+					Timer_LogError("PhysicsCFG: More than one default style detected!");
 				
-				g_ModeDefault = g_ModeCount;
+				g_StyleDefault = g_StyleCount;
 			}
 			
-			if(g_Physics[g_ModeCount][ModeEnable]) g_ModeCountEnabled++;
+			if(g_Physics[g_StyleCount][StyleEnable]) g_StyleCountEnabled++;
 			
-			if(g_Physics[g_ModeCount][ModeCategory] == MCategory_Ranked)
+			if(g_Physics[g_StyleCount][StyleCategory] == MCategory_Ranked)
 			{
-				g_ModeCountRanked++;
-				if(g_Physics[g_ModeCount][ModeEnable]) g_ModeCountRankedEnabled++;
+				g_StyleCountRanked++;
+				if(g_Physics[g_StyleCount][StyleEnable]) g_StyleCountRankedEnabled++;
 			}
 			
-			if(g_Physics[g_ModeCount][ModeCategory] == MCategory_Fun)
+			if(g_Physics[g_StyleCount][StyleCategory] == MCategory_Fun)
 			{
-				g_ModeCountFun++;
-				if(g_Physics[g_ModeCount][ModeEnable]) g_ModeCountFunEnabled++;
+				g_StyleCountFun++;
+				if(g_Physics[g_StyleCount][StyleEnable]) g_StyleCountFunEnabled++;
 			}
 			
-			if(g_Physics[g_ModeCount][ModeCategory] == MCategory_Practise)
+			if(g_Physics[g_StyleCount][StyleCategory] == MCategory_Practise)
 			{
-				g_ModeCountPractise++;
-				if(g_Physics[g_ModeCount][ModeEnable]) g_ModeCountPractiseEnabled++;
+				g_StyleCountPractise++;
+				if(g_Physics[g_StyleCount][StyleEnable]) g_StyleCountPractiseEnabled++;
 			}
 		}
-		else Timer_LogError("PhysicsCFG: Invalid mode id: %d",modeID);
+		else Timer_LogError("PhysicsCFG: Invalid style id: %d", StyleID);
 		
-		g_ModeCount++;
+		g_StyleCount++;
 	} while (KvGotoNextKey(hKv));
 	
 	CloseHandle(hKv);	

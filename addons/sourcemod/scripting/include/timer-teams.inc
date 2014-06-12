@@ -3,6 +3,11 @@
 #endif
 #define _timer_teams_included
 
+//Team modes
+#define TEAMMODE_NONE					0
+#define TEAMMODE_CHALLENGE				1
+#define TEAMMODE_COOP					2
+
 /* Forwards */
 forward OnCoopStart(player1,player2);
 forward OnCoopConfirm(player1,player2);

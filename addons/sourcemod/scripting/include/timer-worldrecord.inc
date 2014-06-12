@@ -5,23 +5,23 @@
 
 /* Natives */
 native Timer_ForceReloadCache();
-native Timer_GetDifficultyRecordTime(mode, bonus, &cacheid, &Float:time, &total);
-native Timer_GetNewPossibleRank(mode, bonus, Float:time);
-native Timer_GetRankID(mode, bonus, rank);
+native Timer_GetStyleRecordTime(style, track, &cacheid, &Float:time, &total);
+native Timer_GetNewPossibleRank(style, track, Float:time);
+native Timer_GetRankID(style, track, rank);
 
-native bool:Timer_GetBestRound(client, mode, bonus, &Float:time, &jumps);
-native Timer_GetDifficultyTotalRank(mode, bonus);
-native Timer_GetDifficultyRank(client, bonus, mode);
-native Timer_GetRecordHolderName(mode, bonus, rank, String:name[], length);
-native Timer_GetFinishCount(mode, bonus, rank);
-native Timer_GetRecordDate(mode, bonus, rank, String:date[], length);
-native Timer_GetRecordTimeInfo(mode, bonus, rank, &Float:time, String:timestring[], length);
-native Timer_GetRecordSpeedInfo(mode, bonus, rank, &Float:avgspeed, &Float:maxspeed, &Float:finishspeed);
-native Timer_GetRecordStrafeJumpInfo(mode, bonus, rank, &strafes, &Float:strafeacc, &jumps, &Float:jumpacc);
-native Timer_GetReplayPath(mode, bonus, rank, String:replay_path[], length);
-native Timer_GetRecordCustom1(mode, bonus, rank, String:custom1[], length);
-native Timer_GetRecordCustom2(mode, bonus, rank, String:custom2[], length);
-native Timer_GetRecordCustom3(mode, bonus, rank, String:custom3[], length);
+native bool:Timer_GetBestRound(client, style, track, &Float:time, &jumps);
+native Timer_GetStyleTotalRank(style, track);
+native Timer_GetStyleRank(client, track, style);
+native Timer_GetRecordHolderName(style, track, rank, String:name[], length);
+native Timer_GetFinishCount(style, track, rank);
+native Timer_GetRecordDate(style, track, rank, String:date[], length);
+native Timer_GetRecordTimeInfo(style, track, rank, &Float:time, String:timestring[], length);
+native Timer_GetRecordSpeedInfo(style, track, rank, &Float:avgspeed, &Float:maxspeed, &Float:finishspeed);
+native Timer_GetRecordStrafeJumpInfo(style, track, rank, &strafes, &Float:strafeacc, &jumps, &Float:jumpacc);
+native Timer_GetReplayPath(style, track, rank, String:replay_path[], length);
+native Timer_GetRecordCustom1(style, track, rank, String:custom1[], length);
+native Timer_GetRecordCustom2(style, track, rank, String:custom2[], length);
+native Timer_GetRecordCustom3(style, track, rank, String:custom3[], length);
 	
 public SharedPlugin:__pl_timer_worldrecord = 
 {
@@ -37,10 +37,10 @@ public SharedPlugin:__pl_timer_worldrecord =
 public __pl_timer_worldrecord_SetNTVOptional() 
 {
 	MarkNativeAsOptional("Timer_ForceReloadCache");
-	MarkNativeAsOptional("Timer_GetDifficultyRecordTime");
+	MarkNativeAsOptional("Timer_GetStyleRecordTime");
 	MarkNativeAsOptional("Timer_GetNewPossibleRank");
-	MarkNativeAsOptional("Timer_GetDifficultyRank");
-	MarkNativeAsOptional("Timer_GetDifficultyTotalRank");
+	MarkNativeAsOptional("Timer_GetStyleRank");
+	MarkNativeAsOptional("Timer_GetStyleTotalRank");
 	MarkNativeAsOptional("Timer_GetBestRound");
 	MarkNativeAsOptional("Timer_GetRankID");
 	MarkNativeAsOptional("Timer_GetRecordHolderName");

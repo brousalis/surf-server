@@ -10,27 +10,23 @@
 /*** SETTINGS ***/
 
 //MAX RECORDS TO CACHE
-#define MAX_CACHE 1000
+#define MAX_CACHE 100
 
 //Uncomment this to use colors.inc and disable morecolors.inc
 //#define LEGACY_COLORS "CS:GO Color Support"
 
 //Max number of styles (default 32 ID:0-31)
-#define MAX_MODES	32
+#define MAX_STYLES	32
 
 //Max. number of door/button based bhop blocks handled in a map
 #define MAX_BHOPBLOCKS	1024
 
 /*** DON'T CHANGE ***/
 
+//Tracks
 #define TRACK_NORMAL 				0
 #define TRACK_BONUS 				1
 #define TRACK_SHORT 				2
-
-//Team modes
-#define TEAMMODE_NONE					0
-#define TEAMMODE_CHALLENGE				1
-#define TEAMMODE_COOP					2
 
 //Colors Includes
 #if defined LEGACY_COLORS
@@ -366,23 +362,33 @@ native bool:Timer_GetClientTimer(client, &enabled, &Float:time, &jumps, &fpsmax)
 native Timer_FinishRound(client, const String:map[], Float:time, jumps, track, fpsmax, bonus);
 
 /**
- * Forces a player to a new bonus.
+ * Forces a player to a new track.
  *
  * @param client The target client
- * @param mode The Style Id to check
+ * @param track The new track (0:normal 1:bonus 2:short)
  * 
- * @return track (0:normal 1:bonus 2:short).
+ * @noreturn
  */
 native Timer_SetTrack(client, track);
 
 /**
- * Returns true if the given mode is configured as ranked.
+ * Returns clients active style ID.
  *
  * @param client The target client
  * 
  * @return The style ID.
  */
 native Timer_GetStyle(client);
+
+/**
+ * Forces a player to a new style and apply its physics.
+ *
+ * @param client The target client
+ * @param style The Style Id to check
+ * 
+ * @noreturn
+ */
+native Timer_SetStyle(client, style);
 
 /**
  * Returns true if the given mode is configured as ranked.
@@ -394,20 +400,31 @@ native Timer_GetStyle(client);
 native Timer_IsStyleRanked(style);
 
 /**
- * Forces a player to a new style and apply its physics.
+ * Returns true if the client timer is enabled and not paused.
  *
  * @param client The target client
- * @param style The Style Id to check
  * 
- * @return Bool ranked or not.
+ * @return Bool running or not.
  */
-native Timer_SetStyle(client, style);
-
 native Timer_GetStatus(client);
+
+/**
+ * Returns true if the client timer paused.
+ *
+ * @param client The target client
+ * 
+ * @return Bool paused or not.
+ */
 native Timer_GetPauseStatus(client);
+
+/**
+ * Returns clients active track. (0:normal 1:bonus 2:short)
+ *
+ * @param client The target client
+ * 
+ * @return The style ID.
+ */
 native Timer_GetTrack(client);
-native Timer_GetMapFinishCount(client);
-native Timer_GetMapFinishBonusCount(client);
 
 public SharedPlugin:__pl_timer = 
 {

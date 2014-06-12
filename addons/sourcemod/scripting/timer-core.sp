@@ -43,9 +43,6 @@ enum Timer
 	CurrentStyle,
 	FpsMax,
 	Track,
-	FinishCount,
-	BonusFinishCount,
-	ShortFinishCount,
 	bool:ShortEndReached
 }
 
@@ -104,22 +101,15 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Timer_Resume", Native_Resume);
 	CreateNative("Timer_Restart", Native_Restart);
 	CreateNative("Timer_FinishRound", Native_FinishRound);
-	
 	CreateNative("Timer_GetClientTimer", Native_GetClientTimer);
 	CreateNative("Timer_GetStatus", Native_GetStatus);
 	CreateNative("Timer_GetPauseStatus", Native_GetPauseStatus);
-	
 	CreateNative("Timer_SetStyle", Native_SetStyle);
 	CreateNative("Timer_GetStyle", Native_GetStyle);
 	CreateNative("Timer_IsStyleRanked", Native_IsStyleRanked);
-	
 	CreateNative("Timer_GetTrack", Native_GetTrack);
 	CreateNative("Timer_SetTrack", Native_SetTrack);
-	
-	CreateNative("Timer_GetMapFinishCount", Native_GetMapFinishCount);
-	CreateNative("Timer_GetMapFinishBonusCount", Native_GetMapFinishBonusCount);
 	CreateNative("Timer_ForceClearCacheBest", Native_ForceClearCacheBest);
-	
 	CreateNative("Timer_AddPenaltyTime", Native_AddPenaltyTime);
 
 	return APLRes_Success;
@@ -274,21 +264,9 @@ public OnMapStart()
 {	
 	GetCurrentMap(g_currentMap, sizeof(g_currentMap));
 	ClearCache();
-	ClearFinishCounts();
 	
 	LoadPhysics();
 	LoadTimerSettings();
-}
-
-ClearFinishCounts()
-{
-	for(new i=1;i<=MaxClients;i++)
-	{
-		g_timers[i][FinishCount] = 0;	
-		g_timers[i][BonusFinishCount] = 0;
-		g_timers[i][ShortFinishCount] = 0;
-		g_timers[i][Track] = 0;
-	}
 }
 
 /**
@@ -1076,16 +1054,6 @@ public Native_SetTrack(Handle:plugin, numParams)
 public Native_GetTrack(Handle:plugin, numParams)
 {
 	return g_timers[GetNativeCell(1)][Track];
-}
-
-public Native_GetMapFinishCount(Handle:plugin, numParams)
-{
-	return g_timers[GetNativeCell(1)][FinishCount];
-}
-
-public Native_GetMapFinishBonusCount(Handle:plugin, numParams)
-{
-	return g_timers[GetNativeCell(1)][BonusFinishCount];
 }
 
 public Native_SetStyle(Handle:plugin, numParams)
