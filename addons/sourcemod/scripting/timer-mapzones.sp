@@ -200,7 +200,7 @@ public OnPluginStart()
 	g_freeStyleZoneColor = CreateConVar("timer_freestylecolor", "20 20 255 200", "The color of the short end zone.");
 	
 	g_BeamDefaultPath = CreateConVar("timer_beam_sprite_default", "materials/sprites/laserbeam", "The laser sprite for zones (default sprite).");
-	g_BeamShortEndZonePath = CreateConVar("timer_beam_sprite_short_end", "materials/sprites/laserbeam", "The laser sprite for zones (bonus end zone).");
+	g_BeamShortEndZonePath = CreateConVar("timer_beam_sprite_short_end", "materials/sprites/laserbeam", "The laser sprite for zones (short end zone).");
 	g_BeamBonusEndZonePath = CreateConVar("timer_beam_sprite_bonus_end", "materials/sprites/laserbeam", "The laser sprite for zones (bonus end zone).");
 	g_BeamBonusStartZonePath = CreateConVar("timer_beam_sprite_bonus_start", "materials/sprites/laserbeam", "The laser sprite for zones (bonus start zone).");
 	g_BeamEndZonePath = CreateConVar("timer_beam_sprite_end", "materials/sprites/laserbeam", "The laser sprite for zones (end zone).");
