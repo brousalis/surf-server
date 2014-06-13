@@ -1502,7 +1502,9 @@ public Action:LJStats(client, bool:fail)
 		Format(cns, 1024, "%s%s Distance : %.2f, PreStrafe : %.2f Strafe : %d, MaxSpeed : %.2f, Sync : %.2f%s",JumpName[J_type], postfix, distance, PreStrafe[client], g_Strafe[client], LJ_MaxSpeed[client], LJ_SyncRate[client], edge);
 	}
 	
-	Client_PrintKeyHintText(client, hint);
+	if(GetEngineVersion() == Engine_CSS)
+		Client_PrintKeyHintText(client, hint);
+	
 	for (new i = 1; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i))
@@ -1520,7 +1522,8 @@ public Action:LJStats(client, bool:fail)
 					if(target <= 0 || target > MaxClients)
 						continue;
 					
-					Client_PrintKeyHintText(i, hint);
+					if(GetEngineVersion() == Engine_CSS)
+						Client_PrintKeyHintText(i, hint);
 				}
 				else
 				{
@@ -1584,7 +1587,8 @@ public Action:LJStats(client, bool:fail)
 				{
 					DisplayMenu(menu, g, MENU_TIME_FOREVER);
 					
-					Client_PrintKeyHintText(g, hint);
+					if(GetEngineVersion() == Engine_CSS)
+						Client_PrintKeyHintText(g, hint);
 					
 					PrintToConsole(g, cns);
 					PrintToConsole(g, "     ");
