@@ -7,8 +7,8 @@
 forward OnClientMaxJumpHeight(client, Float:height);
 
 /* Natives */
-native Timer_GetPickedMode(client);
-native Timer_GetForceMode();
+native Timer_GetPickedStyle(client);
+native Timer_GetForceStyle();
 native Timer_ApplyPhysics(client);
 native Timer_GetJumpAccuracy(client, &Float:percent);
 native Timer_GetCurrentSpeed(client, &Float:speed);
@@ -29,8 +29,8 @@ public SharedPlugin:__pl_timer_physics =
 
 public __pl_timer_physics_SetNTVOptional() 
 {
-	MarkNativeAsOptional("Timer_GetPickedMode");
-	MarkNativeAsOptional("Timer_GetForceMode");
+	MarkNativeAsOptional("Timer_GetPickedStyle");
+	MarkNativeAsOptional("Timer_GetForceStyle");
 	MarkNativeAsOptional("Timer_ApplyPhysics");
 	MarkNativeAsOptional("Timer_GetJumpAccuracy");
 	MarkNativeAsOptional("Timer_GetCurrentSpeed");

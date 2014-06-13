@@ -95,9 +95,6 @@ new g_bonuslevelColor[4] = { 0, 0, 255, 255 };
 new Handle:g_freeStyleZoneColor = INVALID_HANDLE;
 new g_freeStyleColor[4] = { 20, 20, 255, 200 };
 
-new Handle:g_BeamSpeed = INVALID_HANDLE;
-new g_iBeamSpeed;
-
 new Handle:g_BeamDefaultPath = INVALID_HANDLE;
 new String:g_sBeamDefaultPath[256];
 
@@ -202,8 +199,6 @@ public OnPluginStart()
 	g_shortEndZoneColor = CreateConVar("timer_shortendcolor", "255 99 25 255", "The color of the short end zone.");
 	g_freeStyleZoneColor = CreateConVar("timer_freestylecolor", "20 20 255 200", "The color of the short end zone.");
 	
-	g_BeamSpeed = CreateConVar("timer_beam_speed", "10", "Moving speed of beam sprite.");
-	
 	g_BeamDefaultPath = CreateConVar("timer_beam_sprite_default", "materials/sprites/laserbeam", "The laser sprite for zones (default sprite).");
 	g_BeamShortEndZonePath = CreateConVar("timer_beam_sprite_short_end", "materials/sprites/laserbeam", "The laser sprite for zones (bonus end zone).");
 	g_BeamBonusEndZonePath = CreateConVar("timer_beam_sprite_bonus_end", "materials/sprites/laserbeam", "The laser sprite for zones (bonus end zone).");
@@ -233,8 +228,6 @@ public OnPluginStart()
 	HookConVarChange(Sound_TeleLast, Action_OnSettingsChange);
 	HookConVarChange(Sound_TeleNext, Action_OnSettingsChange);
 	HookConVarChange(Sound_TimerStart, Action_OnSettingsChange);
-	
-	HookConVarChange(g_BeamSpeed, Action_OnSettingsChange);
 	
 	HookConVarChange(g_BeamShortEndZonePath, Action_OnSettingsChange);
 	HookConVarChange(g_BeamBonusEndZonePath, Action_OnSettingsChange);
@@ -422,7 +415,6 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	return Plugin_Continue;
 }
 
-//public Action:StartTouchTrigger(caller, activator)
 public Action:OnTouchTrigger(caller, activator)
 {
 	if(!g_bZonesLoaded)
@@ -449,9 +441,10 @@ public Action:OnTouchTrigger(caller, activator)
 	new client = activator;
 	
 	ChangePlayerVelocity(client);
+	
+	return;
 }
 
-//public Action:StartTouchTrigger(caller, activator)
 public Action:StartTouchTrigger(caller, activator)
 {
 	if(!g_bZonesLoaded)
@@ -755,12 +748,9 @@ public Action:StartTouchTrigger(caller, activator)
 		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 0.7);
 	}
 	
-	DrawZone(zone, true);
-	
 	return;
 }
 
-//public Action:EndTouchTrigger(caller, activator)
 public Action:EndTouchTrigger(caller, activator)
 {
 	if(!g_bZonesLoaded)
@@ -816,7 +806,7 @@ public Action:EndTouchTrigger(caller, activator)
 	Call_PushCell(g_mapZones[zone][Type]);
 	Call_Finish();
 	
-	if(Timer_GetForceMode() && !Timer_GetPickedMode(client))
+	if(Timer_GetForceStyle() && !Timer_GetPickedStyle(client))
 	{
 		FakeClientCommand(client, "sm_restart");
 		FakeClientCommand(client, "sm_style");
@@ -1210,10 +1200,6 @@ public Action_OnSettingsChange(Handle:cvar, const String:oldvalue[], const Strin
 	else if (cvar == g_PreSpeedBonusStart)
 	{
 		g_bPreSpeedBonusStart = GetConVarBool(g_PreSpeedBonusStart);
-	}
-	else if (cvar == g_BeamSpeed)
-	{
-		g_iBeamSpeed = StringToInt(newvalue);
 	}
 	else if (cvar == g_BeamShortEndZonePath)
 	{
@@ -2318,15 +2304,15 @@ public Action:DrawZones(Handle:timer)
 			point1[2] = point2[2];
 		
 		if (g_mapZones[zone][Type] == ZtStart)
-			DrawBox(point1, point2, 2.0, g_startColor, true, precache_laser_start);
+			DrawBox(point1, point2, 1.0, g_startColor, true, precache_laser_start);
 		else if (g_mapZones[zone][Type] == ZtEnd)
-			DrawBox(point1, point2, 2.0, g_endColor, true, precache_laser_end);
+			DrawBox(point1, point2, 1.0, g_endColor, true, precache_laser_end);
 		else if (g_mapZones[zone][Type] == ZtBonusStart)
-			DrawBox(point1, point2, 2.0, g_bonusstartColor, true, precache_laser_bonus_start);
+			DrawBox(point1, point2, 1.0, g_bonusstartColor, true, precache_laser_bonus_start);
 		else if (g_mapZones[zone][Type] == ZtBonusEnd)
-			DrawBox(point1, point2, 2.0, g_bonusendColor, true, precache_laser_bonus_end);
+			DrawBox(point1, point2, 1.0, g_bonusendColor, true, precache_laser_bonus_end);
 		else if (g_mapZones[zone][Type] == ZtShortEnd)
-			DrawBox(point1, point2, 2.0, g_shortendColor, true, precache_laser_short_end);
+			DrawBox(point1, point2, 1.0, g_shortendColor, true, precache_laser_short_end);
 	}
 	
 	return Plugin_Continue;
@@ -2353,25 +2339,25 @@ DrawZone(zone, bool:flat)
 		if(flat)
 		{
 			if (g_mapZones[zone][Type] == ZtStop)
-				DrawBox(point1, point2, 2.0, g_stopColor, flat);
+				DrawBox(point1, point2, 1.0, g_stopColor, flat);
 			else if (g_mapZones[zone][Type] == ZtRestart)
-				DrawBox(point1, point2, 2.0, g_restartColor, flat);
+				DrawBox(point1, point2, 1.0, g_restartColor, flat);
 			else if (g_mapZones[zone][Type] == ZtLast)
-				DrawBox(point1, point2, 2.0, g_telelastColor, flat);
+				DrawBox(point1, point2, 1.0, g_telelastColor, flat);
 			else if (g_mapZones[zone][Type] == ZtNext)
-				DrawBox(point1, point2, 2.0, g_telenextColor, flat);
+				DrawBox(point1, point2, 1.0, g_telenextColor, flat);
 			else if (g_mapZones[zone][Type] == ZtLevel)
-				DrawBox(point1, point2, 2.0, g_levelColor, flat);
+				DrawBox(point1, point2, 1.0, g_levelColor, flat);
 			else if (g_mapZones[zone][Type] == ZtBonusLevel)
-				DrawBox(point1, point2, 2.0, g_bonuslevelColor, flat);
+				DrawBox(point1, point2, 1.0, g_bonuslevelColor, flat);
 			else if (g_mapZones[zone][Type] == ZtStart)
-				DrawBox(point1, point2, 2.0, g_startColor, flat);
+				DrawBox(point1, point2, 1.0, g_startColor, flat);
 			else if (g_mapZones[zone][Type] == ZtEnd)
-				DrawBox(point1, point2, 2.0, g_endColor, flat);
+				DrawBox(point1, point2, 1.0, g_endColor, flat);
 		}
 		else
 		{
-			DrawBox(point1, point2, 2.0, g_startColor, flat);
+			DrawBox(point1, point2, 1.0, g_startColor, flat);
 		}
 		
 		g_MapZoneDrawDelayTimer[zone] = CreateTimer(2.0, Timer_DelayDraw, zone, TIMER_FLAG_NO_MAPCHANGE);
@@ -2558,10 +2544,10 @@ IsInsideBox(Float:fPCords[3], Float:fbsx, Float:fbsy, Float:fbsz, Float:fbex, Fl
 	return false;
 }
 
-DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat, laser = 0)
+DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat, iSpriteIndex = 0)
 {
-	if(laser == 0)
-		laser = precache_laser_default;
+	if(iSpriteIndex == 0)
+		iSpriteIndex = precache_laser_default;
 	
 	if(g_Settings[ZoneEffects])
 	{
@@ -2600,20 +2586,20 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat, laser = 
 			fRightBottomBack[2] = fTo[2];
 		
 		//initialize tempoary variables top front
-		decl Float:lefttopfront[3];
-		lefttopfront[0] = fFrom[0];
-		lefttopfront[1] = fFrom[1];
+		decl Float:fLeftTopFront[3];
+		fLeftTopFront[0] = fFrom[0];
+		fLeftTopFront[1] = fFrom[1];
 		if(flat)
-			lefttopfront[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
+			fLeftTopFront[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
 		else
-			lefttopfront[2] = fFrom[2];
-		decl Float:righttopfront[3];
-		righttopfront[0] = fTo[0];
-		righttopfront[1] = fFrom[1];
+			fLeftTopFront[2] = fFrom[2];
+		decl Float:fRightTopFront[3];
+		fRightTopFront[0] = fTo[0];
+		fRightTopFront[1] = fFrom[1];
 		if(flat)
-			righttopfront[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
+			fRightTopFront[2] = fFrom[2]+g_Settings[ZoneBeamHeight];
 		else
-			righttopfront[2] = fFrom[2];
+			fRightTopFront[2] = fFrom[2];
 		
 		//initialize tempoary variables top back
 		decl Float:fLeftTopBack[3];
@@ -2632,24 +2618,24 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat, laser = 
 		fRightTopBack[2] = fFrom[2];
 		
 		//create the box
-		TE_SetupBeamPoints(lefttopfront,righttopfront,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(fLeftTopBack,lefttopfront,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(fRightTopBack,fLeftTopBack,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(righttopfront,fRightTopBack,laser,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fLeftTopFront,fRightTopFront,iSpriteIndex,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,10);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fLeftTopBack,fLeftTopFront,iSpriteIndex,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,10);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fRightTopBack,fLeftTopBack,iSpriteIndex,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,10);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fRightTopFront,fRightTopBack,iSpriteIndex,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,10);TE_SendToAll(0.0);
 		
 		if(!flat)
 		{
-			TE_SetupBeamPoints(fRightBottomFront,fLeftBottomFront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fLeftBottomBack,fLeftBottomFront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(lefttopfront,fLeftBottomFront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightBottomFront,fLeftBottomFront,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fLeftBottomBack,fLeftBottomFront,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fLeftTopFront,fLeftBottomFront,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
 			
 			
-			TE_SetupBeamPoints(fLeftBottomBack,fRightBottomBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fRightBottomFront,fRightBottomBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fRightTopBack,fRightBottomBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fLeftBottomBack,fRightBottomBack,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fRightBottomFront,fRightBottomBack,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fRightTopBack,fRightBottomBack,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
 			
-			TE_SetupBeamPoints(righttopfront,fRightBottomFront,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
-			TE_SetupBeamPoints(fLeftTopBack,fLeftBottomBack,laser,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,g_iBeamSpeed);TE_SendToAll(0.0);//TE_SendToClient(client, 0.0);
+			TE_SetupBeamPoints(fRightTopFront,fRightBottomFront,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fLeftTopBack,fLeftBottomBack,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
 		}
 	}
 }
@@ -2680,10 +2666,10 @@ stock DrawBlueBalls(Float:fFrom[3], Float:fTo[3])
 	fRightBottomBack[2] = fTo[2]-20;
 
 	//initialize tempoary variables top front
-	decl Float:fLeftTopFront[3];
-	fLeftTopFront[0] = fFrom[0];
-	fLeftTopFront[1] = fFrom[1];
-	fLeftTopFront[2] = fFrom[2]+20;
+	decl Float:ffLeftTopFront[3];
+	ffLeftTopFront[0] = fFrom[0];
+	ffLeftTopFront[1] = fFrom[1];
+	ffLeftTopFront[2] = fFrom[2]+20;
 	decl Float:fRightTopFront[3];
 	fRightTopFront[0] = fTo[0];
 	fRightTopFront[1] = fFrom[1];
@@ -2700,7 +2686,7 @@ stock DrawBlueBalls(Float:fFrom[3], Float:fTo[3])
 	fRightTopBack[2] = fFrom[2]+20;
 
 	TE_SetupGlowSprite(fLeftTopBack, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
-	TE_SetupGlowSprite(fLeftTopFront, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
+	TE_SetupGlowSprite(ffLeftTopFront, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
 	TE_SetupGlowSprite(fRightTopFront, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
 	TE_SetupGlowSprite(fRightTopBack, gGlow1, 1.0, 1.0, 255);TE_SendToAll();
 }
@@ -2730,10 +2716,10 @@ stock DrawSmoke(Float:fFrom[3], Float:fTo[3])
 	fRightBottomBack[2] = fTo[2]-50;
 
 	//initialize tempoary variables top front
-	decl Float:fLeftTopFront[3];
-	fLeftTopFront[0] = fFrom[0];
-	fLeftTopFront[1] = fFrom[1];
-	fLeftTopFront[2] = fFrom[2]+50;
+	decl Float:ffLeftTopFront[3];
+	ffLeftTopFront[0] = fFrom[0];
+	ffLeftTopFront[1] = fFrom[1];
+	ffLeftTopFront[2] = fFrom[2]+50;
 	decl Float:fRightTopFront[3];
 	fRightTopFront[0] = fTo[0];
 	fRightTopFront[1] = fFrom[1];
@@ -2750,7 +2736,7 @@ stock DrawSmoke(Float:fFrom[3], Float:fTo[3])
 	fRightTopBack[2] = fFrom[2]+50;
 
 	TE_SetupSmoke(fLeftTopBack, gSmoke1, 10.0, 2);TE_SendToAll();
-	TE_SetupSmoke(fLeftTopFront, gSmoke1, 10.0, 2);TE_SendToAll();
+	TE_SetupSmoke(ffLeftTopFront, gSmoke1, 10.0, 2);TE_SendToAll();
 	TE_SetupSmoke(fRightTopFront, gSmoke1, 10.0, 2);TE_SendToAll();
 	TE_SetupSmoke(fRightTopBack, gSmoke1, 10.0, 2);TE_SendToAll();
 }
@@ -2780,7 +2766,7 @@ stock DrawXBeam(Float:fFrom[3], Float:fTo[3])
 	fRightBottomBack[2] = fTo[2]-20;
 
 	//initialize tempoary variables top front
-	decl Float:fLeftTopFront[3];
+	decl Float:ffLeftTopFront[3];
 	fLeftTopFront[0] = fFrom[0];
 	fLeftTopFront[1] = fFrom[1];
 	fLeftTopFront[2] = fFrom[2]+20;
@@ -2799,7 +2785,7 @@ stock DrawXBeam(Float:fFrom[3], Float:fTo[3])
 	fRightTopBack[1] = fTo[1];
 	fRightTopBack[2] = fFrom[2]+20;
 
-	TE_SetupBeamPoints(fRightTopBack, fLeftTopFront, gLaser1, 0, 0, 0, 1.1, 25.0, 25.0, 0, 1.0, {255, 0, 0, 255}, 3 );TE_SendToAll();
+	TE_SetupBeamPoints(fRightTopBack, ffLeftTopFront, gLaser1, 0, 0, 0, 1.1, 25.0, 25.0, 0, 1.0, {255, 0, 0, 255}, 3 );TE_SendToAll();
 	TE_SetupBeamPoints(fLeftTopBack, fRightTopFront, gLaser1, 0, 0, 0, 1.1, 25.0, 25.0, 0, 1.0, {255, 0, 0, 255}, 3 );TE_SendToAll();
 }
 
@@ -2828,7 +2814,7 @@ stock DrawXBeam2(Float:fFrom[3], Float:fTo[3])
 	fRightBottomBack[2] = fTo[2]-20;
 
 	//initialize tempoary variables top front
-	decl Float:fLeftTopFront[3];
+	decl Float:ffLeftTopFront[3];
 	fLeftTopFront[0] = fFrom[0];
 	fLeftTopFront[1] = fFrom[1];
 	fLeftTopFront[2] = fFrom[2]+20;

@@ -139,7 +139,7 @@ public SharedPlugin:__pl_timer_worldrecord =
 public __pl_timer_worldrecord_SetNTVOptional() 
 {
 	MarkNativeAsOptional("Timer_ForceReloadCache");
-	MarkNativeAsOptional("Timer_GetStyleRecordTime");
+	MarkNativeAsOptional("Timer_GetStyleRecordWRStats");
 	MarkNativeAsOptional("Timer_GetNewPossibleRank");
 	MarkNativeAsOptional("Timer_GetStyleRank");
 	MarkNativeAsOptional("Timer_GetStyleTotalRank");
