@@ -3,6 +3,12 @@
 #endif
 #define _timer_mapzones_included
 
+//Levels
+#define LEVEL_START					1
+#define LEVEL_END					999
+#define LEVEL_BONUS_START			1000
+#define LEVEL_BONUS_END				1999
+
 // 38 zones types
 enum MapZoneType
 {
@@ -50,22 +56,125 @@ enum MapZoneType
 }
 
 /* Forwards */
+
+/**
+ * Called when a client enters a zone.
+ *
+ * @param client The client who enters the zone.
+ * @param type MapZoneType
+ * @noreturn
+ */
 forward OnClientStartTouchZoneType(client, MapZoneType:type);
+
+/**
+ * Called when a client leaves a zone.
+ *
+ * @param client The client who leaves the zone.
+ * @param type MapZoneType
+ * @noreturn
+ */
 forward OnClientEndTouchZoneType(client, MapZoneType:type);
 
+
+/**
+ * Called when a client enters a level zone.
+ *
+ * @param client The client who enters the level zone.
+ * @param level The level id
+ * @param lastlevel The clients last known level id
+ * @noreturn
+ */
 forward OnClientStartTouchLevel(client, level, lastlevel);
+
+/**
+ * Called when a client enters a bonus level zone.
+ *
+ * @param client The client who leaves the bonus level zone.
+ * @param level The level id
+ * @param lastlevel The clients last known bonus level id
+ * @noreturn
+ */
 forward OnClientStartTouchBonusLevel(client, level, lastlevel);
 
 /* Natives */
+
+/**
+ * Returns true if the client touches a zone of given type.
+ *
+ * @param client The target client.
+ * @param type MapZoneType to check for.
+ * 
+ * @return Bool touches or not.
+ */
 native Timer_IsPlayerTouchingZoneType(client, MapZoneType:type);
+
+/**
+ * Returns a level name for a given level ID
+ *
+ * @param level ID
+ * @param name A reference to the level name.
+ * @param length Level name reference string length (max 32)
+ *
+ * @return True if success
+ */
 native Timer_GetLevelName(id, String:name[], length);
 
+/**
+ * Returns clients current level
+ *
+ * @param client The target client
+ * 
+ * @return The level.
+ */
 native Timer_GetClientLevel(client);
+
+/**
+ * Overwrites the current client level
+ *
+ * @param client The target client
+ * @param client The new level
+ * 
+ * @noreturn
+ */
 native Timer_SetClientLevel(client, level);
+
+/**
+ * Returns clients current level ID
+ *
+ * @param client The target client
+ * 
+ * @return The level ID.
+ */
 native Timer_GetClientLevelID(client);
+
+/**
+ * Teleports a client to the center of a level zone
+ *
+ * @param client The target client
+ * @param level
+ *
+ * @return True if success
+ */
 native Timer_ClientTeleportLevel(client, level);
 
+
+/**
+ * Ignore the next ent touch of start or bonus start zone
+ *
+ * @param client The target client
+ * @param ignore Ignore the next output or not
+ * 
+ * @noreturn
+ */
 native Timer_SetIgnoreEndTouchStart(client, ignore);
+
+/**
+ * Returns the count of a given map zone type
+ *
+ * @param type MapZoneType
+ * 
+ * @return The mapzone count.
+ */
 native Timer_GetMapzoneCount(MapZoneType:type);
 	
 public SharedPlugin:__pl_timer_mapzones = 

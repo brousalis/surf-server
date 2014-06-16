@@ -636,25 +636,25 @@ public Action:StartTouchTrigger(caller, activator)
 	{
 		if(Timer_GetTrack(client) == TRACK_BONUS) 
 		{
-			Tele_Level(client, 1001);
+			Tele_Level(client, LEVEL_BONUS_START);
 		}
 		else
 		{
-			Tele_Level(client, 1);
+			Tele_Level(client, LEVEL_START);
 		}
 	}
 	else if (g_mapZones[zone][Type] == ZtRestartNormalTimer)
 	{
 		if(Timer_GetTrack(client) == TRACK_NORMAL) 
 		{
-			Tele_Level(client, 1);
+			Tele_Level(client, LEVEL_START);
 		}
 	}
 	else if (g_mapZones[zone][Type] == ZtRestartBonusTimer)
 	{
 		if(Timer_GetTrack(client) == TRACK_BONUS) 
 		{
-			Tele_Level(client, 1001);
+			Tele_Level(client, LEVEL_BONUS_START);
 		}
 	}
 	else if (g_mapZones[zone][Type] == ZtLast)
@@ -894,7 +894,6 @@ public Action:NPC_Use(caller, activator)
 	MakeVectorFromPoints(vecCaller, vecClient, vec);
 	GetVectorAngles(vec, camangle);
 	camangle[0] = 0.0;
-	//camangle[1] = 0.0;
 	camangle[2] = 0.0;
 	
 	TeleportEntity(caller, NULL_VECTOR, camangle, NULL_VECTOR);
@@ -1147,7 +1146,7 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	
 	if(IsClientInGame(client) && IsPlayerAlive(client))
 	{
-		if(g_Settings[TeleportOnSpawn]) Tele_Level(client, 1);
+		if(g_Settings[TeleportOnSpawn]) Tele_Level(client, LEVEL_START);
 		
 		if(g_Settings[NoblockEnable])
 			SetNoBlock(client);
@@ -1265,8 +1264,8 @@ public MapZoneChangedCallback(Handle:owner, Handle:hndl, const String:error[], a
 	
 	if(g_timerMapTier)
 	{
-		Timer_UpdateStageCount(0);
-		Timer_UpdateStageCount(1);
+		Timer_UpdateStageCount(TRACK_NORMAL);
+		Timer_UpdateStageCount(TRACK_BONUS);
 	}
 	
 	LoadMapZones();
@@ -1864,14 +1863,14 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			{
 				zonetype = ZtStart;
 				ZoneName = "Start";
-				LvlID = 1;
+				LvlID = LEVEL_START;
 				valid = true;
 			}
 			else if(StrEqual(info, "end"))
 			{
 				zonetype = ZtEnd;
 				ZoneName = "End";
-				LvlID = 999;
+				LvlID = LEVEL_END;
 				valid = true;
 			}
 			else if(StrEqual(info, "stop"))
@@ -1903,7 +1902,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				zonetype = ZtLevel;
 				new String:lvlbuffer[32];
 				
-				new hcount = 1;
+				new hcount = LEVEL_START;
 				for (new zone = 0; zone < g_mapZonesCount; zone++)
 				{
 					if(g_mapZones[zone][Type] != ZtLevel) continue;
@@ -1922,14 +1921,14 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			{
 				zonetype = ZtBonusStart;
 				ZoneName = "BonusStart";
-				LvlID = 1001;
+				LvlID = LEVEL_BONUS_START;
 				valid = true;
 			}
 			else if(StrEqual(info, "bonusend"))
 			{
 				zonetype = ZtBonusEnd;
 				ZoneName = "BonusEnd";
-				LvlID = 1999;
+				LvlID = LEVEL_BONUS_END;
 				valid = true;
 			}
 			else if(StrEqual(info, "bonuslevel"))
@@ -1937,7 +1936,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				zonetype = ZtBonusLevel;
 				new String:lvlbuffer[32];
 				
-				new hcount = 1001;
+				new hcount = LEVEL_BONUS_START;
 				for (new zone = 0; zone < g_mapZonesCount; zone++)
 				{
 					if(g_mapZones[zone][Type] != ZtBonusLevel) continue;
@@ -2209,7 +2208,7 @@ stock CreateNPC(client, step, bool:double = false)
 		{
 			new String:lvlbuffer[32];
 			
-			new hcount = 1;
+			new hcount = LEVEL_START;
 			for (new zone = 0; zone < g_mapZonesCount; zone++)
 			{
 				if(g_mapZones[zone][Type] != ZtNPC_Next) continue;
@@ -3362,13 +3361,13 @@ ParseColor(const String:color[], result[])
 		result[i] = StringToInt(buffers[i]);
 }
 
-stock Tele_Level(client, level)
+stock bool:Tele_Level(client, level)
 {
-	if(level > 0 && client > 0 && g_bZonesLoaded)
+	if(LEVEL_BONUS_END >= level >= LEVEL_START && client > 0 && g_bZonesLoaded)
 	{
 		for (new mapZone = 0; mapZone < g_mapZonesCount; mapZone++)
 		{
-			if(g_mapZones[mapZone][Level_Id] < 1)
+			if(g_mapZones[mapZone][Level_Id] < LEVEL_START)
 			{
 				continue;
 			}
@@ -3376,10 +3375,12 @@ stock Tele_Level(client, level)
 			if (g_mapZones[mapZone][Level_Id] == level)
 			{
 				Tele_Zone(client, mapZone);
-				break;
+				return true;
 			}
 		}
 	}
+	
+	return false;
 }
 
 stock Tele_Zone(client, zone)
@@ -3727,7 +3728,7 @@ bool:Client_Start(client)
 	}
 	
 	//Teleport player to starzone
-	Tele_Level(client, 1);
+	Tele_Level(client, LEVEL_START);
 	
 	return true;
 }
@@ -3772,7 +3773,7 @@ bool:Client_Restart(client)
 	//Teleport player to starzone
 	if(g_Settings[TeleportOnRestart])
 	{
-		Tele_Level(client, 1);
+		Tele_Level(client, LEVEL_START);
 	} 
 	//Or just respawn him
 	else if(respawn)
@@ -3818,7 +3819,7 @@ bool:Client_BonusRestart(client)
 	}
 	
 	//Teleport player to bonus-starzone
-	Tele_Level(client, 1001);
+	Tele_Level(client, LEVEL_BONUS_START);
 	
 	return true;
 }
@@ -3941,12 +3942,17 @@ public Native_AddMapZone(Handle:plugin, numParams)
 
 public Native_ClientTeleportLevel(Handle:plugin, numParams)
 {
-	Tele_Level(GetNativeCell(1), GetNativeCell(2));
+	return Tele_Level(GetNativeCell(1), GetNativeCell(2));
 }
 
 public Native_GetClientLevel(Handle:plugin, numParams)
 {
 	return g_clientLevel[GetNativeCell(1)];
+}
+
+public Native_SetClientLevel(Handle:plugin, numParams)
+{
+	g_clientLevel[GetNativeCell(1)] = GetNativeCell(2);
 }
 
 public Native_GetClientLevelID(Handle:plugin, numParams)
@@ -3978,11 +3984,6 @@ public Native_GetLevelName(Handle:plugin, numParams)
 	}
 	
 	return false;
-}
-
-public Native_SetClientLevel(Handle:plugin, numParams)
-{
-	g_clientLevel[GetNativeCell(1)] = GetNativeCell(2);
 }
 
 public Native_SetIgnoreEndTouchStart(Handle:plugin, numParams)
