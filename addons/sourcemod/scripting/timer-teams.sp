@@ -640,7 +640,7 @@ public Action:CoopCountdown(Handle:timer, any:client)
 	g_iCoopCountdown[client]--;
 	
 	SetEntityMoveType(client, MOVETYPE_NONE);
-	Timer_ClientTeleportLevel(client, 1);
+	Timer_ClientTeleportLevel(client, LEVEL_START);
 	
 	if(g_iCoopCountdown[client] <= 0)
 	{
@@ -883,12 +883,15 @@ public Native_SetClientTeammate(Handle:plugin, numParams)
 	
 	if(0 < client)
 	{
+		//Make sure there are no issues with other mates
 		new oldcmate = g_clientTeammate[client];
 		new oldmmate = g_clientTeammate[mate];
+		
 		g_clientTeammate[oldcmate] = 0;
 		g_clientTeammate[oldmmate] = 0;
 		g_clientTeammate[client] = 0;
 		g_clientTeammate[mate] = 0;
+		
 		if(0 < mate)
 		{
 			g_clientTeammate[client] = mate;
@@ -897,10 +900,14 @@ public Native_SetClientTeammate(Handle:plugin, numParams)
 		
 		if(teleport)
 		{
-			Timer_ClientTeleportLevel(oldcmate, 1);
-			Timer_ClientTeleportLevel(oldmmate, 1);
-			Timer_ClientTeleportLevel(client, 1);
-			Timer_ClientTeleportLevel(mate, 1);
+			Timer_ClientTeleportLevel(client, LEVEL_START);
+			Timer_ClientTeleportLevel(mate, LEVEL_START);
+			
+			if(oldcmate && oldcmate != mate)
+				Timer_ClientTeleportLevel(oldcmate, LEVEL_START);
+			
+			if(oldmmate && oldmmate != client)
+				Timer_ClientTeleportLevel(oldmmate, LEVEL_START);
 		}
 	}
 }
