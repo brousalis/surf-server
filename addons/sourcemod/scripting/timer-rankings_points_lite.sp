@@ -65,7 +65,10 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		Timer_AddPoints(client, points);
 		Timer_SavePoints(client);
 
-		CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Complete_Round_Points", points, g_sCurrentMap);
+		if(points > 0)
+		{
+			CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Complete_Round_Points", points, g_sCurrentMap);
+		}
 	}
 }
 
