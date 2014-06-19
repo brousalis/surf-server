@@ -587,6 +587,12 @@ bool:ResumeTimer(client)
 	new Float:velocity[3];
 	Array_Copy(g_timers[client][PauseLastVelocity], velocity, 3);
 
+	//Disable NoClip: do not break the client timer
+	if (g_Settings[NoclipEnable] && GetEntityMoveType(client) == MOVETYPE_NOCLIP)
+	{
+		SetEntityMoveType(client, MOVETYPE_WALK);
+	}
+	
 	TeleportEntity(client, origin, angles, velocity);
 	
 	g_timers[client][IsPaused] = false;
@@ -612,6 +618,12 @@ bool:ResumeTimer(client)
 			new Float:velocity2[3];
 			Array_Copy(g_timers[mate][PauseLastVelocity], velocity2, 3);
 
+			//Disable NoClip: do not break the mate timer
+			if (g_Settings[NoclipEnable] && GetEntityMoveType(mate) == MOVETYPE_NOCLIP)
+			{
+				SetEntityMoveType(mate, MOVETYPE_WALK);
+			}
+			
 			TeleportEntity(mate, origin2, angles2, velocity2);
 
 			g_timers[mate][IsPaused] = false;
