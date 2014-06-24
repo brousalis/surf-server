@@ -3623,7 +3623,10 @@ public Action:Command_BonusRestart(client, args)
 		return Plugin_Handled;
 		
 	if(Timer_GetMapzoneCount(ZtBonusStart) < 1)
+	{
+		CPrintToChat(client, PLUGIN_PREFIX, "There is no bonus in this map");
 		return Plugin_Handled;
+	}
 	
 	if(g_timerTeams)
 	{
