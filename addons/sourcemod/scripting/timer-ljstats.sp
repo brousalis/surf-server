@@ -418,7 +418,7 @@ public Action:Touch_Wall(ent,client)
 			// PrintToChat(client, "\x03Client height : %f, \x04Ground height : %f", temp[2], origin[2]);
 			if(temp[2] - origin[2] <= 0.2)//means slope not just a wall.
 			{
-				PrintToChat(client, "\x01[\x05LJstats\x01]\x03Jump canceled \x01: Possible surfing.");
+				PrintToChat(client, "\x01[\x05LJstats\x01]\x03 Jump canceled \x01: Possible surfing.");
 				g_bValidJump[client] = false;
 				PlayerReadyType[client] = ReadyType_None;
 			}
@@ -527,7 +527,7 @@ public Action:Push_Touch(ent,client)
 		if(g_bLJmode[client])
 		{
 			g_bLJmode[client] = false;
-			PrintToChat(client, "\x01[\x05LJstats\x01]\x03You touched Booster. LJmode disabled");
+			PrintToChat(client, "\x01[\x05LJstats\x01]\x03 You touched Booster. LJmode disabled");
 		}
 	}
 	return Plugin_Continue;
@@ -1152,7 +1152,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 							if(GetEntityFlags(client)&FL_INWATER)
 							{
 								g_bValidJump[client] = false;
-								PrintToChat(client, "\x01[\x05LJstats\x01]\x03Jump canceled \x01: Swimming.");
+								PrintToChat(client, "\x01[\x05LJstats\x01]\x03 Jump canceled \x01: Swimming.");
 							}
 							new Float:pos[3];
 							GetGroundOrigin2(client, pos);
