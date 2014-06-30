@@ -1966,6 +1966,7 @@ public Action:Command_NoclipMe(client, args)
 	{
 		if (GetEntityMoveType(client) != MOVETYPE_NOCLIP)
 		{
+			FakeClientCommand(client, "sm_pause");
 			SetEntityMoveType(client, MOVETYPE_NOCLIP);
 			ReplyToCommand(client, "Noclip Enabled");
 		}
@@ -1976,7 +1977,7 @@ public Action:Command_NoclipMe(client, args)
 			ReplyToCommand(client, "Noclip Disabled");
 		}
 	}
-	else ReplyToCommand(client, "You have access to this command.");
+	else ReplyToCommand(client, "You have not access to this command.");
 	
 	return Plugin_Handled;
 }

@@ -118,8 +118,12 @@ public MenuHandlerTeleMe(Handle:menu, MenuAction:action, client, param2)
 				GetClientAbsOrigin(target, origin);
 				GetClientAbsAngles(target, angles);
 				
-				//Do not reset his pretty timer if it is paused
-				if (!g_Settings[PauseEnable] || !g_timers[client][IsPaused])
+				//Do not reset his pretty timer if it can be paused
+				if (g_Settings[PauseEnable])
+				{
+					FakeClientCommand(client, "sm_pause")
+				}
+				else
 				{
 					Timer_Reset(client);
 				}		
