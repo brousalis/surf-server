@@ -34,3 +34,16 @@ public Action:DelayedSlowDown(Handle:timer, any:client)
 {
 	CheckVelocity(client, 1, 120.0);
 }
+
+public OnClientEndTouchZoneType(client, MapZoneType:type)
+{
+	if(type == ZtStart || type == ZtBonusStart)
+	{
+		new bool:onground = bool:(GetEntityFlags(client) & FL_ONGROUND);
+		
+		if(!onground)
+		{
+			CheckVelocity(client, 1, 120.0);
+		}
+	}
+}
