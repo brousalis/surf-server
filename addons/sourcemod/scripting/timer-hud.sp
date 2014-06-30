@@ -1455,7 +1455,6 @@ UpdateHUD_CSS(client)
 			else PrintHintText(client, centerText);
 		}
 	}
-}
 	
 	//PrintCenterText(client, centerText);
 	
