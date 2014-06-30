@@ -1028,7 +1028,7 @@ public MenuHandler_Settings(Handle:menu, MenuAction:action, client, itemNum)
 	{
 		if (action == MenuAction_End) 
 		{
-			if(IsClientConnected(client)) FakeClientCommand(client, "sm_bhop");
+			if(IsClientConnected(client)) FakeClientCommand(client, "sm_style");
 		}
 		else if ( action == MenuAction_Select )
 		{
@@ -1083,7 +1083,7 @@ public MenuHandler_Settings(Handle:menu, MenuAction:action, client, itemNum)
 		}
 		else
 		{
-			if(IsClientConnected(client)) FakeClientCommand(client, "sm_bhop");
+			if(IsClientConnected(client)) FakeClientCommand(client, "sm_style");
 		}
 	}
 }

@@ -2,7 +2,7 @@
 {
 	"Force Mode"
 	{
-		"en"			 "You need to pick a mode first! Type !bhop into chat and choose wise."
+		"en"			 "You need to pick a style first! Type !style into chat and choose wise."
 	}
 	
 	"Round Finish"
@@ -144,7 +144,7 @@
 	
 	"HUD Difficulty"
 	{
-		"en"			"Mode"
+		"en"			"Style"
 	}
 
 	"Rank"
@@ -412,7 +412,7 @@
 	
 	"Custom FPS"
 	{
-		"en"			"You have been switched to FPSMAX mode, if you like to play in NORMAL set fps_max to 300."
+		"en"			"You have been switched to FPSMAX style, if you like to play in NORMAL set fps_max to 300."
 	}
 	
 	"Tier Limit"
