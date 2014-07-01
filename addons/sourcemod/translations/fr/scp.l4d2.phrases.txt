@@ -1,0 +1,43 @@
+"Phrases"
+{
+	"L4D_Chat_Infecté"
+	{
+		"#format"	"{1:s},{2:s}"
+		"fr"			"(Infecté) {1} :  {2}"
+	}
+	"L4D_Chat_Survivant"
+	{
+		"#format"	"{1:s},{2:s}"
+		"fr"			"(Survivant) {1} :  {2}"
+	}
+	"L4D_Chat_Infecté_Dead"
+	{
+		"#format"	"{1:s},{2:s}"
+		"fr"			"*MORT*(Infecté) {1} :  {2}"
+	}
+	"L4D_Chat_Survivant_Dead"
+	{
+		"#format"	"{1:s},{2:s}"
+		"fr"			"*MORT*(Survivant) {1} :  {2}"
+	}
+	"L4D_Chat_Spec"
+	{
+		"#format"	"{1:s},{2:s}"
+		"fr"			"(Spectateur) {1} :  {2}"
+	}
+	"L4D_Chat_All"
+	{
+		"#format"	"{1:s},{2:s}"
+		"fr"			"{1} :  {2}"
+	}
+	"L4D_Chat_AllDead"
+	{
+		"#format"	"{1:s},{2:s}"
+		"fr"			"*MORT* {1} :  {2}"
+	}
+	"L4D_Chat_AllSpec"
+	{
+		"#format"	"{1:s},{2:s}"
+		"fr"			"*SPEC* {1} :  {2}"
+	}
+}
