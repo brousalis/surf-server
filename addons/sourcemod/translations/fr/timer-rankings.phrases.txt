@@ -1,0 +1,267 @@
+"Phrases"
+{
+	"Prefix_Chat"
+	{
+		"#format"	""
+		"fr"		"{green}[Timer] Classements: {default}"
+	}
+	"Prefix_Hint"
+	{
+		"#format"	""
+		"fr"		"[Timer] Classements: "
+	}
+	"Advertisement"
+	{
+		"#format"	""
+		"fr"		"Affichez les classements avec !top10, !rank. Affichez les points pour cette map avec !points. Affichez tous les classements avec !chatranks."
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Phrase_Loading"
+	{
+		"#format"	""
+		"fr"		"Votre classement est en cours de chargement, patientez !"
+	}
+	"Phrase_Rank_Not_Enough"
+	{
+		"#format"	"{1:d},{2:d}"
+		"fr"		"Vous devez avoir au moins {1} points pour être classé. Vous en avez {2} actuellement."
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Phrase_Rank_Global"
+	{
+		"#format"	"{1:N},{2:d},{3:d},{4:d}"
+		"fr"		"{1} est rang {2} sur {3} avec {4} points !"
+	}
+	"Phrase_Rank_Player"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"fr"		"Vous êtes actuellement rang {1} sur {2} avec {3} points !"
+	}
+	"Phrase_Rank_Top"
+	{
+		"#format"	"{1:d},{2:d}"
+		"fr"		"Rang {1} sur {2}"
+	}
+	"Phrase_Rank_None"
+	{
+		"#format"	""
+		"fr"		"Il n'y a pas assez d'information pour établir les classements. Réessayez plus tard !"
+	}
+	"Phrase_Rank_Remaining"
+	{
+		"#format"	"{1:d}"
+		"fr"		"Vous passerez au prochain rang dans {1} points !"
+	}
+	"Phrase_Next_None"
+	{
+		"#format"	""
+		"fr"		"Aucun joueur devant vous !"
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Menu_Title_Next"
+	{
+		"#format"	"{1:d}"
+		"fr"		"[Timer] Classements\n- {1} Prochains joueurs :"
+	}
+	"Menu_Next_Option"
+	{
+		"#format"	"{1:s},{2:d},{3:d}"
+		"fr"		"(#{3}) {1}, {2} Points"
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Menu_Title_Top"
+	{
+		"#format"	"{1:d}"
+		"fr"		"[Timer] Classements\n- Top {1} joueurs :"
+	}
+	"Menu_Top_Option"
+	{
+		"#format"	"{1:s},{2:d},{3:d}"
+		"fr"		"(#{3}) {1}, {2} Points"
+	}
+	"Menu_Option_Selected"
+	{
+		"#format"	""
+		"fr"		"[*] "
+	}
+	"Menu_Option_Empty"
+	{
+		"#format"	""
+		"fr"		"[  ] "
+	}
+	"Menu_Title_Cookie"
+	{
+		"#format"	""
+		"fr"		"[Timer] Classements\n- Paramètre de position :"
+	}
+	"Menu_Cookie_Option_Tag_Default"
+	{
+		"#format"	""
+		"fr"		"Tag du tableau de score (Si disponible)"
+	}
+	"Menu_Cookie_Option_Tag"
+	{
+		"#format"	"{1:s}"
+		"fr"		"Tag du tableau de score"
+	}
+	"Menu_Cookie_Option_Chat_Default"
+	{
+		"#format"	""
+		"fr"		"Tag du Chat (Si disponible)"
+	}
+	"Menu_Cookie_Option_Chat"
+	{
+		"#format"	"{1:s}"
+		"fr"		"Tag du Chat"
+	}
+	"Menu_Cookie_Option_Text_Default"
+	{
+		"#format"	""
+		"fr"		"Couleur du texte modifiée (Si disponible)"
+	}
+	"Menu_Cookie_Option_Text"
+	{
+		"#format"	""
+		"fr"		"Couleur du texte modifiée"
+	}
+	"Menu_Cookie_Option_Stars_Default"
+	{
+		"#format"	""
+		"fr"		"Etoiles du tableau des scores (Si disponible)"
+	}
+	"Menu_Cookie_Option_Stars"
+	{
+		"#format"	""
+		"fr"		"Etoiles du tableau des scores"
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Menu_Title_Info"
+	{
+		"#format"	""
+		"fr"		"[Timer] Classements\n- Positions :"
+	}
+	"Phrase_Info_Rank_Points"
+	{
+		"#format"	"{1:d},{2:s}"
+		"fr"		"{2}: {1} points requis."
+	}
+	"Phrase_Info_Rank_Rank"
+	{
+		"#format"	"{1:d},{2:d},{3:s}"
+		"fr"		"{3}: Disponible des rangs {1} jusqu'à {2}."
+	}
+	"Phrase_Info_Rank_Display_Tag"
+	{
+		"#format"	"{1:s}"
+		"fr"		"  - Tag du tableau des scores : {1}"
+	}
+	"Phrase_Info_Rank_Display_Chat"
+	{
+		"#format"	"{1:s},{2:N}"
+		"fr"		"  - Tag du Chat : {1}{2}"
+	}
+	"Phrase_Info_Rank_Display_Text"
+	{
+		"#format"	"{1:s}"
+		"fr"		"  - {1}Couleur du Chat"
+	}
+	"Phrase_Info_Rank_Display_Stars"
+	{
+		"#format"	"{1:d}"
+		"fr"		"  - Etoiles du tableau des scores : x{1}"
+	}
+	"Phrase_Info_Rank_Remaining"
+	{
+		"#format"	"{1:d}"
+		"fr"		"- Vous serez à ce classement dans {1} points."
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Phrase_Complete_Round"
+	{
+		"#format"	"{1:d},{2:s}"
+		"fr"		"Vous avez reçu {1} points pour avoir complété {2}."
+	}
+	"Phrase_Complete_Round_Points"
+	{
+		"#format"	"{1:d},{2:s}"
+		"fr"		"Vous avez reçu {1} points pour avoir terminé {2}."
+	}
+	"Phrase_Complete_Round_Already_Multiple"
+	{
+		"#format"	"{1:d},{2:s}"
+		"fr"		"vous n'avez pas reçu de points pour {2} puisque vous l'avez terminée au moins {1} fois !"
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *	
+	"Phrase_Points_Per_Map"
+	{
+		"#format"	"{1:d}"
+		"fr"		"Cette map vaut {1} point(s) !"
+	}		
+	"Phrase_Map_Worth_Exceeded"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"fr"		"Cette map vaut {1} point(s) ! Vous ne recevrez aucun points en la terminant puisque vous l'avez finie {2}/{3} fois !"
+	}		
+	"Phrase_Map_Worth_Remaining"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"fr"		"Cette map vaut {1} point(s) ! Vous pouvez terminer cette map encore {2}/{3} fois pour plus de points."
+	}
+	"Phrase_Complete_Round_Exceeded"
+	{
+		"#format"	"{1:d},{2:d}"
+		"fr"		"Vous avez reçu 0 points pour avoir terminé cette map puisque vous l'avez déjà terminée {1}/{2} fois !"
+	}
+	"Phrase_Complete_Round_Remaining"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"fr"		"Vous avez reçu {1} points pour avoir terminé cette map. Vous pouvez encore la terminer {2}/{3} fois pour plus de points."
+	}
+	"Phrase_Complete_Round_Last"
+	{
+		"#format"	"{1:d}"
+		"fr"		"Vous avez reçu {1} points pour avoir terminé la map. Vous ne pouvez plus gagner de points pour cette map."
+	}	
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	//v1.0.5e
+	"Menu_Core_Title"
+	{
+		"#format"	""
+		"fr"		"[Timer] Classements"
+	}
+	"Menu_Settings_Title"
+	{
+		"#format"	""
+		"fr"		"[Timer] Classements\n- Fonctionnalités :"
+	}
+	"Menu_Settings_Option_Cookie"
+	{
+		"#format"	""
+		"fr"		"Paramètre des positions"
+	}
+	"Menu_Settings_Option_Top"
+	{
+		"#format"	""
+		"fr"		"Voir le Top des joueurs"
+	}
+	"Menu_Settings_Option_Next"
+	{
+		"#format"	""
+		"fr"		"Voir les prochains joueurs"
+	}
+	"Menu_Settings_Option_Rank"
+	{
+		"#format"	""
+		"fr"		"Voir le rang"
+	}
+	"Menu_Settings_Option_Worth"
+	{
+		"#format"	""
+		"fr"		"Voir combien vaut la map"
+	}
+	"Menu_Settings_Option_Positions"
+	{
+		"#format"	""
+		"fr"		"Voir les positions"
+	}
+}
