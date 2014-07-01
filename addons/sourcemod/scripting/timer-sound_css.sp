@@ -104,6 +104,9 @@ public OnTimerResumed(client)
 
 public OnTimerWorldRecord(client)
 {
+	//Stop the sound first
+	EmitSoundToAll(SND_TIMER_WORLDRECORD_ALL, _, _, _, SND_STOPLOOPING);
+	
 	EmitSoundToAll(SND_TIMER_WORLDRECORD_ALL);
 }
 
