@@ -1,0 +1,480 @@
+"Phrases"
+{
+	"Force Mode"
+	{
+		"nl"			 "Je moet eerst een style kiezen! Typ !style in de chat and kies uit het menu."
+	}
+	
+	"Round Finish"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:d}"
+		"nl"			"{1} heeft de map afgewerkt in {2} en {4} sprongen."
+	}
+	
+	"Round Finish Without Jumps"
+	{
+		"#format"		"{1:s},{2:s},{3:s}"
+		"nl"			"{1} Heeft de map afgewerkt in {2}."
+	}
+	
+	"Round Finish Difficulty"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:s},{5:d}"
+		"nl"			 "{1} heeft de map afgewerkt in {2} ({4}) en {5} sprongen."
+	}
+	
+	"Round Finish Difficulty Without Jumps"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:s}"
+		"nl"			 "{1} heeft de map afgewerkt in {2} ({4})!"
+	}
+	"Bonus Round Finish"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:d}"
+		"nl"			"{1} heeft de bonus map afgewerkt in {2} en {4} sprongen."
+	}
+	
+	"Bonus Round Finish Without Jumps"
+	{
+		"#format"		"{1:s},{2:s},{3:s}"
+		"nl"			"{1} heeft de bonus map afgewerkt in {2}."
+	}
+	
+	"Bonus Round Finish Difficulty"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:s},{5:d}"
+		"nl"			"{1} heeft de bonus map afgewerkt in {2} ({4}) en {5} sprongen."
+	}
+	
+	"Bonus Round Finish Difficulty Without Jumps"
+	{
+		"#format"		 "{1:s},{2:s},{3:s},{4:s}"
+		"nl"			 "{1} heeft de bonus map gefinished in {2} ({4})!"
+	}
+	
+	"Short Round Finish"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:d}"
+		"nl"			"{1} heeft de korte map gefinished in {2} en {4} sprongen."
+	}
+	
+	"Short Round Finish Without Jumps"
+	{
+		"#format"		"{1:s},{2:s},{3:s}"
+		"nl"			"{1} heeft de korte map afgewerkt in {2}."
+	}
+	
+	"Short Round Finish Difficulty"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:s},{5:d}"
+		"nl"			"{1} heeft de korte map afgewerkt in {2} ({4}) en {5} sprongen."
+	}
+	
+	"Short Round Finish Difficulty Without Jumps"
+	{
+		"#format"		 "{1:s},{2:s},{3:s},{4:s}"
+		"nl"			 "{1} heeft de korte map gefinished in {2} ({4})!"
+	}
+	
+	"Point Select Panel"
+	{
+		"#format"		"{1:s}"
+		"nl"			"Sta in het {1} punt van de zone\nen klik muis2"
+	}
+	
+	"Tier"
+	{
+		"nl"			"Rij"
+	}
+	
+	"Cancel"
+	{
+		"nl"			"Annuleren"
+	}
+	
+	"Please wait"
+	{
+		"nl"			"Even geduld..."
+	}
+
+	"FIRST"
+	{
+		"nl"			"EERSTE"
+	}
+	
+	"SECOND"
+	{
+		"nl"			"TWEEDE"
+	}
+	
+	"Map Zone Delete"
+	{
+		"nl"			"Map zone succesvol verwijderd."
+	}
+	
+	"Level"
+	{
+		"nl"			"Level"
+	}
+	
+	"Bonus Level"
+	{
+		"nl"			"Bonus Level"
+	}
+	
+	"Time"
+	{
+		"nl"			"Tijd"
+	}
+	
+	"Jumps"
+	{
+		"nl"			"Sprongen"
+	}
+	
+	"HUD Speed"
+	{
+		"nl"			"Snelheid"
+	}
+
+	"HUD Best Times"
+	{
+		"nl"			"Beste tijden"
+	}
+	
+	"HUD Difficulty"
+	{
+		"nl"			"Stijl"
+	}
+
+	"Rank"
+	{
+		"nl"			"Rank"
+	}
+	
+	"No target"
+	{
+		"nl"			"Geen doel gevonden."
+	}
+	
+	"Physics Difficulty"
+	{
+		"nl"			"Bhop Moeilijkheidgraad"
+	}
+	
+	"World Record Menu Title"
+	{
+		"#format"		"{1:s}"
+		"nl"			"Wereld Records voor {1}"
+	}
+	
+	"Bonus World Record Menu Title"
+	{
+		"#format"		"{1:s}"
+		"nl"			"Bonus Wereld Records voor {1}"
+	}
+	
+	"Short World Record Menu Title"
+	{
+		"#format"		"{1:s}"
+		"nl"			"Korte World Records voor {1}"
+	}
+	
+	"World Record Loading"
+	{
+		"nl"			"Wereld Record is nog aan het laden, probeer het later nogmaals."
+	}
+	
+	"Bonus World Record Loading"
+	{
+		"nl"			"Bonus Wereld Records is nog aan het laden, probeer het later nogmaals."
+	}
+	
+	"Short World Record Loading"
+	{
+		"nl"			"Korte Wereld Records is nog aan het laden, probeer het later nogmaals."
+	}
+	
+	"No Records"
+	{
+		"nl"			"Er zijn geen records."
+	}
+	
+	"No Difficulty Records"
+	{
+		"nl"			"Er zijn geen records voor deze moeilijkheidsgraad."
+	}
+	
+	"Record Info"
+	{
+		"nl"			"Record Info"
+	}
+	
+	"Player Name"
+	{
+		"nl"			"Speler Naam"
+	}
+	
+	"Rank"
+	{
+		"nl"			"Rank"
+	}
+
+	"Toggle visibilty"
+	{
+		"nl"			"Toggled speler zichtbaarheid"
+	}
+
+	"Timer Management"
+	{
+		"nl"			"Timer Beheer"
+	}
+
+	"Delete Map Records"
+	{
+		"nl"			"Verwijder alle records van deze map"
+	}
+	
+	"Delete All Map Zones"
+	{
+		"nl"			"Verwijder alle map zones"
+	}
+
+	"Delete Player Record"
+	{
+		"nl"			"Verwijder record"
+	}
+
+	"Add Map Zone"
+	{
+		"nl"			"Voeg een map zone toe"
+	}
+
+	"Delete Map Zone"
+	{
+		"nl"			"Verwijder een map zone"
+	}
+	
+	"Select zone type"
+	{
+		"nl"			"Selecteer zone type:"
+	}
+	
+	"Pause Info"
+	{
+		"nl"			"Timer gepauseerd. Typ !resume om je timer te herstellen"
+	}
+	
+	"Start"
+	{
+		"nl"			"Start"
+	}
+	
+	"End"
+	{
+		"nl"			"Eind"
+	}
+	
+	"Glitch1"
+	{
+		"nl"			"Stop Timer"
+	}
+	
+	"Glitch2"
+	{
+		"nl"			"Herstard Timer"
+	}
+	
+	"Glitch3"
+	{
+		"nl"			"Tele Speler Laatste Checkpoint"
+	}
+	
+	"Glitch4"
+	{
+		"nl"			"Tele Speler Volgende Checkpoint"
+	}
+	
+	"BonusStart"
+	{
+		"nl"			"Bonus Start"
+	}
+	
+	"BonusEnd"
+	{
+		"nl"			"Bonus Eind"
+	}
+	
+	"Enable NoBlock"
+	{
+		"nl"			"Schakel NoBlock in"
+	}
+	
+	"Disable NoBlock"
+	{
+		"nl"			"Schakel NoBlock uit"
+	}
+	
+	"Speed Limit"
+	{
+		"nl"			"Snelheids limiet"
+	}
+	
+	"Player Clip"
+	{
+		"nl"			"Speler Clip"
+	}
+	
+	"Longjump"
+	{
+		"nl"			"Longjump"
+	}
+	
+	"Booster"
+	{
+		"nl"			"Booster"
+	}
+	
+	"Full Booster"
+	{
+		"nl"			"Volle Booster"
+	}
+	
+	"Arena"
+	{
+		"nl"			"Arena"
+	}
+	
+	"Bounce Back"
+	{
+		"nl"			"Bounce Terug"
+	}
+	
+	"Jail"
+	{
+		"nl"			"Gevangenis"
+	}
+	
+	"Lift"
+	{
+		"nl"			"Optillen"
+	}
+	
+	"Bullet Time"
+	{
+		"nl"			"Bullet Time"
+	}
+	
+	"No Gravity Overwrite"
+	{
+		"nl"			"Geen zwaartekracht Overschrijven"
+	}
+	
+	"NPC Next"
+	{
+		"nl"			"NPC Volgende"
+	}
+	
+	"NPC Next Double"
+	{
+		"nl"			"NPC Volgende Dubbele"
+	}
+	
+	"No Boost"
+	{
+		"nl"			"Geen Boost"
+	}
+	
+	"Restart Normal Timer"
+	{
+		"nl"			"Herstart Normale Timer"
+	}
+	
+	"Restart Bonus Timer"
+	{
+		"nl"			"Herstart Bonus Timer"
+	}
+	
+	"Short End"
+	{
+		"nl"			"Kort Eind"
+	}
+	
+	"Choose Player"
+	{
+		"nl"			"Kies Speler:"
+	}
+	
+	"Delete Records"
+	{
+		"nl"			"Verwijder Records:"
+	}
+	
+	"Custom FPS"
+	{
+		"nl"			"Je bent overgeschakeld naar FPSMAX style. als je graag wil spelen in NORMAAL modus, zet fps_max naar 300."
+	}
+	
+	"Tier Limit"
+	{
+		"nl"			"Je ontvangt alleen punten voor de eerste 2 keer dat je een Rij 1 of 2 map afwerkt."
+	}
+	
+	"Cheater Finish"
+	{
+		"nl"			"Je record wordt niet opgeslagen in verband met cheaten, bezoek onze homepage om een unban aan te vragen."
+	}
+	
+	"Owned"
+	{
+		"#format"		"{1:s},{2:s}"
+		"nl"			"{1} heeft {2} verslagen in een duel tot de dood!"
+	}
+	
+	"Coop Win"
+	{
+		"#format"		"{1:s},{2:s}"
+		"nl"			"{1} en {2} hebben gefinisht als een team!"
+	}
+	
+	"Coop Fail"
+	{
+		"#format"		"{1:s},{2:s}"
+		"nl"			"{1} heeft een coop met {2} afgewezen!"
+	}
+	
+	"Adminmode Enabled"
+	{
+		"nl"			"Zoneadminmode ingeschakeld."
+	}
+	
+	"Adminmode Disabled"
+	{
+		"nl"			"Zoneadminmode uitgeschakeld."
+	}
+	
+	"Zones Reloaded"
+	{
+		"nl"			"Zones zijn herladen."
+	}
+	
+	"No Target"
+	{
+		"nl"			"Ongeldig Doel"
+	}
+	
+	"Not Alive"
+	{
+		"nl"			"Spawn om dit command te gebruiken."
+	}
+	
+	"Hide Enabled"
+	{
+		"nl"			"Andere spelers zijn nu onzichtbaar."
+	}
+	
+	"Hide Disabled"
+	{
+		"nl"			"Andere spelers zijn nu zichtbaar."
+	}
+}

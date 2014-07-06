@@ -1,0 +1,267 @@
+"Phrases"
+{
+	"Prefix_Chat"
+	{
+		"#format"	""
+		"nl"		"{green}[Timer] Rankings: {default}"
+	}
+	"Prefix_Hint"
+	{
+		"#format"	""
+		"nl"		"[Timer] Rankings: "
+	}
+	"Advertisement"
+	{
+		"#format"	""
+		"nl"		"Bekijk de globale ranks met !top10, !rank. Of bekijk wat de map waard is met !points. Typ !chatranks om alle ranks weer te geven."
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Phrase_Loading"
+	{
+		"#format"	""
+		"nl"		"Je rank informatie is nog aan het laden; geduld a.u.b!"
+	}
+	"Phrase_Rank_Not_Enough"
+	{
+		"#format"	"{1:d},{2:d}"
+		"nl"		"Je moet minimaal {1} punten hebben om in aanmerking te komen voor rankings. Op het moment heb je {2} punten."
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Phrase_Rank_Global"
+	{
+		"#format"	"{1:N},{2:d},{3:d},{4:d}"
+		"nl"		"{1} is rank {2} van de {3} met {4} punten!"
+	}
+	"Phrase_Rank_Player"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"nl"		"Je bent momenteel rank {1} van de {2} met {3} punten!"
+	}
+	"Phrase_Rank_Top"
+	{
+		"#format"	"{1:d},{2:d}"
+		"nl"		"Rank {1} van de {2}"
+	}
+	"Phrase_Rank_None"
+	{
+		"#format"	""
+		"nl"		"Er is niet genoeg informatie om de ranks te bepalen. Probeer het later nog eens."
+	}
+	"Phrase_Rank_Remaining"
+	{
+		"#format"	"{1:d}"
+		"nl"		"Je speelt de volgende level in rankings vrij met nog {1} punten."
+	}
+	"Phrase_Next_None"
+	{
+		"#format"	""
+		"nl"		"Er zijn geen spelers voor je."
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Menu_Title_Next"
+	{
+		"#format"	"{1:d}"
+		"nl"		"[Timer] Ranking\n- Volgende {1} spelers:"
+	}
+	"Menu_Next_Option"
+	{
+		"#format"	"{1:s},{2:d},{3:d}"
+		"nl"		"(#{3}) {1}, {2} Punten"
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Menu_Title_Top"
+	{
+		"#format"	"{1:d}"
+		"nl"		"[Timer] Ranking\n- Top {1} Spelers:"
+	}
+	"Menu_Top_Option"
+	{
+		"#format"	"{1:s},{2:d},{3:d}"
+		"nl"		"(#{3}) {1}, {2} Punten"
+	}
+	"Menu_Option_Selected"
+	{
+		"#format"	""
+		"nl"		"[*] "
+	}
+	"Menu_Option_Empty"
+	{
+		"#format"	""
+		"nl"		"[  ] "
+	}
+	"Menu_Title_Cookie"
+	{
+		"#format"	""
+		"nl"		"[Timer] Ranking\n- Positie Instellingen:"
+	}
+	"Menu_Cookie_Option_Tag_Default"
+	{
+		"#format"	""
+		"nl"		"Scoreboard Tag (Indien Beschikbaar)"
+	}
+	"Menu_Cookie_Option_Tag"
+	{
+		"#format"	"{1:s}"
+		"nl"		"Scoreboard Tag"
+	}
+	"Menu_Cookie_Option_Chat_Default"
+	{
+		"#format"	""
+		"nl"		"Chat Tag (Indien Beschikbaar)"
+	}
+	"Menu_Cookie_Option_Chat"
+	{
+		"#format"	"{1:s}"
+		"nl"		"Chat Tag"
+	}
+	"Menu_Cookie_Option_Text_Default"
+	{
+		"#format"	""
+		"nl"		"Gewijzigde text kleuren (Indien Beschikbaar)"
+	}
+	"Menu_Cookie_Option_Text"
+	{
+		"#format"	""
+		"nl"		"Gewijzigde text kleur"
+	}
+	"Menu_Cookie_Option_Stars_Default"
+	{
+		"#format"	""
+		"nl"		"Scoreboard Sterren (Indien Beschikbaar)"
+	}
+	"Menu_Cookie_Option_Stars"
+	{
+		"#format"	""
+		"nl"		"Scoreboard Sterren"
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Menu_Title_Info"
+	{
+		"#format"	""
+		"nl"		"[Timer] Ranking\n- Rank Posities:"
+	}
+	"Phrase_Info_Rank_Points"
+	{
+		"#format"	"{1:d},{2:s}"
+		"nl"		"{2}: Minimaal {1} punten nodig."
+	}
+	"Phrase_Info_Rank_Rank"
+	{
+		"#format"	"{1:d},{2:d},{3:s}"
+		"nl"		"{3}: Beschikbaar voor ranks {1} tot en met {2}."
+	}
+	"Phrase_Info_Rank_Display_Tag"
+	{
+		"#format"	"{1:s}"
+		"nl"		"  - Scoreboard Tag: {1}"
+	}
+	"Phrase_Info_Rank_Display_Chat"
+	{
+		"#format"	"{1:s},{2:N}"
+		"nl"		"  - Chat Tag: {1}{2}"
+	}
+	"Phrase_Info_Rank_Display_Text"
+	{
+		"#format"	"{1:s}"
+		"nl"		"  - {1}Chat Kleur"
+	}
+	"Phrase_Info_Rank_Display_Stars"
+	{
+		"#format"	"{1:d}"
+		"nl"		"  - Scoreboard Sterren: x{1}"
+	}
+	"Phrase_Info_Rank_Remaining"
+	{
+		"#format"	"{1:d}"
+		"nl"		"- You behaald deze positie met nog {1} punten."
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	"Phrase_Complete_Round"
+	{
+		"#format"	"{1:d},{2:s}"
+		"nl"		"Je hebt {1} punt gekregen voor het finishen van {2}."
+	}
+	"Phrase_Complete_Round_Points"
+	{
+		"#format"	"{1:d},{2:s}"
+		"nl"		"Je hebt {1} punten behaalt voor het finishen van {2}."
+	}
+	"Phrase_Complete_Round_Already_Multiple"
+	{
+		"#format"	"{1:d},{2:s}"
+		"nl"		"Je hebt geen punten behaalt voor het finishen van {2}, omdat je het minimaal {1} keer hebt gefinisht."
+	}
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *	
+	"Phrase_Points_Per_Map"
+	{
+		"#format"	"{1:d}"
+		"nl"		"Deze map is {1} punt(en) waard."
+	}		
+	"Phrase_Map_Worth_Exceeded"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"nl"		"Deze map is {1} punt(en) waard! Je zult geen punten behalen omdat je deze map al {2}/{3} keer hebt gefinisht."
+	}		
+	"Phrase_Map_Worth_Remaining"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"nl"		"Deze map is {1} punt(en) waard! Je mag deze map {2}/{3} keer vaker finishen voor punten."
+	}
+	"Phrase_Complete_Round_Exceeded"
+	{
+		"#format"	"{1:d},{2:d}"
+		"nl"		"Je hebt 0 punten ontvangen voor het finishen van deze map, omdat je het al {1}/{2} keer hebt gefinisht."
+	}
+	"Phrase_Complete_Round_Remaining"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"nl"		"Je hebt {1} punten ontvangen voor het finishen van de map; Je mag het {2}/{3} keer vaker finishen voor punten."
+	}
+	"Phrase_Complete_Round_Last"
+	{
+		"#format"	"{1:d}"
+		"nl"		"Je hebt {1} punten ontvangen voor het finishen van de map; Je mag niet meer punten ontvagen van deze map."
+	}	
+	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	//v1.0.5e
+	"Menu_Core_Title"
+	{
+		"#format"	""
+		"nl"		"[Timer] Rankings"
+	}
+	"Menu_Settings_Title"
+	{
+		"#format"	""
+		"nl"		"[Timer] Rankings\n- Functies:"
+	}
+	"Menu_Settings_Option_Cookie"
+	{
+		"#format"	""
+		"nl"		"Positie Instellingen"
+	}
+	"Menu_Settings_Option_Top"
+	{
+		"#format"	""
+		"nl"		"Laat de top spelers zien."
+	}
+	"Menu_Settings_Option_Next"
+	{
+		"#format"	""
+		"nl"		"Laat de volgende spelers zien."
+	}
+	"Menu_Settings_Option_Rank"
+	{
+		"#format"	""
+		"nl"		"Laat de rank zien."
+	}
+	"Menu_Settings_Option_Worth"
+	{
+		"#format"	""
+		"nl"		"Laat zien hoeveel de map waard is."
+	}
+	"Menu_Settings_Option_Positions"
+	{
+		"#format"	""
+		"nl"		"Laat de posities zien."
+	}
+}

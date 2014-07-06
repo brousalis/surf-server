@@ -1,0 +1,43 @@
+"Phrases"
+{
+	"TF_Chat_Team_Loc"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"(TEAM) {1} :  {2}"
+	}
+	"TF_Chat_Team"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"(TEAM) {1} :  {2}"
+	}
+	"TF_Chat_Team_Dead"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"*DOOD*(TEAM) {1} :  {2}"
+	}
+	"TF_Chat_Spec"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"(Toeschouwer) {1} :  {2}"
+	}
+	"TF_Chat_All"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"{1} :  {2}"
+	}
+	"TF_Chat_AllDead"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"*DOOD* {1} :  {2}"
+	}
+	"TF_Chat_AllSpec"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"*TOESCH* {1} :  {2}"
+	}
+	"TF_Chat_Coach"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"(Coach) {1} :  {2}"
+	}
+}

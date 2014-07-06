@@ -1,0 +1,53 @@
+"Phrases"
+{
+	"Cstrike_Chat_CT_Loc"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"(Antiterreurbrigade) {1} :  {2}"
+	}
+	"Cstrike_Chat_CT"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"(Antiterreurbrigade) {1} :  {2}"
+	}
+	"Cstrike_Chat_T_Loc"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"(Terrorist) {1} :  {2}"
+	}
+	"Cstrike_Chat_T"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"(Terrorist) {1} :  {2}"
+	}
+	"Cstrike_Chat_CT_Dead"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"*DOOD*(Antiterreurbrigade) {1} :  {2}"
+	}
+	"Cstrike_Chat_T_Dead"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"*DOOD*(Terrorist) {1} :  {2}"
+	}
+	"Cstrike_Chat_Spec"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"(Toeschouwer) {1} :  {2}"
+	}
+	"Cstrike_Chat_All"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"{1} :  {2}"
+	}
+	"Cstrike_Chat_AllDead"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"*DOOD* {1} :  {2}"
+	}
+	"Cstrike_Chat_AllSpec"
+	{
+		"#format"	"{1:s},{2:s}"
+		"nl"			"*TOESCH* {1} :  {2}"
+	}
+}
