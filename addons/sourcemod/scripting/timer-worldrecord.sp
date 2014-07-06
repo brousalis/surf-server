@@ -74,6 +74,8 @@ new g_iAdminSelectedTrack[MAXPLAYERS+1];
 
 new bool:g_timerPhysics = false;
 
+new Handle:g_OnRecordCacheLoaded;
+
 public Plugin:myinfo =
 {
     name        = "[Timer] World Record",
@@ -95,6 +97,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Timer_GetNewPossibleRank", Native_GetNewPossibleRank);
 	CreateNative("Timer_GetRankID", Native_GetRankID);
 	CreateNative("Timer_GetRecordHolderName", Native_GetRecordHolderName);
+	CreateNative("Timer_GetRecordHolderAuth", Native_GetRecordHolderAuth);
 	CreateNative("Timer_GetFinishCount", Native_GetFinishCount);
 	CreateNative("Timer_GetRecordDate", Native_GetRecordDate);
 	CreateNative("Timer_GetRecordSpeedInfo", Native_GetRecordSpeedInfo);
@@ -146,7 +149,9 @@ public OnPluginStart()
 	if (LibraryExists("adminmenu") && ((topmenu = GetAdminTopMenu()) != INVALID_HANDLE))
 	{
 		OnAdminMenuReady(topmenu);
-	}	
+	}
+	
+	g_OnRecordCacheLoaded = CreateGlobalForward("OnRecordCacheLoaded", ET_Event, Param_Cell);
 }
 
 public OnLibraryAdded(const String:name[])
@@ -791,6 +796,11 @@ CollectCache(track, any:style, Handle:hndl)
 	}
 		
 	g_cacheLoaded[style][track] = true;
+	
+	/* Forwards */
+	Call_StartForward(g_OnRecordCacheLoaded);
+	Call_PushCell(track);
+	Call_Finish();
 
 	CollectBestCache(track, style);
 }
@@ -1593,6 +1603,30 @@ public Native_GetRecordHolderName(Handle:plugin, numParams)
 	{
 		decl String:buffer[nlen];
 		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Name]);
+		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+			return true;
+	}
+	
+	return false;
+}
+
+public Native_GetRecordHolderAuth(Handle:plugin, numParams)
+{
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
+	new rank = GetNativeCell(3);
+	new nlen = GetNativeCell(5); 
+	
+	if(rank > MAX_CACHE)
+		return false;
+	
+	if (nlen <= 0)
+		return false;
+
+	if(rank > 0 && track >= 0)
+	{
+		decl String:buffer[nlen];
+		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Auth]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}

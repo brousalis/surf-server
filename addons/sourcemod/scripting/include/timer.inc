@@ -210,70 +210,70 @@ forward OnTimerResumed(client);
  *
  * @param client The client who finished the round.
  * @param track End zone type (0:normal 1:bonus 2:short)
- * @param mode Style ID
+ * @param style Style ID
  * @param time Float record time
  * @param lasttime Float last record time (0.0 if first record)
  * @param currentrank Old position of player.
  * @param newrank New position of player.
  * @noreturn
  */
-forward OnTimerWorldRecord(client, track, mode, Float:time, Float:lasttime, currentrank, newrank);
+forward OnTimerWorldRecord(client, track, style, Float:time, Float:lasttime, currentrank, newrank);
 
 /**
  * Called when a round finishes as personal record.
  *
  * @param client The client who finished the round.
  * @param track End zone type (0:normal 1:bonus 2:short)
- * @param mode Style ID
+ * @param style Style ID
  * @param time Float record time
  * @param lasttime Float last record time (0.0 if first record)
  * @param currentrank Old position of player.
  * @param newrank New position of player.
  * @noreturn
  */
-forward OnTimerPersonalRecord(client, track, mode, Float:time, Float:lasttime, currentrank, newrank);
+forward OnTimerPersonalRecord(client, track, style, Float:time, Float:lasttime, currentrank, newrank);
 
 /**
  * Called when a round finishes as top 10 record.
  *
  * @param client The client who finished the round.
  * @param track End zone type (0:normal 1:bonus 2:short)
- * @param mode Style ID
+ * @param style Style ID
  * @param time Float record time
  * @param lasttime Float last record time (0.0 if first record)
  * @param currentrank Old position of player.
  * @param newrank New position of player.
  * @noreturn
  */
-forward OnTimerTop10Record(client, track, mode, Float:time, Float:lasttime, currentrank, newrank);
+forward OnTimerTop10Record(client, track, style, Float:time, Float:lasttime, currentrank, newrank);
 
 /**
  * Called when a round finishes first time.
  *
  * @param client The client who finished the round.
  * @param track End zone type (0:normal 1:bonus 2:short)
- * @param mode Style ID
+ * @param style Style ID
  * @param time Float record time
  * @param lasttime Float last record time (0.0 if first record)
  * @param currentrank Old position of player.
  * @param newrank New position of player.
  * @noreturn
  */
-forward OnTimerFirstRecord(client, track, mode, Float:time, Float:lasttime, currentrank, newrank);
+forward OnTimerFirstRecord(client, track, style, Float:time, Float:lasttime, currentrank, newrank);
 
 /**
  * Called when a round finishes.
  *
  * @param client The client who finished the round.
  * @param track End zone type (0:normal 1:bonus 2:short)
- * @param mode Style ID
+ * @param style Style ID
  * @param time Float record time
  * @param lasttime Float last record time (0.0 if first record)
  * @param currentrank Old position of player.
  * @param newrank New position of player.
  * @noreturn
  */
-forward OnTimerRecord(client, track, mode, Float:time, Float:lasttime, currentrank, newrank);
+forward OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentrank, newrank);
 
 /**
  * Reset a timer. (clear all data)
@@ -391,7 +391,7 @@ native Timer_GetStyle(client);
 native Timer_SetStyle(client, style);
 
 /**
- * Returns true if the given mode is configured as ranked.
+ * Returns true if the given style is configured as ranked.
  *
  * @param style The Style Id to check
  * 

@@ -226,6 +226,8 @@ enum Styles
 	bool:StyleAntiBhop,
 	
 	//other
+	bool:StyleReplay,
+	bool:StyleReplayBonus,
 	bool:StyleLJStats,
 	bool:StyleCustom,
 	String:StyleOnFinishExec[128],
@@ -531,6 +533,8 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StylePreventMoveback] = bool:KvGetNum(hKv, "prevent_back", 0);
 			g_Physics[g_StyleCount][StylePreventMoveforward] = bool:KvGetNum(hKv, "prevent_forward", 0);
 			g_Physics[g_StyleCount][StyleForceMoveforward] = bool:KvGetNum(hKv, "force_forward", 0);
+			g_Physics[g_StyleCount][StyleReplay] = bool:KvGetNum(hKv, "replay", 0);
+			g_Physics[g_StyleCount][StyleReplayBonus] = bool:KvGetNum(hKv, "replay_bonus", 0);
 			g_Physics[g_StyleCount][StyleCustom] = bool:KvGetNum(hKv, "custom", 0);
 			g_Physics[g_StyleCount][StyleFPSMax] = KvGetNum(hKv, "fps_max", 0);
 			g_Physics[g_StyleCount][StyleFPSMin] = KvGetNum(hKv, "fps_min", 0);

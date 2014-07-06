@@ -141,6 +141,8 @@ new precache_laser_start;
 
 new g_iClientLastTrackZone[MAXPLAYERS+1]=0;
 
+new Handle:g_OnMapZonesLoaded;
+
 new Handle:g_OnClientStartTouchZoneType;
 new Handle:g_OnClientEndTouchZoneType;
 
@@ -282,6 +284,8 @@ public OnPluginStart()
 	AddNormalSoundHook(Hook_NormalSound);
 	
 	g_ioffsCollisionGroup = FindSendPropOffs("CBaseEntity", "m_CollisionGroup");
+	
+	g_OnMapZonesLoaded = CreateGlobalForward("OnMapZonesLoaded", ET_Event);
 	
 	g_OnClientStartTouchZoneType = CreateGlobalForward("OnClientStartTouchZoneType", ET_Event, Param_Cell,Param_Cell);
 	g_OnClientEndTouchZoneType = CreateGlobalForward("OnClientEndTouchZoneType", ET_Event, Param_Cell,Param_Cell);
@@ -1325,6 +1329,10 @@ public LoadMapZonesCallback(Handle:owner, Handle:hndl, const String:error[], any
 	}
 	
 	g_bZonesLoaded = true;
+	
+	/* Forwards */
+	Call_StartForward(g_OnMapZonesLoaded);
+	Call_Finish();
 }
 
 ConnectSQL()

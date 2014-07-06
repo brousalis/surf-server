@@ -58,6 +58,13 @@ enum MapZoneType
 /* Forwards */
 
 /**
+ * Called when all zones are loaded from the database.
+ *
+ * @noreturn
+ */
+forward OnMapZonesLoaded();
+
+/**
  * Called when a client enters a zone.
  *
  * @param client The client who enters the zone.

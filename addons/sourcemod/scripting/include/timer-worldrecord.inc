@@ -3,6 +3,16 @@
 #endif
 #define _timer_worldrecord_included
 
+/* Forwards */
+
+/**
+ * Called when all records are loaded from the database.
+ * @param track
+ *
+ * @noreturn
+ */
+forward OnRecordCacheLoaded(track);
+
 /* Natives */
 
 /**

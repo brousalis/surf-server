@@ -15,6 +15,7 @@
 #include <timer-strafes>
 #include <timer-worldrecord>
 #include <timer-scripter_db>
+#include <botmimic>
 
 #define MAX_FILE_LEN 128
 
@@ -80,6 +81,8 @@ new Handle:g_timerRecordForward;
 
 new g_iVelocity;
 new GameMod:mod;
+
+new String:g_sReplayPath[MAXPLAYERS+1][128];
 
 public Plugin:myinfo =
 {
@@ -790,23 +793,6 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 		NewPersonalRecord = true;
 	}
 	
-	if(FirstRecord || NewPersonalRecord)
-	{
-		//CPrintToChat(client, "%s{blue} Your record has been saved.", PLUGIN_PREFIX2);
-		
-		//Save record
-		decl String:query[2048];
-		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc);
-			
-		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
-	}
-	else
-	{
-		decl String:query[512];
-		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f) ON DUPLICATE KEY UPDATE name = '%s', finishcount = finishcount + 1;", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, safeName);
-		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
-	}
-	
 	/* Forwards */
 	Call_StartForward(g_timerRecordForward);
 	Call_PushCell(client);
@@ -869,6 +855,40 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 		Call_PushCell(newrank);
 		Call_Finish();
 	}
+	
+	if(FirstRecord || NewPersonalRecord)
+	{
+		//CPrintToChat(client, "%s{blue} Your record has been saved.", PLUGIN_PREFIX2);
+		
+		//Save record
+		decl String:query[2048];
+		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, %s) ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, g_sReplayPath[client], time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc);
+		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
+	}
+	else
+	{
+		decl String:query[2048];
+		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, %s) ON DUPLICATE KEY UPDATE name = '%s', finishcount = finishcount + 1;", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, g_sReplayPath[client], safeName);
+		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
+	}
+}
+
+public BotMimic_OnRecordSaved(client, String:name[], String:category[], String:subdir[], String:file[])
+{
+	Format(g_sReplayPath[client], sizeof(g_sReplayPath[]), "%s", file);
+	
+	decl String:buffer[32];
+	Format(buffer, sizeof(buffer), "/%d_%d/", Timer_GetStyle(client), Timer_GetTrack(client));
+	ReplaceString(g_sReplayPath[client], sizeof(g_sReplayPath[]), buffer, "", true);
+	ReplaceString(g_sReplayPath[client], sizeof(g_sReplayPath[]), "addons/sourcemod/data/botmimic/", "", true);
+	GetClientAuthString(client, buffer, sizeof(buffer), true);
+	ReplaceString(g_sReplayPath[client], sizeof(g_sReplayPath[]), buffer, "", true);
+	ReplaceString(g_sReplayPath[client], sizeof(g_sReplayPath[]), g_currentMap, "", true);
+	ReplaceString(g_sReplayPath[client], sizeof(g_sReplayPath[]), ".rec", "", true);
+	ReplaceString(g_sReplayPath[client], sizeof(g_sReplayPath[]), "/", "", true);
+	
+	if(!String_IsNumeric(g_sReplayPath[client]))
+		Format(g_sReplayPath[client], sizeof(g_sReplayPath[]), "-1");
 }
 
 public UpdateNameCallback(Handle:owner, Handle:hndl, const String:error[], any:param1)
