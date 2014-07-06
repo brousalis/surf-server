@@ -151,7 +151,7 @@ public OnPluginStart()
 		OnAdminMenuReady(topmenu);
 	}
 	
-	g_OnRecordCacheLoaded = CreateGlobalForward("OnRecordCacheLoaded", ET_Event, Param_Cell);
+	g_OnRecordCacheLoaded = CreateGlobalForward("OnRecordCacheLoaded", ET_Event, Param_Cell, Param_Cell);
 }
 
 public OnLibraryAdded(const String:name[])
@@ -799,6 +799,7 @@ CollectCache(track, any:style, Handle:hndl)
 	
 	/* Forwards */
 	Call_StartForward(g_OnRecordCacheLoaded);
+	Call_PushCell(style);
 	Call_PushCell(track);
 	Call_Finish();
 

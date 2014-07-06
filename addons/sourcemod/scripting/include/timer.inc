@@ -426,6 +426,26 @@ native Timer_GetPauseStatus(client);
  */
 native Timer_GetTrack(client);
 
+/**
+ * Returns current replay path name for a client
+ *
+ * @param client
+ * @param name A reference to the file path (256).
+ *
+ * @noreturn
+ */
+native Timer_GetClientActiveReplayPath(client, String:path[]);
+
+/**
+ * Returns current replay file path for a client
+ *
+ * @param client
+ * @param name A reference to the file name (32).
+ *
+ * @noreturn
+ */
+native Timer_GetClientActiveReplayFileName(client, String:file[]);
+
 public SharedPlugin:__pl_timer = 
 {
 	name = "timer",
@@ -456,4 +476,6 @@ public __pl_timer_SetNTVOpt()
 	MarkNativeAsOptional("Timer_GetStyle");
 	MarkNativeAsOptional("Timer_IsStyleRanked");
 	MarkNativeAsOptional("Timer_SetStyle");	
+	MarkNativeAsOptional("Timer_GetClientActiveReplayPath");	
+	MarkNativeAsOptional("Timer_GetClientActiveReplayFileName");	
 }

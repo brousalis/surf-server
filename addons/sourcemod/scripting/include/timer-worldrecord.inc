@@ -7,11 +7,12 @@
 
 /**
  * Called when all records are loaded from the database.
+ * @param style
  * @param track
  *
  * @noreturn
  */
-forward OnRecordCacheLoaded(track);
+forward OnRecordCacheLoaded(style, track);
 
 /* Natives */
 
@@ -97,12 +98,25 @@ native Timer_GetStyleRank(client, track, style);
  * @param style
  * @param track
  * @param rank
- * @param name A reference to the record time.
+ * @param name A reference to the record holder name.
  * @param length Name reference string length (max 32)
  *
  * @return True if success
  */
 native Timer_GetRecordHolderName(style, track, rank, String:name[], length);
+
+/**
+ * Returns a record holder nickname for a given style/track/rank
+ *
+ * @param style
+ * @param track
+ * @param rank
+ * @param name A reference to the record holder SteamID.
+ * @param length SteamID reference string length (max 32)
+ *
+ * @return True if success
+ */
+native Timer_GetRecordHolderAuth(style, track, rank, String:name[], length);
 
 /**
  * Returns a total amount of finishes for given style/track/rank
@@ -156,6 +170,7 @@ public __pl_timer_worldrecord_SetNTVOptional()
 	MarkNativeAsOptional("Timer_GetBestRound");
 	MarkNativeAsOptional("Timer_GetRankID");
 	MarkNativeAsOptional("Timer_GetRecordHolderName");
+	MarkNativeAsOptional("Timer_GetRecordHolderAuth");
 	MarkNativeAsOptional("Timer_GetFinishCount");
 	MarkNativeAsOptional("Timer_GetRecordDate");
 	MarkNativeAsOptional("Timer_GetRecordTimeInfo");
