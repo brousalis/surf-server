@@ -121,7 +121,7 @@ public MenuHandlerTeleMe(Handle:menu, MenuAction:action, client, param2)
 				//Do not reset his pretty timer if it can be paused
 				if (g_Settings[PauseEnable])
 				{
-					FakeClientCommand(client, "sm_pause")
+					FakeClientCommand(client, "sm_pause");
 				}
 				else
 				{
