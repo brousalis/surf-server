@@ -144,7 +144,8 @@ native Timer_GetRecordDate(style, track, rank, String:date[], length);
 native Timer_GetRecordTimeInfo(style, track, rank, &Float:time, String:timestring[], length);
 native Timer_GetRecordSpeedInfo(style, track, rank, &Float:avgspeed, &Float:maxspeed, &Float:finishspeed);
 native Timer_GetRecordStrafeJumpInfo(style, track, rank, &strafes, &Float:strafeacc, &jumps, &Float:jumpacc);
-native Timer_GetReplayPath(style, track, rank, String:replay_path[], length);
+native Timer_GetReplayPath(style, track, rank, String:path[], length);
+native Timer_GetReplayFileName(style, track, rank, String:file[], length);
 native Timer_GetRecordCustom1(style, track, rank, String:custom1[], length);
 native Timer_GetRecordCustom2(style, track, rank, String:custom2[], length);
 native Timer_GetRecordCustom3(style, track, rank, String:custom3[], length);
@@ -177,6 +178,7 @@ public __pl_timer_worldrecord_SetNTVOptional()
 	MarkNativeAsOptional("Timer_GetRecordSpeedInfo");
 	MarkNativeAsOptional("Timer_GetRecordStrafeJumpInfo");
 	MarkNativeAsOptional("Timer_GetReplayPath");
+	MarkNativeAsOptional("Timer_GetReplayFileName");
 	MarkNativeAsOptional("Timer_GetRecordCustom1");
 	MarkNativeAsOptional("Timer_GetRecordCustom2");
 	MarkNativeAsOptional("Timer_GetRecordCustom3");

@@ -1363,7 +1363,7 @@ UpdateHUD_CSS(client)
 			Client_SetDeaths(client, rank);
 		}
 		
-		if(g_Settings[HUDUseClanTag])
+		if(g_Settings[HUDUseClanTag] && !IsFakeClient(client))
 		{
 			decl String:tagbuffer[32];
 			if(g_Settings[HUDUseClanTagTime])
@@ -1955,7 +1955,7 @@ UpdateHUD_CSGO(client)
 			Client_SetDeaths(client, rank);
 		}
 		
-		if(g_Settings[HUDUseClanTag])
+		if(g_Settings[HUDUseClanTag] && !IsFakeClient(client))
 		{
 			decl String:tagbuffer[32];
 			if(g_Settings[HUDUseClanTagTime])

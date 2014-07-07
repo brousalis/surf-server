@@ -33,7 +33,7 @@ enum RecordCache
 	LevelProcess,
 	CurrentRank,
 	FinishCount,
-	String:ReplayPath[32],
+	String:ReplayFile[32],
 	String:Custom1[32],
 	String:Custom2[32],
 	String:Custom3[32],
@@ -104,6 +104,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Timer_GetRecordStrafeJumpInfo", Native_GetRecordStrafeJumpInfo);
 	CreateNative("Timer_GetRecordTimeInfo", Native_GetRecordTimeInfo);
 	CreateNative("Timer_GetReplayPath", Native_GetReplayPath);
+	CreateNative("Timer_GetReplayFileName", Native_GetReplayFileName);
 	CreateNative("Timer_GetRecordCustom1", Native_GetCustom1);
 	CreateNative("Timer_GetRecordCustom2", Native_GetCustom2);
 	CreateNative("Timer_GetRecordCustom3", Native_GetCustom3);
@@ -785,7 +786,7 @@ CollectCache(track, any:style, Handle:hndl)
 		g_cache[style][track][g_cacheCount[style][track]][AvgSpeed] = SQL_FetchFloat(hndl, 13);
 		g_cache[style][track][g_cacheCount[style][track]][Strafes] = SQL_FetchInt(hndl, 14);
 		g_cache[style][track][g_cacheCount[style][track]][StrafeAcc] = SQL_FetchFloat(hndl, 15);
-		SQL_FetchString(hndl, 16, g_cache[style][track][g_cacheCount[style][track]][ReplayPath], 32);
+		SQL_FetchString(hndl, 16, g_cache[style][track][g_cacheCount[style][track]][ReplayFile], 32);
 		SQL_FetchString(hndl, 17, g_cache[style][track][g_cacheCount[style][track]][Custom1], 32);
 		SQL_FetchString(hndl, 18, g_cache[style][track][g_cacheCount[style][track]][Custom2], 32);
 		SQL_FetchString(hndl, 19, g_cache[style][track][g_cacheCount[style][track]][Custom3], 32);
@@ -1741,7 +1742,7 @@ public Native_GetRecordStrafeJumpInfo(Handle:plugin, numParams)
 	return true;
 }
 
-public Native_GetReplayPath(Handle:plugin, numParams)
+public Native_GetReplayFileName(Handle:plugin, numParams)
 {
 	new style = GetNativeCell(1);
 	new track = GetNativeCell(2);
@@ -1757,13 +1758,41 @@ public Native_GetReplayPath(Handle:plugin, numParams)
 	if(rank > 0 && track >= 0)
 	{
 		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][ReplayPath]);
+		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][ReplayFile]);
 		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
 			return true;
 	}
 	
 	return false;
 }
+
+public Native_GetReplayPath(Handle:plugin, numParams)
+{
+	new style = GetNativeCell(1);
+	new track = GetNativeCell(2);
+	new rank = GetNativeCell(3);
+	new nlen = GetNativeCell(5); 
+	
+	if(rank > MAX_CACHE)
+		return false;
+	
+	if (nlen <= 0)
+		return false;
+
+	if(rank > 0 && track >= 0)
+	{
+		decl String:path[256];
+		Format(path, sizeof(path), "addons/sourcemod/data/botmimic/%d_%d/%s/%s/%s.rec", style, track, g_currentMap, g_cache[style][track][rank-1][Auth], g_cache[style][track][rank-1][ReplayFile]);
+		
+		decl String:buffer[nlen];
+		FormatEx(buffer, nlen, "%s", path);
+		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+			return true;
+	}
+	
+	return false;
+}
+
 
 public Native_GetCustom1(Handle:plugin, numParams)
 {
