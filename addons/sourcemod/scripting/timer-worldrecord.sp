@@ -1781,6 +1781,9 @@ public Native_GetReplayPath(Handle:plugin, numParams)
 
 	if(rank > 0 && track >= 0)
 	{
+		if(g_cache[style][track][rank-1][Time] == 0.0)
+			return false;
+		
 		decl String:path[256];
 		Format(path, sizeof(path), "addons/sourcemod/data/botmimic/%d_%d/%s/%s/%s.rec", style, track, g_currentMap, g_cache[style][track][rank-1][Auth], g_cache[style][track][rank-1][ReplayFile]);
 		

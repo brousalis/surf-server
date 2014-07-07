@@ -860,13 +860,26 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 		Call_Finish();
 	}
 	
+	if(NewWorldRecord)
+	{
+		//Delete old replay file
+		decl String:path[256];
+		Timer_GetReplayPath(style, track, 1, path, sizeof(path));
+		BotMimic_DeleteRecord(path);
+	}
+	else
+	{
+		//Delete current replay file
+		decl String:path[256];
+		Timer_GetClientActiveReplayPath(client, path);
+		BotMimic_DeleteRecord(path);
+	}
+	
 	if(FirstRecord || NewPersonalRecord)
 	{
-		//CPrintToChat(client, "%s{blue} Your record has been saved.", PLUGIN_PREFIX2);
-		
 		//Save record
 		decl String:query[2048];
-		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, '%s') ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, g_timers[client][ReplayFile], time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc);
+		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, '%s') ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', replaypath = '%s', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, g_timers[client][ReplayFile], time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, g_timers[client][ReplayFile]);
 		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
 	}
 	else
