@@ -885,7 +885,7 @@ public BotMimic_OnRecordSaved(client, String:name[], String:category[], String:s
 	//Clear the path to get the filename only
 	Format(buffer, sizeof(buffer), "/%d_%d/", Timer_GetStyle(client), Timer_GetTrack(client));
 	ReplaceString(filename, sizeof(filename), buffer, "", true);
-	ReplaceString(filename, sizeof(filename), "addons/sourcemod/data/botmimic/", "", true);
+	ReplaceString(filename, sizeof(filename), "addons/sourcemod/data/botmimic", "", true);
 	GetClientAuthString(client, buffer, sizeof(buffer), true);
 	ReplaceString(filename, sizeof(filename), buffer, "", true);
 	ReplaceString(filename, sizeof(filename), g_currentMap, "", true);
