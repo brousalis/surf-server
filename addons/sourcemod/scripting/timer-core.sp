@@ -1315,7 +1315,7 @@ public CreditsPanel3(client)
 	DrawPanelText(panel, "Smesh292 - No Jail and small fixes/changes");
 	DrawPanelText(panel, "Dark Session - Code optimization");
 	DrawPanelText(panel, "Mev - Autostrafe");
-	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "1NutWunDeR - Mapchange enforcer");
 	DrawPanelText(panel, " ");
 	DrawPanelItem(panel, "- Back -");
 	DrawPanelItem(panel, "- Next -");
