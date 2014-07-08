@@ -18,6 +18,9 @@
 #include <timer-maptier>
 #include <timer-teams>
 
+#define WHITE 0x01
+#define LIGHTRED 0x0F
+
 new bool:g_timerPhysics = false;
 new bool:g_timerTeams = false;
 new bool:g_timerMapTier = false;
@@ -148,6 +151,8 @@ new Handle:g_OnClientEndTouchZoneType;
 
 new Handle:g_OnClientStartTouchLevel;
 new Handle:g_OnClientStartTouchBonusLevel;
+
+new bool:g_bAllowRoundEnd = false;
 
 public Plugin:myinfo =
 {
@@ -292,6 +297,9 @@ public OnPluginStart()
 	
 	g_OnClientStartTouchLevel = CreateGlobalForward("OnClientStartTouchLevel", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	g_OnClientStartTouchBonusLevel = CreateGlobalForward("OnClientStartTouchBonusLevel", ET_Event, Param_Cell, Param_Cell, Param_Cell);
+	
+	//Check timeleft to enforce mapchange
+	CreateTimer(1.0, CheckRemainingTime, INVALID_HANDLE, TIMER_REPEAT);
 }
 
 public OnLibraryAdded(const String:name[])
@@ -338,6 +346,37 @@ public OnLibraryRemoved(const String:name[])
 	}
 }
 
+public OnMapStart()
+{
+	LoadPhysics();
+	LoadTimerSettings();
+	
+	InitZoneSprites();
+	
+	if(g_Settings[TerminateRoundEnd]) ServerCommand("mp_ignore_round_win_conditions 1");
+	else ServerCommand("mp_ignore_round_win_conditions 0");
+	
+	g_bZonesLoaded = false;
+	adminmode = 0;
+	
+	GetCurrentMap(g_currentMap, sizeof(g_currentMap));
+	ConnectSQL();
+	
+	CreateTimer(1.0, DrawZones, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(4.0, CheckEntitysLoaded, _, TIMER_FLAG_NO_MAPCHANGE);
+	
+	for (new i = 1; i < MAXPLAYERS; i++)
+	{
+		g_iClientLastTrackZone[i] = 0;
+	}
+	
+	PrecacheModel("models/props_junk/wood_crate001a.mdl", true);
+	
+	if(GetEngineVersion() == Engine_CSGO)
+		ServerCommand("mp_endmatch_votenextmap 0;mp_endmatch_votenextleveltime 5;mp_maxrounds 1;mp_match_end_changelevel 1;mp_match_can_clinch 0;mp_halftime 0;mp_match_restart_delay 10");
+}
+
+//Saving current position of players to check for teleport cheating
 public OnGameFrame()
 {
 	for (new client = 1; client <= MaxClients; client++)
@@ -731,10 +770,6 @@ public Action:StartTouchTrigger(caller, activator)
 			SetBlock(client);
 		else SetNoBlock(client);
 	}
-	else if (g_mapZones[zone][Type] == ZtPlayerClip)
-	{
-		CheckVelocity(client, 0, 10000.0);
-	}
 	else if (g_mapZones[zone][Type] == ZtLongjump)
 	{
 		if(g_timerLjStats) SetLJMode(client, true);
@@ -990,33 +1025,6 @@ public PrepareSound(String: sound[MAX_FILE_LEN])
 	}
 }
 
-public OnMapStart()
-{
-	LoadPhysics();
-	LoadTimerSettings();
-	
-	InitZoneSprites();
-	
-	if(g_Settings[TerminateRoundEnd]) ServerCommand("mp_ignore_round_win_conditions 1");
-	else ServerCommand("mp_ignore_round_win_conditions 0");
-	
-	g_bZonesLoaded = false;
-	adminmode = 0;
-	
-	GetCurrentMap(g_currentMap, sizeof(g_currentMap));
-	ConnectSQL();
-	
-	CreateTimer(1.0, DrawZones, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-	CreateTimer(4.0, CheckEntitysLoaded, _, TIMER_FLAG_NO_MAPCHANGE);
-	
-	for (new i = 1; i < MAXPLAYERS; i++)
-	{
-		g_iClientLastTrackZone[i] = 0;
-	}
-	
-	PrecacheModel("models/props_junk/wood_crate001a.mdl", true);
-}
-
 InitZoneSprites()
 {
 	new String:spritebuffer[256];
@@ -1112,8 +1120,80 @@ public OnClientDisconnect_Post(client)
 	Timer_Stop(client, false);
 }
 
+//Credits to 1NutWunDeR
+public Action:CheckRemainingTime(Handle:timer)
+{
+	new Handle:hTmp;	
+	hTmp = FindConVar("mp_timelimit");
+	new iTimeLimit = GetConVarInt(hTmp);			
+	if (hTmp != INVALID_HANDLE)
+		CloseHandle(hTmp);	
+	if (iTimeLimit > 0)
+	{
+		new timeleft;
+		GetMapTimeLeft(timeleft);
+		
+		if(GetEngineVersion() == Engine_CSGO)
+		{
+			switch(timeleft)
+			{
+				case 1800: PrintToChatAll("[%cMAP%c] 30 minutes remaining",LIGHTRED,WHITE);
+				case 1200: PrintToChatAll("[%cMAP%c] 20 minutes remaining",LIGHTRED,WHITE);
+				case 600: PrintToChatAll("[%cMAP%c] 10 minutes remaining",LIGHTRED,WHITE);
+				case 300: PrintToChatAll("[%cMAP%c] 5 minutes remaining",LIGHTRED,WHITE);
+				case 120: PrintToChatAll("[%cMAP%c] 2 minutes remaining",LIGHTRED,WHITE);
+				case 60: PrintToChatAll("[%cMAP%c] 60 seconds remaining",LIGHTRED,WHITE); 
+				case 30: PrintToChatAll("[%cMAP%c] 30 seconds remaining",LIGHTRED,WHITE);
+				case 15: PrintToChatAll("[%cMAP%c] 15 seconds remaining",LIGHTRED,WHITE);			
+				case -1: PrintToChatAll("[%cMAP%c] 3..",LIGHTRED,WHITE);
+				case -2: PrintToChatAll("[%cMAP%c] 2..",LIGHTRED,WHITE);
+				case -3:
+				{
+					PrintToChatAll("[%cMAP%c] 1..",LIGHTRED,WHITE);
+					CreateTimer(1.0, TerminateRoundTimer, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);				
+				}
+			}
+		}
+		else
+		{
+			switch(timeleft)
+			{
+				case 1800: CPrintToChatAll("[MAP] 30 minutes remaining");
+				case 1200: CPrintToChatAll("[MAP] 20 minutes remaining");
+				case 600: CPrintToChatAll("[MAP] 10 minutes remaining");
+				case 300: CPrintToChatAll("[MAP] 5 minutes remaining");
+				case 120: CPrintToChatAll("[MAP] 2 minutes remaining");
+				case 60: CPrintToChatAll("[MAP] 60 seconds remaining");
+				case 30: CPrintToChatAll("[MAP] 30 seconds remaining");
+				case 15: CPrintToChatAll("[MAP] 15 seconds remaining");
+				case -1: CPrintToChatAll("[MAP] 3..");
+				case -2: CPrintToChatAll("[MAP] 2..");
+				case -3:
+				{
+					PrintToChatAll("[MAP] 1..");
+					CreateTimer(1.0, TerminateRoundTimer, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);				
+				}
+			}
+		}
+	}
+}
+
+public Action:TerminateRoundTimer(Handle:timer)
+{
+	if(g_Settings[TerminateRoundEnd]) ServerCommand("mp_ignore_round_win_conditions 0");
+	g_bAllowRoundEnd = true;
+	
+	CS_TerminateRound(1.0, CSRoundEnd_CTWin, true);
+}
+
 public Action:CS_OnTerminateRound(&Float:delay, &CSRoundEndReason:reason)
 {
+	if(g_bAllowRoundEnd)
+	{
+		g_bAllowRoundEnd = false;
+		return Plugin_Continue;
+	}
+	
 	if(g_Settings[TerminateRoundEnd])
 		return Plugin_Handled;
 	else
@@ -2407,8 +2487,6 @@ bool:IsPlayerTouchingSpeedZone(client)
 		return true;
 	if(Timer_IsPlayerTouchingZoneType(client, ZtFullBooster))
 		return true;
-	if(Timer_IsPlayerTouchingZoneType(client, ZtPlayerClip))
-		return true;
 	if(Timer_IsPlayerTouchingZoneType(client, ZtBounceBack))
 		return true;
 	if(Timer_IsPlayerTouchingZoneType(client, ZtPushUp))
@@ -2458,10 +2536,6 @@ ChangePlayerVelocity(client)
 	if (Timer_IsPlayerTouchingZoneType(client, ZtFullBooster))
 	{
 		CheckVelocity(client, 4, maxspeed);
-	}
-	else if (Timer_IsPlayerTouchingZoneType(client, ZtPlayerClip))
-	{
-		CheckVelocity(client, 0, 10000.0);
 	}
 	else if (Timer_IsPlayerTouchingZoneType(client, ZtBounceBack))
 	{
@@ -2945,277 +3019,312 @@ SpawnZoneEntitys(zone)
 {
 	if(g_mapZones[zone][Point1][0] != 0.0 || g_mapZones[zone][Point1][1]  != 0.0 || g_mapZones[zone][Point1][2] != 0.0 )
 	{
-		new entity = CreateEntityByName("trigger_multiple");
-		if (entity > 0)
-		{
-			if(!IsValidEntity(entity)) {
-				PrintToServer("DEBUG ----> Invalid entity index %i", entity);
-				return;
-			}
-			
-			g_MapZoneEntityZID[entity] = zone;
-			
-			SetEntityModel(entity, "models/props_junk/wood_crate001a.mdl"); 
-			
-			new Float:origin[3];
-			origin[0] = (g_mapZones[zone][Point1][0] + g_mapZones[zone][Point2][0]) / 2.0;
-			origin[1] = (g_mapZones[zone][Point1][1] + g_mapZones[zone][Point2][1]) / 2.0;
-			origin[2] = g_mapZones[zone][Point1][2] / 1.0;
-			
-			new Float:minbounds[3]; 
-			new Float:maxbounds[3]; 
-			
-			minbounds[0] = FloatAbs(g_mapZones[zone][Point1][0]-g_mapZones[zone][Point2][0]) / -2.0;
-			minbounds[1] = FloatAbs(g_mapZones[zone][Point1][1]-g_mapZones[zone][Point2][1]) / -2.0;
-			minbounds[2] = -1.0;
-			
-			maxbounds[0] = FloatAbs(g_mapZones[zone][Point1][0]-g_mapZones[zone][Point2][0]) / 2.0;
-			maxbounds[1] = FloatAbs(g_mapZones[zone][Point1][1]-g_mapZones[zone][Point2][1]) / 2.0;
-			maxbounds[2] = FloatAbs(g_mapZones[zone][Point1][2]-g_mapZones[zone][Point2][2]) / 1.0;
-			
-			//Resize trigger
-			minbounds[0] += g_Settings[ZoneResize];
-			minbounds[1] += g_Settings[ZoneResize];
-			minbounds[2] += g_Settings[ZoneResize];
-			
-			maxbounds[0] -= g_Settings[ZoneResize];
-			maxbounds[1] -= g_Settings[ZoneResize];
-			maxbounds[2] -= g_Settings[ZoneResize];
-			
-			if(IsValidEntity(entity))
-			{ 
-				
-				// Spawnflags:	1 - only a player can trigger this by touch, makes it so a NPC cannot fire a trigger_multiple
-				// 2 - Won't fire unless triggering ent's view angles are within 45 degrees of trigger's angles (in addition to any other conditions), so if you want the player to only be able to fire the entity at a 90 degree angle you would do ",angles,0 90 0," into your spawnstring.
-				// 4 - Won't fire unless player is in it and pressing use button (in addition to any other conditions), you must make a bounding box,(max\mins) for this to work.
-				// 8 - Won't fire unless player/NPC is in it and pressing fire button, you must make a bounding box,(max\mins) for this to work.
-				// 16 - only non-player NPCs can trigger this by touch
-				// 128 - Start off, has to be activated by a target_activate to be touchable/usable
-				// 256 - multiple players can trigger the entity at the same time
-				DispatchKeyValue(entity, "spawnflags", "257"); 
-				DispatchKeyValue(entity, "StartDisabled", "0");
-				DispatchKeyValue(entity, "OnTrigger", "!activator,IgnitePlayer,,0,-1");
-				
-				new String:EntName[256];
-				FormatEx(EntName, sizeof(EntName), "#DHC_Trigger_%d", g_mapZones[zone][Id]);
-				DispatchKeyValue(entity, "targetname", EntName);
-				
-				if(g_mapZones[zone][Type] == ZtBlock) DispatchKeyValue(entity, "Solid", "6"); 
-				
-				if(DispatchSpawn(entity))
-				{
-					ActivateEntity(entity);
-					
-					SetEntPropVector(entity, Prop_Send, "m_vecMins", minbounds);
-					SetEntPropVector(entity, Prop_Send, "m_vecMaxs", maxbounds);
-					
-					if(g_mapZones[zone][Type] != ZtBlock) SetEntProp(entity, Prop_Send, "m_nSolidType", 2);
-					
-					TeleportEntity(entity, origin, NULL_VECTOR, NULL_VECTOR);
-					
-					// SetVariantString(Buffer);
-					AcceptEntityInput(entity, "SetParent");
-					
-					new iEffects = GetEntProp(entity, Prop_Send, "m_fEffects");
-					iEffects |= 0x020;
-					SetEntProp(entity, Prop_Send, "m_fEffects", iEffects);
-					
-					SDKHook(entity, SDKHook_StartTouch,  StartTouchTrigger);
-					SDKHook(entity, SDKHook_EndTouch, EndTouchTrigger);
-					SDKHook(entity, SDKHook_Touch, OnTouchTrigger);
-					
-				}
-				else 
-				{
-					PrintToServer("Not able to dispatchspawn for Entity %i in SpawnTrigger", entity);
-					PrintToChatAll("Not able to dispatchspawn for Entity %i in SpawnTrigger", entity);
-				}
-				
-			} 
-			else 
-			{
-				PrintToServer("Entity %i did not pass the validation check in SpawnTrigger", entity);
-				PrintToChatAll("Entity %i did not pass the validation check in SpawnTrigger", entity);
-			}
-		}
+		// No valid zone
+		return;
 	}
 	
+	//Spawn debug entitys ine each corner
+	if(adminmode == 1)
+	{
+		SpawnZoneDebugEntitys(zone);
+	}
+	
+	//Spawn NPCs
 	if(g_mapZones[zone][Type] == ZtNPC_Next || g_mapZones[zone][Type] == ZtNPC_Next_Double)
 	{
-		new Float:vecNPC[3];
-		vecNPC[0] = g_mapZones[zone][Point1][0];
-		vecNPC[1] = g_mapZones[zone][Point1][1];
-		vecNPC[2] = g_mapZones[zone][Point1][2];
-		
-		new Float:vecDestination[3];
-		vecDestination[0] = g_mapZones[zone][Point2][0];
-		vecDestination[1] = g_mapZones[zone][Point2][1];
-		vecDestination[2] = g_mapZones[zone][Point2][2];
-		
-		new String:ModePath[256];
-		if(g_mapZones[zone][Type] == ZtNPC_Next)
-		{
-			PrecacheModel(g_Settings[NPC_Path], true);
-			FormatEx(ModePath, sizeof(ModePath), "%s", g_Settings[NPC_Path]);
-		}
-		else if(g_mapZones[zone][Type] == ZtNPC_Next_Double)
-		{
-			PrecacheModel(g_Settings[NPC_Double_Path], true);
-			FormatEx(ModePath, sizeof(ModePath), "%s", g_Settings[NPC_Double_Path]);
-		}
-		
-		decl String:EntName[256];
-		FormatEx(EntName, sizeof(EntName), "#DHC_NPC_%d", g_mapZones[zone][Id]);
-		
-		new String:Classname[] = "prop_physics_override";
-		
-		new entity1 = CreateEntityByName(Classname);
-		SetEntityModel(entity1, ModePath);
-		
-		DispatchKeyValue(entity1, "targetname", EntName);
-		
-		DispatchSpawn(entity1);
-		AcceptEntityInput(entity1, "DisableMotion");
-		AcceptEntityInput(entity1, "DisableShadow");
-		TeleportEntity(entity1, vecNPC, NULL_VECTOR, NULL_VECTOR);
-		
-		g_mapZones[zone][NPC] = entity1;
-		
-		SDKHook(entity1, SDKHook_StartTouch, NPC_Use);
+		SpawnNPC(zone);
 	}
-	else if(adminmode == 1)
+	//Spawn NPCs
+	else if(g_mapZones[zone][Type] == ZtPlayerClip)
 	{
-		new Float:fFrom[3];
-		fFrom[0] = g_mapZones[zone][Point2][0];
-		fFrom[1] = g_mapZones[zone][Point2][1];
-		fFrom[2] = g_mapZones[zone][Point2][2];
-		
-		new Float:fTo[3];
-		fTo[0] = g_mapZones[zone][Point1][0];
-		fTo[1] = g_mapZones[zone][Point1][1];
-		fTo[2] = g_mapZones[zone][Point1][2];
-		
-		//initialize tempoary variables bottom front
-		decl Float:fLeftBottomFront[3];
-		fLeftBottomFront[0] = fFrom[0];
-		fLeftBottomFront[1] = fFrom[1];
-		fLeftBottomFront[2] = fTo[2]+20;
-		
-		decl Float:fRightBottomFront[3];
-		fRightBottomFront[0] = fTo[0];
-		fRightBottomFront[1] = fFrom[1];
-		fRightBottomFront[2] = fTo[2]+20;
-		
-		//initialize tempoary variables bottom back
-		decl Float:fLeftBottomBack[3];
-		fLeftBottomBack[0] = fFrom[0];
-		fLeftBottomBack[1] = fTo[1];
-		fLeftBottomBack[2] = fTo[2]+20;
-		
-		decl Float:fRightBottomBack[3];
-		fRightBottomBack[0] = fTo[0];
-		fRightBottomBack[1] = fTo[1];
-		fRightBottomBack[2] = fTo[2]+20;
-		
-		PrecacheModel("models/props_junk/trafficcone001a.mdl", true);
-		
-		decl String:EntName[256];
-		FormatEx(EntName, sizeof(EntName), "#DHC_Zone_%d", g_mapZones[zone][Id]);
-		
-		new String:ModePath[] = "models/props_junk/trafficcone001a.mdl";
-		new String:Classname[] = "prop_physics_override";
-		
-		new entity1 = CreateEntityByName(Classname);
-		SetEntityModel(entity1, ModePath);
-		SetEntProp(entity1, Prop_Data, "m_CollisionGroup", 1);
-		SetEntProp(entity1, Prop_Send, "m_usSolidFlags", 12);
-		SetEntProp(entity1, Prop_Send, "m_nSolidType", 6);
-		SetEntityMoveType(entity1, MOVETYPE_NONE);		
-		DispatchKeyValue(entity1, "targetname", EntName);
-		DispatchSpawn(entity1);
-		AcceptEntityInput(entity1, "DisableMotion");
-		AcceptEntityInput(entity1, "DisableShadow");
-		TeleportEntity(entity1, fRightBottomBack, NULL_VECTOR, NULL_VECTOR);
-		
-		new entity2 = CreateEntityByName(Classname);
-		SetEntityModel(entity2, ModePath);
-		SetEntProp(entity2, Prop_Data, "m_CollisionGroup", 1);
-		SetEntProp(entity2, Prop_Send, "m_usSolidFlags", 12);
-		SetEntProp(entity2, Prop_Send, "m_nSolidType", 6);
-		SetEntityMoveType(entity2, MOVETYPE_NONE);
-		DispatchKeyValue(entity2, "targetname", EntName);
-		DispatchSpawn(entity2);
-		AcceptEntityInput(entity2, "DisableMotion");
-		AcceptEntityInput(entity2, "DisableShadow");
-		TeleportEntity(entity2, fRightBottomFront, NULL_VECTOR, NULL_VECTOR);
-		
-		new entity3 = CreateEntityByName(Classname);
-		SetEntityModel(entity3, ModePath);
-		SetEntProp(entity3, Prop_Data, "m_CollisionGroup", 1);
-		SetEntProp(entity3, Prop_Send, "m_usSolidFlags", 12);
-		SetEntProp(entity3, Prop_Send, "m_nSolidType", 6);
-		SetEntityMoveType(entity3, MOVETYPE_NONE);
-		DispatchKeyValue(entity3, "targetname", EntName);
-		DispatchSpawn(entity3);
-		AcceptEntityInput(entity3, "DisableMotion");
-		AcceptEntityInput(entity3, "DisableShadow");
-		TeleportEntity(entity3, fLeftBottomFront, NULL_VECTOR, NULL_VECTOR);
-		
-		new entity4 = CreateEntityByName(Classname);
-		SetEntityModel(entity4, ModePath);
-		SetEntProp(entity4, Prop_Data, "m_CollisionGroup", 1);
-		SetEntProp(entity4, Prop_Data, "m_CollisionGroup", 2, 4);
-		SetEntProp(entity4, Prop_Send, "m_usSolidFlags", 12);
-		SetEntProp(entity4, Prop_Send, "m_nSolidType", 6);
-		SetEntityMoveType(entity4, MOVETYPE_NONE);
-		DispatchKeyValue(entity4, "targetname", EntName);
-		DispatchSpawn(entity4);
-		AcceptEntityInput(entity4, "DisableMotion");
-		AcceptEntityInput(entity4, "DisableShadow");
-		TeleportEntity(entity4, fLeftBottomBack, NULL_VECTOR, NULL_VECTOR);
-		
-		if(g_mapZones[zone][Type] == ZtLevel || g_mapZones[zone][Type] == ZtStart || g_mapZones[zone][Type] == ZtEnd)
-		{
-			SetEntityRenderColor(entity1, 0, 255, 0, 200);
-			SetEntityRenderColor(entity2, 0, 255, 0, 200);
-			SetEntityRenderColor(entity3, 0, 255, 0, 200);
-			SetEntityRenderColor(entity4, 0, 255, 0, 200);
+		//SpawnPlayerClip(zone);
+	}
+	//Spawn trigger_multiple
+	else
+	{
+		SpawnZoneTrigger(zone);
+	}
+}
+
+SpawnZoneTrigger(zone)
+{
+	//Center
+	new Float:origin[3];
+	origin[0] = (g_mapZones[zone][Point1][0] + g_mapZones[zone][Point2][0]) / 2.0;
+	origin[1] = (g_mapZones[zone][Point1][1] + g_mapZones[zone][Point2][1]) / 2.0;
+	origin[2] = g_mapZones[zone][Point1][2] / 1.0;
+	
+	//Min & max bounds
+	new Float:minbounds[3]; 
+	new Float:maxbounds[3]; 
+	
+	minbounds[0] = FloatAbs(g_mapZones[zone][Point1][0]-g_mapZones[zone][Point2][0]) / -2.0;
+	minbounds[1] = FloatAbs(g_mapZones[zone][Point1][1]-g_mapZones[zone][Point2][1]) / -2.0;
+	minbounds[2] = -1.0;
+	
+	maxbounds[0] = FloatAbs(g_mapZones[zone][Point1][0]-g_mapZones[zone][Point2][0]) / 2.0;
+	maxbounds[1] = FloatAbs(g_mapZones[zone][Point1][1]-g_mapZones[zone][Point2][1]) / 2.0;
+	maxbounds[2] = FloatAbs(g_mapZones[zone][Point1][2]-g_mapZones[zone][Point2][2]) / 1.0;
+	
+	//Resize trigger (default 16.0)
+	minbounds[0] += g_Settings[ZoneResize];
+	minbounds[1] += g_Settings[ZoneResize];
+	minbounds[2] += g_Settings[ZoneResize];
+	
+	maxbounds[0] -= g_Settings[ZoneResize];
+	maxbounds[1] -= g_Settings[ZoneResize];
+	maxbounds[2] -= g_Settings[ZoneResize];
+	
+	//Spawn trigger
+	new entity = CreateEntityByName("trigger_multiple");
+	if (entity > 0)
+	{
+		if(!IsValidEntity(entity)) {
+			PrintToServer("DEBUG ----> Invalid entity index %i", entity);
+			return;
 		}
-		else if(g_mapZones[zone][Type] == ZtBonusLevel || g_mapZones[zone][Type] == ZtBonusStart || g_mapZones[zone][Type] == ZtBonusEnd)
+			
+		g_MapZoneEntityZID[entity] = zone;
+		
+		SetEntityModel(entity, "models/props_junk/wood_crate001a.mdl"); 
+		
+		if(IsValidEntity(entity))
+		{ 
+			
+			// Spawnflags:	1 - only a player can trigger this by touch, makes it so a NPC cannot fire a trigger_multiple
+			// 2 - Won't fire unless triggering ent's view angles are within 45 degrees of trigger's angles (in addition to any other conditions), so if you want the player to only be able to fire the entity at a 90 degree angle you would do ",angles,0 90 0," into your spawnstring.
+			// 4 - Won't fire unless player is in it and pressing use button (in addition to any other conditions), you must make a bounding box,(max\mins) for this to work.
+			// 8 - Won't fire unless player/NPC is in it and pressing fire button, you must make a bounding box,(max\mins) for this to work.
+			// 16 - only non-player NPCs can trigger this by touch
+			// 128 - Start off, has to be activated by a target_activate to be touchable/usable
+			// 256 - multiple players can trigger the entity at the same time
+			DispatchKeyValue(entity, "spawnflags", "257"); 
+			DispatchKeyValue(entity, "StartDisabled", "0");
+			DispatchKeyValue(entity, "OnTrigger", "!activator,IgnitePlayer,,0,-1");
+			
+			new String:EntName[256];
+			FormatEx(EntName, sizeof(EntName), "#DHC_Trigger_%d", g_mapZones[zone][Id]);
+			DispatchKeyValue(entity, "targetname", EntName);
+			
+			if(g_mapZones[zone][Type] == ZtBlock) DispatchKeyValue(entity, "Solid", "6"); 
+			
+			if(DispatchSpawn(entity))
+			{
+				ActivateEntity(entity);
+				
+				SetEntPropVector(entity, Prop_Send, "m_vecMins", minbounds);
+				SetEntPropVector(entity, Prop_Send, "m_vecMaxs", maxbounds);
+				
+				if(g_mapZones[zone][Type] != ZtBlock) SetEntProp(entity, Prop_Send, "m_nSolidType", 2);
+				
+				TeleportEntity(entity, origin, NULL_VECTOR, NULL_VECTOR);
+				
+				// SetVariantString(Buffer);
+				AcceptEntityInput(entity, "SetParent");
+				
+				new iEffects = GetEntProp(entity, Prop_Send, "m_fEffects");
+				iEffects |= 0x020;
+				SetEntProp(entity, Prop_Send, "m_fEffects", iEffects);
+				
+				SDKHook(entity, SDKHook_StartTouch,  StartTouchTrigger);
+				SDKHook(entity, SDKHook_EndTouch, EndTouchTrigger);
+				SDKHook(entity, SDKHook_Touch, OnTouchTrigger);
+				
+			}
+			else 
+			{
+				PrintToServer("Not able to dispatchspawn for Entity %i in SpawnTrigger", entity);
+				PrintToChatAll("Not able to dispatchspawn for Entity %i in SpawnTrigger", entity);
+			}
+			
+		} 
+		else 
 		{
-			SetEntityRenderColor(entity1, 0, 0, 255, 200);
-			SetEntityRenderColor(entity2, 0, 0, 255, 200);
-			SetEntityRenderColor(entity3, 0, 0, 255, 200);
-			SetEntityRenderColor(entity4, 0, 0, 255, 200);
+			PrintToServer("Entity %i did not pass the validation check in SpawnTrigger", entity);
+			PrintToChatAll("Entity %i did not pass the validation check in SpawnTrigger", entity);
 		}
-		else if(g_mapZones[zone][Type] == ZtStop)
-		{
-			SetEntityRenderColor(entity1, 138, 0, 180, 200);
-			SetEntityRenderColor(entity2, 138, 0, 180, 200);
-			SetEntityRenderColor(entity3, 138, 0, 180, 200);
-			SetEntityRenderColor(entity4, 138, 0, 180, 200);
-		}
-		else if(g_mapZones[zone][Type] == ZtRestart)
-		{
-			SetEntityRenderColor(entity1, 255, 0, 0, 200);
-			SetEntityRenderColor(entity2, 255, 0, 0, 200);
-			SetEntityRenderColor(entity3, 255, 0, 0, 200);
-			SetEntityRenderColor(entity4, 255, 0, 0, 200);
-		}
-		else if(g_mapZones[zone][Type] == ZtLast)
-		{
-			SetEntityRenderColor(entity1, 255, 255, 0, 200);
-			SetEntityRenderColor(entity2, 255, 255, 0, 200);
-			SetEntityRenderColor(entity3, 255, 255, 0, 200);
-			SetEntityRenderColor(entity4, 255, 255, 0, 200);
-		}
-		else if(g_mapZones[zone][Type] == ZtNext)
-		{
-			SetEntityRenderColor(entity1, 0, 255, 255, 200);
-			SetEntityRenderColor(entity2, 0, 255, 255, 200);
-			SetEntityRenderColor(entity3, 0, 255, 255, 200);
-			SetEntityRenderColor(entity4, 0, 255, 255, 200);
-		}
+	}
+}
+
+SpawnNPC(zone)
+{
+	new Float:vecNPC[3];
+	vecNPC[0] = g_mapZones[zone][Point1][0];
+	vecNPC[1] = g_mapZones[zone][Point1][1];
+	vecNPC[2] = g_mapZones[zone][Point1][2];
+	
+	new Float:vecDestination[3];
+	vecDestination[0] = g_mapZones[zone][Point2][0];
+	vecDestination[1] = g_mapZones[zone][Point2][1];
+	vecDestination[2] = g_mapZones[zone][Point2][2];
+	
+	new String:ModePath[256];
+	if(g_mapZones[zone][Type] == ZtNPC_Next)
+	{
+		PrecacheModel(g_Settings[NPC_Path], true);
+		FormatEx(ModePath, sizeof(ModePath), "%s", g_Settings[NPC_Path]);
+	}
+	else if(g_mapZones[zone][Type] == ZtNPC_Next_Double)
+	{
+		PrecacheModel(g_Settings[NPC_Double_Path], true);
+		FormatEx(ModePath, sizeof(ModePath), "%s", g_Settings[NPC_Double_Path]);
+	}
+	
+	decl String:EntName[256];
+	FormatEx(EntName, sizeof(EntName), "#DHC_NPC_%d", g_mapZones[zone][Id]);
+	
+	new String:Classname[] = "prop_physics_override";
+	
+	new entity1 = CreateEntityByName(Classname);
+	SetEntityModel(entity1, ModePath);
+	
+	DispatchKeyValue(entity1, "targetname", EntName);
+	
+	DispatchSpawn(entity1);
+	AcceptEntityInput(entity1, "DisableMotion");
+	AcceptEntityInput(entity1, "DisableShadow");
+	TeleportEntity(entity1, vecNPC, NULL_VECTOR, NULL_VECTOR);
+	
+	g_mapZones[zone][NPC] = entity1;
+	
+	SDKHook(entity1, SDKHook_StartTouch, NPC_Use);
+}
+
+SpawnZoneDebugEntitys(zone)
+{
+	if(g_mapZones[zone][Type] == ZtNPC_Next || g_mapZones[zone][Type] == ZtNPC_Next_Double)
+		return;
+	
+	new Float:fFrom[3];
+	fFrom[0] = g_mapZones[zone][Point2][0];
+	fFrom[1] = g_mapZones[zone][Point2][1];
+	fFrom[2] = g_mapZones[zone][Point2][2];
+	
+	new Float:fTo[3];
+	fTo[0] = g_mapZones[zone][Point1][0];
+	fTo[1] = g_mapZones[zone][Point1][1];
+	fTo[2] = g_mapZones[zone][Point1][2];
+	
+	//initialize tempoary variables bottom front
+	decl Float:fLeftBottomFront[3];
+	fLeftBottomFront[0] = fFrom[0];
+	fLeftBottomFront[1] = fFrom[1];
+	fLeftBottomFront[2] = fTo[2]+20;
+	
+	decl Float:fRightBottomFront[3];
+	fRightBottomFront[0] = fTo[0];
+	fRightBottomFront[1] = fFrom[1];
+	fRightBottomFront[2] = fTo[2]+20;
+	
+	//initialize tempoary variables bottom back
+	decl Float:fLeftBottomBack[3];
+	fLeftBottomBack[0] = fFrom[0];
+	fLeftBottomBack[1] = fTo[1];
+	fLeftBottomBack[2] = fTo[2]+20;
+	
+	decl Float:fRightBottomBack[3];
+	fRightBottomBack[0] = fTo[0];
+	fRightBottomBack[1] = fTo[1];
+	fRightBottomBack[2] = fTo[2]+20;
+	
+	PrecacheModel("models/props_junk/trafficcone001a.mdl", true);
+	
+	decl String:EntName[256];
+	FormatEx(EntName, sizeof(EntName), "#DHC_Zone_%d", g_mapZones[zone][Id]);
+	
+	new String:ModePath[] = "models/props_junk/trafficcone001a.mdl";
+	new String:Classname[] = "prop_physics_override";
+	
+	new entity1 = CreateEntityByName(Classname);
+	SetEntityModel(entity1, ModePath);
+	SetEntProp(entity1, Prop_Data, "m_CollisionGroup", 1);
+	SetEntProp(entity1, Prop_Send, "m_usSolidFlags", 12);
+	SetEntProp(entity1, Prop_Send, "m_nSolidType", 6);
+	SetEntityMoveType(entity1, MOVETYPE_NONE);		
+	DispatchKeyValue(entity1, "targetname", EntName);
+	DispatchSpawn(entity1);
+	AcceptEntityInput(entity1, "DisableMotion");
+	AcceptEntityInput(entity1, "DisableShadow");
+	TeleportEntity(entity1, fRightBottomBack, NULL_VECTOR, NULL_VECTOR);
+	
+	new entity2 = CreateEntityByName(Classname);
+	SetEntityModel(entity2, ModePath);
+	SetEntProp(entity2, Prop_Data, "m_CollisionGroup", 1);
+	SetEntProp(entity2, Prop_Send, "m_usSolidFlags", 12);
+	SetEntProp(entity2, Prop_Send, "m_nSolidType", 6);
+	SetEntityMoveType(entity2, MOVETYPE_NONE);
+	DispatchKeyValue(entity2, "targetname", EntName);
+	DispatchSpawn(entity2);
+	AcceptEntityInput(entity2, "DisableMotion");
+	AcceptEntityInput(entity2, "DisableShadow");
+	TeleportEntity(entity2, fRightBottomFront, NULL_VECTOR, NULL_VECTOR);
+	
+	new entity3 = CreateEntityByName(Classname);
+	SetEntityModel(entity3, ModePath);
+	SetEntProp(entity3, Prop_Data, "m_CollisionGroup", 1);
+	SetEntProp(entity3, Prop_Send, "m_usSolidFlags", 12);
+	SetEntProp(entity3, Prop_Send, "m_nSolidType", 6);
+	SetEntityMoveType(entity3, MOVETYPE_NONE);
+	DispatchKeyValue(entity3, "targetname", EntName);
+	DispatchSpawn(entity3);
+	AcceptEntityInput(entity3, "DisableMotion");
+	AcceptEntityInput(entity3, "DisableShadow");
+	TeleportEntity(entity3, fLeftBottomFront, NULL_VECTOR, NULL_VECTOR);
+	
+	new entity4 = CreateEntityByName(Classname);
+	SetEntityModel(entity4, ModePath);
+	SetEntProp(entity4, Prop_Data, "m_CollisionGroup", 1);
+	SetEntProp(entity4, Prop_Data, "m_CollisionGroup", 2, 4);
+	SetEntProp(entity4, Prop_Send, "m_usSolidFlags", 12);
+	SetEntProp(entity4, Prop_Send, "m_nSolidType", 6);
+	SetEntityMoveType(entity4, MOVETYPE_NONE);
+	DispatchKeyValue(entity4, "targetname", EntName);
+	DispatchSpawn(entity4);
+	AcceptEntityInput(entity4, "DisableMotion");
+	AcceptEntityInput(entity4, "DisableShadow");
+	TeleportEntity(entity4, fLeftBottomBack, NULL_VECTOR, NULL_VECTOR);
+	
+	if(g_mapZones[zone][Type] == ZtLevel || g_mapZones[zone][Type] == ZtStart || g_mapZones[zone][Type] == ZtEnd)
+	{
+		SetEntityRenderColor(entity1, 0, 255, 0, 200);
+		SetEntityRenderColor(entity2, 0, 255, 0, 200);
+		SetEntityRenderColor(entity3, 0, 255, 0, 200);
+		SetEntityRenderColor(entity4, 0, 255, 0, 200);
+	}
+	else if(g_mapZones[zone][Type] == ZtBonusLevel || g_mapZones[zone][Type] == ZtBonusStart || g_mapZones[zone][Type] == ZtBonusEnd)
+	{
+		SetEntityRenderColor(entity1, 0, 0, 255, 200);
+		SetEntityRenderColor(entity2, 0, 0, 255, 200);
+		SetEntityRenderColor(entity3, 0, 0, 255, 200);
+		SetEntityRenderColor(entity4, 0, 0, 255, 200);
+	}
+	else if(g_mapZones[zone][Type] == ZtStop)
+	{
+		SetEntityRenderColor(entity1, 138, 0, 180, 200);
+		SetEntityRenderColor(entity2, 138, 0, 180, 200);
+		SetEntityRenderColor(entity3, 138, 0, 180, 200);
+		SetEntityRenderColor(entity4, 138, 0, 180, 200);
+	}
+	else if(g_mapZones[zone][Type] == ZtRestart)
+	{
+		SetEntityRenderColor(entity1, 255, 0, 0, 200);
+		SetEntityRenderColor(entity2, 255, 0, 0, 200);
+		SetEntityRenderColor(entity3, 255, 0, 0, 200);
+		SetEntityRenderColor(entity4, 255, 0, 0, 200);
+	}
+	else if(g_mapZones[zone][Type] == ZtLast)
+	{
+		SetEntityRenderColor(entity1, 255, 255, 0, 200);
+		SetEntityRenderColor(entity2, 255, 255, 0, 200);
+		SetEntityRenderColor(entity3, 255, 255, 0, 200);
+		SetEntityRenderColor(entity4, 255, 255, 0, 200);
+	}
+	else if(g_mapZones[zone][Type] == ZtNext)
+	{
+		SetEntityRenderColor(entity1, 0, 255, 255, 200);
+		SetEntityRenderColor(entity2, 0, 255, 255, 200);
+		SetEntityRenderColor(entity3, 0, 255, 255, 200);
+		SetEntityRenderColor(entity4, 0, 255, 255, 200);
 	}
 }
 
