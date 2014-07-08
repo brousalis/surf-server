@@ -2983,22 +2983,22 @@ DeleteAllZoneEntitys()
 		Entity_GetName(i, EntName, sizeof(EntName));
 		
 		
-		new valid = StrContains(EntName, "#DHC_NPC");
-		if(valid > -1)
+		new valid_npc = StrContains(EntName, "#DHC_NPC");
+		if(valid_npc > -1)
 		{
 			SDKUnhook(i, SDKHook_StartTouch, NPC_Use);
 		}
 		
-		new valid2 = StrContains(EntName, "#DHC_TRIGGER");
-		if(valid2 > -1)
+		new valid_trigger = StrContains(EntName, "#DHC_TRIGGER");
+		if(valid_trigger > -1)
 		{
 			SDKUnhook(i, SDKHook_StartTouch, StartTouchTrigger);
 			SDKUnhook(i, SDKHook_EndTouch, EndTouchTrigger);
 			SDKUnhook(i, SDKHook_Touch, OnTouchTrigger);
 		}
 		
-		new valid3 = StrContains(EntName, "#DHC_");
-		if(valid3 > -1)
+		new valid_timer_entity = StrContains(EntName, "#DHC_");
+		if(valid_timer_entity > -1)
 		{
 			DeleteEntity(i);
 		}
@@ -3017,7 +3017,7 @@ DeleteEntity(entity)
 
 SpawnZoneEntitys(zone)
 {
-	if(g_mapZones[zone][Point1][0] != 0.0 || g_mapZones[zone][Point1][1]  != 0.0 || g_mapZones[zone][Point1][2] != 0.0 )
+	if(g_mapZones[zone][Point1][0] == 0.0 && g_mapZones[zone][Point1][1]  == 0.0 && g_mapZones[zone][Point1][2] == 0.0 )
 	{
 		// No valid zone
 		return;
@@ -3037,12 +3037,23 @@ SpawnZoneEntitys(zone)
 	//Spawn NPCs
 	else if(g_mapZones[zone][Type] == ZtPlayerClip)
 	{
-		//SpawnPlayerClip(zone);
+		SpawnPlayerClip(zone);
 	}
 	//Spawn trigger_multiple
 	else
 	{
 		SpawnZoneTrigger(zone);
+	}
+	
+	//Spawn spot lights
+	if(g_mapZones[zone][Type] == ZtStart || 
+		g_mapZones[zone][Type] == ZtEnd || 
+		g_mapZones[zone][Type] == ZtLevel || 
+		g_mapZones[zone][Type] == ZtBonusStart || 
+		g_mapZones[zone][Type] == ZtBonusEnd || 
+		g_mapZones[zone][Type] == ZtBonusLevel)
+	{
+		SpawnZoneSpotLights(zone);
 	}
 }
 
@@ -3144,6 +3155,158 @@ SpawnZoneTrigger(zone)
 			PrintToChatAll("Entity %i did not pass the validation check in SpawnTrigger", entity);
 		}
 	}
+}
+
+SpawnZoneSpotLights(zone)
+{
+	//Center
+	new Float:origin[3];
+	origin[0] = (g_mapZones[zone][Point1][0] + g_mapZones[zone][Point2][0]) / 2.0;
+	origin[1] = (g_mapZones[zone][Point1][1] + g_mapZones[zone][Point2][1]) / 2.0;
+	origin[2] = (g_mapZones[zone][Point1][2] / 1.0) + 512.0;
+	
+	new Float:fFrom[3];
+	fFrom[0] = g_mapZones[zone][Point2][0];
+	fFrom[1] = g_mapZones[zone][Point2][1];
+	fFrom[2] = g_mapZones[zone][Point2][2];
+	
+	new Float:fTo[3];
+	fTo[0] = g_mapZones[zone][Point1][0];
+	fTo[1] = g_mapZones[zone][Point1][1];
+	fTo[2] = g_mapZones[zone][Point1][2];
+	
+	//initialize tempoary variables bottom front
+	decl Float:fLeftBottomFront[3];
+	fLeftBottomFront[0] = fFrom[0];
+	fLeftBottomFront[1] = fFrom[1];
+	fLeftBottomFront[2] = fTo[2]+20;
+	
+	decl Float:fRightBottomFront[3];
+	fRightBottomFront[0] = fTo[0];
+	fRightBottomFront[1] = fFrom[1];
+	fRightBottomFront[2] = fTo[2]+20;
+	
+	//initialize tempoary variables bottom back
+	decl Float:fLeftBottomBack[3];
+	fLeftBottomBack[0] = fFrom[0];
+	fLeftBottomBack[1] = fTo[1];
+	fLeftBottomBack[2] = fTo[2]+20;
+	
+	decl Float:fRightBottomBack[3];
+	fRightBottomBack[0] = fTo[0];
+	fRightBottomBack[1] = fTo[1];
+	fRightBottomBack[2] = fTo[2]+20;
+	
+	new Float:angbuffer[3], Float:color[3], Float:vecbuffer[3];
+	
+	if(g_mapZones[zone][Type] == ZtStart)
+	{
+		color[0] = float(g_startColor[0]);
+		color[1] = float(g_startColor[1]);
+		color[2] = float(g_startColor[2]);
+	}
+	else if(g_mapZones[zone][Type] == ZtBonusStart)
+	{
+		color[0] = float(g_bonusstartColor[0]);
+		color[1] = float(g_bonusstartColor[1]);
+		color[2] = float(g_bonusstartColor[2]);
+	}
+	else if(g_mapZones[zone][Type] == ZtLevel)
+	{
+		color[0] = float(g_levelColor[0]);
+		color[1] = float(g_levelColor[1]);
+		color[2] = float(g_levelColor[2]);
+	}
+	else if(g_mapZones[zone][Type] == ZtBonusLevel)
+	{
+		color[0] = float(g_bonuslevelColor[0]);
+		color[1] = float(g_bonuslevelColor[1]);
+		color[2] = float(g_bonuslevelColor[2]);
+	}
+	else if(g_mapZones[zone][Type] == ZtEnd)
+	{
+		color[0] = float(g_endColor[0]);
+		color[1] = float(g_endColor[1]);
+		color[2] = float(g_endColor[2]);
+	}
+	else if(g_mapZones[zone][Type] == ZtBonusEnd)
+	{
+		color[0] = float(g_bonusendColor[0]);
+		color[1] = float(g_bonusendColor[1]);
+		color[2] = float(g_bonusendColor[2]);
+	}
+	
+	MakeVectorFromPoints(fLeftBottomFront, origin, vecbuffer);
+	GetVectorAngles(vecbuffer, angbuffer);
+	angbuffer[2] = 0.0;
+	SpawnSpotLight(fLeftBottomFront, color, angbuffer);
+	
+	MakeVectorFromPoints(fRightBottomFront, origin, vecbuffer);
+	GetVectorAngles(vecbuffer, angbuffer);
+	angbuffer[2] = 0.0;
+	SpawnSpotLight(fRightBottomFront, color, angbuffer);
+	
+	MakeVectorFromPoints(fLeftBottomBack, origin, vecbuffer);
+	GetVectorAngles(vecbuffer, angbuffer);
+	angbuffer[2] = 0.0;
+	SpawnSpotLight(fLeftBottomBack, color, angbuffer);
+	
+	MakeVectorFromPoints(fRightBottomBack, origin, vecbuffer);
+	GetVectorAngles(vecbuffer, angbuffer);
+	angbuffer[2] = 0.0;
+	SpawnSpotLight(fRightBottomBack, color, angbuffer);
+}
+
+stock SpawnSpotLight(Float:pos[3], Float:color[3], Float:ang[3])
+{
+	pos[2] -= 16.0;
+	
+	new entity = CreateEntityByName("point_spotlight");
+	
+	decl String:sAng[32];
+	Format(sAng, sizeof(sAng), "%d %d %d", RoundToFloor(ang[0]), RoundToFloor(ang[1]), RoundToFloor(ang[2]));
+	
+	
+	decl String:EntName[256];
+	FormatEx(EntName, sizeof(EntName), "#DHC_SPOTLIGHT");
+	DispatchKeyValue(entity, "targetname", EntName);
+	
+	DispatchKeyValue(entity, "SpotlightLength", "350");
+	DispatchKeyValue(entity, "SpotlightWidth", "25");
+	DispatchKeyValue(entity, "rendermode", "0");
+	DispatchKeyValue(entity, "scale", "1");
+	DispatchKeyValue(entity, "renderamt", "64");
+	DispatchKeyValueVector(entity, "rendercolor", color);
+	
+	DispatchKeyValue(entity, "HDRColorScale", "0.1");
+	DispatchKeyValue(entity, "HaloScale", "1");
+	DispatchKeyValue(entity, "fadescale", "1");
+	
+	DispatchKeyValue(entity, "brightness", "1");
+	
+	DispatchKeyValue(entity, "_light", "255 255 255 255");
+	DispatchKeyValue(entity, "style", "0");
+	
+	DispatchKeyValue(entity, "pitch", "0 0 0");
+	DispatchKeyValue(entity, "renderamt", "255");
+	
+	DispatchKeyValue(entity, "disablereceiveshadows", "1");
+	
+	//-75 x 0
+	DispatchKeyValue(entity, "angles", sAng);
+	
+	DispatchKeyValue(entity, "spawnflags", "3");
+	
+	DispatchSpawn(entity);
+	
+	TeleportEntity(entity, pos, NULL_VECTOR, NULL_VECTOR);
+	
+	AcceptEntityInput(entity, "LightOn");
+}
+
+SpawnPlayerClip(zone)
+{
+	
 }
 
 SpawnNPC(zone)
