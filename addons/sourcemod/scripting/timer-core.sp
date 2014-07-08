@@ -1195,14 +1195,14 @@ public CreditsPanel(client)
 	
 	DrawPanelText(panel, "     -- Page 1/4 --");
 	DrawPanelText(panel, " ");
-	DrawPanelText(panel, "Zipcore - Creator and Main Coder of plugin");
+	DrawPanelText(panel, "Zipcore - Creator and main coder of this plugin");
 	DrawPanelText(panel, " ");
-	DrawPanelText(panel, "Alongub - Old Timer Core");
+	DrawPanelText(panel, "Alongub - Timer 1.x");
+	DrawPanelText(panel, "Das D - Player Info, Timer Info");
+	DrawPanelText(panel, "Paduh - Chatrank");
+	DrawPanelText(panel, "Peace-Maker - bot mimic 2, backwards and much more");
 	DrawPanelText(panel, "Shavit - Added new features and supported plugin");
-	DrawPanelText(panel, "Paduh - Rankings system");
-	DrawPanelText(panel, "Das D - Chatrank, Player Info, Timer Info, Chatextension");
-	DrawPanelText(panel, "DaFox - MultiPlayer Bunny Hops");
-	DrawPanelText(panel, "Peace-Maker - Bot Mimic 2, Backwards and more");
+	DrawPanelText(panel, "0wn3r - Many small improvements");
 	DrawPanelText(panel, " ");
 	DrawPanelItem(panel, "- Next -");
 	DrawPanelItem(panel, "- Exit -");
@@ -1248,13 +1248,13 @@ public CreditsPanel2(client)
 	
 	DrawPanelText(panel, "     -- Page 2/4 --");
 	DrawPanelText(panel, " ");
-	DrawPanelText(panel, "0wn3r - Many small improvements");
-	DrawPanelText(panel, "Justshoot - LJ Stats");
-	DrawPanelText(panel, "DieterM75 - Checkpoint System");
-	DrawPanelText(panel, "Skippy - Trigger Hooks");
-	DrawPanelText(panel, "GoD-Tony - AutoTrigger Detection");
-	DrawPanelText(panel, "Miu - Strafe Stats");
-	DrawPanelText(panel, "Inami - Macrodox Detection");
+	DrawPanelText(panel, "DaFox - MP bunny hops");
+	DrawPanelText(panel, "Justshoot - Long-Jump stats");
+	DrawPanelText(panel, "DieterM75 - cPmod");
+	DrawPanelText(panel, "Skippy - Trigger_multiple hooks");
+	DrawPanelText(panel, "Miu - Strafe stats");
+	DrawPanelText(panel, "Inami - Macrodox detection");
+	DrawPanelText(panel, "SMAC Team - Auto jump trigger detection");
 	DrawPanelText(panel, " ");
 	DrawPanelItem(panel, "- Back -");
 	DrawPanelItem(panel, "- Next -");
@@ -1309,7 +1309,6 @@ public CreditsPanel3(client)
 	
 	DrawPanelText(panel, "     -- Page 3/4 --");
 	DrawPanelText(panel, " ");
-	DrawPanelText(panel, "SMAC Team - Trigger Detection");
 	DrawPanelText(panel, "Jason Bourne - Challenge, Custom-HUD");
 	DrawPanelText(panel, "SWATr - Small fixes/changes");
 	DrawPanelText(panel, "Smesh292 - No Jail and small fixes/changes");
@@ -1371,12 +1370,12 @@ public CreditsPanel4(client)
 	DrawPanelText(panel, "     -- Page 4/4 --");
 	DrawPanelText(panel, " ");
 	DrawPanelText(panel, "   ---- Special Thanks ----");
-	DrawPanelText(panel, "AlliedModders, .#IsKulT, Jacky, Shadow[DK],");
-	DrawPanelText(panel, "Korki, Joy, Blackpanther, Popping-Fresh,");
-	DrawPanelText(panel, "Dirthy Secret, KackEinKrug, Blackout, Cru,");
-	DrawPanelText(panel, "Shadow, Schoschy, Extan, cREANy0,");
-	DrawPanelText(panel, "Kolapsicle, DevilHunterMultigaming, ");
-	DrawPanelText(panel, "and many others");
+	DrawPanelText(panel, "Schoschy, .#IsKulT, Shadow^_^,");
+	DrawPanelText(panel, "Joy. Extan, -XP.| Mr.loser ™.K.W.©,");
+	DrawPanelText(panel, "");
+	DrawPanelText(panel, " and many others.");
+	DrawPanelText(panel, "");
+	DrawPanelText(panel, "");
 	DrawPanelText(panel, " ");
 	DrawPanelItem(panel, "- Back -");
 	DrawPanelItem(panel, "- Next -", ITEMDRAW_SPACER);
