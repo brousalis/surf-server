@@ -3159,12 +3159,6 @@ SpawnZoneTrigger(zone)
 
 SpawnZoneSpotLights(zone)
 {
-	//Center
-	new Float:origin[3];
-	origin[0] = (g_mapZones[zone][Point1][0] + g_mapZones[zone][Point2][0]) / 2.0;
-	origin[1] = (g_mapZones[zone][Point1][1] + g_mapZones[zone][Point2][1]) / 2.0;
-	origin[2] = (g_mapZones[zone][Point1][2] / 1.0) + 512.0;
-	
 	new Float:fFrom[3];
 	fFrom[0] = g_mapZones[zone][Point2][0];
 	fFrom[1] = g_mapZones[zone][Point2][1];
@@ -3197,7 +3191,7 @@ SpawnZoneSpotLights(zone)
 	fRightBottomBack[1] = fTo[1];
 	fRightBottomBack[2] = fTo[2]+20;
 	
-	new Float:angbuffer[3], Float:color[3], Float:vecbuffer[3];
+	new Float:ang[3], Float:color[3];
 	
 	if(g_mapZones[zone][Type] == ZtStart)
 	{
@@ -3236,25 +3230,12 @@ SpawnZoneSpotLights(zone)
 		color[2] = float(g_bonusendColor[2]);
 	}
 	
-	MakeVectorFromPoints(fLeftBottomFront, origin, vecbuffer);
-	GetVectorAngles(vecbuffer, angbuffer);
-	angbuffer[2] = 0.0;
-	SpawnSpotLight(fLeftBottomFront, color, angbuffer);
+	ang[0] = -90.0;
 	
-	MakeVectorFromPoints(fRightBottomFront, origin, vecbuffer);
-	GetVectorAngles(vecbuffer, angbuffer);
-	angbuffer[2] = 0.0;
-	SpawnSpotLight(fRightBottomFront, color, angbuffer);
-	
-	MakeVectorFromPoints(fLeftBottomBack, origin, vecbuffer);
-	GetVectorAngles(vecbuffer, angbuffer);
-	angbuffer[2] = 0.0;
-	SpawnSpotLight(fLeftBottomBack, color, angbuffer);
-	
-	MakeVectorFromPoints(fRightBottomBack, origin, vecbuffer);
-	GetVectorAngles(vecbuffer, angbuffer);
-	angbuffer[2] = 0.0;
-	SpawnSpotLight(fRightBottomBack, color, angbuffer);
+	SpawnSpotLight(fLeftBottomFront, color, ang);
+	SpawnSpotLight(fRightBottomFront, color, ang);
+	SpawnSpotLight(fLeftBottomBack, color, ang);
+	SpawnSpotLight(fRightBottomBack, color, ang);
 }
 
 stock SpawnSpotLight(Float:pos[3], Float:color[3], Float:ang[3])

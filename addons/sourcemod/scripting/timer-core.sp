@@ -862,10 +862,18 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 	
 	if(NewWorldRecord)
 	{
+		if(currentrank > 1)
+		{
+			//Delete old replay file
+			decl String:path[256];
+			Timer_GetReplayPath(style, track, currentrank, path, sizeof(path));
+			BotMimic_DeleteRecord(path);
+		}
+		
 		//Delete old replay file
-		decl String:path[256];
-		Timer_GetReplayPath(style, track, 1, path, sizeof(path));
-		BotMimic_DeleteRecord(path);
+		decl String:wrpath[256];
+		Timer_GetReplayPath(style, track, 1, wrpath, sizeof(wrpath));
+		BotMimic_DeleteRecord(wrpath);
 	}
 	else
 	{
