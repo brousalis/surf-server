@@ -279,6 +279,7 @@ public OnPluginStart()
 		RegConsoleCmd("sm_bonusstart", Command_BonusRestart);
 		RegConsoleCmd("sm_br", Command_BonusRestart);
 		RegConsoleCmd("sm_b", Command_BonusRestart);
+		RegConsoleCmd("sm_bonus", Command_BonusRestart);
 	}
 	
 	if(g_Settings[StuckEnable]) RegConsoleCmd("sm_stuck", Command_Stuck);

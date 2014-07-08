@@ -28,6 +28,9 @@ public OnPluginStart()
 	
 	RegConsoleCmd("sm_teleme", Command_TeleMe);
 	RegConsoleCmd("sm_tpto", Command_TeleMe);
+	RegConsoleCmd("sm_teleport", Command_TeleMe);
+	RegConsoleCmd("sm_teleportto", Command_TeleMe);
+	RegConsoleCmd("sm_teleportme", Command_TeleMe);
 }
 
 public OnLibraryAdded(const String:name[])

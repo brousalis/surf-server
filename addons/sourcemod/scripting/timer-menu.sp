@@ -24,6 +24,7 @@ public OnPluginStart()
 	RegConsoleCmd("sm_menu", Command_Menu);	
 	RegConsoleCmd("sm_timer", Command_HelpMenu);
 	RegConsoleCmd("sm_help", Command_HelpMenu);
+	RegConsoleCmd("sm_commands", Command_HelpMenu);
 	
 	mod = GetGameMod();
 }

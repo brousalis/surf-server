@@ -127,7 +127,10 @@ public OnPluginStart()
 		
 		RegConsoleCmd("sm_hidemyass", Cmd_HideMyAss);
 		RegConsoleCmd("sm_hud", MenuHud);
+		RegConsoleCmd("sm_hudmenu", MenuHud);
+		RegConsoleCmd("sm_hudstyle", MenuHud);
 		RegConsoleCmd("sm_specinfo", Cmd_SpecInfo);
+		RegConsoleCmd("sm_speclist", Cmd_SpecInfo);
 		
 		g_cvarTimeLimit = FindConVar("mp_timelimit");
 		

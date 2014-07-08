@@ -128,7 +128,9 @@ public OnPluginStart()
 	if(g_Settings[BonusWrEnable]) 
 	{
 		RegConsoleCmd("sm_btop", Command_BonusWorldRecord);
+		RegConsoleCmd("sm_topb", Command_BonusWorldRecord);
 		RegConsoleCmd("sm_bwr", Command_BonusWorldRecord);
+		RegConsoleCmd("sm_wrb", Command_BonusWorldRecord);
 	}
 	if(g_Settings[ShortWrEnable]) 
 	{

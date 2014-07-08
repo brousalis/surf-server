@@ -223,6 +223,8 @@ public OnPluginStart()
 	CreateConVar("ljstats_version", PL_VERSION, "Long Jump Stats - justshoot", FCVAR_PLUGIN|FCVAR_NOTIFY);
 	RegAdminCmd("sm_ljadm", Command_ljadm, ADMFLAG_ROOT, "Delete Record");
 	RegConsoleCmd("sm_lj", Command_ljmode, "Record Jump Stats");
+	RegConsoleCmd("sm_ljstats", Command_ljmode, "Record Jump Stats");
+	RegConsoleCmd("sm_ljmode", Command_ljmode, "Record Jump Stats");
 	RegConsoleCmd("sm_ljblock", Command_ljblock, "Register Destination");
 	RegConsoleCmd("sm_ljsound", Command_ljsound, "ljstats quake sound");
 	RegConsoleCmd("sm_ljpopup", Command_ljpopup, "Show/hide stats popup.");

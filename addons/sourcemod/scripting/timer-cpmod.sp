@@ -136,6 +136,7 @@ public OnPluginStart()
 	RegConsoleCmd("sm_save", Client_Save, "Saves a checkpoint");
 	RegConsoleCmd("sm_tele", Client_Tele, "Teleports you to last checkpoint");
 	RegConsoleCmd("sm_cp", Client_Cp, "Opens teleportmenu");
+	RegConsoleCmd("sm_cpmenu", Client_Cp, "Opens teleportmenu");
 	RegConsoleCmd("sm_clear", Client_Clear, "Erases all checkpoints");
 	RegConsoleCmd("sm_cphelp", Client_Help, "Displays the help menu");
 	
