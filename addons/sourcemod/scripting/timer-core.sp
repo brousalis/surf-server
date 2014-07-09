@@ -24,6 +24,7 @@ new bool:g_timerStrafes = false;
 new bool:g_timerScripterDB = false;
 new bool:g_timerTeams = false;
 new bool:g_timerWorldRecord = false;
+new bool:g_Botmimic = false;
 
 /** 
  * Global Enums
@@ -169,6 +170,7 @@ public OnPluginStart()
 	g_timerScripterDB = LibraryExists("timer-scripter_db");
 	g_timerTeams = LibraryExists("timer-teams");
 	g_timerWorldRecord = LibraryExists("timer-worldrecord");
+	g_Botmimic = LibraryExists("botmimic");
 }
 
 public OnLibraryAdded(const String:name[])
@@ -193,6 +195,10 @@ public OnLibraryAdded(const String:name[])
 	{
 		g_timerWorldRecord = true;
 	}
+	else if (StrEqual(name, "botmimic"))
+	{
+		g_Botmimic = true;
+	}
 }
 
 public OnLibraryRemoved(const String:name[])
@@ -216,6 +222,10 @@ public OnLibraryRemoved(const String:name[])
 	else if (StrEqual(name, "timer-worldrecord"))
 	{
 		g_timerWorldRecord = false;
+	}
+	else if (StrEqual(name, "botmimic"))
+	{
+		g_Botmimic = false;
 	}
 }
 
@@ -860,27 +870,30 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 		Call_Finish();
 	}
 	
-	if(NewWorldRecord)
+	if(g_Botmimic)
 	{
-		if(currentrank > 1)
+		if(NewWorldRecord)
 		{
+			if(currentrank > 1)
+			{
+				//Delete old replay file
+				decl String:path[256];
+				Timer_GetReplayPath(style, track, currentrank, path, sizeof(path));
+				BotMimic_DeleteRecord(path);
+			}
+			
 			//Delete old replay file
+			decl String:wrpath[256];
+			Timer_GetReplayPath(style, track, 1, wrpath, sizeof(wrpath));
+			BotMimic_DeleteRecord(wrpath);
+		}
+		else
+		{
+			//Delete current replay file
 			decl String:path[256];
-			Timer_GetReplayPath(style, track, currentrank, path, sizeof(path));
+			Timer_GetClientActiveReplayPath(client, path);
 			BotMimic_DeleteRecord(path);
 		}
-		
-		//Delete old replay file
-		decl String:wrpath[256];
-		Timer_GetReplayPath(style, track, 1, wrpath, sizeof(wrpath));
-		BotMimic_DeleteRecord(wrpath);
-	}
-	else
-	{
-		//Delete current replay file
-		decl String:path[256];
-		Timer_GetClientActiveReplayPath(client, path);
-		BotMimic_DeleteRecord(path);
 	}
 	
 	if(FirstRecord || NewPersonalRecord)

@@ -3035,7 +3035,7 @@ SpawnZoneEntitys(zone)
 	{
 		SpawnNPC(zone);
 	}
-	//Spawn NPCs
+	//Spawn PlayerClip
 	else if(g_mapZones[zone][Type] == ZtPlayerClip)
 	{
 		SpawnPlayerClip(zone);
