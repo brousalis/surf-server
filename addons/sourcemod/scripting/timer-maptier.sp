@@ -137,17 +137,15 @@ LoadMapTier()
 {
 	if (g_hSQL != INVALID_HANDLE)
 	{
-		new bonus; //0=normal
 		decl String:query[128];
-		FormatEx(query, sizeof(query), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND bonus = '%d'", g_currentMap, bonus);
-		SQL_TQuery(g_hSQL, LoadTierCallback, query, bonus, DBPrio_Normal);   
+		FormatEx(query, sizeof(query), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND bonus = 0", g_currentMap);
+		SQL_TQuery(g_hSQL, LoadTierCallback, query, 0, DBPrio_Normal);
 		
-		bonus = 1; //1=bonus
 		decl String:query2[128];
-		FormatEx(query2, sizeof(query2), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND bonus = '%d'", g_currentMap, bonus);
-		SQL_TQuery(g_hSQL, LoadTierCallback, query, bonus, DBPrio_Normal); 
+		FormatEx(query2, sizeof(query2), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND bonus = 1", g_currentMap);
+		SQL_TQuery(g_hSQL, LoadTierCallback, query2, 1, DBPrio_Normal); 
 	}
-}	
+}
 
 public LoadTierCallback(Handle:owner, Handle:hndl, const String:error[], any:bonus)
 {
@@ -163,10 +161,10 @@ public LoadTierCallback(Handle:owner, Handle:hndl, const String:error[], any:bon
 		g_stagecount[bonus] = SQL_FetchInt(hndl, 1);
 	}
 	
-	if (g_maptier[bonus] == 0 && g_stagecount[bonus] == 0)
+	if (g_maptier[bonus] == 0)
 	{
 		decl String:query[128];
-		FormatEx(query, sizeof(query), "INSERT INTO maptier (map, bonus, tier, stagecount) VALUES ('%s','%d','1', '1');", g_currentMap, bonus);
+		FormatEx(query, sizeof(query), "INSERT INTO maptier (map, bonus, tier, stagecount) VALUES ('%s','%d','1', '0');", g_currentMap, bonus);
 
 		SQL_TQuery(g_hSQL, InsertTierCallback, query, bonus, DBPrio_Normal);
 	}
