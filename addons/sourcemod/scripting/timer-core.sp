@@ -921,6 +921,7 @@ public BotMimic_OnRecordSaved(client, String:name[], String:category[], String:s
 	ReplaceString(filename, sizeof(filename), buffer, "", true);
 	ReplaceString(filename, sizeof(filename), "addons/sourcemod/data/botmimic", "", true);
 	GetClientAuthString(client, buffer, sizeof(buffer), true);
+	ReplaceString(buffer, sizeof(buffer), ":", "_", true);
 	ReplaceString(filename, sizeof(filename), buffer, "", true);
 	ReplaceString(filename, sizeof(filename), g_currentMap, "", true);
 	ReplaceString(filename, sizeof(filename), ".rec", "", true);
@@ -1170,6 +1171,7 @@ public Native_GetClientActiveReplayPath(Handle:plugin, numParams)
 	decl String:path[256], String:auth[64];
 	GetClientAuthString(client, auth, sizeof(auth), true);
 	Format(path, sizeof(path), "addons/sourcemod/data/botmimic/%d_%d/%s/%s/%s.rec", g_timers[client][CurrentStyle], g_timers[client][Track], g_currentMap, auth, g_timers[client][ReplayFile]);
+	ReplaceString(path, sizeof(path), ":", "_", true);
 	SetNativeString(2, path, 256);
 }
 

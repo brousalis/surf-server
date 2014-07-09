@@ -1788,6 +1788,7 @@ public Native_GetReplayPath(Handle:plugin, numParams)
 		
 		decl String:path[256];
 		Format(path, sizeof(path), "addons/sourcemod/data/botmimic/%d_%d/%s/%s/%s.rec", style, track, g_currentMap, g_cache[style][track][rank-1][Auth], g_cache[style][track][rank-1][ReplayFile]);
+		ReplaceString(path, sizeof(path), ":", "_", true);
 		
 		decl String:buffer[nlen];
 		FormatEx(buffer, nlen, "%s", path);
