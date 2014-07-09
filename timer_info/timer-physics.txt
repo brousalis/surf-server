@@ -132,3 +132,9 @@ Here are all setings you can use for a style:
 
 //Enable quake bhop booster (requires quakebhop module)
 "quake_bhop"			"1"			//Default = 0
+
+//Activate replay bot for this style (requires botmimic and replaybot)
+"replay"				"1"			//Default = 0
+
+//Activate replay bot for this style in bonus  (requires botmimic and replaybot)
+"replay_bonus"			"1"			//Default = 0
