@@ -1330,7 +1330,7 @@ public CreditsPanel3(client)
 	DrawPanelText(panel, "Dark Session - Code optimization");
 	DrawPanelText(panel, "Mev - Autostrafe");
 	DrawPanelText(panel, "1NutWunDeR - Mapchange enforcer");
-	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "Pandora - German translation");
 	DrawPanelItem(panel, "- Back -");
 	DrawPanelItem(panel, "- Next -");
 	DrawPanelItem(panel, "- Exit -");
@@ -1383,7 +1383,7 @@ public CreditsPanel4(client)
 	else SetPanelCurrentKey(panel, 8);
 	
 	DrawPanelText(panel, "     -- Page 4/4 --");
-	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "JKab - France translation");
 	DrawPanelText(panel, "   ---- Special Thanks ----");
 	DrawPanelText(panel, "Schoschy, .#IsKulT, Shadow^_^,");
 	DrawPanelText(panel, "Joy. Extan, -XP.| Mr.loser ™.K.W.©,");
