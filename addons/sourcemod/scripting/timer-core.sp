@@ -1384,13 +1384,13 @@ public CreditsPanel4(client)
 	
 	DrawPanelText(panel, "     -- Page 4/4 --");
 	DrawPanelText(panel, "JKab - France translation");
+	DrawPanelText(panel, "Rop - Dutch Translation");
+	DrawPanelText(panel, "");
 	DrawPanelText(panel, "   ---- Special Thanks ----");
 	DrawPanelText(panel, "Schoschy, .#IsKulT, Shadow^_^,");
 	DrawPanelText(panel, "Joy. Extan, -XP.| Mr.loser ™.K.W.©,");
 	DrawPanelText(panel, "");
 	DrawPanelText(panel, " and many others.");
-	DrawPanelText(panel, "");
-	DrawPanelText(panel, "");
 	DrawPanelText(panel, " ");
 	DrawPanelItem(panel, "- Back -");
 	DrawPanelItem(panel, "- Next -", ITEMDRAW_SPACER);
