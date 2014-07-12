@@ -1384,7 +1384,7 @@ public CreditsPanel4(client)
 	
 	DrawPanelText(panel, "     -- Page 4/4 --");
 	DrawPanelText(panel, "JKab - France translation");
-	DrawPanelText(panel, "Rop - Dutch Translation");
+	DrawPanelText(panel, "Rop - Dutch Translation & much more");
 	DrawPanelText(panel, "");
 	DrawPanelText(panel, "   ---- Special Thanks ----");
 	DrawPanelText(panel, "Schoschy, .#IsKulT, Shadow^_^,");
