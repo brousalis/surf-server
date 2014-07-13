@@ -176,3 +176,4 @@
 	- sv_enablebunnyhopping "1" (Disable speed limit)
 	- sv_maxvelocity "9999" (Increase max. possible speed)
 	- mp_falldamage "0" (Disable fall damage)
+	- sv_hudhint_sound 0
