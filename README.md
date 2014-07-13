@@ -131,6 +131,8 @@
 	4.) Upload all SMX files, configs, sounds and materials onto your server.
 	
 	5.) Insert "timer" keyvalue into configs/databases.cfg (no sqlite support).
+		5.1) When using the timer-cpmod module, insert a "cpmod" keyvalue into configs/databases.cfg
+		5.2) When using the timer-ranking_toponly module, insert a "timer_toponly" keyvalue into configs/databases.cfg
 	
 	6.) Change configs/timer/settings.cfg to your needs
 	
