@@ -50,7 +50,7 @@ enum eCommand
     String:eCommand_Plugin[512],
 }
 
-new commandsperpage = 5;
+new commandsperpage = 7;
 new g_iCmdCount = 0;
 new g_Commands[512][eCommand];
 new g_iCurrentPage[MAXPLAYERS+1];
