@@ -1,3 +1,5 @@
 Timer-Rankings
 
 This plugins does not rank players, but you can check if a player is top ranked at another database and kicks bad players.
+
+Requires "timer_toponly" keyvalue in configs/databases.cfg
