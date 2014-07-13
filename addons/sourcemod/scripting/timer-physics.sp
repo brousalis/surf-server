@@ -177,7 +177,10 @@ public OnPluginStart()
 	RegAdminCmd("sm_timer_reload_config", Command_ReloadConfig, ADMFLAG_CONVARS, "Reload timer settings");
 	if(g_Settings[MultimodeEnable]) RegConsoleCmd("sm_style", Command_Difficulty);
 	if(g_Settings[NoclipEnable]) RegConsoleCmd("sm_nc", Command_NoclipMe);
+	if(g_Settings[NoclipEnable]) RegConsoleCmd("sm_noclipme", Command_NoclipMe);
 	if(g_Settings[BhopEnable]) RegConsoleCmd("sm_tauto", Command_ToggleAuto);
+	if(g_Settings[BhopEnable]) RegConsoleCmd("sm_autobhop", Command_ToggleAuto);
+	if(g_Settings[BhopEnable]) RegConsoleCmd("sm_autojump", Command_ToggleAuto);
 	RegAdminCmd("sm_colour", Command_Colour, ADMFLAG_RESERVATION);
 	
 	g_hPlattformColor = CreateConVar("timer_plattform_color", "0 255 0 255", "The color of detected plattforms.");
