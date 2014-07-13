@@ -1,0 +1,3 @@
+timer-mapzones_startzone_nojump
+
+This module prevents people from getting any speed advantage in the start zone. The moment they jump the speed gets reducted to 120, so its impossible to prespeed.
