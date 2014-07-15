@@ -1184,7 +1184,11 @@ public Action:TerminateRoundTimer(Handle:timer)
 	if(g_Settings[TerminateRoundEnd]) ServerCommand("mp_ignore_round_win_conditions 0");
 	g_bAllowRoundEnd = true;
 	
-	CS_TerminateRound(1.0, CSRoundEnd_CTWin, true);
+	if(Team_GetClientCount(CS_TEAM_CT))
+		CS_TerminateRound(1.0, CSRoundEnd_CTWin, true);
+	else if(Team_GetClientCount(CS_TEAM_T))
+		CS_TerminateRound(1.0, CSRoundEnd_TerroristWin, true);
+	else CS_TerminateRound(1.0, CSRoundEnd_Draw, true);
 }
 
 public Action:CS_OnTerminateRound(&Float:delay, &CSRoundEndReason:reason)
