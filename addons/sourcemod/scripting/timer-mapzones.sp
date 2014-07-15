@@ -1181,9 +1181,9 @@ public Action:CheckRemainingTime(Handle:timer)
 
 public Action:TerminateRoundTimer(Handle:timer)
 {
+	// Force round end
 	if(g_Settings[TerminateRoundEnd]) ServerCommand("mp_ignore_round_win_conditions 0");
 	g_bAllowRoundEnd = true;
-	
 	if(Team_GetClientCount(CS_TEAM_CT))
 		CS_TerminateRound(1.0, CSRoundEnd_CTWin, true);
 	else if(Team_GetClientCount(CS_TEAM_T))
@@ -1193,15 +1193,18 @@ public Action:TerminateRoundTimer(Handle:timer)
 
 public Action:CS_OnTerminateRound(&Float:delay, &CSRoundEndReason:reason)
 {
+	// Allow round end this time
 	if(g_bAllowRoundEnd)
 	{
 		g_bAllowRoundEnd = false;
 		return Plugin_Continue;
 	}
 	
+	// Block round end
 	if(g_Settings[TerminateRoundEnd])
 		return Plugin_Handled;
-	else
+	
+	// Let the round end
 	return Plugin_Continue;
 }
 
