@@ -2637,8 +2637,9 @@ SessionStats(client)
 {
 	if(KvJumpToKey(g_hSession, g_sAuth[client], false))
 	{
+		UpdateRankIndexbyRecordTime(client);
 		decl String:sTag[20];
-		GetArrayString(g_hCfgArray_DisplayTag, g_iCurrentIndex[client], sTag, sizeof(sTag));
+		if(g_iCurrentIndex[client] != -1) GetArrayString(g_hCfgArray_DisplayTag, g_iCurrentIndex[client], sTag, sizeof(sTag));
 		
 		new points_start = KvGetNum(g_hSession, "points", 0);
 		new points = Timer_GetPoints(client);
