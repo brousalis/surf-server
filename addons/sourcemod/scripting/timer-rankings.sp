@@ -1,5 +1,6 @@
 #include <sourcemod>
 #include <sdktools>
+#include <smlib>
 #include <geoip>
 #include <cstrike>
 #include <basecomm>
@@ -9,6 +10,7 @@
 #include <clientprefs>
 #include <timer-config_loader.sp>
 #include <autoexecconfig>	//https://github.com/Impact123/AutoExecConfig
+#include <scp>
 
 #undef REQUIRE_PLUGIN
 #include <timer-maptier>
@@ -930,22 +932,28 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 		return Plugin_Continue;
 	}
 
-	/*if(author && GetClientTeam(author) <= CS_TEAM_SPECTATOR)
+	if(author && GetMessageFlags() & CHATFLAGS_SPEC)
 	{
-		ClearArray(recipients);
+		new iSize = GetArraySize(recipients);
+		if(g_iEnabled == 2)
+		{
+			LogMessage("Debug: Spec chat %d recipients:", iSize);
+			for(new i=0;i<iSize;i++)
+				LogMessage("Debug: client (%d) %N (team %d)", GetArrayCell(recipients, i), GetArrayCell(recipients, i), GetClientTeam(GetArrayCell(recipients, i)));
+		}
+		
 		for (new i = 1; i <= MaxClients; i++)
 		{
-			if (IsValidClient(i))
+			if (Client_IsValid(i) && GetClientTeam(i) > CS_TEAM_SPECTATOR)
 			{
 				PushArrayCell(recipients, i);
 			}
 		}
-	}*/
+	}
 	
 	if(g_iDisplayMethod < 0)
 	{
 		new iDisplay = (g_iDisplayMethod * -1);
-
 		if((g_hDisplayCookie != INVALID_HANDLE && !g_bLoadedCookies[author]) || !g_bLoadedSQL[author])
 		{
 			if(iDisplay & cDisplayChatTag)
@@ -957,7 +965,7 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 				CReplaceColorCodes(name, author, false, 1024);
 				#endif
 			}
-
+			
 			if(iDisplay & cDisplayChatColor)
 			{
 				Format(message, 1024, "%s%s", g_sLoadingChatColor, message);
@@ -967,7 +975,7 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 				CReplaceColorCodes(message, author, false, 1024);
 				#endif
 			}
-
+			
 			return Plugin_Changed;
 		}
 		else if(g_iCurrentIndex[author] != -1)
@@ -983,7 +991,7 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 				CReplaceColorCodes(name, author, false, 1024);
 				#endif
 			}
-
+			
 			if(iDisplay & cDisplayChatColor && g_iClientDisplay[author] & cDisplayChatColor)
 			{
 				decl String:sTextBuffer[1024];
@@ -995,7 +1003,6 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 				CReplaceColorCodes(message, author, false, 1024);
 				#endif
 			}
-
 			return Plugin_Changed;
 		}
 	}
@@ -1012,7 +1019,7 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 				CReplaceColorCodes(name, author, false, 1024);
 				#endif
 			}
-
+			
 			if(g_iDisplayMethod & cDisplayChatColor)
 			{
 				Format(message, 1024, "%s%s", g_sLoadingChatColor, message);
@@ -1022,7 +1029,7 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 				CReplaceColorCodes(message, author, false, 1024);
 				#endif
 			}
-
+			
 			return Plugin_Changed;
 		}
 		else if(g_iCurrentIndex[author] != -1)
@@ -1038,7 +1045,7 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 				CReplaceColorCodes(name, author, false, 1024);
 				#endif
 			}
-
+			
 			if(g_iDisplayMethod & cDisplayChatColor)
 			{
 				decl String:sTextBuffer[1024];
@@ -1050,11 +1057,10 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 				CReplaceColorCodes(message, author, false, 1024);
 				#endif
 			}
-
+			
 			return Plugin_Changed;
 		}
 	}
-
 	return Plugin_Continue;
 }
 
@@ -2563,18 +2569,6 @@ public Native_RefreshPointsAll(Handle:plugin, numParams)
 			SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(i), DBPrio_Low);
 		}
 	}
-}
-
-stock bool:Client_HasAdminFlags(client, flags=ADMFLAG_GENERIC)
-{
-	new AdminId:adminId = GetUserAdmin(client);
-	
-	if (adminId == INVALID_ADMIN_ID)
-	{
-		return false;
-	}
-	
-	return bool:(GetAdminFlags(adminId, Access_Effective) & flags);
 }
 
 stock ValidatePlayerSlot(client, bool:force_kick = false)
