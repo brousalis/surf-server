@@ -1433,13 +1433,20 @@ UpdateHUD_CSGO(client)
 	{
 		if(Timer_GetPauseStatus(iClientToShow))
 		{
-			Format(centerText, sizeof(centerText), "%sTime: Paused", centerText, timeString);
+			Format(centerText, sizeof(centerText), "%sTime: <font color='FF8A00'>Paused</font>", centerText, timeString);
 		}
 		else if (enabled)
 		{
-			Format(centerText, sizeof(centerText), "%sTime: %s", centerText, timeString);
+			if(RecordTime == 0.0 && RecordTime > time)
+			{
+				Format(centerText, sizeof(centerText), "%sTime: <font color='#00ff00'>%s</font>", centerText, timeString);
+			}
+			else
+			{
+				Format(centerText, sizeof(centerText), "%sTime: <font color='#ff0000'>%s</font>", centerText, timeString);
+			}
 		}
-		else Format(centerText, sizeof(centerText), "%sTime: Stopped", centerText);
+		else Format(centerText, sizeof(centerText), "%sTime: <font color='#ff0000'>Stopped</font>", centerText);
 
 		if(hudSettings[Jumps][client] && g_Settings[HUDJumpsEnable]) Format(centerText, sizeof(centerText), "%s | ", centerText);
 	}
