@@ -1425,20 +1425,22 @@ UpdateHUD_CSS(client)
 	{
 		if (hudSettings[Speed][client])
 		{
-			Format(centerText, sizeof(centerText), "%s%t: %d", centerText, "HUD Speed", RoundToFloor(currentspeed));
-			if(g_Settings[HUDSpeedUnit] == 1)
-			{
-				Format(centerText, sizeof(centerText), "%s km/h", centerText);
-			}
+			Format(centerText, sizeof(centerText), "%s%t: %d%s", centerText, "HUD Speed", RoundToFloor(currentspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "");
 		}
 	}
 	else 
 	{
-		if (hudSettings[Speed][client] && hudSettings[SpeedMax][client])
-			//Format(centerText, sizeof(centerText), "%s%t: %5.2f [max:%5.2f|avg:%5.2f]", centerText, "HUD Speed", currentspeed, maxspeed, avgspeed);
-			Format(centerText, sizeof(centerText), "%s%t: %d", centerText, "HUD Speed", RoundToFloor(currentspeed));
-		if (hudSettings[Speed][client] && !hudSettings[SpeedMax][client])
-			Format(centerText, sizeof(centerText), "%s%t: %d", centerText, "HUD Speed", RoundToFloor(currentspeed));
+		if(hudSettings[Speed][client])
+		{
+			if(hudSettings[SpeedMax][client])
+			{
+				Format(centerText, sizeof(centerText), "%s%t: %5.2f%s [max:%5.2f%s]", centerText, "HUD Speed", RoundToFloor(currentspeed), RoundToFloor(maxspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "", g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "");
+			}
+			else
+			{
+				Format(centerText, sizeof(centerText), "%s%t: %d%s", centerText, "HUD Speed", RoundToFloor(currentspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "");
+			}
+		}
 	}
 	
 	if (g_Settings[HUDCenterEnable] && hudSettings[Main][client])
