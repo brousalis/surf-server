@@ -1434,7 +1434,7 @@ UpdateHUD_CSS(client)
 		{
 			if(hudSettings[SpeedMax][client])
 			{
-				Format(centerText, sizeof(centerText), "%s%t: %5.2f%s [max:%5.2f%s]", centerText, "HUD Speed", RoundToFloor(currentspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "", RoundToFloor(maxspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "");
+				Format(centerText, sizeof(centerText), "%s%t: %d%s [max:%d%s]", centerText, "HUD Speed", RoundToFloor(currentspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "", RoundToFloor(maxspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "");
 			}
 			else
 			{
