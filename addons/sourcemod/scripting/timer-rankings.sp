@@ -932,6 +932,7 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 		return Plugin_Continue;
 	}
 
+	/*
 	if(author && GetMessageFlags() & CHATFLAGS_SPEC)
 	{
 		new iSize = GetArraySize(recipients);
@@ -950,6 +951,7 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 			}
 		}
 	}
+	*/
 	
 	if(g_iDisplayMethod < 0)
 	{
