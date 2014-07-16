@@ -1445,9 +1445,9 @@ UpdateHUD_CSS(client)
 	{
 		if(!IsVoteInProgress())
 		{
-			if(Timer_IsPlayerTouchingZoneType(client, ZtStart))
+			if(Timer_IsPlayerTouchingZoneType(iClientToShow, ZtStart))
 				PrintHintText(client, "In Start Zone");
-			else if(Timer_IsPlayerTouchingZoneType(client, ZtBonusStart))
+			else if(Timer_IsPlayerTouchingZoneType(iClientToShow, ZtBonusStart))
 				PrintHintText(client, "In Bonus Start Zone");
 			else PrintHintText(client, centerText);
 		}
