@@ -2651,9 +2651,13 @@ SessionStats(client)
 		DrawPanelItem(panel, "[Tag] Name");
 		Format(text, sizeof(text), "[%s] %s", sTag, g_sName[client]);
 		DrawPanelText(panel, text);
-		DrawPanelItem(panel, "Points");
-		Format(text, sizeof(text), "%d (%s%d)", points, (points-points_start < 0 ? "" : "+"), points-points_start);
-		DrawPanelText(panel, text);
+		
+		if(g_iPositionMethod == 0 || g_iPositionMethod == 1)
+		{
+			DrawPanelItem(panel, "Points");
+			Format(text, sizeof(text), "%d (%s%d)", points, (points-points_start < 0 ? "" : "+"), points-points_start);
+			DrawPanelText(panel, text);
+		}
 		DrawPanelItem(panel, "Time played");
 		Format(text, sizeof(text), "%id %ih %im %is", time_connected / 86400,(time_connected % 86400) / 3600, (time_connected % 3600) / 60, time_connected % 60);
 		DrawPanelText(panel, text);
