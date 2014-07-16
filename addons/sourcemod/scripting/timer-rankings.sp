@@ -181,7 +181,7 @@ public OnPluginStart()
 	HookConVarChange(g_hGlobalMessage, OnCVarChange);
 	g_bGlobalMessage = GetConVarBool(g_hGlobalMessage);
 
-	g_hPositionMethod = AutoExecConfig_CreateConVar("timer_ranks_position_method", "1", "Determines what method will be used to determine rank positions in-game. (0 = Based on clients' total number of points, 1 = Based on the clients' current rank within the server)", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_hPositionMethod = AutoExecConfig_CreateConVar("timer_ranks_position_method", "1", "Determines what method will be used to determine rank positions in-game. (0 = Based on clients' total number of points, 1 = Based on the clients' current rank within the server, 2 = based on current time ranking)", FCVAR_NONE, true, 0.0, true, 2.0);
 	HookConVarChange(g_hPositionMethod, OnCVarChange);
 	g_iPositionMethod = GetConVarInt(g_hPositionMethod);
 
@@ -362,8 +362,8 @@ public OnConfigsExecuted()
 		GetCurrentMap(g_sCurrentMap, sizeof(g_sCurrentMap));
 		g_bLateLoad = false;
 	}
-
-	if(g_hDatabase == INVALID_HANDLE)
+	
+	if(g_hDatabase == INVALID_HANDLE && (g_iPositionMethod == 0 || g_iPositionMethod == 1))
 		SQL_TConnect(SQL_Connect_Database, "timer");
 }
 
@@ -409,8 +409,10 @@ public OnClientPostAdminCheck(client)
 	
 	g_bAuthed[client] = GetClientAuthString(client, g_sAuth[client], sizeof(g_sAuth[]));
 	if(!g_bAuthed[client])
+	{
 		CreateTimer(2.0, Timer_AuthClient, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
-	else if(g_hDatabase != INVALID_HANDLE && !g_bInitalizing)
+	}
+	else if(g_hDatabase != INVALID_HANDLE && !g_bInitalizing && (g_iPositionMethod == 0 || g_iPositionMethod == 1))
 	{
 		GetClientName(client, g_sName[client], sizeof(g_sName[]));
 		g_sAuth[client][6] = '0';
@@ -473,22 +475,30 @@ public OnClientDisconnect(client)
 	{
 		new points_start = KvGetNum(g_hSession, "points", 0);
 		new points = Timer_GetPoints(client);
-		KvSetFloat(g_hSession, "disconnec_time", GetEngineTime());
 		
-		new String:sPre[3];
-		if(points-points_start >= 0)
-			Format(sPre, sizeof(sPre), "+");
-		
-		decl String:sNameBuffer[1024];
-		GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[client], sNameBuffer, sizeof(sNameBuffer));
-		
-		#if defined LEGACY_COLORS
-		CFormat(sNameBuffer, 1024, client);
-		CPrintToChatAll("%s{lightred}%s {olive}disconnected with {lightred}%d {olive}points {lightred}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
-		#else
-		CReplaceColorCodes(sNameBuffer, client, false, 1024);
-		CPrintToChatAll("%s{red}%s {green}disconnected with {yellow}%d {green}points {yellow}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
-		#endif
+		if(points > 0 && points_start == 0)
+		{
+			//Hmm looks like I've to fix this
+		}
+		else
+		{
+			KvSetFloat(g_hSession, "disconnec_time", GetEngineTime());
+			
+			new String:sPre[3];
+			if(points-points_start >= 0)
+				Format(sPre, sizeof(sPre), "+");
+			
+			decl String:sNameBuffer[1024];
+			GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[client], sNameBuffer, sizeof(sNameBuffer));
+			
+			#if defined LEGACY_COLORS
+			CFormat(sNameBuffer, 1024, client);
+			CPrintToChatAll("%s{lightred}%s {olive}disconnected with {lightred}%d {olive}points {lightred}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
+			#else
+			CReplaceColorCodes(sNameBuffer, client, false, 1024);
+			CPrintToChatAll("%s{red}%s {green}disconnected with {yellow}%d {green}points {yellow}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
+			#endif
+		}
 	}
 	KvRewind(g_hSession);
 
@@ -505,7 +515,7 @@ public OnClientDisconnect(client)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+//g_iPositionMethod == 1 || g_iPositionMethod == 2
 public Action:Command_Say(client, const String:command[], argc)
 {
 	if(!g_iEnabled || !client || g_bInitalizing)
@@ -530,66 +540,104 @@ public Action:Command_Say(client, const String:command[], argc)
 			{
 				if(g_iDisplayMethod >= 0 || g_hDisplayCookie == INVALID_HANDLE || g_iCurrentIndex[client] == -1)
 					return Plugin_Continue;
-
+				
 				if(!g_bLoadedSQL[client] || !g_bLoadedCookies[client])
 				{
 					CPrintToChat(client, PLUGIN_PREFIX, "Phrase.Loading");
 					return Plugin_Handled;
 				}
-
 				CreateCookieMenu(client);
 			}
 			case cChatTop:
 			{
-				FormatEx(sText, sizeof(sText), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC LIMIT %d", g_iRequiredPoints, g_iLimitTopPlayers);
-				if(g_iEnabled == 2)
-					PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, sText);
-				SQL_TQuery(g_hDatabase, CallBack_Top, sText, GetClientUserId(client));
+				Command_Top(client);
 			}
 			case cChatRank:
 			{
-				if(!g_bLoadedSQL[client])
-				{
-					CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Loading");
-					return Plugin_Handled;
-				}
-
-				if(g_iCurrentPoints[client] < g_iRequiredPoints)
-					CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Rank_Not_Enough", g_iRequiredPoints, g_iCurrentPoints[client]);
-				else
-				{
-					FormatEx(sText, sizeof(sText), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
-					if(g_iEnabled == 2)
-						PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, sText);
-					SQL_TQuery(g_hDatabase, CallBack_Rank, sText, GetClientUserId(client));
-				}
+				Command_Rank(client);
 			}
 			case cChatView:
 			{
-				if(g_iDisplayMethod != 0)
-					CreateInfoMenu(client);
-				else
-					return Plugin_Continue;
+				Command_View(client);
 			}
 			case cChatNext:
 			{
-				if(!g_bLoadedSQL[client])
-				{
-					CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Loading");
-					return Plugin_Handled;
-				}
-
-				FormatEx(sText, sizeof(sText), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d AND `auth` != '%s' ORDER BY `points` ASC LIMIT %d", g_iCurrentPoints[client], g_sAuth[client], g_iLimitTopPlayers);
-				if(g_iEnabled == 2)
-					PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, sText);
-				SQL_TQuery(g_hDatabase, CallBack_Next, sText, GetClientUserId(client));
+				Command_Next(client);
 			}
 		}
-
 		return Plugin_Handled;
 	}
 
 	return Plugin_Continue;
+}
+
+Command_Top(client)
+{
+	if(g_iPositionMethod == 2)
+	{
+		FakeClientCommand(client, "sm_wr");
+		return;
+	}
+	
+	decl String:query[2048];
+	FormatEx(query, sizeof(query), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC LIMIT %d", g_iRequiredPoints, g_iLimitTopPlayers);
+	if(g_iEnabled == 2)
+		PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, query);
+	SQL_TQuery(g_hDatabase, CallBack_Top, query, GetClientUserId(client));
+}
+
+Command_Rank(client)
+{
+	if(g_iPositionMethod == 2)
+	{
+		FakeClientCommand(client, "sm_rank");
+		return;
+	}
+	
+	if(!g_bLoadedSQL[client])
+	{
+		CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Loading");
+		return;
+	}
+
+	decl String:query[2048];
+	if(g_iCurrentPoints[client] < g_iRequiredPoints)
+		CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Rank_Not_Enough", g_iRequiredPoints, g_iCurrentPoints[client]);
+	else
+	{
+		FormatEx(query, sizeof(query), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
+		if(g_iEnabled == 2)
+			PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, query);
+		SQL_TQuery(g_hDatabase, CallBack_Rank, query, GetClientUserId(client));
+	}
+}
+
+Command_View(client)
+{
+	if(g_iDisplayMethod == 1 && g_iDisplayMethod == 2)
+		CreateInfoMenu(client);
+}
+
+Command_Next(client)
+{
+	if(g_iPositionMethod == 2)
+	{
+		FakeClientCommand(client, "sm_rank");
+		return;
+	}
+	
+	decl String:query[2048];
+	
+	if(!g_bLoadedSQL[client])
+	{
+		CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Loading");
+		return;
+	}
+	
+	FormatEx(query, sizeof(query), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d AND `auth` != '%s' ORDER BY `points` ASC LIMIT %d", g_iCurrentPoints[client], g_sAuth[client], g_iLimitTopPlayers);
+	if(g_iEnabled == 2)
+		PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, query);
+	SQL_TQuery(g_hDatabase, CallBack_Next, query, GetClientUserId(client));
 }
 
 CreateCookieMenu(client)
@@ -740,7 +788,7 @@ CreateInfoMenu(client, item = 0)
 	SetMenuExitBackButton(hMenu, false);
 
 	new iHideNegative;
-	if(g_iPositionMethod)
+	if(g_iPositionMethod == 1 || g_iPositionMethod == 2)
 		iHideNegative = FindValueInArray(g_hArray_Positions, -1);
 	else
 		iHideNegative = FindValueInArray(g_hArray_CfgPoints, -1);
@@ -773,7 +821,7 @@ public MenuHandler_InfoMenu(Handle:menu, MenuAction:action, param1, param2)
 			GetArrayString(g_hCfgArray_DisplayInfo, iIndex, sInfo, sizeof(sInfo));
 
 			new iEnd, iStart, iPoints;
-			if(g_iPositionMethod)
+			if(g_iPositionMethod == 1 || g_iPositionMethod == 2)
 			{
 				new iPreviousIndex = (iIndex - 1);
 				if(iPreviousIndex < 0)
@@ -857,7 +905,7 @@ public MenuHandler_InfoMenu(Handle:menu, MenuAction:action, param1, param2)
 				}
 			}
 
-			if(!g_iPositionMethod && g_iCurrentPoints[param1] < iPoints)
+			if(g_iPositionMethod == 0 && g_iCurrentPoints[param1] < iPoints)
 			{
 				iPoints -= g_iCurrentPoints[param1];
 				CPrintToChat(param1, PLUGIN_PREFIX, "Phrase_Info_Rank_Remaining", iPoints);
@@ -870,8 +918,17 @@ public MenuHandler_InfoMenu(Handle:menu, MenuAction:action, param1, param2)
 
 public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:message[])
 {
-	if(!g_iEnabled || g_hDatabase == INVALID_HANDLE || !g_bAuthed[author] || !g_iDisplayMethod)
+	if(!g_iEnabled || !g_bAuthed[author] || !g_iDisplayMethod)
 		return Plugin_Continue;
+	
+	if(g_iPositionMethod == 2)
+	{
+		UpdateRankIndexbyRecordTime(author);
+	}
+	else if(g_hDatabase == INVALID_HANDLE)
+	{
+		return Plugin_Continue;
+	}
 
 	/*if(author && GetClientTeam(author) <= CS_TEAM_SPECTATOR)
 	{
@@ -1188,7 +1245,7 @@ public CallBack_CreateClient(Handle:owner, Handle:hndl, const String:error[], an
 		return;
 
 	g_iCurrentIndex[client] = -1;
-	if(g_iPositionMethod)
+	if(g_iPositionMethod == 1)
 	{
 		decl String:sQuery[192];
 		FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
@@ -1271,7 +1328,7 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 
 		g_iCurrentPoints[client] = SQL_FetchInt(hndl, 0);
 
-		if(g_iPositionMethod)
+		if(g_iPositionMethod == 1)
 		{
 			FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
 			if(g_iEnabled == 2)
@@ -1377,8 +1434,35 @@ public CallBack_LoadRank(Handle:owner, Handle:hndl, const String:error[], any:us
 	ShowConnectMsg(client);
 }
 
+UpdateRankIndexbyRecordTime(client)
+{
+	new iOutside = FindValueInArray(g_hArray_Positions, -1);
+	
+	g_iCurrentRank[client] = Timer_GetStyleRank(client, TRACK_NORMAL, g_StyleDefault);
+	
+	if(g_iCurrentRank[client] > g_iHighestRank || g_iCurrentRank[client] <= 0)
+		g_iCurrentIndex[client] = iOutside;
+	else
+	{
+		new iSize = GetArraySize(g_hArray_Positions);
+		for(new i = 0; i < iSize; i++)
+		{
+			if(g_iCurrentRank[client] <= GetArrayCell(g_hArray_Positions, i))
+			{
+				g_iCurrentIndex[client] = i;
+				break;
+			}
+		}
+	}
+
+	g_bLoadedSQL[client] = true;
+}
+
 ShowConnectMsg(client)
 {
+	if(g_iPositionMethod == 2)
+		return;
+	
 	if(g_bLateLoad)
 		return;
 	
@@ -2097,7 +2181,7 @@ Parse_Points()
 			new iCurrent;
 			new iLowest = 2147483647;
 
-			if(g_iPositionMethod)
+			if(g_iPositionMethod == 1 || g_iPositionMethod == 2)
 			{
 				new iSize = GetArraySize(hTemp[1]);
 				for(new j = 0; j < iSize; j++)
@@ -2138,7 +2222,7 @@ Parse_Points()
 				RemoveFromArray(hTemp[j], iIndex);
 		}
 
-		if(g_iPositionMethod)
+		if(g_iPositionMethod == 1 || g_iPositionMethod == 2)
 		{
 			new iSize = GetArraySize(g_hArray_CfgRanks);
 			for(new i = 0; i < iSize; i++)
@@ -2351,14 +2435,18 @@ stock PrintToAdmins(const String:format[], any:...)
 
 SavePoints(client)
 {
-	decl String:sQuery[192];
-	FormatEx(sQuery, sizeof(sQuery), "UPDATE `ranks` SET `points` = %d WHERE `auth` = '%s'", g_iCurrentPoints[client], g_sAuth[client]);
-	if(g_iEnabled == 2)
-		PrintToDebug("OnFinishRound(%N): Issuing Query `%s`", client, sQuery);
-	SQL_TQuery(g_hDatabase, CallBack_UpdateClient, sQuery, GetClientUserId(client), DBPrio_High);
-
-	if(g_iPositionMethod)
+	if(g_iPositionMethod == 0 || g_iPositionMethod == 1)
 	{
+		decl String:sQuery[192];
+		FormatEx(sQuery, sizeof(sQuery), "UPDATE `ranks` SET `points` = %d WHERE `auth` = '%s'", g_iCurrentPoints[client], g_sAuth[client]);
+		if(g_iEnabled == 2)
+			PrintToDebug("OnFinishRound(%N): Issuing Query `%s`", client, sQuery);
+		SQL_TQuery(g_hDatabase, CallBack_UpdateClient, sQuery, GetClientUserId(client), DBPrio_High);
+	}
+
+	if(g_iPositionMethod == 1)
+	{
+		decl String:sQuery[2048];
 		FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
 		if(g_iEnabled == 2)
 			PrintToDebug("OnFinishRound(%N): Issuing Query `%s`", client, sQuery);
