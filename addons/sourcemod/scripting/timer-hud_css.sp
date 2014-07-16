@@ -1423,16 +1423,16 @@ UpdateHUD_CSS(client)
 	
 	if(!enabled)
 	{
-		if (hudSettings[Speed][client])
+		if (hudSettings[Speed][client] && g_Settings[HUDSpeedEnable])
 		{
 			Format(centerText, sizeof(centerText), "%s%t: %d%s", centerText, "HUD Speed", RoundToFloor(currentspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "");
 		}
 	}
 	else 
 	{
-		if(hudSettings[Speed][client])
+		if(hudSettings[Speed][client] && g_Settings[HUDSpeedEnable])
 		{
-			if(hudSettings[SpeedMax][client])
+			if(hudSettings[SpeedMax][client] && g_Settings[HUDSpeedMaxEnable])
 			{
 				Format(centerText, sizeof(centerText), "%s%t: %d%s [max:%d%s]", centerText, "HUD Speed", RoundToFloor(currentspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "", RoundToFloor(maxspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "");
 			}
