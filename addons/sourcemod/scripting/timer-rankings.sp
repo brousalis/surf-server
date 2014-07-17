@@ -268,7 +268,7 @@ public Menu_Settings(client, CookieMenuAction:action, any:info, String:buffer[],
 		case CookieMenuAction_DisplayOption:
 			FormatEx(buffer, maxlen, "%t", "Menu_Core_Title", client);
 		case CookieMenuAction_SelectOption:
-			CreateSettingsMenu(client);
+			if(g_iPositionMethod == 0 || g_iPositionMethod == 1) CreateSettingsMenu(client);
 	}
 }
 
@@ -1668,7 +1668,7 @@ CreateSettingsMenu(client)
 		FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Cookie", client);
 		AddMenuItem(hMenu, "1", sBuffer);
 	}
-
+	
 	FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Top", client);
 	AddMenuItem(hMenu, "2", sBuffer);
 
@@ -1683,6 +1683,7 @@ CreateSettingsMenu(client)
 		FormatEx(sBuffer, sizeof(sBuffer), "%T", "Menu_Settings_Option_Positions", client);
 		AddMenuItem(hMenu, "5", sBuffer);
 	}
+		
 
 	DisplayMenu(hMenu, client, 30);
 }
