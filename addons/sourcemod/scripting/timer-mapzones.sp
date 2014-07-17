@@ -300,7 +300,7 @@ public OnPluginStart()
 	g_OnClientStartTouchBonusLevel = CreateGlobalForward("OnClientStartTouchBonusLevel", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	
 	//Check timeleft to enforce mapchange
-	CreateTimer(1.0, CheckRemainingTime, INVALID_HANDLE, TIMER_REPEAT);
+	if(g_Settings[ForceMapEndEnable]) CreateTimer(1.0, CheckRemainingTime, INVALID_HANDLE, TIMER_REPEAT);
 }
 
 public OnLibraryAdded(const String:name[])

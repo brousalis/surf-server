@@ -64,6 +64,7 @@ enum TimerSettings
 	Float:ZoneTeleportZ,
 	bool:DisableButtonSounds,
 	bool:DisableDoorSounds,
+	bool:ForceMapEndEnable,
 	
 	//HUD
 	HUDUseMVPStars,
@@ -341,6 +342,7 @@ stock LoadTimerSettings()
 			KvGetString(hKv, "npc_double_model", g_Settings[NPC_Double_Path], 32);
 			g_Settings[DisableButtonSounds] = bool:KvGetNum(hKv, "disable_button_sounds", 1);
 			g_Settings[DisableDoorSounds] = bool:KvGetNum(hKv, "disable_door_sounds", 1);
+			g_Settings[ForceMapEndEnable] = bool:KvGetNum(hKv, "force_map_end", 1);
 		}
 		else if(StrEqual(sSectionName, "Hud"))
 		{
