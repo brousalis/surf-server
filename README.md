@@ -112,7 +112,7 @@
 	//////////////////////////////
 	/////INSTALL INSTRUCTIONS/////
 	//////////////////////////////
-
+		
 	1.) Download the plugin at https://github.com/Zipcore/Timer
 	
 	2.) CS:GO color support: 
@@ -124,7 +124,7 @@
 		2.3) Remove // in front of #define and close it
 
 	3.) Compiling
-		3.1) Download at least Sourcemod v1.5 and extract it into your desktop.
+		3.1) Download the latest Sourcemod & Metamod Snapshots (Stable Branch): http://www.sourcemod.net/snapshots.php & http://www.sourcemm.net/snapshots
 		3.2) Goto addons/sourcemod/scripting/include and fill it with all files this timer provides from same folder.
 		3.3) Drag and drop needed SP files onto spcomp.exe inside addons/sourcemod/scripting to compile them it should create all needed SMX files.
 		
