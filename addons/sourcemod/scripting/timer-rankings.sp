@@ -616,7 +616,7 @@ Command_Rank(client)
 
 Command_View(client)
 {
-	if(g_iDisplayMethod == 1 && g_iDisplayMethod == 2)
+	if(g_iDisplayMethod != 0)
 		CreateInfoMenu(client);
 }
 
