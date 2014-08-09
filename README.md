@@ -32,44 +32,34 @@ It measures the time and jumps it takes players to finish the map.
 
 ### 2) INSTALL INSTRUCTIONS
 
-1) Download the plugin at [github.com/Zipcore/Timer] (https://github.com/Zipcore/Timer)
+* **Step 1** Download the plugin at [github.com/Zipcore/Timer] (https://github.com/Zipcore/Timer)
 	
-2) CS:GO color support: 
-Continue with step 3 and skip this part if you are running a CS:S server. 
-For CS:GO you have to follow step 2 first!
+* **Step 2** CS:GO color support: Continue with step 3 and skip this part if you are running a CS:S server. For CS:GO you have to follow step 2 first!
+ * **Step 2.1** Open scripting/include/timer.inc with a text editor (like Notepad++)
+ * **Step 2.2** Find the following line - //#define LEGACY_COLORS "CS:GO Color Support"
+ * **Step 2.3** Remove // in front of #define and close it
 
-  Step 2.1) Open scripting/include/timer.inc with a text editor (like Notepad++)
-  
-  Step 2.2) Find the following line - //#define LEGACY_COLORS "CS:GO Color Support"
-  
-  Step 2.3) Remove // in front of #define and close it
+* **Step 3)** Compiling: Download the latest Sourcemod & Metamod Snapshots (Stable Branch): [DOWNLOAD] (http://www.sourcemod.net/snapshots.php)
+ * **Step 3.1** Goto addons/sourcemod/scripting/include and fill it with all files this timer provides from same folder.
+ * **Step 3.2** Drag and drop needed SP files onto spcomp.exe inside addons/sourcemod/scripting to compile them it should create all needed SMX files.	
 
-Step 3) Compiling: Download the latest Sourcemod & Metamod Snapshots (Stable Branch): [DOWNLOAD] (http://www.sourcemod.net/snapshots.php)
+* **Step 4** Upload all SMX files, configs, sounds and materials onto your server.
 
-  Step 3.1) Goto addons/sourcemod/scripting/include and fill it with all files this timer provides from same folder.
-  
-  Step 3.2) Drag and drop needed SP files onto spcomp.exe inside addons/sourcemod/scripting to compile them it should create all needed SMX files.	
+* **Step 5** Insert "timer" keyvalue into configs/databases.cfg (no sqlite support).
+ * **Step 5.1** When using the timer-cpmod module, insert a "cpmod" keyvalue into configs/databases.cfg
+ * **Step 5.2** When using the timer-ranking_toponly module, insert a "timer_toponly" keyvalue into configs/databases.cfg
 
-Step 4) Upload all SMX files, configs, sounds and materials onto your server.
+* **Step 6** Change configs/timer/settings.cfg to your needs
 
-Step 5) Insert "timer" keyvalue into configs/databases.cfg (no sqlite support).
+* **Step 7** Change configs/timer/physics.cfg to your needs (the folder contains some example files for bhop, surf, etc.)
 
-  Step 5.1) When using the timer-cpmod module, insert a "cpmod" keyvalue into configs/databases.cfg
-  
-  Step 5.2) When using the timer-ranking_toponly module, insert a "timer_toponly" keyvalue into configs/databases.cfg
-
-Step 6) Change configs/timer/settings.cfg to your needs
-
-Step 7) Change configs/timer/physics.cfg to your needs (the folder contains some example files for bhop, surf, etc.)
-
-Step 8) Skip this part if you don't like to run Chatranks/Points ranking/Skillrank
+* **Step 8** Skip this part if you don't like to run Chatranks/Points ranking/Skillrank
 Depending on if you run a CS:GO or CS:S server, rename csgo-rankings.cfg/css-rankings.cfg to rankings.cfg (addons/sourcemod/configs/timer) to enable the ranking module.
+ * **Step 8.1** Compile simple-chatprocessor.sp  and upload it to your server to enable chatranks.
 
-  Step 8.1) Compile simple-chatprocessor.sp  and upload it to your server to enable chatranks.
+* **Step 9** Restart your server.
 
-Step 9) Restart your server.
-
-Step 10) Start creating zones or use included mappacks inside addons/sourcemod/gamedata/MySQL
+* **Step 10** Start creating zones or use included mappacks inside addons/sourcemod/gamedata/MySQL
 
 ### 3) Update Instructions (2.0.x to 2.1.x
 
