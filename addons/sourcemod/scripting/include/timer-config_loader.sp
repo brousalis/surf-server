@@ -192,6 +192,9 @@ enum Styles
 	String:StyleTagName[32],
 	String:StyleTagShortName[32],
 	String:StyleQuickCommand[32],
+	String:StyleQuickWrCommand[32],
+	String:StyleQuickBonusWrCommand[32],
+	String:StyleQuickShortWrCommand[32],
 	String:StyleDesc[128],
 	
 	//HUD
@@ -556,6 +559,9 @@ stock LoadPhysics()
 			KvGetString(hKv, "tag_name", g_Physics[g_StyleCount][StyleTagName], 32);
 			KvGetString(hKv, "tag_shortname", g_Physics[g_StyleCount][StyleTagShortName], 32);
 			KvGetString(hKv, "chat_command", g_Physics[g_StyleCount][StyleQuickCommand], 32);
+			KvGetString(hKv, "chat_wr_command", g_Physics[g_StyleCount][StyleQuickWrCommand], 32);
+			KvGetString(hKv, "chat_bwr_command", g_Physics[g_StyleCount][StyleQuickBonusWrCommand], 32);
+			KvGetString(hKv, "chat_swr_command", g_Physics[g_StyleCount][StyleQuickShortWrCommand], 32);
 			KvGetString(hKv, "exec_onfinish", g_Physics[g_StyleCount][StyleOnFinishExec], 128);
 			KvGetString(hKv, "desc", g_Physics[g_StyleCount][StyleDesc], 128);
 			

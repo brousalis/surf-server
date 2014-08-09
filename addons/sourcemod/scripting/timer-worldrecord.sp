@@ -155,6 +155,25 @@ public OnPluginStart()
 	}
 	
 	g_OnRecordCacheLoaded = CreateGlobalForward("OnRecordCacheLoaded", ET_Event, Param_Cell, Param_Cell);
+
+	for(new i = 0; i < MAX_STYLES-1; i++) 
+	{
+		if(!StrEqual(g_Physics[i][StyleQuickWrCommand], ""))
+		{
+			RegConsoleCmd(g_Physics[i][StyleQuickWrCommand], Callback_Empty);
+			AddCommandListener(Hook_WrCommands, g_Physics[i][StyleQuickWrCommand]);
+		}
+		if(!StrEqual(g_Physics[i][StyleQuickBonusWrCommand], ""))
+		{
+			RegConsoleCmd(g_Physics[i][StyleQuickBonusWrCommand], Callback_Empty);
+			AddCommandListener(Hook_WrCommands, g_Physics[i][StyleQuickBonusWrCommand]);
+		}
+		if(!StrEqual(g_Physics[i][StyleQuickShortWrCommand], ""))
+		{
+			RegConsoleCmd(g_Physics[i][StyleQuickShortWrCommand], Callback_Empty);
+			AddCommandListener(Hook_WrCommands, g_Physics[i][StyleQuickShortWrCommand]);
+		}
+	}
 }
 
 public OnLibraryAdded(const String:name[])
@@ -231,7 +250,7 @@ public Action:Command_WorldRecord(client, args)
 	if (g_timerPhysics && g_Settings[MultimodeEnable])
 		CreateRankedWRMenu(client);
 	else
-		CreateWRMenu(client, g_StyleDefault, 0);
+		CreateWRMenu(client, g_StyleDefault, TRACK_NORMAL);
 	
 	return Plugin_Handled;
 }
@@ -241,7 +260,7 @@ public Action:Command_BonusWorldRecord(client, args)
 	if (g_timerPhysics && g_Settings[MultimodeEnable])
 		CreateRankedBWRMenu(client);
 	else
-		CreateWRMenu(client, g_StyleDefault, 1);
+		CreateWRMenu(client, g_StyleDefault, TRACK_BONUS);
 	
 	return Plugin_Handled;
 }
@@ -251,8 +270,52 @@ public Action:Command_ShortWorldRecord(client, args)
 	if (g_timerPhysics && g_Settings[MultimodeEnable])
 		CreateRankedSWRMenu(client);
 	else
-		CreateWRMenu(client, g_StyleDefault, 2);
+		CreateWRMenu(client, g_StyleDefault, TRACK_SHORT);
 	
+	return Plugin_Handled;
+}
+
+public Action:Hook_WrCommands(client, const String:sCommand[], argc)
+{
+	if (!IsValidClient(client))
+	{
+		return Plugin_Continue;
+	}
+	for(new i = 0; i < MAX_STYLES-1; i++) 
+	{
+		if(!g_Physics[i][StyleEnable])
+			continue;
+		
+		if(g_Physics[i][StyleCategory] != MCategory_Ranked)
+			continue;
+		
+		if(!StrEqual(g_Physics[i][StyleQuickWrCommand], ""))
+		if(StrEqual(g_Physics[i][StyleQuickWrCommand], sCommand))
+		{
+			CreateWRMenu(client, i, TRACK_NORMAL);
+			return Plugin_Handled;
+		}
+		
+		if(!StrEqual(g_Physics[i][StyleQuickBonusWrCommand], ""))
+		if(StrEqual(g_Physics[i][StyleQuickBonusWrCommand], sCommand))
+		{
+			CreateWRMenu(client, i, TRACK_BONUS);
+			return Plugin_Handled;
+		}
+		
+		if(!StrEqual(g_Physics[i][StyleQuickShortWrCommand], ""))
+		if(StrEqual(g_Physics[i][StyleQuickShortWrCommand], sCommand))
+		{
+			CreateWRMenu(client, i, TRACK_SHORT);
+			return Plugin_Handled;
+		}
+	}
+	
+	return Plugin_Continue;
+}
+
+public Action:Callback_Empty(client, args)
+{
 	return Plugin_Handled;
 }
 

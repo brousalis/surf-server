@@ -34,6 +34,15 @@ Here are all setings you can use for a style:
 //requires quickcommands module
 "chat_command"			"auto"
 
+//Console command to open wr menu for this style
+"chat_wr_command"		"wrauto"
+
+//Console command to open bonus wr menu for this style
+"chat_bwr_command"		"bwrauto"
+
+//Console command to open short wr menu for this style
+"chat_swr_command"		"swrauto"
+
 //Exec a command on map finish (requires finishexec module)
 "exec_onfinish"			"sm_givestammpoints {steamid} 50"
 //just another example...
