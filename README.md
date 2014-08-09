@@ -32,39 +32,44 @@ It measures the time and jumps it takes players to finish the map.
 
 ### 2) INSTALL INSTRUCTIONS
 
-1.) Download the plugin at [github.com/Zipcore/Timer] (https://github.com/Zipcore/Timer)
+1. Download the plugin at [github.com/Zipcore/Timer] (https://github.com/Zipcore/Timer)
 	
-2.) CS:GO color support: 
-	Continue with 3.) and skip this part if you are running a CS:S server. 
-	For CS:GO you have to follow step 2 first!
-	
-2.1) Open scripting/include/timer.inc with a text editor (like Notepad++)
-2.2) Find the following line - //#define LEGACY_COLORS "CS:GO Color Support"
-2.3) Remove // in front of #define and close it
+2. CS:GO color support: 
+Continue with step 3 and skip this part if you are running a CS:S server. 
+For CS:GO you have to follow step 2 first!
 
-3.) Compiling
-3.1) Download the latest Sourcemod & Metamod Snapshots (Stable Branch): [DOWNLOAD] (http://www.sourcemod.net/snapshots.php)
-3.2) Goto addons/sourcemod/scripting/include and fill it with all files this timer provides from same folder.
-3.3) Drag and drop needed SP files onto spcomp.exe inside addons/sourcemod/scripting to compile them it should create all needed SMX files.
-		
-4.) Upload all SMX files, configs, sounds and materials onto your server.
-	
-5.) Insert "timer" keyvalue into configs/databases.cfg (no sqlite support).
-5.1) When using the timer-cpmod module, insert a "cpmod" keyvalue into configs/databases.cfg
-5.2) When using the timer-ranking_toponly module, insert a "timer_toponly" keyvalue into configs/databases.cfg
-		
-6.) Change configs/timer/settings.cfg to your needs
-	
-7.) Change configs/timer/physics.cfg to your needs (the folder contains some example files for bhop, surf, etc.)
-	
-7.) Skip this part if you don't like to run Chatranks/Points ranking/Skillrank
-	Depending on if you run a CS:GO or CS:S server, rename csgo-rankings.cfg/css-rankings.cfg to rankings.cfg (addons/sourcemod/configs/timer) to enable the ranking module.
-	
-6.1) Compile simple-chatprocessor.sp  and upload it to your server to enable chatranks.
-	
-8.) Restart your server.
-	
-9.) Start creating zones or use included mappacks inside addons/sourcemod/gamedata/MySQL
+2.1 Open scripting/include/timer.inc with a text editor (like Notepad++)
+
+2.2 Find the following line - //#define LEGACY_COLORS "CS:GO Color Support"
+
+2.3 Remove // in front of #define and close it
+
+3. Compiling: Download the latest Sourcemod & Metamod Snapshots (Stable Branch): [DOWNLOAD] (http://www.sourcemod.net/snapshots.php)
+
+3.1 Goto addons/sourcemod/scripting/include and fill it with all files this timer provides from same folder.
+
+3.2 Drag and drop needed SP files onto spcomp.exe inside addons/sourcemod/scripting to compile them it should create all needed SMX files.	
+
+4. Upload all SMX files, configs, sounds and materials onto your server.
+
+5. Insert "timer" keyvalue into configs/databases.cfg (no sqlite support).
+
+5.1 When using the timer-cpmod module, insert a "cpmod" keyvalue into configs/databases.cfg
+
+5.2 When using the timer-ranking_toponly module, insert a "timer_toponly" keyvalue into configs/databases.cfg
+
+6. Change configs/timer/settings.cfg to your needs
+
+7. Change configs/timer/physics.cfg to your needs (the folder contains some example files for bhop, surf, etc.)
+
+8. Skip this part if you don't like to run Chatranks/Points ranking/Skillrank
+Depending on if you run a CS:GO or CS:S server, rename csgo-rankings.cfg/css-rankings.cfg to rankings.cfg (addons/sourcemod/configs/timer) to enable the ranking module.
+
+8.1 Compile simple-chatprocessor.sp  and upload it to your server to enable chatranks.
+
+9. Restart your server.
+
+10. Start creating zones or use included mappacks inside addons/sourcemod/gamedata/MySQL
 
 ### 3) Update Instructions (2.0.x to 2.1.x
 
