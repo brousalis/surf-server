@@ -13,17 +13,17 @@
 12. List of Other Modules Modules
 13. Usefull CVAR list
 
-### General Info
+### 1) General Info
 
 	[CS:S/CS:GO] Timer for surf, bhop, climb, deathrun, minigame and more...
 	Support: https://forums.alliedmods.net/showthread.php?t=231866
 
-### History
+### 2) History
 
 	This timer was private until poppin leaked it, this timer is a heavy modified version of Timer by Alongub (https://github.com/alongubkin/timer),
 	with many new components and annexed plugins by various authors.
 
-### INSTALL INSTRUCTIONS
+### 3) INSTALL INSTRUCTIONS
 
 	##1.) Download the plugin at https://github.com/Zipcore/Timer
 	
@@ -58,7 +58,7 @@
 	
 	##9.) Start creating zones or use included mappacks inside addons/sourcemod/gamedata/MySQL
 
-### Update Instructions (2.0.x to 2.1.x
+### 4) Update Instructions (2.0.x to 2.1.x
 
 	Update 2.0.x to 2.1.x:
 	1.) Make a backup of your mapzone, round and maptier table.
@@ -66,7 +66,7 @@
 	3.) Delete "create table" lines of you backup files (Notepad++).
 	4.) Import modified backups.
 
-### Compability Info
+### 5) Compability Info
 
 	- Noblock (Included into Mapzone module)
 	- MultiPlayer Bunny Hops (Included into Physics module)
@@ -75,7 +75,7 @@
 	- SMAC autotrigger (Included into Scripter-SMAC module)
 	- Macrodox - Bhop cheat detection (Included into Scripter-Macrodox module)
 
-### List of Main Modules
+### 6) List of Main Modules
 
 	Timer-Core https://github.com/Zipcore/Timer/blob/master/timer_info/timer-core.txt
 	Timer-Logging https://github.com/Zipcore/Timer/blob/master/timer_info/timer-logging.txt
@@ -85,7 +85,7 @@
 	Timer-Teams https://github.com/Zipcore/Timer/blob/master/timer_info/timer-teams.txt
 	Timer-Worldrecord https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord.txt
     
-### List of Recommend Modules
+### 7) List of Recommend Modules
 
 	Timer-Autospawn https://github.com/Zipcore/Timer/blob/master/timer_info/timer-autospawn.txt
 	Timer-HUD https://github.com/Zipcore/Timer/blob/master/timer_info/timer-hud.txt
@@ -108,25 +108,25 @@
 	Timer-Worldrecord Playerinfo https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord_playerinfo.txt
 	Timer-Unlimited Spawnpoints https://github.com/Zipcore/Timer/blob/master/timer_info/timer-unlimited-spawnpoints.txt
 	
-### List of Recommend Bhop Modules
+### 8) List of Recommend Bhop Modules
 	
 	Timer-LJ Stats (Long Jump Stats) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-ljstats.txt
 	Timer-Strafes (count strafes) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-strafes.txt
 	Timer-Weapons (CS:Source only) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-weapons.txt
 	
-### List of Recommend Surf Modules
+### 9) List of Recommend Surf Modules
 	
 	Timer-NoJail https://github.com/Zipcore/Timer/blob/master/timer_info/timer-nojail.txt
 	
-### List of Recommend Climb Modules
+### 10) List of Recommend Climb Modules
 	
 	Timer-CP Mod (Checkpoints) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-cpmod.txt
 	
-### List of Recommend Minigames Modules
+### 11) List of Recommend Minigames Modules
 	
 	Timer-Finish Manager https://github.com/Zipcore/Timer/blob/master/timer_info/timer-finish_manager.txt
 	
-### List of Other Modules
+### 12) List of Other Modules
 	
 	Timer-Finish Exec https://github.com/Zipcore/Timer/blob/master/timer_info/timer-finish_exec.txt
 	Timer-Physics Autostrafe https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_autostrafe.txt
@@ -144,7 +144,7 @@
 	Timer-Sound (CS:Source only) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-sound.txt
 	timer-Teams Challenge Points https://github.com/Zipcore/Timer/blob/master/timer_info/timer-teams_challenge_points.txt
 	
-### Usefull CVAR list
+### 13) Usefull CVAR list
 
 	- sv_accelerate "10" (Ground control)
 	- sv_wateraccelerate "150" (Water control)
