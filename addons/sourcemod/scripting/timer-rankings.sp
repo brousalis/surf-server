@@ -511,7 +511,7 @@ public OnClientDisconnect(client)
 	g_iNextIndex[client] = -1;
 	g_iCurrentIndex[client] = -1;
 	g_iCompletions[client] = 0;
-	g_iCurrentPoints[client] = 0;
+	g_iCurrentPoints[client] = -1;
 	g_iLastGlobalMessage[client] = 0;
 	g_iClientDisplay[client] = 0;
 }
@@ -1316,7 +1316,7 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 	decl String:sQuery[256];
 	if(!SQL_GetRowCount(hndl))
 	{
-		g_iCurrentPoints[client] = 0;
+		g_iCurrentPoints[client] = -1;
 
 		FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `ranks` (auth, points, lastname, lastplay) VALUES ('%s', 0, '%s', %d)", g_sAuth[client], sSafeName, GetTime());
 		if(g_iEnabled == 2)
@@ -2444,6 +2444,12 @@ stock PrintToAdmins(const String:format[], any:...)
 
 SavePoints(client)
 {
+	if(!g_bAuthed[client])
+		return;
+	
+	if(g_iCurrentPoints[client] < 0)
+		return;
+	
 	if(g_iPositionMethod == 0 || g_iPositionMethod == 1)
 	{
 		decl String:sQuery[192];
@@ -2493,6 +2499,13 @@ public Native_GetPointRank(Handle:plugin, numParams)
 public Native_SetPoints(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
+	
+	if(!g_bAuthed[client])
+		return;
+	
+	if(g_iCurrentPoints[client] < 0)
+		return;
+	
 	new points = GetNativeCell(2);
 	
 	new old_points = g_iCurrentPoints[client];
@@ -2510,6 +2523,13 @@ public Native_SetPoints(Handle:plugin, numParams)
 public Native_AddPoints(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
+	
+	if(!g_bAuthed[client])
+		return;
+	
+	if(g_iCurrentPoints[client] < 0)
+		return;
+	
 	new points = GetNativeCell(2);
 	g_iCurrentPoints[client] += points;
         
@@ -2524,6 +2544,12 @@ public Native_AddPoints(Handle:plugin, numParams)
 public Native_RemovePoints(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
+	
+	if(!g_bAuthed[client])
+		return;
+	
+	if(g_iCurrentPoints[client] < 0)
+		return;
 	new points = GetNativeCell(2);
 	
 	g_iCurrentPoints[client] -= points;

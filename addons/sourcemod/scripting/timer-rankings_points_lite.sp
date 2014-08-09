@@ -44,7 +44,6 @@ public OnMapStart()
 	GetCurrentMap(g_sCurrentMap, sizeof(g_sCurrentMap));
 }
 
-//public OnFinishRound(client, const String:map[], jumps, flashbangs, physicsDifficulty, fpsmax, const String:timeString[], const String:timeDiffString[], position, totalrank, bool:overwrite)
 public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentrank, newrank)
 {
 	if(IsFakeClient(client))
@@ -53,20 +52,17 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	new tier = Timer_GetTier(track);
 	if(track > TRACK_BONUS) tier = 1;
 	
-	new bool:ranked = bool:Timer_IsStyleRanked(style);
-	
-	if(ranked)
+	if(Timer_IsStyleRanked(style))
 	{
 		new total = Timer_GetStyleTotalRank(style, track);
 		new finishcount = Timer_GetFinishCount(style, track, currentrank);
 		
 		new points = GetRecordPoints(lasttime > time, track, style, tier, finishcount, total, currentrank, newrank);
-
-		Timer_AddPoints(client, points);
-		Timer_SavePoints(client);
-
+		
 		if(points > 0)
 		{
+			Timer_AddPoints(client, points);
+			Timer_SavePoints(client);
 			CPrintToChat(client, PLUGIN_PREFIX, "Phrase_Complete_Round_Points", points, g_sCurrentMap);
 		}
 	}
@@ -142,135 +138,117 @@ stock GetRecordPoints(bool:timeimproved, track, style, tier, finishcount, total,
 		tier_scale = g_Settings[Tier10Scale];
 
 	/* Anyway */
-	points += g_Settings[PointsAnyway]*tier_scale*style_scale; //for first 5 records on this map
-	//PrintToChatAll("a %.1f", g_Settings[PointsAnyway]*tier_scale*style_scale);
+	points += g_Settings[PointsAnyway]*tier_scale*style_scale;
 	
 	/* First Record */
 	if(finishcount == 0)
 	{
-		points += g_Settings[PointsFirst]*tier_scale*style_scale; //for first personal record on this map
-		//PrintToChatAll("f %.1f", g_Settings[PointsFirst]*tier_scale*style_scale);
+		points += g_Settings[PointsFirst]*tier_scale*style_scale;
 	}
 	
 	/* First 5 */
 	if(finishcount < 5)
 	{
-		points += g_Settings[PointsFirst5]*tier_scale*style_scale; //for first 5 records on this map
-		//PrintToChatAll("f5 %.1f", g_Settings[PointsFirst5]*tier_scale*style_scale);
+		points += g_Settings[PointsFirst5]*tier_scale*style_scale;
 	}
 	
 	/* First 10 */
 	if(finishcount < 10)
 	{
-		points += g_Settings[PointsFirst10]*tier_scale*style_scale; //for first 10 records on this map
-		//PrintToChatAll("f10 %.1f", g_Settings[PointsFirst10]*tier_scale*style_scale);
+		points += g_Settings[PointsFirst10]*tier_scale*style_scale;
 	}
 	
 	/* First 25 */
 	if(finishcount < 25)
 	{
-		points += g_Settings[PointsFirst25]*tier_scale*style_scale; //for first 25 records on this map
-		//PrintToChatAll("f25 %.1f", g_Settings[PointsFirst25]*tier_scale*style_scale);
+		points += g_Settings[PointsFirst25]*tier_scale*style_scale;
 	}
 	
 	/* First 50 */
 	if(finishcount < 50)
 	{
-		points += g_Settings[PointsFirst50]*tier_scale*style_scale; //for first 50 records on this map
-		//PrintToChatAll("f50 %.1f", g_Settings[PointsFirst50]*tier_scale*style_scale);
+		points += g_Settings[PointsFirst50]*tier_scale*style_scale;
 	}
 	
 	/* First 100 */
 	if(finishcount < 100)
 	{
-		points += g_Settings[PointsFirst100]*tier_scale*style_scale; //for first 100 records on this map
-		//PrintToChatAll("f100 %.1f", g_Settings[PointsFirst100]*tier_scale*style_scale);
+		points += g_Settings[PointsFirst100]*tier_scale*style_scale;
 	}
 	
 	/* First 250 */
 	if(finishcount < 250)
 	{
-		points += g_Settings[PointsFirst250]*tier_scale*style_scale; //for first 250 records on this map
-		//PrintToChatAll("f250 %.1f", g_Settings[PointsFirst250]*tier_scale*style_scale);
+		points += g_Settings[PointsFirst250]*tier_scale*style_scale;
 	}
 	
-	/* Iproved Time */
+	/* Improved Time */
 	if(timeimproved)
 	{
-		points += g_Settings[PointsImprovedTime]*tier_scale*style_scale; //improved yourself (time)
-		//PrintToChatAll("it %f.1f", g_Settings[PointsImprovedTime]*tier_scale*style_scale);
+		points += g_Settings[PointsImprovedTime]*tier_scale*style_scale;
 	}
 	
-	/* Iproved Rank */
+	/* Improved Rank */
 	if(currentrank > newrank)
 	{
-		points += g_Settings[PointsImprovedRank]*tier_scale*style_scale; //improved yourself (rank)
-		//PrintToChatAll("ir %f.1f", g_Settings[PointsImprovedRank]*tier_scale*style_scale);
+		points += g_Settings[PointsImprovedRank]*tier_scale*style_scale;
 	}
 	
 	/* Break World-Record Self */
 	if(newrank == 1 && total > 10 && currentrank == newrank)
 	{
-		points += g_Settings[PointsNewWorldRecordSelf]*tier_scale*style_scale; //for breaking own world record
+		points += g_Settings[PointsNewWorldRecordSelf]*tier_scale*style_scale;
 		points += totalbonus;
-		//PrintToChatAll("wrs %.1f", g_Settings[PointsNewWorldRecordSelf]*tier_scale*style_scale+totalbonus);
 	}
 	else if(currentrank > newrank)
 	{
 		/* Break World-Record */
 		if(newrank == 1 && total > 10 && finishcount == 0)
 		{
-			points += g_Settings[PointsNewWorldRecord]*tier_scale*style_scale; //for new world record
+			points += g_Settings[PointsNewWorldRecord]*tier_scale*style_scale;
 			points += totalbonus;
-			//PrintToChatAll("wr %.1f", g_Settings[PointsNewWorldRecord]*tier_scale*style_scale+totalbonus);
 		} 
 		
 		/* Top 10 */
 		if(newrank <= 10 && total > 25 && (currentrank > 10 || finishcount == 0))
 		{
-			points += g_Settings[PointsTop10Record]*tier_scale*style_scale; //new top10 record
+			points += g_Settings[PointsTop10Record]*tier_scale*style_scale;
 			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop10Record]*tier_scale*style_scale+totalbonus);
 		}
 		
 		/* Top 25 */
 		if(newrank <= 25 && total > 50 && (currentrank > 25 || finishcount == 0))
 		{
-			points += g_Settings[PointsTop25Record]*tier_scale*style_scale; //new top25 record
+			points += g_Settings[PointsTop25Record]*tier_scale*style_scale;
 			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop25Record]*tier_scale*style_scale+totalbonus);
 		}
 		
 		/* Top 50 */
 		if(newrank <= 50 && total > 100 && (currentrank > 50 || finishcount == 0))
 		{
-			points += g_Settings[PointsTop50Record]*tier_scale*style_scale; //new top50 record
+			points += g_Settings[PointsTop50Record]*tier_scale*style_scale;
 			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop50Record]*tier_scale*style_scale+totalbonus);
 		}
 		
 		/* Top 100 */
 		if(newrank <= 100 && total > 200 && (currentrank > 100 || finishcount == 0))
 		{
-			points += g_Settings[PointsTop100Record]*tier_scale*style_scale; //new top100 record
+			points += g_Settings[PointsTop100Record]*tier_scale*style_scale;
 			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop100Record]*tier_scale*style_scale+totalbonus);
 		}
 		
 		/* Top 250 */
 		if(newrank <= 250 && total > 500 && (currentrank > 250 || finishcount == 0))
 		{
-			points += g_Settings[PointsTop250Record]*tier_scale*style_scale; //new top250 record
+			points += g_Settings[PointsTop250Record]*tier_scale*style_scale;
 			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop250Record]*tier_scale*style_scale+totalbonus);
 		}
 		
 		/* Top 500 */
 		if(newrank <= 500 && total > 750 && (currentrank > 500 || finishcount == 0))
 		{
-			points += g_Settings[PointsTop500Record]*tier_scale*style_scale; //new top500 record
+			points += g_Settings[PointsTop500Record]*tier_scale*style_scale;
 			points += totalbonus;
-			//PrintToChatAll("t10 %.1f", g_Settings[PointsTop500Record]*tier_scale*style_scale+totalbonus);
 		}
 	}
 	
