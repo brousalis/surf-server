@@ -1,35 +1,82 @@
-	Structure:
-	- Timer
-	- History
-	- Main Modules
-	- Recommend Modules
-	- Recommend Bhop
-	- Recommend Surf
-	- Recommend Climb
-	- Recommend Minigames
-	- Other Modules
-	- INSTALL INSTRUCTIONS
-	- Update Instructions (2.0.x to 2.1.x)
-	- Usefull CVAR list
+### Structure:
+1. General Info
+2. History
+3. INSTALL INSTRUCTIONS
+4. Update Instructions (2.0.x to 2.1.x)
+5. Compability Info
+6. List of Main Modules
+7. List of Recommend Modules
+8. List of Recommend Bhop Modules
+9. List of Recommend Surf Modules
+10. List of Recommend Climb Modules
+11. List of Recommend Minigames Modules
+12. List of Other Modules Modules
+13. Usefull CVAR list
 
-	//////////////////////////////
-	////////////Timer/////////////
-	//////////////////////////////
+### General Info
 
 	[CS:S/CS:GO] Timer for surf, bhop, climb, deathrun, minigame and more...
 	Support: https://forums.alliedmods.net/showthread.php?t=231866
 
-	//////////////////////////////
-	////////////History///////////
-	//////////////////////////////
+### History
 
 	This timer was private until poppin leaked it, this timer is a heavy modified version of Timer by Alongub (https://github.com/alongubkin/timer),
 	with many new components and annexed plugins by various authors.
 
-	//////////////////////////////
-	/////////Main Modules/////////
-	//////////////////////////////
+### INSTALL INSTRUCTIONS
+
+	##1.) Download the plugin at https://github.com/Zipcore/Timer
 	
+	##2.) CS:GO color support: 
+		Continue with 3.) and skip this part if you are running a CS:S server. 
+		For CS:GO you have to follow step 2 first!
+		
+		2.1) Open scripting/include/timer.inc with a text editor (like Notepad++)
+		2.2) Find the following line - //#define LEGACY_COLORS "CS:GO Color Support"
+		2.3) Remove // in front of #define and close it
+
+	##3.) Compiling
+		3.1) Download the latest Sourcemod & Metamod Snapshots (Stable Branch): http://www.sourcemod.net/snapshots.php & http://www.sourcemm.net/snapshots
+		3.2) Goto addons/sourcemod/scripting/include and fill it with all files this timer provides from same folder.
+		3.3) Drag and drop needed SP files onto spcomp.exe inside addons/sourcemod/scripting to compile them it should create all needed SMX files.
+		
+	##4.) Upload all SMX files, configs, sounds and materials onto your server.
+	
+	##5.) Insert "timer" keyvalue into configs/databases.cfg (no sqlite support).
+		5.1) When using the timer-cpmod module, insert a "cpmod" keyvalue into configs/databases.cfg
+		5.2) When using the timer-ranking_toponly module, insert a "timer_toponly" keyvalue into configs/databases.cfg
+	
+	##6.) Change configs/timer/settings.cfg to your needs
+	
+	##7.) Change configs/timer/physics.cfg to your needs (the folder contains some example files for bhop, surf, etc.)
+	
+	##7.) Skip this part if you don't like to run Chatranks/Points ranking/Skillrank
+		Depending on if you run a CS:GO or CS:S server, rename csgo-rankings.cfg/css-rankings.cfg to rankings.cfg (addons/sourcemod/configs/timer) to enable the ranking module.
+		6.1) Compile simple-chatprocessor.sp  and upload it to your server to enable chatranks.
+	
+	##8.) Restart your server.
+	
+	##9.) Start creating zones or use included mappacks inside addons/sourcemod/gamedata/MySQL
+
+### Update Instructions (2.0.x to 2.1.x
+
+	Update 2.0.x to 2.1.x:
+	1.) Make a backup of your mapzone, round and maptier table.
+	2.) Delete mapzone, round and maptier table.
+	3.) Delete "create table" lines of you backup files (Notepad++).
+	4.) Import modified backups.
+
+### Compability Info
+
+	- Noblock (Included into Mapzone module)
+	- MultiPlayer Bunny Hops (Included into Physics module)
+	- Autobhop (Included into Physics module)
+	- Godmode (Build-in godmode into Physics module, with PvP Arena zone)
+	- SMAC autotrigger (Included into Scripter-SMAC module)
+	- Macrodox - Bhop cheat detection (Included into Scripter-Macrodox module)
+
+### List of Main Modules
+
 	Timer-Core https://github.com/Zipcore/Timer/blob/master/timer_info/timer-core.txt
 	Timer-Logging https://github.com/Zipcore/Timer/blob/master/timer_info/timer-logging.txt
 	Timer-Physics https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics.txt
@@ -37,11 +84,9 @@
 	Timer-Maptier https://github.com/Zipcore/Timer/blob/master/timer_info/timer-maptier.txt
 	Timer-Teams https://github.com/Zipcore/Timer/blob/master/timer_info/timer-teams.txt
 	Timer-Worldrecord https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord.txt
-	
-	//////////////////////////////
-	///////Recommend Modules//////
-	//////////////////////////////
-	
+    
+### List of Recommend Modules
+
 	Timer-Autospawn https://github.com/Zipcore/Timer/blob/master/timer_info/timer-autospawn.txt
 	Timer-HUD https://github.com/Zipcore/Timer/blob/master/timer_info/timer-hud.txt
 	Timer-Rankings https://github.com/Zipcore/Timer/blob/master/timer_info/timer-rankings.txt
@@ -63,35 +108,25 @@
 	Timer-Worldrecord Playerinfo https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord_playerinfo.txt
 	Timer-Unlimited Spawnpoints https://github.com/Zipcore/Timer/blob/master/timer_info/timer-unlimited-spawnpoints.txt
 	
-	//////////////////////////////
-	////////Recommend Bhop////////
-	//////////////////////////////
+### List of Recommend Bhop Modules
 	
 	Timer-LJ Stats (Long Jump Stats) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-ljstats.txt
 	Timer-Strafes (count strafes) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-strafes.txt
 	Timer-Weapons (CS:Source only) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-weapons.txt
 	
-	//////////////////////////////
-	////////Recommend Surf////////
-	//////////////////////////////
+### List of Recommend Surf Modules
 	
 	Timer-NoJail https://github.com/Zipcore/Timer/blob/master/timer_info/timer-nojail.txt
 	
-	//////////////////////////////
-	////////Recommend Climb///////
-	//////////////////////////////
+### List of Recommend Climb Modules
 	
 	Timer-CP Mod (Checkpoints) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-cpmod.txt
 	
-	//////////////////////////////
-	//////Recommend Minigames/////
-	//////////////////////////////
+### List of Recommend Minigames Modules
 	
 	Timer-Finish Manager https://github.com/Zipcore/Timer/blob/master/timer_info/timer-finish_manager.txt
 	
-	//////////////////////////////
-	////////Other Modules/////////
-	//////////////////////////////
+### List of Other Modules
 	
 	Timer-Finish Exec https://github.com/Zipcore/Timer/blob/master/timer_info/timer-finish_exec.txt
 	Timer-Physics Autostrafe https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_autostrafe.txt
@@ -109,66 +144,7 @@
 	Timer-Sound (CS:Source only) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-sound.txt
 	timer-Teams Challenge Points https://github.com/Zipcore/Timer/blob/master/timer_info/timer-teams_challenge_points.txt
 	
-	//////////////////////////////
-	/////INSTALL INSTRUCTIONS/////
-	//////////////////////////////
-		
-	1.) Download the plugin at https://github.com/Zipcore/Timer
-	
-	2.) CS:GO color support: 
-		Continue with 3.) and skip this part if you are running a CS:S server. 
-		For CS:GO you have to follow step 2 first!
-		
-		2.1) Open scripting/include/timer.inc with a text editor (like Notepad++)
-		2.2) Find the following line - //#define LEGACY_COLORS "CS:GO Color Support"
-		2.3) Remove // in front of #define and close it
-
-	3.) Compiling
-		3.1) Download the latest Sourcemod & Metamod Snapshots (Stable Branch): http://www.sourcemod.net/snapshots.php & http://www.sourcemm.net/snapshots
-		3.2) Goto addons/sourcemod/scripting/include and fill it with all files this timer provides from same folder.
-		3.3) Drag and drop needed SP files onto spcomp.exe inside addons/sourcemod/scripting to compile them it should create all needed SMX files.
-		
-	4.) Upload all SMX files, configs, sounds and materials onto your server.
-	
-	5.) Insert "timer" keyvalue into configs/databases.cfg (no sqlite support).
-		5.1) When using the timer-cpmod module, insert a "cpmod" keyvalue into configs/databases.cfg
-		5.2) When using the timer-ranking_toponly module, insert a "timer_toponly" keyvalue into configs/databases.cfg
-	
-	6.) Change configs/timer/settings.cfg to your needs
-	
-	7.) Change configs/timer/physics.cfg to your needs (the folder contains some example files for bhop, surf, etc.)
-	
-	7.) Skip this part if you don't like to run Chatranks/Points ranking/Skillrank
-		Depending on if you run a CS:GO or CS:S server, rename csgo-rankings.cfg/css-rankings.cfg to rankings.cfg (addons/sourcemod/configs/timer) to enable the ranking module.
-		6.1) Compile simple-chatprocessor.sp  and upload it to your server to enable chatranks.
-	
-	8.) Restart your server.
-	
-	9.) Start creating zones or use included mappacks inside addons/sourcemod/gamedata/MySQL
-
-	//////////////////////////////
-	/////Update instructions//////
-	//////////////////////////////
-
-	Update 2.0.x to 2.1.x:
-	1.) Make a backup of your mapzone, round and maptier table.
-	2.) Delete mapzone, round and maptier table.
-	3.) Delete "create table" lines of you backup files (Notepad++).
-	4.) Import modified backups.
-
-	//////////////////////////////
-	//////Compability Info////////
-	//////////////////////////////
-
-	- Noblock (Included into Mapzone module)
-	- MultiPlayer Bunny Hops (Included into Physics module)
-	- Autobhop (Included into Physics module)
-	- Godmode (Build-in godmode into Physics module, with PvP Arena zone)
-	- SMAC autotrigger (Included into Scripter-SMAC module)
-	- Macrodox - Bhop cheat detection (Included into Scripter-Macrodox module)
-
-	//////////////////////////////
-	//////Usefull CVAR list///////
+### Usefull CVAR list
 
 	- sv_accelerate "10" (Ground control)
 	- sv_wateraccelerate "150" (Water control)
