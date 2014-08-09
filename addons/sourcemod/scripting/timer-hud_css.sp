@@ -17,6 +17,7 @@
 #include <timer-rankings>
 #include <timer-worldrecord>
 #include <timer-physics>
+#include <timer-strafes>
 #include <js_ljstats>
 
 #define THINK_INTERVAL 			1.0
@@ -42,7 +43,8 @@ enum Hud
 	Steam,
 	Level,
 	Timeleft,
-	Points
+	Points,
+	Strafes
 }
 
 /**
@@ -53,11 +55,13 @@ new String:g_currentMap[64];
 new Handle:g_cvarTimeLimit	= INVALID_HANDLE;
 
 //module check
+new bool:g_timerCore = false;
 new bool:g_timerPhysics = false;
 new bool:g_timerMapzones = false;
 new bool:g_timerLjStats = false;
 new bool:g_timerMapTier = false;
 new bool:g_timerRankings = false;
+new bool:g_timerStrafes = false;
 new bool:g_timerWorldRecord = false;
 
 new bool:spec[MAXPLAYERS+1];
@@ -77,6 +81,7 @@ new Handle:cookieHudMainJumpsPref;
 new Handle:cookieHudMainSpeedPref;
 new Handle:cookieHudMainJumpsAccPref;
 new Handle:cookieHudMainSpeedMaxPref;
+new Handle:cookieHudMainStrafesPref;
 new Handle:cookieHudSidePref;
 new Handle:cookieHudSideMapPref;
 new Handle:cookieHudSideModePref;
@@ -104,11 +109,13 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	g_timerCore = LibraryExists("timer");
 	g_timerPhysics = LibraryExists("timer-physics");
 	g_timerMapzones = LibraryExists("timer-mapzones");
 	g_timerLjStats = LibraryExists("timer-ljstats");
 	g_timerMapTier = LibraryExists("timer-maptier");
 	g_timerRankings = LibraryExists("timer-rankings");
+	g_timerStrafes = LibraryExists("timer-strafes");
 	g_timerWorldRecord = LibraryExists("timer-worldrecord");
 	
 	LoadPhysics();
@@ -143,6 +150,7 @@ public OnPluginStart()
 		cookieHudMainJumpsAccPref = RegClientCookie("timer_hud_jump_acc", "Turn on or off jumps accuracy component", CookieAccess_Private);
 		cookieHudMainSpeedPref = RegClientCookie("timer_hud_speed", "Turn on or off speed component", CookieAccess_Private);
 		cookieHudMainSpeedMaxPref = RegClientCookie("timer_hud_speed_max", "Turn on or off max speed component", CookieAccess_Private);
+		cookieHudMainStrafesPref = RegClientCookie("timer_hud_strafes", "Turn on or off strafes component", CookieAccess_Private);
 		cookieHudSidePref = RegClientCookie("timer_hud_side", "Turn on or off side hud component", CookieAccess_Private);
 		cookieHudSideMapPref = RegClientCookie("timer_hud_side_map", "Turn on or off map component", CookieAccess_Private);
 		cookieHudSideModePref = RegClientCookie("timer_hud_side_mode", "Turn on or off mode component", CookieAccess_Private);
@@ -161,7 +169,11 @@ public OnPluginStart()
 
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer"))
+	{
+		g_timerCore = true;
+	}	
+	else if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = true;
 	}	
@@ -181,6 +193,10 @@ public OnLibraryAdded(const String:name[])
 	{
 		g_timerRankings = true;
 	}		
+	else if (StrEqual(name, "timer-strafes"))
+	{
+		g_timerStrafes = true;
+	}	
 	else if (StrEqual(name, "timer-worldrecord"))
 	{
 		g_timerWorldRecord = true;
@@ -189,7 +205,11 @@ public OnLibraryAdded(const String:name[])
 
 public OnLibraryRemoved(const String:name[])
 {	
-	if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer"))
+	{
+		g_timerCore = false;
+	}	
+	else if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = false;
 	}	
@@ -208,7 +228,11 @@ public OnLibraryRemoved(const String:name[])
 	else if (StrEqual(name, "timer-rankings"))
 	{
 		g_timerRankings = false;
-	}		
+	}	
+	else if (StrEqual(name, "timer-strafes"))
+	{
+		g_timerStrafes = false;
+	}	
 	else if (StrEqual(name, "timer-worldrecord"))
 	{
 		g_timerWorldRecord = false;
@@ -310,6 +334,13 @@ loadClientCookiesFor(client)
 	if(!StrEqual(buffer, ""))
 	{
 		hudSettings[SpeedMax][client] = StringToInt(buffer);
+	}
+	
+	//Show Strafes?
+	GetClientCookie(client, cookieHudMainStrafesPref, buffer, 5);
+	if(!StrEqual(buffer, ""))
+	{
+		hudSettings[Strafes][client] = StringToInt(buffer);
 	}
 	
 	//Show JumpAcc?
@@ -513,6 +544,22 @@ public MenuHandlerHud(Handle:menu, MenuAction:action, client, itemNum)
 				decl String:buffer[5];
 				IntToString(hudSettings[SpeedMax][client], buffer, 5);
 				SetClientCookie(client, cookieHudMainSpeedMaxPref, buffer);		
+			}
+			
+			if(StrEqual(info, "strafes"))
+			{
+				if (hudSettings[Strafes][client] == 0)
+				{
+					hudSettings[Strafes][client] = 1;
+				} 
+				else if (hudSettings[Strafes][client] == 1) 
+				{
+					hudSettings[Strafes][client] = 0;
+				}
+				
+				decl String:buffer[5];
+				IntToString(hudSettings[Strafes][client], buffer, 5);
+				SetClientCookie(client, cookieHudMainStrafesPref, buffer);		
 			}
 			
 			if(StrEqual(info, "jumpacc"))
@@ -856,6 +903,18 @@ ShowHudMenu(client, start_item)
 			}
 		}
 		
+		if(g_Settings[HUDStrafesEnable])
+		{
+			if(hudSettings[Strafes][client] == 0)
+			{
+				AddMenuItem(menu, "strafes", "Enable Strafe Counter");	
+			}
+			else
+			{
+				AddMenuItem(menu, "strafes", "Disable Strafe Counter");	
+			}
+		}
+		
 		if(g_Settings[HUDJumpAccEnable])
 		{
 			if(hudSettings[JumpAcc][client] == 0)
@@ -1082,6 +1141,7 @@ public OnClientPutInServer(client)
 		hudSettings[Jumps][client] = 1;
 		hudSettings[Speed][client] = 1;
 		hudSettings[SpeedMax][client] = 1;
+		hudSettings[Strafes][client] = 1;
 		hudSettings[JumpAcc][client] = 1;
 		hudSettings[Side][client] = 1;
 		hudSettings[Map][client] = 1;
@@ -1186,20 +1246,17 @@ public Action:HUDTimer_CSS(Handle:timer)
 
 UpdateHUD_CSS(client)
 {
-	if(!IsClientInGame(client))
-	{
+	if(!g_timerCore)
 		return;
-	}
+	
+	if(!IsClientInGame(client))
+		return;
 	
 	if(!hudSettings[Master][client])
-	{
 		return;
-	}
 	
 	if(!g_Settings[HUDMasterEnable])
-	{
 		return;
-	}
 	
 	new iClientToShow, iButtons, iObserverMode;
 
@@ -1440,6 +1497,10 @@ UpdateHUD_CSS(client)
 			{
 				Format(centerText, sizeof(centerText), "%s%t: %d%s", centerText, "HUD Speed", RoundToFloor(currentspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "");
 			}
+		}
+		if(g_timerStrafes && hudSettings[Strafes][client] && g_Settings[HUDStrafesEnable])
+		{
+			Format(centerText, sizeof(centerText), "%s\nStrafes: %d", centerText, Timer_GetStrafeCount(iClientToShow));
 		}
 	}
 	

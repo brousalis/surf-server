@@ -84,6 +84,7 @@ enum TimerSettings
 	bool:HUDJumpAccEnable,
 	bool:HUDSpeedEnable,
 	bool:HUDSpeedMaxEnable,
+	bool:HUDStrafesEnable,
 	bool:HUDMapEnable,
 	bool:HUDStyleEnable,
 	bool:HUDWREnable,
@@ -376,6 +377,7 @@ stock LoadTimerSettings()
 			g_Settings[HUDPointsEnable] = bool:KvGetNum(hKv, "hud_show_points", 1);
 			g_Settings[HUDSpeedEnable] = bool:KvGetNum(hKv, "hud_show_speed", 1);
 			g_Settings[HUDSpeedMaxEnable] = bool:KvGetNum(hKv, "hud_show_speedmax", 1);
+			g_Settings[HUDStrafesEnable] = bool:KvGetNum(hKv, "hud_show_strafes", 1);
 		}
 		else if(StrEqual(sSectionName, "Teams"))
 		{
