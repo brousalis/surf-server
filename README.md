@@ -77,72 +77,72 @@
 
 ### 6) List of Main Modules
 
-	Timer-Core https://github.com/Zipcore/Timer/blob/master/timer_info/timer-core.txt
-	Timer-Logging https://github.com/Zipcore/Timer/blob/master/timer_info/timer-logging.txt
-	Timer-Physics https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics.txt
-	Timer-Mapzones https://github.com/Zipcore/Timer/blob/master/timer_info/timer-mapzones.txt
-	Timer-Maptier https://github.com/Zipcore/Timer/blob/master/timer_info/timer-maptier.txt
-	Timer-Teams https://github.com/Zipcore/Timer/blob/master/timer_info/timer-teams.txt
-	Timer-Worldrecord https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord.txt
+	Timer-Core [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-core.txt")
+	Timer-Logging [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-logging.txt")
+	Timer-Physics [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics.txt")
+	Timer-Mapzones [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-mapzones.txt")
+	Timer-Maptier [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-maptier.txt")
+	Timer-Teams [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-teams.txt")
+	Timer-Worldrecord [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord.txt")
     
 ### 7) List of Recommend Modules
 
-	Timer-Autospawn https://github.com/Zipcore/Timer/blob/master/timer_info/timer-autospawn.txt
-	Timer-HUD https://github.com/Zipcore/Timer/blob/master/timer_info/timer-hud.txt
-	Timer-Rankings https://github.com/Zipcore/Timer/blob/master/timer_info/timer-rankings.txt
-	Timer-Rankings Points Lite https://github.com/Zipcore/Timer/blob/master/timer_info/timer-rankings_points_lite.txt
-	Timer-Physics Quick Cmds https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_quickcmds.txt
-	Timer-Finish Message https://github.com/Zipcore/Timer/blob/master/timer_info/timer-finish_msg.txt
-	Timer-TeleMe https://github.com/Zipcore/Timer/blob/master/timer_info/timer-teleme.txt
-	Timer-Hide(Players) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-hide.txt
-	Timer-Hide CMDs https://github.com/Zipcore/Timer/blob/master/timer_info/timer-hidecmds.txt
-	Timer-Mapinfo https://github.com/Zipcore/Timer/blob/master/timer_info/timer-mapinfo.txt
-	Timer-Maplist helper (CS:Source only) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-maplist-helper.txt
-	Timer-Mapzones Simple Stage Timer https://github.com/Zipcore/Timer/blob/master/timer_info/timer-mapzones_simple_stage_timer.txt
-	Timer-Mapzones Damage Controller https://github.com/Zipcore/Timer/blob/master/timer_info/timer-mapzones_damage_controller.txt
-	Timer-Menu https://github.com/Zipcore/Timer/blob/master/timer_info/timer-menu.txt
-	Timer-Random Startmap https://github.com/Zipcore/Timer/blob/master/timer_info/timer-random_startmap.txt
-	Timer-Spec https://github.com/Zipcore/Timer/blob/master/timer_info/timer-spec.txt
-	Timer-Worldrecord Lastest https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord_latest.txt
-	Timer-Worldrecord Maptop https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord_maptop.txt
-	Timer-Worldrecord Playerinfo https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord_playerinfo.txt
-	Timer-Unlimited Spawnpoints https://github.com/Zipcore/Timer/blob/master/timer_info/timer-unlimited-spawnpoints.txt
+	Timer-Autospawn [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-autospawn.txt")
+	Timer-HUD [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-hud.txt")
+	Timer-Rankings [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-rankings.txt")
+	Timer-Rankings Points Lite [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-rankings_points_lite.txt")
+	Timer-Physics Quick Cmds [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_quickcmds.txt")
+	Timer-Finish Message [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-finish_msg.txt")
+	Timer-TeleMe [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-teleme.txt")
+	Timer-Hide(Players) [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-hide.txt")
+	Timer-Hide CMDs [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-hidecmds.txt")
+	Timer-Mapinfo [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-mapinfo.txt")
+	Timer-Maplist helper (CS:Source only) [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-maplist-helper.txt")
+	Timer-Mapzones Simple Stage Timer [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-mapzones_simple_stage_timer.txt")
+	Timer-Mapzones Damage Controller [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-mapzones_damage_controller.txt")
+	Timer-Menu [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-menu.txt")
+	Timer-Random Startmap [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-random_startmap.txt
+	Timer-Spec [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-spec.txt")
+	Timer-Worldrecord Lastest [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord_latest.txt")
+	Timer-Worldrecord Maptop [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord_maptop.txt")
+	Timer-Worldrecord Playerinfo [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord_playerinfo.txt")
+	Timer-Unlimited Spawnpoints [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-unlimited-spawnpoints.txt")
 	
 ### 8) List of Recommend Bhop Modules
 	
-	Timer-LJ Stats (Long Jump Stats) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-ljstats.txt
-	Timer-Strafes (count strafes) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-strafes.txt
-	Timer-Weapons (CS:Source only) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-weapons.txt
+	Timer-LJ Stats (Long Jump Stats) [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-ljstats.txt")
+	Timer-Strafes (count strafes) [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-strafes.txt")
+	Timer-Weapons (CS:Source only) [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-weapons.txt")
 	
 ### 9) List of Recommend Surf Modules
 	
-	Timer-NoJail https://github.com/Zipcore/Timer/blob/master/timer_info/timer-nojail.txt
+	Timer-NoJail [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-nojail.txt")
 	
 ### 10) List of Recommend Climb Modules
 	
-	Timer-CP Mod (Checkpoints) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-cpmod.txt
+	Timer-CP Mod (Checkpoints) [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-cpmod.txt")
 	
 ### 11) List of Recommend Minigames Modules
 	
-	Timer-Finish Manager https://github.com/Zipcore/Timer/blob/master/timer_info/timer-finish_manager.txt
+	Timer-Finish Manager [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-finish_manager.txt")
 	
 ### 12) List of Other Modules
 	
-	Timer-Finish Exec https://github.com/Zipcore/Timer/blob/master/timer_info/timer-finish_exec.txt
-	Timer-Physics Autostrafe https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_autostrafe.txt
-	Timer-Physics FPS Max https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_fpsmax.txt
-	Timer-Physics Info https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_info.txt
-	Timer-Physics Quake Bhop https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_quakehop.txt
-	Timer-Physics Strafe Booster https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_strafebooster.txt
-	Timer-Rankings Georank https://github.com/Zipcore/Timer/blob/master/timer_info/timer-rankings_georank.txt
-	Timer-Rankings Top Extend https://github.com/Zipcore/Timer/blob/master/timer_info/timer-rankings_top_extend.txt
-	Timer-Rankings Top Only https://github.com/Zipcore/Timer/blob/master/timer_info/timer-rankings_toponly.txt
-	Timer-Replay (Not supported) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-replay.txt
-	Timer-Scripter DB https://github.com/Zipcore/Timer/blob/master/timer_info/timer-scripter_db.txt
-	Timer-Scripter Macrodox https://github.com/Zipcore/Timer/blob/master/timer_info/timer-scripter_macrodox.txt
-	Timer-Scripter SMAC https://github.com/Zipcore/Timer/blob/master/timer_info/timer-scripter_smac.txt
-	Timer-Sound (CS:Source only) https://github.com/Zipcore/Timer/blob/master/timer_info/timer-sound.txt
-	timer-Teams Challenge Points https://github.com/Zipcore/Timer/blob/master/timer_info/timer-teams_challenge_points.txt
+	Timer-Finish Exec [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-finish_exec.txt")
+	Timer-Physics Autostrafe [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_autostrafe.txt")
+	Timer-Physics FPS Max [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_fpsmax.txt")
+	Timer-Physics Info [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_info.txt")
+	Timer-Physics Quake Bhop [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_quakehop.txt")
+	Timer-Physics Strafe Booster [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-physics_strafebooster.txt")
+	Timer-Rankings Georank [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-rankings_georank.txt")
+	Timer-Rankings Top Extend [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-rankings_top_extend.txt")
+	Timer-Rankings Top Only [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-rankings_toponly.txt")
+	Timer-Replay (Not supported) [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-replay.txt")
+	Timer-Scripter DB [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-scripter_db.txt")
+	Timer-Scripter Macrodox [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-scripter_macrodox.txt")
+	Timer-Scripter SMAC [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-scripter_smac.txt")
+	Timer-Sound (CS:Source only) [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-sound.txt")
+	timer-Teams Challenge Points [LINK]( "https://github.com/Zipcore/Timer/blob/master/timer_info/timer-teams_challenge_points.txt")
 	
 ### 13) Usefull CVAR list
 
