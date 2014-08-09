@@ -1487,6 +1487,11 @@ UpdateHUD_CSS(client)
 	}
 	else 
 	{
+		if(g_timerStrafes && hudSettings[Strafes][client] && g_Settings[HUDStrafesEnable])
+		{
+			Format(centerText, sizeof(centerText), "%sStrafes: %d\n", centerText, Timer_GetStrafeCount(iClientToShow));
+		}
+		
 		if(hudSettings[Speed][client] && g_Settings[HUDSpeedEnable])
 		{
 			if(hudSettings[SpeedMax][client] && g_Settings[HUDSpeedMaxEnable])
@@ -1497,10 +1502,6 @@ UpdateHUD_CSS(client)
 			{
 				Format(centerText, sizeof(centerText), "%s%t: %d%s", centerText, "HUD Speed", RoundToFloor(currentspeed), g_Settings[HUDSpeedUnit] == 1 ? "km/h"  : "");
 			}
-		}
-		if(g_timerStrafes && hudSettings[Strafes][client] && g_Settings[HUDStrafesEnable])
-		{
-			Format(centerText, sizeof(centerText), "%s\nStrafes: %d", centerText, Timer_GetStrafeCount(iClientToShow));
 		}
 	}
 	
