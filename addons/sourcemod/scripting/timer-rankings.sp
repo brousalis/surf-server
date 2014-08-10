@@ -99,7 +99,7 @@ new Float:g_fKickDelay;
 //* * * * * * * * * * * * * * * * * * * * * * * * * *
 new g_iCompletions[MAXPLAYERS + 1];
 new g_iCurrentIndex[MAXPLAYERS + 1] = { -1, ... };
-new g_iCurrentPoints[MAXPLAYERS + 1];
+new g_iCurrentPoints[MAXPLAYERS + 1] = { -1, ... };
 new g_iCurrentRank[MAXPLAYERS + 1];
 new g_iNextIndex[MAXPLAYERS + 1] = { -1, ... };
 new g_iLastGlobalMessage[MAXPLAYERS + 1];
@@ -478,29 +478,23 @@ public OnClientDisconnect(client)
 		new points_start = KvGetNum(g_hSession, "points", 0);
 		new points = Timer_GetPoints(client);
 		
-		if(points > 0 && points_start == 0)
-		{
-			//Hmm looks like I've to fix this
-		}
-		else
-		{
-			KvSetFloat(g_hSession, "disconnec_time", GetEngineTime());
+		KvSetFloat(g_hSession, "disconnec_time", GetEngineTime());
+		
+		new String:sPre[3];
+		if(points-points_start >= 0)
+			Format(sPre, sizeof(sPre), "+");
+		
+		decl String:sNameBuffer[1024];
+		GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[client], sNameBuffer, sizeof(sNameBuffer));
+		
+		#if defined LEGACY_COLORS
+		CFormat(sNameBuffer, 1024, client);
+		CPrintToChatAll("%s{lightred}%s {olive}disconnected with {lightred}%d {olive}points {lightred}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
+		#else
+		CReplaceColorCodes(sNameBuffer, client, false, 1024);
+		CPrintToChatAll("%s{red}%s {green}disconnected with {yellow}%d {green}points {yellow}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
+		#endif
 			
-			new String:sPre[3];
-			if(points-points_start >= 0)
-				Format(sPre, sizeof(sPre), "+");
-			
-			decl String:sNameBuffer[1024];
-			GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[client], sNameBuffer, sizeof(sNameBuffer));
-			
-			#if defined LEGACY_COLORS
-			CFormat(sNameBuffer, 1024, client);
-			CPrintToChatAll("%s{lightred}%s {olive}disconnected with {lightred}%d {olive}points {lightred}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
-			#else
-			CReplaceColorCodes(sNameBuffer, client, false, 1024);
-			CPrintToChatAll("%s{red}%s {green}disconnected with {yellow}%d {green}points {yellow}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
-			#endif
-		}
 	}
 	KvRewind(g_hSession);
 
@@ -1313,10 +1307,12 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 	GetClientName(client, sName, sizeof(sName));
 	SQL_EscapeString(g_hDatabase, sName, sSafeName, sizeof(sSafeName));
 	
+	g_iCurrentPoints[client] = -1;
+	
 	decl String:sQuery[256];
 	if(!SQL_GetRowCount(hndl))
 	{
-		g_iCurrentPoints[client] = -1;
+		g_iCurrentPoints[client] = 0;
 
 		FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `ranks` (auth, points, lastname, lastplay) VALUES ('%s', 0, '%s', %d)", g_sAuth[client], sSafeName, GetTime());
 		if(g_iEnabled == 2)
@@ -1376,6 +1372,13 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 			UpdateClientStars(client);
 			UpdateClientTag(client);
 		}
+	}
+	
+	if(g_iCurrentPoints[client] == -1)
+	{
+		//Something went wrong, retry
+		CreateTimer(2.0, Timer_AuthClient, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
+		return;
 	}
 	
 	if(g_bAuthed[client] && g_bCheck[client])
@@ -2508,6 +2511,9 @@ public Native_SetPoints(Handle:plugin, numParams)
 	
 	new points = GetNativeCell(2);
 	
+	if(points < 0)
+		return;
+	
 	new old_points = g_iCurrentPoints[client];
 	
 	g_iCurrentPoints[client] = points;
@@ -2531,6 +2537,10 @@ public Native_AddPoints(Handle:plugin, numParams)
 		return;
 	
 	new points = GetNativeCell(2);
+	
+	if(points < 0)
+		return;
+	
 	g_iCurrentPoints[client] += points;
         
 	// Forward points edit by raska
@@ -2550,11 +2560,16 @@ public Native_RemovePoints(Handle:plugin, numParams)
 	
 	if(g_iCurrentPoints[client] < 0)
 		return;
+	
 	new points = GetNativeCell(2);
+	
+	if(points < 0)
+		return;
 	
 	g_iCurrentPoints[client] -= points;
 	
-	if(g_iCurrentPoints[client] < 0) g_iCurrentPoints[client] = 0;
+	if(g_iCurrentPoints[client] < 0) 
+		g_iCurrentPoints[client] = 0;
         
 	// Forward points edit by raska
 	Call_StartForward(g_timerLostPointsForward);
