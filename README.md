@@ -32,6 +32,8 @@ It measures the time and jumps it takes players to finish the map.
 
 ### 2) INSTALL INSTRUCTIONS
 
+FAQ --> [Timer/wiki/FAQ] (https://github.com/Zipcore/Timer/wiki/FAQ)
+
 * **Step 1** Download the plugin at [github.com/Zipcore/Timer] (https://github.com/Zipcore/Timer)
 	
 * **Step 2** CS:GO color support: Continue with step 3 and skip this part if you are running a CS:S server. For CS:GO you have to follow step 2 first!
