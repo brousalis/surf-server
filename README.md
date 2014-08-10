@@ -104,7 +104,7 @@ Depending on if you run a CS:GO or CS:S server, rename csgo-rankings.cfg/css-ran
 * Timer-Mapzones Simple Stage Timer [INFO](https://github.com/Zipcore/Timer/blob/master/timer_info/timer-mapzones_simple_stage_timer.txt)
 * Timer-Mapzones Damage Controller [INFO](https://github.com/Zipcore/Timer/blob/master/timer_info/timer-mapzones_damage_controller.txt)
 * Timer-Menu [INFO](https://github.com/Zipcore/Timer/blob/master/timer_info/timer-menu.txt)
-* Timer-Random Startmap [INFO](https://github.com/Zipcore/Timer/blob/master/timer_info/timer-random_startmap.txt
+* Timer-Random Startmap [INFO](https://github.com/Zipcore/Timer/blob/master/timer_info/timer-random_startmap.txt)
 * Timer-Spec [INFO](https://github.com/Zipcore/Timer/blob/master/timer_info/timer-spec.txt)
 * Timer-Worldrecord Lastest [INFO](https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord_latest.txt)
 * Timer-Worldrecord Maptop [INFO](https://github.com/Zipcore/Timer/blob/master/timer_info/timer-worldrecord_maptop.txt)
