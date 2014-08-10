@@ -16,7 +16,11 @@
 * You can also use custom sprites for zone beam effects ([video tutorial] (https://www.youtube.com/watch?v=uka1Iq_I6W4&feature=youtu.be)).
 * There are also many other optional modules.
 
-Links:
+**Problems?**
+* If you have trouble goto our [FAQ] (https://github.com/Zipcore/Timer/wiki/FAQ) page first.
+* If you have still no clue you can ask for help [here] (https://github.com/Zipcore/Timer/issues/new).
+
+**Links:**
 * [INSTALL INSTRUCTIONS] (https://github.com/Zipcore/Timer/wiki/INSTALL-INSTRUCTIONS)
 * [FAQ] (https://github.com/Zipcore/Timer/wiki/FAQ)
 * [InCompability-Info] (https://github.com/Zipcore/Timer/wiki/InCompability-Info)
