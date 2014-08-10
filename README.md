@@ -32,7 +32,7 @@ It measures the time and jumps it takes players to finish the map.
 
 ### 2) INSTALL INSTRUCTIONS
 
-FAQ --> [Timer/wiki/FAQ] (https://github.com/Zipcore/Timer/wiki/FAQ)
+FAQ ==> [Timer/wiki/FAQ] (https://github.com/Zipcore/Timer/wiki/FAQ)
 
 * **Step 1** Download the plugin at [github.com/Zipcore/Timer] (https://github.com/Zipcore/Timer)
 	
