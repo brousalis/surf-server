@@ -7,11 +7,11 @@
 #include <smlib>
 
 #include <timer-logging>
+#include <timer-stocks>
 #include <timer-config_loader.sp>
 
 #undef REQUIRE_PLUGIN
 #include <timer>
-
 #define LJDELAY 1.0
 #define ELSEDELAY 0.1
 
@@ -1090,10 +1090,25 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 							}
 						}
 						
+						decl String:centerText[512];
+						new bool:enabled; //timer running
+						new Float:time; //current time
+						new jumps; //current jump count
+						new fpsmax; //fps settings
+						Timer_GetClientTimer(client, enabled, time, jumps, fpsmax);
+						
+						decl String:timeString[64];
+						Timer_SecondsToTime(time, timeString, sizeof(timeString), 1);
+						if(StrEqual(timeString, "00:-0.0")) FormatEx(timeString, sizeof(timeString), "00:00.0");
+						
+						if(enabled)
+							Format(centerText, sizeof(centerText), "Time: %s\nPrestrafe\n%.2f%s", timeString, newvelo, edgeinfo);
+						else Format(centerText, sizeof(centerText), "Prestrafe\n%.2f%s", newvelo, edgeinfo);
+						
 						if(GetEngineVersion() == Engine_CSGO)
-							PrintHintText(client, "Prestrafe\n%.2f%s", newvelo, edgeinfo);
+							PrintHintText(client, centerText);
 						else if(GetEngineVersion() == Engine_CSS)
-							Client_PrintHintText(client, "Prestrafe\n%.2f%s", newvelo, edgeinfo);
+							Client_PrintHintText(client, centerText);
 						
 						for (new i = 1; i <= MaxClients; i++)
 						{
@@ -1113,9 +1128,9 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 											continue;
 										
 										if(GetEngineVersion() == Engine_CSGO)
-											PrintHintText(client, "Prestrafe\n%.2f%s", newvelo, edgeinfo);
+											PrintHintText(client, centerText);
 										else if(GetEngineVersion() == Engine_CSS)
-											Client_PrintHintText(client, "Prestrafe\n%.2f%s", newvelo, edgeinfo);
+											Client_PrintHintText(client, centerText);
 									}
 									else
 									{
