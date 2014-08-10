@@ -208,7 +208,7 @@ enum Styles
 	bool:StylePreventPlusright,
 	bool:StylePreventMoveforward,
 	bool:StylePreventMoveback,
-	bool:StyleForceMoveforward,
+	bool:StyleForceHalfSideways,
 	
 	//Movement
 	StyleBlockMovementDirection,
@@ -539,7 +539,7 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StylePreventPlusright] = bool:KvGetNum(hKv, "prevent_plusright", 0);
 			g_Physics[g_StyleCount][StylePreventMoveback] = bool:KvGetNum(hKv, "prevent_back", 0);
 			g_Physics[g_StyleCount][StylePreventMoveforward] = bool:KvGetNum(hKv, "prevent_forward", 0);
-			g_Physics[g_StyleCount][StyleForceMoveforward] = bool:KvGetNum(hKv, "force_forward", 0);
+			g_Physics[g_StyleCount][StyleForceHalfSideways] = bool:KvGetNum(hKv, "hsw", 0);
 			g_Physics[g_StyleCount][StyleReplay] = bool:KvGetNum(hKv, "replay", 0);
 			g_Physics[g_StyleCount][StyleReplayBonus] = bool:KvGetNum(hKv, "replay_bonus", 0);
 			g_Physics[g_StyleCount][StyleCustom] = bool:KvGetNum(hKv, "custom", 0);

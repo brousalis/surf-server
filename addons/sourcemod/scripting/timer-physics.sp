@@ -534,12 +534,24 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	{
 		if(!Timer_IsPlayerTouchingZoneType(client, ZtFreeStyle))
 		{
-			if(g_Physics[style][StyleForceMoveforward])
+			if(g_Physics[style][StyleForceHalfSideways])
 			{
-				if (!(buttons & IN_FORWARD))
-				{
+				new iMoveCount = 0;
+				
+				if(buttons & IN_FORWARD)
+					iMoveCount++;
+				
+				if(buttons & IN_BACK)
+					iMoveCount++;
+				
+				if(buttons & IN_MOVELEFT)
+					iMoveCount++;
+				
+				if(buttons & IN_MOVERIGHT)
+					iMoveCount++;
+				
+				if (iMoveCount == 1)
 					abuse = true;
-				}
 			}
 			
 			if(g_Physics[style][StylePreventMoveleft])

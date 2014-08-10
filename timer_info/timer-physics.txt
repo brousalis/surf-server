@@ -97,8 +97,8 @@ Here are all setings you can use for a style:
 "prevent_plusleft"		"1"			//Default = 0
 "prevent_plusright"		"1"			//Default = 0
 
-//Force move forward
-"force_forward"			"1"			//Default = 0
+//Force players to use 2 movement keys at the same time (Half-Sideways)
+"hsw"					"1"			//Default = 0
 
 //Punishent for pressing blocked keys
 //0=no punishment,1=block all keys,2=stop movement,3=reset timer, 4=teleport to startzone,5=suiside
