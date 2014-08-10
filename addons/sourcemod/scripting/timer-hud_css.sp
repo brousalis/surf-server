@@ -1300,7 +1300,7 @@ UpdateHUD_CSS(client)
 	//collect player stats
 	decl String:buffer[32]; //time format buffer
 	decl String:bestbuffer[32]; //time format buffer
-	new bool:enabled; //tier running
+	new bool:enabled; //timer running
 	new Float:bestTime; //best round time
 	new bestJumps; //best round jumps
 	new jumps; //current jump count
