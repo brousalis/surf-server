@@ -477,4 +477,9 @@
 	{
 		"en"			"Other players are now visible."
 	}
+	
+	"There is no bonus in this map"
+	{
+		"en"			"There is no bonus in this map."
+	}
 }
