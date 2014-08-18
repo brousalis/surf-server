@@ -945,7 +945,7 @@ CreateDifficultyMenu(client)
 			{
 				new Handle:menu = CreateMenu(MenuHandler_Difficulty);
 
-				SetMenuTitle(menu, "Bhop Styles", client);
+				SetMenuTitle(menu, "Styles", client);
 				SetMenuExitButton(menu, true);
 				
 				if(g_StyleCountRankedEnabled > 0)
