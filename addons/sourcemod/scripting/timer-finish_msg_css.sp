@@ -239,12 +239,12 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		{
 			if(bAll)
 			{
-				CPrintToChatAll("%s%s%s {blue}%s finished in {yellow}[%ss] {blue}[WR %.2fs] %s", PLUGIN_PREFIX2, BonusString, StyleString, name, TimeString, time-lasttime, RankString);
+				CPrintToChatAll("%s%s%s {blue}%s finished in {yellow}[%ss] {blue}[PB %.2fs] %s", PLUGIN_PREFIX2, BonusString, StyleString, name, TimeString, time-lasttime, RankString);
 				CPrintToChatAll("%s", RankPwndString);
 			}
 			else
 			{
-				CPrintToChat(client, "%s%s%s {blue}You finished in {yellow}[%ss] {blue}[WR %.2fs] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, time-lasttime, RankString);
+				CPrintToChat(client, "%s%s%s {blue}You finished in {yellow}[%ss] {blue}[PB %.2fs] %s", PLUGIN_PREFIX2, BonusString, StyleString, TimeString, time-lasttime, RankString);
 				CPrintToChat(client, "%s", RankPwndString);
 			}
 		}
