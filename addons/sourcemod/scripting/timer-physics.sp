@@ -2098,7 +2098,10 @@ PunishAbuse(client)
 	//Teleport to startzone
 	else if(g_Physics[style][StylePunishType] == 4)
 	{
-		Timer_Restart(client);
+		if(Timer_GetTrack(client) == TRACK_BONUS)
+			Timer_ClientTeleportLevel(client, LEVEL_BONUS_START);
+		else
+			Timer_ClientTeleportLevel(client, LEVEL_START);
 	}
 	//Suiside
 	else if(g_Physics[style][StylePunishType] == 5)
