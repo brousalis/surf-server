@@ -471,7 +471,7 @@ public OnClientDisconnect(client)
 	if(!g_iEnabled)
 		return;
 
-	g_sAuth[client][0] = '\0';
+	//g_sAuth[client][0] = '\0';
 	
 	if(g_bAuthed[client] && KvJumpToKey(g_hSession, g_sAuth[client], false) && g_iCurrentIndex[client] >= 0)
 	{
@@ -497,6 +497,7 @@ public OnClientDisconnect(client)
 			
 	}
 	KvRewind(g_hSession);
+	g_sAuth[client][0] = '\0';
 
 	g_bAuthed[client] = false;
 	g_bLoadedSQL[client] = false;
