@@ -80,7 +80,7 @@ SecondaryAction(client)
 {
 	new modeSecondary = GetConVarInt(cvarModeSecondary);
 	
-	switch(modePrimary)
+	switch(modeSecondary)
 	{
 		case 1:
 		{
