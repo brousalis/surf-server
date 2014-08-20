@@ -330,7 +330,7 @@ public Action:OnSayText2(UserMsg:msg_id, Handle:bf, const clients[], numClients,
 	decl String:cpMessage[MAXLENGTH_INPUT];
 	if (bProtobuf)
 	{
-		PbReadString(bf, "params", cpMessage, sizeof(cpMessage));
+		PbReadString(bf, "params", cpMessage, sizeof(cpMessage), 1);
 	}
 	else if (BfGetNumBytesLeft(bf))
 	{
