@@ -473,7 +473,7 @@ public OnClientDisconnect(client)
 
 	//g_sAuth[client][0] = '\0';
 	
-	if(g_bAuthed[client] && KvJumpToKey(g_hSession, g_sAuth[client], false) && g_iCurrentIndex[client] >= 0)
+	if(g_bAuthed[client] && KvJumpToKey(g_hSession, g_sAuth[client], false) && g_iCurrentIndex[client] >= 0 && g_iPositionMethod != 2)
 	{
 		new points_start = KvGetNum(g_hSession, "points", 0);
 		new points = Timer_GetPoints(client);
