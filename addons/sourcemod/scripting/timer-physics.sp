@@ -62,6 +62,20 @@ new Float:g_fLandedTime[MAXPLAYERS+1] = {0.0, ...};
 new Float:g_fJumpAccuracy[MAXPLAYERS+1] = {0.0, ...};
 new bool:g_bStayOnGround[MAXPLAYERS+1] = {false, ...};
 
+//Half Sideways Globals
+new g_iMoveCount[MAXPLAYERS+1] = 0;
+new g_iFORWARD_hits[MAXPLAYERS+1] = 0;
+new g_iBACK_hits[MAXPLAYERS+1] = 0;
+new g_iMOVELEFT_hits[MAXPLAYERS+1] = 0;
+new g_iMOVERIGHT_hits[MAXPLAYERS+1] = 0;
+new g_iKey_hits[MAXPLAYERS+1] = 0;
+new g_iKey_hits_reset[MAXPLAYERS+1] = 0;
+new Float:g_fCount_FORWARD[MAXPLAYERS+1] = 0.0;
+new Float:g_fCount_BACK[MAXPLAYERS+1] = 0.0;
+new Float:g_fCount_MOVELEFT[MAXPLAYERS+1] = 0.0;
+new Float:g_fCount_MOVERIGHT[MAXPLAYERS+1] = 0.0;
+new Float:g_fCount_Keys[MAXPLAYERS+1] = 0.0;
+
 //Player Flags
 new bool:g_bPushWait[MAXPLAYERS+1] = {false, ...};
 
@@ -536,22 +550,110 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 		{
 			if(g_Physics[style][StyleForceHalfSideways])
 			{
-				new iMoveCount = 0;
+				g_iMoveCount[client] = 0;
+				
+				new Float:fCheck_KeyCounts = 0.25;													//time after 2 buttons have to be pressed in seconds
+				new Float:fReset_KeyHits = 3.00;													//time after keyhits are resetted in seconds
+				new iCheck_Key_hits = 5;															//max keyhits allowed within "fCheck_KeyCounts" time
+				
+				
+				new Float:fTickrate = 1.0 / GetTickInterval();										//get server tickrate
+				new Float:fCheck_KeyCounts_ticks = fCheck_KeyCounts*fTickrate;						//calculate how many ticks has to be ticked to match "fCheck_KeyCounts" time
 				
 				if(buttons & IN_FORWARD)
-					iMoveCount++;
+				{
+					g_iMoveCount[client]++;															//count how many keys are pressed
+					g_fCount_FORWARD[client]++;														//counts up as long as the button is pressed
+				}
+				else
+				{
+					if(g_fCount_FORWARD[client] > 1.0 && g_fCount_FORWARD[client] < fCheck_KeyCounts_ticks)
+					{
+						g_iFORWARD_hits[client]++;													//counts up if key is pressed for a short time (on purpose)
+					}
+					g_fCount_FORWARD[client] = 0.0;													//reset count after key is released
+				}
 				
 				if(buttons & IN_BACK)
-					iMoveCount++;
+				{
+					g_iMoveCount[client]++;															//count how many keys are pressed
+					g_fCount_BACK[client]++;														//counts up as long as the button is pressed
+				}
+				else
+				{
+					if(g_fCount_BACK[client] > 1.0 && g_fCount_BACK[client] < fCheck_KeyCounts_ticks)
+					{
+						g_iBACK_hits[client]++;														//counts up if key is pressed for a short time (on purpose)
+					}
+					g_fCount_BACK[client] = 0.0;													//reset count after key is released
+				}
 				
 				if(buttons & IN_MOVELEFT)
-					iMoveCount++;
+				{
+					g_iMoveCount[client]++;															//count how many keys are pressed
+					g_fCount_MOVELEFT[client]++;													//counts up as long as the button is pressed
+				}
+				else
+				{
+					if(g_fCount_MOVELEFT[client] > 1.0 && g_fCount_MOVELEFT[client] < fCheck_KeyCounts_ticks)
+					{
+						g_iMOVELEFT_hits[client]++;													//counts up if key is pressed for a short time (on purpose)
+					}
+					g_fCount_MOVELEFT[client] = 0.0;												//reset count after key is released
+				}
 				
 				if(buttons & IN_MOVERIGHT)
-					iMoveCount++;
+				{
+					g_iMoveCount[client]++;															//count how many keys are pressed
+					g_fCount_MOVERIGHT[client]++;													//counts up as long as the button is pressed
+				}
+				else
+				{
+					if(g_fCount_MOVERIGHT[client] > 1.0 && g_fCount_MOVERIGHT[client] < fCheck_KeyCounts_ticks)
+					{
+						g_iMOVERIGHT_hits[client]++;												//counts up if key is pressed for a short time (on purpose)
+					}
+					g_fCount_MOVERIGHT[client] = 0.0;												//reset count after key is released
+				}
 				
-				if (iMoveCount == 1)
+				g_fCount_Keys[client] = g_fCount_FORWARD[client]+g_fCount_BACK[client]+g_fCount_MOVELEFT[client]+g_fCount_MOVERIGHT[client];			//calculate time between button presses
+				
+				g_iKey_hits[client] = g_iFORWARD_hits[client]+g_iBACK_hits[client]+g_iMOVELEFT_hits[client]+g_iMOVERIGHT_hits[client];					//calculate all key hits
+				
+				if ((g_iMoveCount[client] == 1 && (g_fCount_Keys[client] >= fCheck_KeyCounts_ticks)) || (g_iKey_hits[client] >= iCheck_Key_hits))		//punish the client and reset keyhits/keycounts
+				{
 					abuse = true;
+					g_fCount_FORWARD[client] = 0.0;
+					g_fCount_BACK[client] = 0.0;
+					g_fCount_MOVELEFT[client] = 0.0;
+					g_fCount_MOVERIGHT[client] = 0.0;
+					g_iFORWARD_hits[client] = 0;
+					g_iBACK_hits[client] = 0;
+					g_iMOVELEFT_hits[client] = 0;
+					g_iMOVERIGHT_hits[client] = 0;
+				}
+				
+				if (g_iMoveCount[client] == 2)														// reset keyhits/keycounts if 2 buttons are pressed
+				{
+					g_fCount_FORWARD[client] = 0.0;
+					g_fCount_BACK[client] = 0.0;
+					g_fCount_MOVELEFT[client] = 0.0;
+					g_fCount_MOVERIGHT[client] = 0.0;
+					g_iFORWARD_hits[client] = 0;
+					g_iBACK_hits[client] = 0;
+					g_iMOVELEFT_hits[client] = 0;
+					g_iMOVERIGHT_hits[client] = 0;
+				}
+				
+				g_iKey_hits_reset[client]++;
+				if(g_iKey_hits_reset[client] > (fReset_KeyHits*fTickrate))									// reset keyhits
+				{
+					g_iFORWARD_hits[client] = 0;
+					g_iBACK_hits[client] = 0;
+					g_iMOVELEFT_hits[client] = 0;
+					g_iMOVERIGHT_hits[client] = 0;
+					g_iKey_hits_reset[client] = 0;
+				}
 			}
 			
 			if(g_Physics[style][StylePreventMoveleft])
