@@ -2108,6 +2108,12 @@ PunishAbuse(client)
 	{
 		ForcePlayerSuicide(client);
 	}
+	//Teleport to last checkpoint
+	else if(g_Physics[style][StylePunishType] == 6)
+	{
+		new levelid = Timer_GetClientLevelID(client);
+		Timer_ClientTeleportLevel(client, levelid);
+	}
 	else
 	{
 		Timer_LogError("%d is not a valid punish type", g_Physics[style][StylePunishType]);
