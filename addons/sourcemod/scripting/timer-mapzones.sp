@@ -4230,7 +4230,7 @@ public Native_SetClientLevel(Handle:plugin, numParams)
 public Native_GetClientLevelID(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
-	if(client && Client_IsValid(client, true) && g_iClientLastTrackZone[client] >= 0 && g_iClientLastTrackZone[client] > 0)
+	if(client && Client_IsValid(client, true) && g_iClientLastTrackZone[client] >= 0)
 	{
 		return g_mapZones[g_iClientLastTrackZone[client]][Level_Id];
 	}
