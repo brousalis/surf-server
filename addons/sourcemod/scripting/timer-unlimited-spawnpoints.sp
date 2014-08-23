@@ -2,9 +2,14 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <cstrike>
 #include <timer>
 
-new Handle:cvarSpawns = INVALID_HANDLE;
+new Float:LastUsed[MAXPLAYERS+1];
+
+new Handle:cvarTeams = INVALID_HANDLE;
+new Handle:cvarClassSelection = INVALID_HANDLE;
+new Handle:cvarAlive = INVALID_HANDLE;
 
 public Plugin:myinfo =
 {
@@ -17,63 +22,58 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	cvarSpawns = CreateConVar("timer_enforce_spawns", "32", "Amount of spawnpoints to enforce each team");
+	cvarTeams = CreateConVar("timer_spawn_team", "1", "0:Disable Plugin 1:All Teams 2:Terrorist only 3:Counter-Terrorist only");
+	cvarClassSelection = CreateConVar("timer_spawn_class", "0", "0:Skip class selection 1:Allow class selection");
+	cvarAlive = CreateConVar("timer_spawn_alive", "0", "0:Don't allow alive player to respawn 1:Allow");
 	AutoExecConfig(true, "timer/unlimited_spawnpoints");
+	
+	RegConsoleCmd("jointeam", JoinTeam);
 }
-
-public OnMapStart()
+ 
+public OnClientConnected(client)
 {
-	new minspawns = GetConVarInt(cvarSpawns);
+	new Float:curTime = GetGameTime();
+	LastUsed[client] = curTime;
+}
+ 
+public Action:JoinTeam(client, args)
+{
+	new spawn_mode = GetConVarInt(cvarTeams);
+	new bool:allow_class = GetConVarBool(cvarClassSelection);
 	
-	new CTspawns = 0;
-	new Tspawns = 0;
+	if(spawn_mode < 1)
+		return Plugin_Continue;
 	
-	new Float:fVecCt[3];
-	new Float:fVecT[3];
-	new Float:angVec[3];
+	if(args < 1)
+		return Plugin_Handled;
 	
-	new maxEnt = GetMaxEntities();
-	decl String:sClassName[64];
+	if(!GetConVarBool(cvarAlive) && IsPlayerAlive(client))
+		return Plugin_Handled;
 	
-	for (new i = MaxClients; i < maxEnt; i++)
+	decl String:buffer[256];
+	GetCmdArgString(buffer, sizeof(buffer));
+	
+	new team = StringToInt(buffer);
+	
+	new Float:curTime = GetGameTime();
+	if (curTime - LastUsed[client] != 0)
 	{
-		if (IsValidEdict(i) && IsValidEntity(i) && GetEdictClassname(i, sClassName, sizeof(sClassName)))
+		if(team > CS_TEAM_SPECTATOR || team == 0)
 		{
-			if (StrEqual(sClassName, "info_player_terrorist"))
-			{
-				Tspawns++;
-				GetEntPropVector(i, Prop_Data, "m_vecOrigin", fVecT);
-			}
-			else if (StrEqual(sClassName, "info_player_counterterrorist"))
-			{
-				CTspawns++;
-				GetEntPropVector(i, Prop_Data, "m_vecOrigin", fVecCt);
-			}
+			if(spawn_mode == CS_TEAM_CT)
+				CS_SwitchTeam(client, CS_TEAM_CT);
+			if(spawn_mode == CS_TEAM_T)
+				CS_SwitchTeam(client, CS_TEAM_T);
+			else
+				CS_SwitchTeam(client, team);
+				
+			CS_RespawnPlayer(client);
 		}
+		LastUsed[client] = curTime;
 	}
 	
-	if(CTspawns && CTspawns < minspawns)
-	{
-		
-		for(new i=CTspawns; i<=minspawns ;i++)
-		{
-			new entity = CreateEntityByName("info_player_counterterrorist");
-			if (DispatchSpawn(entity))
-			{
-				TeleportEntity(entity, fVecCt, angVec, NULL_VECTOR);
-			}
-		}
-	}
+	if(allow_class)
+		return Plugin_Continue;
 	
-	if(Tspawns && Tspawns < minspawns)
-	{
-		for(new i=Tspawns; i<=minspawns ;i++)
-		{
-			new entity = CreateEntityByName("info_player_terrorist");
-			if (DispatchSpawn(entity))
-			{
-				TeleportEntity(entity, fVecT, angVec, NULL_VECTOR);
-			}
-		}
-	}
+	return Plugin_Handled;
 }
