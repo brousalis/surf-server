@@ -31,7 +31,7 @@ forward OnClientApplyDifficulty(client, style)
  * @param style The styleID
  * @noreturn
  */
-forward OnClientApplyDifficulty(client, style)
+forward OnClientApplyDifficultyPre(client, style)
 
 /* Natives */
 native Timer_GetPickedStyle(client);

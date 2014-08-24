@@ -80,6 +80,7 @@ new Handle:g_timerPersonalRecordForward;
 new Handle:g_timerTop10RecordForward;
 new Handle:g_timerFirstRecordForward;
 new Handle:g_timerRecordForward;
+new Handle:g_OnClientChangeStyle;
 
 new g_iVelocity;
 new GameMod:mod;
@@ -142,6 +143,7 @@ public OnPluginStart()
 	g_timerTop10RecordForward = CreateGlobalForward("OnTimerTop10Record", ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
 	g_timerFirstRecordForward = CreateGlobalForward("OnTimerFirstRecord", ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
 	g_timerRecordForward = CreateGlobalForward("OnTimerRecord", ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+	g_OnClientChangeStyle = CreateGlobalForward("OnClientChangeStyle", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	
 	g_iVelocity = FindSendPropInfo("CBasePlayer", "m_vecVelocity[0]");
 	
@@ -1134,7 +1136,13 @@ public Native_SetStyle(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
 	
+	Call_StartForward(g_OnClientChangeStyle);
+	Call_PushCell(client);
+	Call_PushCell(g_timers[client][CurrentStyle]);
+	Call_PushCell(GetNativeCell(2));
+	Call_Finish();
 	g_timers[client][CurrentStyle] = GetNativeCell(2);
+	
 	if(g_timerPhysics) Timer_ApplyPhysics(client);
 }
 

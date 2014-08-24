@@ -276,6 +276,17 @@ forward OnTimerFirstRecord(client, track, style, Float:time, Float:lasttime, cur
 forward OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentrank, newrank);
 
 /**
+ * Called when a player changes his style.
+ *
+ * @param client The client who finished the round.
+ * @param oldatyle Style before change
+ * @param newstyle Selected Style
+ * @noreturn
+ */
+forward OnClientChangeStyle(client, oldstyle, newstyle);
+
+
+/**
  * Reset a timer. (clear all data)
  *
  * @param client
