@@ -4,7 +4,34 @@
 #define _timer_physics_included
 
 
+/* Forwards */
+
+/**
+ * Called when a client reached max jump height
+ *
+ * @param client The client who jumped.
+ * @param type MapZoneType
+ * @noreturn
+ */
 forward OnClientMaxJumpHeight(client, Float:height);
+
+/**
+ * Called when style setting apply on a client.
+ *
+ * @param client The client.
+ * @param style The styleID
+ * @noreturn
+ */
+forward OnClientApplyDifficulty(client, style)
+
+/**
+ * Called before style setting apply on a client.
+ *
+ * @param client The client.
+ * @param style The styleID
+ * @noreturn
+ */
+forward OnClientApplyDifficulty(client, style)
 
 /* Natives */
 native Timer_GetPickedStyle(client);

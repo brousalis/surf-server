@@ -30,6 +30,8 @@ new bool:g_timerRankings = false;
 new g_userJumps[MAXPLAYERS][UserJumps];
 
 new Handle:g_OnClientMaxJumpHeight;
+new Handle:g_OnClientApplyDifficulty;
+new Handle:g_OnClientApplyDifficultyPre;
 
 new iPrevButtons[MAXPLAYERS+1];
 new Float:fCheckTime[MAXPLAYERS+1];
@@ -230,7 +232,9 @@ public OnPluginStart()
 	g_timerRankings = LibraryExists("timer-rankings");
 
 	
-	g_OnClientMaxJumpHeight = CreateGlobalForward("OnClientMaxJumpHeight", ET_Event, Param_Cell,Param_Cell);
+	g_OnClientMaxJumpHeight = CreateGlobalForward("OnClientMaxJumpHeight", ET_Event, Param_Cell, Param_Cell);
+	g_OnClientApplyDifficulty = CreateGlobalForward("OnClientApplyDifficulty", ET_Event, Param_Cell, Param_Cell);
+	g_OnClientApplyDifficultyPre = CreateGlobalForward("OnClientApplyDifficultyPre", ET_Event, Param_Cell, Param_Cell);
 	
 	if(g_bLateLoaded) 
 	{
@@ -1299,6 +1303,14 @@ ApplyDifficulty(client)
 	{
 		new style = Timer_GetStyle(client);
 		
+		Call_StartForward(g_OnClientApplyDifficultyPre);
+		Call_PushCell(client);
+		Call_PushCell(style);
+		Call_Finish();
+		
+		// Get style again for the case it was changed on the forward
+		style = Timer_GetStyle(client);
+		
 		if(g_Physics[style][StyleCustom])
 		{
 			if(g_bCustomFullStamina[client]) g_fStamina[client] = STAMINA_FULL;
@@ -1353,6 +1365,11 @@ ApplyDifficulty(client)
 				FakeClientCommand(client, "sm_b");
 			else FakeClientCommand(client, "sm_start");
 		}
+		
+		Call_StartForward(g_OnClientApplyDifficulty);
+		Call_PushCell(client);
+		Call_PushCell(style);
+		Call_Finish();
 	}
 }
 
