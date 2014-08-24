@@ -1135,13 +1135,13 @@ public Native_GetTrack(Handle:plugin, numParams)
 public Native_SetStyle(Handle:plugin, numParams)
 {
 	new client = GetNativeCell(1);
-	
+	new style = GetNativeCell(2);
 	Call_StartForward(g_OnClientChangeStyle);
 	Call_PushCell(client);
 	Call_PushCell(g_timers[client][CurrentStyle]);
-	Call_PushCell(GetNativeCell(2));
+	Call_PushCell(style);
 	Call_Finish();
-	g_timers[client][CurrentStyle] = GetNativeCell(2);
+	g_timers[client][CurrentStyle] = style;
 	
 	if(g_timerPhysics) Timer_ApplyPhysics(client);
 }
