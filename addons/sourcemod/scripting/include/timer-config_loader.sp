@@ -543,10 +543,10 @@ stock LoadPhysics()
 			
 			if(g_Physics[g_StyleCount][StyleForceHalfSideways])
 			{
-				g_Physics[g_StyleCount][StylePreventMoveleft] = 0;
-				g_Physics[g_StyleCount][StylePreventMoveright] = 0;
-				g_Physics[g_StyleCount][StylePreventMoveback] = 0;
-				g_Physics[g_StyleCount][StylePreventMoveforward] = 0;
+				g_Physics[g_StyleCount][StylePreventMoveleft] = false;
+				g_Physics[g_StyleCount][StylePreventMoveright] = false;
+				g_Physics[g_StyleCount][StylePreventMoveback] = false;
+				g_Physics[g_StyleCount][StylePreventMoveforward] = false;
 			}
 			
 			g_Physics[g_StyleCount][StyleReplay] = bool:KvGetNum(hKv, "replay", 0);
