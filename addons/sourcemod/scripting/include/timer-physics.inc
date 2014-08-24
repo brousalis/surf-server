@@ -22,7 +22,7 @@ forward OnClientMaxJumpHeight(client, Float:height);
  * @param style The styleID
  * @noreturn
  */
-forward OnClientApplyDifficulty(client, style)
+forward OnClientApplyDifficulty(client, style);
 
 /**
  * Called before style setting apply on a client.
@@ -31,7 +31,7 @@ forward OnClientApplyDifficulty(client, style)
  * @param style The styleID
  * @noreturn
  */
-forward OnClientApplyDifficultyPre(client, style)
+forward OnClientApplyDifficultyPre(client, style);
 
 /* Natives */
 native Timer_GetPickedStyle(client);
