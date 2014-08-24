@@ -31,34 +31,49 @@
 //----------------------//
 // some client commands //
 //----------------------//
-public Action:Client_Next(client, args){
+
+public Action:Client_Next(client, args)
+{
 	TeleClient(client,1);
 	return Plugin_Handled;
 }
-public Action:Client_Prev(client, args){
+
+public Action:Client_Prev(client, args)
+{
 	TeleClient(client,-1);
 	return Plugin_Handled;
 }
-public Action:Client_Save(client, args){
+
+public Action:Client_Save(client, args)
+{
 	SaveClientLocation(client);
 	return Plugin_Handled;
 }
-public Action:Client_Tele(client, args){
+
+public Action:Client_Tele(client, args)
+{
 	TeleClient(client,0);
 	return Plugin_Handled;
 }
-public Action:Client_Cp(client, args){
+
+public Action:Client_Cp(client, args)
+{
 	TeleMenu(client);
 	return Plugin_Handled;
 }
-public Action:Client_Clear(client, args){
+
+public Action:Client_Clear(client, args)
+{
 	ClearClient(client);
 	return Plugin_Handled;
 }
-public Action:Client_Help(client, args){
+
+public Action:Client_Help(client, args)
+{
 	HelpPanel(client);
 	return Plugin_Handled;
 }
+
 //-----------------------------//
 // save player location method //
 //-----------------------------//
@@ -76,10 +91,13 @@ public SaveClientLocation(client)
 			new whole = g_WholeCp[client];
 			
 			//if player has less than limit checkpoints
-			if(whole < CPLIMIT){
+			if(whole < CPLIMIT)
+			{
 				//save some data
 				GetClientAbsOrigin(client,g_fPlayerCords[client][whole]);
 				GetClientAbsAngles(client,g_fPlayerAngles[client][whole]);
+				
+				g_iPlayerLevel[client][whole] = Timer_GetClientLevel(client);
 				
 				//increase counters
 				g_CurrentCp[client] = g_WholeCp[client];
@@ -111,6 +129,8 @@ public SaveClientLocation(client)
 				//save some data
 				GetClientAbsOrigin(client,g_fPlayerCords[client][current]);
 				GetClientAbsAngles(client,g_fPlayerAngles[client][current]);
+				
+				g_iPlayerLevel[client][current] = Timer_GetClientLevel(client);
 				PrintToChat(client, "%t", "CpSaved", YELLOW,LIGHTGREEN,YELLOW,GREEN,current+1,whole,YELLOW);
 				
 				EmitSoundToClient(client,"buttons/blip1.wav",client);
@@ -154,7 +174,7 @@ public Client_TelePos(client, pos)
 	//if plugin is enabled
 	if(g_bEnabled)
 	{
-		if(g_timer) Timer_Reset(client);
+		if(g_timer && !g_bRestore) Timer_Reset(client);
 		
 		new current = g_CurrentCp[client];
 		new whole = g_WholeCp[client];
@@ -197,6 +217,8 @@ public Client_TelePos(client, pos)
 			EmitSoundToClient(client,"buttons/blip1.wav",client);
 			TE_SetupBeamRingPoint(g_fPlayerCords[client][actual],10.0,200.0,g_BeamSpriteRing2,0,0,10,1.0,50.0,0.0,{255,255,255,255},0,0);
 			TE_SendToClient(client);
+			
+			Timer_SetClientLevel(client, g_iPlayerLevel[client][actual]);
 		}
 	}
 	else //plugin disabled
@@ -246,7 +268,8 @@ public Handle_ConfirmAbortMenu(Handle:menu, MenuAction:action, client, itemNum)
 //------------------//
 // tele menu method //
 //------------------//
-public TeleMenu(client){
+public TeleMenu(client)
+{
 	//if no valid player
 	if(!IsPlayerAlive(client) || GetClientTeam(client) == 1)
 		return;
@@ -264,14 +287,17 @@ public TeleMenu(client){
 		SetMenuExitButton(menu, true);
 		SetMenuOptionFlags(menu, MENUFLAG_BUTTON_EXIT);
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
-	}else //plugin disabled
+	}
+	else //plugin disabled
 		PrintToChat(client, "%t", "PluginDisabled", YELLOW,LIGHTGREEN,YELLOW);
 }
 //---------//
 // handler //
 //---------//
-public TeleMenuHandler(Handle:menu, MenuAction:action, param1, param2){
-	if(action == MenuAction_Select){
+public TeleMenuHandler(Handle:menu, MenuAction:action, param1, param2)
+{
+	if(action == MenuAction_Select)
+	{
 		switch(param2){
 			case 0: SaveClientLocation(param1);
 			case 1: TeleClient(param1,0);
@@ -287,13 +313,15 @@ public TeleMenuHandler(Handle:menu, MenuAction:action, param1, param2){
 //---------------------//
 // clear player method //
 //---------------------//
-public ClearClient(client){
+public ClearClient(client)
+{
 	//if no valid player
 	if(!IsPlayerAlive(client) || GetClientTeam(client) == 1)
 		return;
 	
 	//if plugin is enabled
-	if(g_bEnabled){
+	if(g_bEnabled)
+	{
 		//reset counters
 		g_CurrentCp[client] = -1;
 		g_WholeCp[client] = 0;
@@ -306,7 +334,8 @@ public ClearClient(client){
 //-------------------//
 // help panel method //
 //-------------------//
-public HelpPanel(client){
+public HelpPanel(client)
+{
 	//create panel
 	new Handle:panel = CreatePanel();
 	DrawPanelText(panel, "[Checkpoint System]");
@@ -326,5 +355,6 @@ public HelpPanel(client){
 //---------//
 // handler //
 //---------//
-public HelpPanelHandler(Handle:menu, MenuAction:action, param1, param2){
+public HelpPanelHandler(Handle:menu, MenuAction:action, param1, param2)
+{
 }

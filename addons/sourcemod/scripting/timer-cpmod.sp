@@ -54,6 +54,7 @@ new bool:g_bRestore = false;
 
 new Float:g_fPlayerCords[MAXPLAYERS+1][CPLIMIT][3];
 new Float:g_fPlayerAngles[MAXPLAYERS+1][CPLIMIT][3];
+new g_iPlayerLevel[MAXPLAYERS+1][CPLIMIT];
 
 //number of current checkpoint in the storage array
 new g_CurrentCp[MAXPLAYERS+1];
@@ -273,17 +274,21 @@ public OnMapStart()
 //------------------------//
 // executed on end of map //
 //------------------------//
-public OnMapEnd(){
+public OnMapEnd()
+{
 	new max = MaxClients;
 	//for all of the players
-	for(new i = 0; i <= max; i++){
-		//if client valid
-		if(i != 0 && IsClientInGame(i) && !IsFakeClient(i) && IsClientConnected(i)){
-			new current = g_CurrentCp[i];
-			//if checkpoint restoring and valid checkpoint
-			if(g_bRestore && current != -1){
-				//update the checkpoint in the database
-				db_updatePlayerCheckpoint(i, current);
+	if(g_bRestore)
+	{
+		for(new i = 0; i <= max; i++){
+			//if client valid
+			if(i != 0 && IsClientInGame(i) && !IsFakeClient(i) && IsClientConnected(i)){
+				new current = g_CurrentCp[i];
+				//if checkpoint restoring and valid checkpoint
+				if(current != -1){
+					//update the checkpoint in the database
+					db_updatePlayerCheckpoint(i, current);
+				}
 			}
 		}
 	}
@@ -293,7 +298,8 @@ public OnMapEnd(){
 // hook executed on changed settings //
 //-----------------------------------//
 public OnSettingChanged(Handle:convar, const String:oldValue[], const String:newValue[]){
-	if(convar == g_hcvarEnable){
+	if(convar == g_hcvarEnable)
+	{
 		if(newValue[0] == '1')
 			g_bEnabled = true;
 		else
@@ -346,17 +352,17 @@ public OnClientDisconnect(client)
 
 public OnTimerStarted(client)
 {
-	if(StrContains(g_szMapName,"xc_",false) == 0)
-	{
-		//if no valid player
-		if(!IsPlayerAlive(client) || GetClientTeam(client) == 1)
-			return;
+	//if no valid player
+	if(!IsPlayerAlive(client) || GetClientTeam(client) == 1)
+		return;
 
-		//if plugin is enabled
-		if(g_bEnabled){
-			//reset counters
-			g_CurrentCp[client] = -1;
-			g_WholeCp[client] = 0;
-		}
-	} 
+	//if plugin is enabled
+	if(g_bEnabled)
+	{
+		if(!g_bRestore) ClearClient(client);
+		
+		//reset counters
+		g_CurrentCp[client] = -1;
+		g_WholeCp[client] = 0;
+	}
 }
