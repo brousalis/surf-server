@@ -7,6 +7,8 @@
 
 new Float:LastUsed[MAXPLAYERS+1];
 
+new ctspawns, tspawns;
+
 new Handle:cvarTeams = INVALID_HANDLE;
 new Handle:cvarClassSelection = INVALID_HANDLE;
 new Handle:cvarAlive = INVALID_HANDLE;
@@ -28,6 +30,22 @@ public OnPluginStart()
 	AutoExecConfig(true, "timer/unlimited_spawnpoints");
 	
 	RegConsoleCmd("jointeam", JoinTeam);
+}
+ 
+public OnMapStart()
+{
+	ctspawns = 0;
+	tspawns = 0;
+	
+	new ent = -1;
+	while((ent = FindEntityByClassname(ent, "info_player_counterterrorist")) != -1)
+	{
+		ctspawns++;
+	}
+	while((ent = FindEntityByClassname(ent, "info_player_terrorist")) != -1)
+	{
+		tspawns++;
+	}
 }
  
 public OnClientConnected(client)
@@ -54,6 +72,11 @@ public Action:JoinTeam(client, args)
 	GetCmdArgString(buffer, sizeof(buffer));
 	
 	new team = StringToInt(buffer);
+	if(team == CS_TEAM_SPECTATOR)
+		return Plugin_Continue;
+	
+	if(team == 0)
+		team = GetRandomInt(2, 3);
 	
 	new Float:curTime = GetGameTime();
 	if (curTime - LastUsed[client] != 0)
@@ -65,7 +88,14 @@ public Action:JoinTeam(client, args)
 			if(spawn_mode == CS_TEAM_T)
 				CS_SwitchTeam(client, CS_TEAM_T);
 			else
-				CS_SwitchTeam(client, team);
+			{
+				if(team == CS_TEAM_CT && ctspawns == 0)
+					CS_SwitchTeam(client, CS_TEAM_T);
+				if(team == CS_TEAM_T && tspawns == 0)
+					CS_SwitchTeam(client, CS_TEAM_CT);
+				else
+					CS_SwitchTeam(client, team);
+			}
 				
 			CS_RespawnPlayer(client);
 		}
