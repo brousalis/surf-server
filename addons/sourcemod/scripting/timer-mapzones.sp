@@ -3659,7 +3659,14 @@ stock Tele_Zone(client, zone)
 	new Float:center[3];
 	center[0] = (g_mapZones[zone][Point1][0] + g_mapZones[zone][Point2][0]) / 2.0;
 	center[1] = (g_mapZones[zone][Point1][1] + g_mapZones[zone][Point2][1]) / 2.0;
-	center[2] = g_mapZones[zone][Point1][2] + g_Settings[ZoneTeleportZ];
+	if(g_Settings[UseZoneTeleportZ])
+	{
+		center[2] = g_mapZones[zone][Point1][2] + g_Settings[ZoneTeleportZ];
+	}
+	else
+	{
+		center[2] = (g_mapZones[zone][Point1][2] + g_mapZones[zone][Point2][2]) / 2.0;
+	}
 	
 	if(IsClientInGame(client)) 
 	{
