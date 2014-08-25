@@ -64,6 +64,7 @@ new Handle:g_hLimitTopPerPage = INVALID_HANDLE;
 new Handle:g_hConnectTopOnly = INVALID_HANDLE;
 new Handle:g_hKickMsg = INVALID_HANDLE;
 new Handle:g_hKickDelay = INVALID_HANDLE;
+new Handle:g_hAllchat = INVALID_HANDLE;
 //* * * * * * * * * * * * * * * * * * * * * * * * * *
 //Variables
 //* * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -75,6 +76,8 @@ new bool:g_bGlobalMessage;
 new bool:g_bSettingsMenu;
 new g_iConnectTopOnly;
 new g_iEnabled;
+new bool:g_bNewMsg;
+new bool:g_bAllchat;
 new g_iTotalRanks;
 new g_iTotalPlayers;
 new g_iHighestRank;
@@ -214,6 +217,10 @@ public OnPluginStart()
 	g_hKickMsg = AutoExecConfig_CreateConVar("timer_ranks_kick_msg", "Sry, you have to be at least rank {rank} on our other server to play on this server!", "Message to display before player will be kicked. Use {rank} to display needed rank.", FCVAR_NONE);
 	HookConVarChange(g_hKickMsg, OnCVarChange);
 	GetConVarString(g_hKickMsg, g_sKickMsg, sizeof(g_sKickMsg));
+
+	g_hAllchat = AutoExecConfig_CreateConVar("timer_ranks_allchat", "0", "If enabled, the plugin will enable allchat.", FCVAR_NONE, true, 0.0, true, 1.0);
+	HookConVarChange(g_hAllchat, OnCVarChange);
+	g_bAllchat = GetConVarBool(g_hAllchat);
 	
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
@@ -225,6 +232,7 @@ public OnPluginStart()
 
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_Say, "say_team");
+	
 	RegAdminCmd("timer_setrankpoints", Command_SetRankPoints, ADMFLAG_CHEATS, "Usage: timer_setrankpoints <steam> <amount> | <steam> must exist otherwise the operation fails.");
 	RegAdminCmd("timer_changerankpoints", Command_ChangeRankPoints, ADMFLAG_CHEATS, "Usage: timer_changerankpoints <steam> <amount> | <steam> must exist otherwise the operation fails. | Positive to add, Negative to subtract.");
 	RegAdminCmd("timer_listranks", Command_ListRanks, ADMFLAG_KICK, "Queries the database for all ranking information and displays it to server console or issuing admin.");
@@ -333,6 +341,10 @@ public OnCVarChange(Handle:cvar, const String:oldvalue[], const String:newvalue[
 	else if(cvar == g_hKickMsg)
 	{
 		FormatEx(g_sKickMsg, sizeof(g_sKickMsg), "%s", newvalue);
+	}
+	else if(cvar == g_hAllchat)
+	{
+		g_bAllchat = bool:StringToInt(newvalue);
 	}
 }
 
@@ -515,6 +527,8 @@ public OnClientDisconnect(client)
 //g_iPositionMethod == 1 || g_iPositionMethod == 2
 public Action:Command_Say(client, const String:command[], argc)
 {
+	g_bNewMsg = true;
+	
 	if(!g_iEnabled || !client || g_bInitalizing)
 		return Plugin_Continue;
 
@@ -926,10 +940,10 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 	{
 		return Plugin_Continue;
 	}
-
-	/*
-	if(author && GetMessageFlags() & CHATFLAGS_SPEC)
+	
+	if(author && GetMessageFlags() & CHATFLAGS_SPEC && g_bNewMsg && g_bAllchat)
 	{
+		g_bNewMsg = false;
 		new iSize = GetArraySize(recipients);
 		if(g_iEnabled == 2)
 		{
@@ -946,7 +960,6 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 			}
 		}
 	}
-	*/
 	
 	if(g_iDisplayMethod < 0)
 	{
