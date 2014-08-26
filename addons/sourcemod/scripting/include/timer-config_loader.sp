@@ -548,12 +548,18 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StylePunishType] = KvGetNum(hKv, "punish_type", 1);
 			g_Physics[g_StyleCount][StylePunishMovementControlCooldown] = KvGetFloat(hKv, "punish_movement_cooldown", 1.0);
 			
-			if(g_Physics[g_StyleCount][StyleForceHalfSideways])
+			if(g_Physics[g_StyleCount][StyleForceHalfSideways] > 0)
 			{
 				g_Physics[g_StyleCount][StylePreventMoveleft] = false;
 				g_Physics[g_StyleCount][StylePreventMoveright] = false;
 				g_Physics[g_StyleCount][StylePreventMoveback] = false;
 				g_Physics[g_StyleCount][StylePreventMoveforward] = false;
+				
+				if(g_Physics[g_StyleCount][StyleForceHalfSideways] == 2 && g_Physics[g_StyleCount][StylePunishType] == 1)
+					g_Physics[g_StyleCount][StylePunishMovementControlCooldown] = 0.0;
+				
+				if(g_Physics[g_StyleCount][StyleForceHalfSideways] == 1 && g_Physics[g_StyleCount][StylePunishType] == 1)
+					g_Physics[g_StyleCount][StyleForceHalfSideways] = 2;
 			}
 			
 			g_Physics[g_StyleCount][StyleReplay] = bool:KvGetNum(hKv, "replay", 0);
