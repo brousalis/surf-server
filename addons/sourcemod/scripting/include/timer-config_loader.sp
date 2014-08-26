@@ -209,11 +209,15 @@ enum Styles
 	bool:StylePreventPlusright,
 	bool:StylePreventMoveforward,
 	bool:StylePreventMoveback,
-	bool:StyleForceHalfSideways,
+	StyleForceHalfSideways,
 	
 	//Movement
 	StyleBlockMovementDirection,
 	Float:StyleBlockPreSpeeding,
+	
+	//Punish
+	StylePunishType,
+	Float:StylePunishMovementControlCooldown,
 	
 	//Physics
 	StyleMultiBhop,
@@ -228,7 +232,6 @@ enum Styles
 	Float:StylePointsMulti,
 	Float:StyleHoverScale,
 	Float:StyleMaxSpeed,
-	StylePunishType,
 	bool:StyleAntiBhop,
 	
 	//other
@@ -541,14 +544,12 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StylePreventPlusright] = bool:KvGetNum(hKv, "prevent_plusright", 0);
 			g_Physics[g_StyleCount][StylePreventMoveback] = bool:KvGetNum(hKv, "prevent_back", 0);
 			g_Physics[g_StyleCount][StylePreventMoveforward] = bool:KvGetNum(hKv, "prevent_forward", 0);
-			g_Physics[g_StyleCount][StyleForceHalfSideways] = bool:KvGetNum(hKv, "hsw", 0);
+			g_Physics[g_StyleCount][StyleForceHalfSideways] = KvGetNum(hKv, "hsw", 0);
 			g_Physics[g_StyleCount][StylePunishType] = KvGetNum(hKv, "punish_type", 1);
+			g_Physics[g_StyleCount][StylePunishMovementControlCooldown] = KvGetFloat(hKv, "punish_movement_cooldown", 1.0);
 			
 			if(g_Physics[g_StyleCount][StyleForceHalfSideways])
 			{
-				if(g_Physics[g_StyleCount][StylePunishType] == 1)
-					LogError("PhysicsCFG: Punish mode 1 is not supported for HSW [StyleID: %d]", g_StyleCount);
-				
 				g_Physics[g_StyleCount][StylePreventMoveleft] = false;
 				g_Physics[g_StyleCount][StylePreventMoveright] = false;
 				g_Physics[g_StyleCount][StylePreventMoveback] = false;

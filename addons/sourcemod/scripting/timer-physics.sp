@@ -51,6 +51,8 @@ new Float:g_fCord_Old[MAXPLAYERS+1][3];
 new Float:g_fCord_New[MAXPLAYERS+1][3];
 new Float:g_fJumpLastCord[MAXPLAYERS+1][3];
 
+new Float:g_fUnblockControl[MAXPLAYERS+1];
+
 //Player Physicsss
 new Float:g_fStamina[MAXPLAYERS+1];
 new Float:g_fLastJump[MAXPLAYERS+1] = {0.0, ...};
@@ -552,7 +554,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	{
 		if(!Timer_IsPlayerTouchingZoneType(client, ZtFreeStyle))
 		{
-			if(g_Physics[style][StyleForceHalfSideways])
+			if(g_Physics[style][StyleForceHalfSideways] == 1)
 			{
 				g_iMoveCount[client] = 0;
 				
@@ -658,6 +660,25 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 					g_iMOVERIGHT_hits[client] = 0;
 					g_iKey_hits_reset[client] = 0;
 				}
+			}
+			else if(g_Physics[style][StyleForceHalfSideways] == 2)
+			{
+				new iMoveCount = 0;
+				
+				if(buttons & IN_FORWARD)
+					iMoveCount++;
+				
+				if(buttons & IN_BACK)
+					iMoveCount++;
+				
+				if(buttons & IN_MOVELEFT)
+					iMoveCount++;
+					
+				if(buttons & IN_MOVERIGHT)
+					iMoveCount++;
+				
+				if (iMoveCount == 1)
+					abuse = true;
 			}
 			
 			if(g_Physics[style][StylePreventMoveleft])
@@ -766,18 +787,20 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	if(abuse)
 	{
 		PunishAbuse(client);
+		g_fUnblockControl[client] = fGameTime+1.0;
 	}
 	else if(g_timerMapzones) 
 	{
 		if(!Timer_IsPlayerTouchingZoneType(client, ZtPushEast)
 			&& !Timer_IsPlayerTouchingZoneType(client, ZtPushWest)
 			&& !Timer_IsPlayerTouchingZoneType(client, ZtPushNorth)
-			&& !Timer_IsPlayerTouchingZoneType(client, ZtPushSouth))
+			&& !Timer_IsPlayerTouchingZoneType(client, ZtPushSouth)
+			&& g_fUnblockControl[client] - fGameTime < 0.0)
 		{
 			Block_MovementControl(client, true);
 		}
 	}
-	else 
+	else if(g_fUnblockControl[client] - fGameTime < 0.0)
 	{
 		Block_MovementControl(client, true);
 	}
