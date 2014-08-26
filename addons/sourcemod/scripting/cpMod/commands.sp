@@ -105,9 +105,12 @@ public SaveClientLocation(client)
 				
 				PrintToChat(client, "%t", "CpSaved", YELLOW,LIGHTGREEN,YELLOW,GREEN,whole+1,whole+1,YELLOW);
 				
-				EmitSoundToClient(client,"buttons/blip1.wav",client);
-				TE_SetupBeamRingPoint(g_fPlayerCords[client][whole],10.0,200.0,g_BeamSpriteRing1,0,0,10,1.0,50.0,0.0,{255,255,255,255},0,0);
-				TE_SendToClient(client);
+				if(g_bEffects) 
+				{
+					EmitSoundToClient(client,"buttons/blip1.wav",client);
+					TE_SetupBeamRingPoint(g_fPlayerCords[client][whole],10.0,200.0,g_BeamSpriteRing1,0,0,10,1.0,50.0,0.0,{255,255,255,255},0,0);
+					TE_SendToClient(client);
+				}
 			}
 			else if(whole == CPLIMIT)
 			{ //cp rotation enabled

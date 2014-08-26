@@ -52,6 +52,9 @@ new bool:g_bEnabled = false;
 new Handle:g_hcvarRestore = INVALID_HANDLE;
 new bool:g_bRestore = false;
 
+new Handle:g_hcvarEffects = INVALID_HANDLE;
+new bool:g_bEffects = false;
+
 new Float:g_fPlayerCords[MAXPLAYERS+1][CPLIMIT][3];
 new Float:g_fPlayerAngles[MAXPLAYERS+1][CPLIMIT][3];
 new g_iPlayerLevel[MAXPLAYERS+1][CPLIMIT];
@@ -131,6 +134,10 @@ public OnPluginStart()
 	g_hcvarRestore    = CreateConVar("sm_cp_restore", "1", "Enable/Disable automatic saving of checkpoints to database.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_bRestore        = GetConVarBool(g_hcvarRestore);
 	HookConVarChange(g_hcvarRestore, OnSettingChanged);
+
+	g_hcvarEffects    = CreateConVar("sm_cp_effects", "1", "Enable/Disable save effects.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_bEffects        = GetConVarBool(g_hcvarEffects);
+	HookConVarChange(g_hcvarEffects, OnSettingChanged);
 	
 	RegConsoleCmd("sm_nextcp", Client_Next, "Next checkpoint");
 	RegConsoleCmd("sm_prevcp", Client_Prev, "Previous checkpoint");
@@ -311,6 +318,13 @@ public OnSettingChanged(Handle:convar, const String:oldValue[], const String:new
 			g_bRestore = true;
 		else
 			g_bRestore = false;
+	}
+	else if(convar == g_hcvarEffects)
+	{
+		if(newValue[0] == '1')
+			g_bEffects = true;
+		else
+			g_bEffects = false;
 	}
 }
 
