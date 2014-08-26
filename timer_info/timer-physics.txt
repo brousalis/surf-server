@@ -97,12 +97,14 @@ Here are all setings you can use for a style:
 "prevent_plusleft"		"1"			//Default = 0
 "prevent_plusright"		"1"			//Default = 0
 
-//Force players to use 2 movement keys at the same time (Half-Sideways)
+//Force players to use 2 movement keys at the same time aka. Half-Sideways (0:Disable, 1=new method, 2= oldmethod)
 "hsw"					"1"			//Default = 0
 
 //Punishent for pressing blocked keys
 //0=no punishment,1=block all keys,2=stop movement,3=reset timer, 4=teleport to startzone,5=suiside
 "punish_type"			"4"			//Default = 1
+// Time to block movement control for punish type 1
+"punish_movement_cooldown"	"1.0"
 
 //Anti Bhop for skill-surf
 "anti_bhop"				"1"			//Default = 0
