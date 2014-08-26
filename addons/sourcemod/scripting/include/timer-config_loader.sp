@@ -542,9 +542,13 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StylePreventMoveback] = bool:KvGetNum(hKv, "prevent_back", 0);
 			g_Physics[g_StyleCount][StylePreventMoveforward] = bool:KvGetNum(hKv, "prevent_forward", 0);
 			g_Physics[g_StyleCount][StyleForceHalfSideways] = bool:KvGetNum(hKv, "hsw", 0);
+			g_Physics[g_StyleCount][StylePunishType] = KvGetNum(hKv, "punish_type", 1);
 			
 			if(g_Physics[g_StyleCount][StyleForceHalfSideways])
 			{
+				if(g_Physics[g_StyleCount][StylePunishType] == 1)
+					LogError("PhysicsCFG: Punish mode 1 is not supported for HSW [StyleID: %d]", g_StyleCount);
+				
 				g_Physics[g_StyleCount][StylePreventMoveleft] = false;
 				g_Physics[g_StyleCount][StylePreventMoveright] = false;
 				g_Physics[g_StyleCount][StylePreventMoveback] = false;
@@ -566,7 +570,6 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StyleAutoStrafe] = KvGetNum(hKv, "auto_strafe", 0);
 			g_Physics[g_StyleCount][StyleQuakeBhop] = KvGetNum(hKv, "quake_bhop", 0);
 			g_Physics[g_StyleCount][StyleStrafeBoost] = KvGetNum(hKv, "strafe_boost", 0);
-			g_Physics[g_StyleCount][StylePunishType] = KvGetNum(hKv, "punish_type", 1);
 			g_Physics[g_StyleCount][StyleAntiBhop] = bool:KvGetNum(hKv, "anti_bhop", 0);
 			
 			KvGetString(hKv, "tag_name", g_Physics[g_StyleCount][StyleTagName], 32);
@@ -581,7 +584,7 @@ stock LoadPhysics()
 			if (g_Physics[g_StyleCount][StyleIsDefault] && g_StyleDefault != g_StyleCount)
 			{
 				if(g_StyleDefault != -1) 
-					Timer_LogError("PhysicsCFG: More than one default style detected!");
+					Timer_LogError("PhysicsCFG: More than one default style detected! [StyleID: %d]", g_StyleCount);
 				
 				g_StyleDefault = g_StyleCount;
 			}
