@@ -71,6 +71,7 @@ new Handle:g_hAllchat = INVALID_HANDLE;
 new bool:g_bLateLoad;
 new bool:g_bLateQuery;
 new bool:g_bSql;
+new bool:g_bSimpleChatProcessor;
 new bool:g_bInitalizing;
 new bool:g_bGlobalMessage;
 new bool:g_bSettingsMenu;
@@ -267,6 +268,24 @@ public OnPluginStart()
 	BuildPath(Path_SM, g_sPluginLog, sizeof(g_sPluginLog), "logs/timer-rankings.debug.log");
 	BuildPath(Path_SM, g_sDumpLog, sizeof(g_sDumpLog), "logs/timer-rankings.dump.log");
 	RegServerCmd("timer_rankingsdump", Command_PrintRanks, "Generates a dump file in /logs/ that contains all definitions and rankings.");
+	
+	g_bSimpleChatProcessor = LibraryExists("scp");
+}
+
+public OnLibraryAdded(const String:name[])
+{
+	if (StrEqual(name, "scp"))
+	{
+		g_bSimpleChatProcessor = true;
+	}
+}
+
+public OnLibraryRemoved(const String:name[])
+{	
+	if (StrEqual(name, "scp"))
+	{
+		g_bSimpleChatProcessor = false;
+	}
 }
 
 public Menu_Settings(client, CookieMenuAction:action, any:info, String:buffer[], maxlen)
@@ -930,6 +949,9 @@ public MenuHandler_InfoMenu(Handle:menu, MenuAction:action, param1, param2)
 public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:message[])
 {
 	if(!g_iEnabled || !g_bAuthed[author] || !g_iDisplayMethod)
+		return Plugin_Continue;
+	
+	if(!g_bSimpleChatProcessor)
 		return Plugin_Continue;
 	
 	if(g_iPositionMethod == 2)
