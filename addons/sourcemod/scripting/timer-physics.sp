@@ -787,7 +787,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	if(abuse)
 	{
 		PunishAbuse(client);
-		g_fUnblockControl[client] = fGameTime+1.0;
+		g_fUnblockControl[client] = fGameTime+g_Physics[style][StylePunishMovementControlCooldown];
 	}
 	else if(g_timerMapzones) 
 	{
