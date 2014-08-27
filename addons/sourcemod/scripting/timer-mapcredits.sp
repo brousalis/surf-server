@@ -5,6 +5,7 @@
 #include <store>
 #include <timer>
 #include <timer-worldrecord>
+#include <timer-config_loader.sp>
 
 #pragma semicolon 1
 
@@ -43,6 +44,15 @@ public OnPluginStart()
 	HookConVarChange(gH_PTG, oncvarchanged);
 	
 	AutoExecConfig(true, "storemoneyadder");
+	
+	LoadPhysics();
+	LoadTimerSettings();
+}
+
+public OnMapStart()
+{
+	LoadPhysics();
+	LoadTimerSettings();
 }
 
 public OnLibraryAdded(const String:name[])
@@ -78,14 +88,12 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	new fpsmax, jumps, bool:enabled;
 	Timer_GetClientTimer(client, enabled, time, jumps, fpsmax);
 	
-	new internal_fpsmax;
-	
-	if(!internal_fpsmax || fpsmax > 300)
+	if(fpsmax == 0 || fpsmax > 300)
 	{
 		fpsmax = 300;
 	}
 	
-	if(!jumps)
+	if(jumps <= 0)
 	{
 		jumps = 1;
 	}
@@ -100,7 +108,7 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		style = 1;
 	}
 	
-	new Float:PTG = float(gI_PTG)/4.1/float(jumps)*4.5*float(fpsmax)*style/75.4;
+	new Float:PTG = float(gI_PTG)/4.1/float(jumps)*4.5*float(fpsmax)*g_Physics[style][StylePointsMulti]/75.4;
 	
 	if(currentrank > 0)
 	{
@@ -117,13 +125,16 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	
 	new iPTG = RoundToCeil(PTG);
 	
-	new accid = Store_GetClientAccountID(client);
-	
-	new Handle:pack = CreateDataPack();
-	WritePackCell(pack, client);
-	WritePackCell(pack, iPTG);
-	
-	Store_GiveCredits(accid, iPTG, CreditsCallback, pack);
+	if(iPTG > 0)
+	{
+		new accid = Store_GetClientAccountID(client);
+		
+		new Handle:pack = CreateDataPack();
+		WritePackCell(pack, client);
+		WritePackCell(pack, iPTG);
+		
+		Store_GiveCredits(accid, iPTG, CreditsCallback, pack);
+	}
 }
 
 public CreditsCallback(accountId, any:pack)
