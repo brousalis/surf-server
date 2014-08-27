@@ -9,8 +9,6 @@
 
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "1.3"
-
 new Handle:gH_Enabled = INVALID_HANDLE;
 new bool:gB_Enabled;
 
@@ -24,13 +22,13 @@ public Plugin:myinfo =
 	name = "[Timer] Store Credits Giver",
 	author = "TimeBomb/x69 ml & Zipcore",
 	description = "Gives \"Store\" money when you finish a map, followed by an algorithm.",
-	version = PLUGIN_VERSION,
+	version = PL_VERSION,
 	url = "http://hl2.co.il/"
 }
 
 public OnPluginStart()
 {
-	CreateConVar("sm_smadder_version", PLUGIN_VERSION, "Version", FCVAR_PLUGIN|FCVAR_DONTRECORD|FCVAR_NOTIFY);
+	CreateConVar("sm_smadder_version", PL_VERSION, "Version", FCVAR_PLUGIN|FCVAR_DONTRECORD|FCVAR_NOTIFY);
 	
 	gH_Enabled = CreateConVar("sm_smadder_enabled", "1", "Store money adder is enabled?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	gB_Enabled = true;
