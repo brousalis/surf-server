@@ -976,7 +976,7 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 		
 		for (new i = 1; i <= MaxClients; i++)
 		{
-			if (Client_IsValid(i) && GetClientTeam(i) > CS_TEAM_SPECTATOR)
+			if (Client_IsValid(i) && IsClientInGame(i) && GetClientTeam(i) > CS_TEAM_SPECTATOR)
 			{
 				PushArrayCell(recipients, i);
 			}
