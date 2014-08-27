@@ -136,9 +136,12 @@ public SaveClientLocation(client)
 				g_iPlayerLevel[client][current] = Timer_GetClientLevel(client);
 				PrintToChat(client, "%t", "CpSaved", YELLOW,LIGHTGREEN,YELLOW,GREEN,current+1,whole,YELLOW);
 				
-				EmitSoundToClient(client,"buttons/blip1.wav",client);
-				TE_SetupBeamRingPoint(g_fPlayerCords[client][current],10.0,200.0,g_BeamSpriteRing1,0,0,10,1.0,50.0,0.0,{255,255,255,255},0,0);
-				TE_SendToClient(client);
+				if(g_bEffects) 
+				{
+					EmitSoundToClient(client,"buttons/blip1.wav",client);
+					TE_SetupBeamRingPoint(g_fPlayerCords[client][current],10.0,200.0,g_BeamSpriteRing1,0,0,10,1.0,50.0,0.0,{255,255,255,255},0,0);
+					TE_SendToClient(client);
+				}
 			}
 			else //checkpoint limit
 				PrintToChat(client, "%t", "CpLimit", YELLOW,LIGHTGREEN,YELLOW,GREEN,YELLOW);
@@ -217,9 +220,12 @@ public Client_TelePos(client, pos)
 			PrintToChat(client, "%t", "CpTeleported", YELLOW,LIGHTGREEN,YELLOW,GREEN,actual+1,whole,YELLOW);
 			g_CurrentCp[client] += pos;
 			
-			EmitSoundToClient(client,"buttons/blip1.wav",client);
-			TE_SetupBeamRingPoint(g_fPlayerCords[client][actual],10.0,200.0,g_BeamSpriteRing2,0,0,10,1.0,50.0,0.0,{255,255,255,255},0,0);
-			TE_SendToClient(client);
+			if(g_bEffects) 
+			{
+				EmitSoundToClient(client,"buttons/blip1.wav",client);
+				TE_SetupBeamRingPoint(g_fPlayerCords[client][actual],10.0,200.0,g_BeamSpriteRing2,0,0,10,1.0,50.0,0.0,{255,255,255,255},0,0);
+				TE_SendToClient(client);
+			}
 			
 			Timer_SetClientLevel(client, g_iPlayerLevel[client][actual]);
 		}
