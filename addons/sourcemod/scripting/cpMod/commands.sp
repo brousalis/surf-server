@@ -94,8 +94,9 @@ public SaveClientLocation(client)
 			if(whole < CPLIMIT)
 			{
 				//save some data
-				GetClientAbsOrigin(client,g_fPlayerCords[client][whole]);
-				GetClientAbsAngles(client,g_fPlayerAngles[client][whole]);
+				GetClientAbsOrigin(client, g_fPlayerCords[client][whole]);
+				GetClientAbsAngles(client, g_fPlayerAngles[client][whole]);
+				GetEntPropVector(client, Prop_Data, "m_vecVelocity", g_fPlayerVelocity[client][whole]);
 				
 				g_iPlayerLevel[client][whole] = Timer_GetClientLevel(client);
 				
@@ -132,6 +133,7 @@ public SaveClientLocation(client)
 				//save some data
 				GetClientAbsOrigin(client,g_fPlayerCords[client][current]);
 				GetClientAbsAngles(client,g_fPlayerAngles[client][current]);
+				GetEntPropVector(client, Prop_Data, "m_vecVelocity", g_fPlayerVelocity[client][current]);
 				
 				g_iPlayerLevel[client][current] = Timer_GetClientLevel(client);
 				PrintToChat(client, "%t", "CpSaved", YELLOW,LIGHTGREEN,YELLOW,GREEN,current+1,whole,YELLOW);
@@ -215,8 +217,10 @@ public Client_TelePos(client, pos)
 				if(Timer_IsPlayerTouchingZoneType(client, ZtStart) || Timer_IsPlayerTouchingZoneType(client, ZtBonusStart)) 
 					Timer_SetIgnoreEndTouchStart(client, 1);
 			}
-		
-			TeleportEntity(client, g_fPlayerCords[client][actual],g_fPlayerAngles[client][actual], Float:{0.0,0.0,-100.0});//stop him
+			
+			if(g_bVelocity)
+				TeleportEntity(client, g_fPlayerCords[client][actual], g_fPlayerAngles[client][actual], g_fPlayerVelocity[client][actual]);
+			else TeleportEntity(client, g_fPlayerCords[client][actual], g_fPlayerAngles[client][actual], Float:{0.0,0.0,-100.0});//stop him
 			PrintToChat(client, "%t", "CpTeleported", YELLOW,LIGHTGREEN,YELLOW,GREEN,actual+1,whole,YELLOW);
 			g_CurrentCp[client] += pos;
 			

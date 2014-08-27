@@ -55,8 +55,12 @@ new bool:g_bRestore = false;
 new Handle:g_hcvarEffects = INVALID_HANDLE;
 new bool:g_bEffects = false;
 
+new Handle:g_hcvarVelocity = INVALID_HANDLE;
+new bool:g_bVelocity = false;
+
 new Float:g_fPlayerCords[MAXPLAYERS+1][CPLIMIT][3];
 new Float:g_fPlayerAngles[MAXPLAYERS+1][CPLIMIT][3];
+new Float:g_fPlayerVelocity[MAXPLAYERS+1][CPLIMIT][3];
 new g_iPlayerLevel[MAXPLAYERS+1][CPLIMIT];
 
 //number of current checkpoint in the storage array
@@ -138,6 +142,10 @@ public OnPluginStart()
 	g_hcvarEffects    = CreateConVar("sm_cp_effects", "1", "Enable/Disable save effects.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_bEffects        = GetConVarBool(g_hcvarEffects);
 	HookConVarChange(g_hcvarEffects, OnSettingChanged);
+
+	g_hcvarVelocity    = CreateConVar("sm_cp_velocity", "0", "Enable/Disable save and restore velocity/speed.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_bVelocity        = GetConVarBool(g_hcvarVelocity);
+	HookConVarChange(g_hcvarVelocity, OnSettingChanged);
 	
 	RegConsoleCmd("sm_nextcp", Client_Next, "Next checkpoint");
 	RegConsoleCmd("sm_prevcp", Client_Prev, "Previous checkpoint");
@@ -325,6 +333,13 @@ public OnSettingChanged(Handle:convar, const String:oldValue[], const String:new
 			g_bEffects = true;
 		else
 			g_bEffects = false;
+	}
+	else if(convar == g_hcvarVelocity)
+	{
+		if(newValue[0] == '1')
+			g_bVelocity = true;
+		else
+			g_bVelocity = false;
 	}
 }
 
