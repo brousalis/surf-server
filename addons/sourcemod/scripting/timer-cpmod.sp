@@ -58,6 +58,9 @@ new bool:g_bEffects = false;
 new Handle:g_hcvarVelocity = INVALID_HANDLE;
 new bool:g_bVelocity = false;
 
+new Handle:g_hcvarAir = INVALID_HANDLE;
+new bool:g_bAir = false;
+
 new Float:g_fPlayerCords[MAXPLAYERS+1][CPLIMIT][3];
 new Float:g_fPlayerAngles[MAXPLAYERS+1][CPLIMIT][3];
 new Float:g_fPlayerVelocity[MAXPLAYERS+1][CPLIMIT][3];
@@ -146,6 +149,10 @@ public OnPluginStart()
 	g_hcvarVelocity    = CreateConVar("sm_cp_velocity", "0", "Enable/Disable save and restore velocity/speed.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_bVelocity        = GetConVarBool(g_hcvarVelocity);
 	HookConVarChange(g_hcvarVelocity, OnSettingChanged);
+
+	g_hcvarAir    = CreateConVar("sm_cp_air", "0", "Enable/Disable allow saving in air.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_bAir        = GetConVarBool(g_hcvarAir);
+	HookConVarChange(g_hcvarAir, OnSettingChanged);
 	
 	RegConsoleCmd("sm_nextcp", Client_Next, "Next checkpoint");
 	RegConsoleCmd("sm_prevcp", Client_Prev, "Previous checkpoint");
@@ -340,6 +347,13 @@ public OnSettingChanged(Handle:convar, const String:oldValue[], const String:new
 			g_bVelocity = true;
 		else
 			g_bVelocity = false;
+	}
+	else if(convar == g_hcvarAir)
+	{
+		if(newValue[0] == '1')
+			g_bAir = true;
+		else
+			g_bAir = false;
 	}
 }
 

@@ -87,7 +87,8 @@ public SaveClientLocation(client)
 	if(g_bEnabled)
 	{
 		//if player on ground
-		if(GetEntDataEnt2(client, FindSendPropOffs("CBasePlayer", "m_hGroundEntity")) != -1){
+		if(GetEntDataEnt2(client, FindSendPropOffs("CBasePlayer", "m_hGroundEntity")) != -1 || g_bAir)
+		{
 			new whole = g_WholeCp[client];
 			
 			//if player has less than limit checkpoints
