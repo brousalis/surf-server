@@ -1,1 +1,0 @@
-Choose and rename a physics example to physics.cfg or create one yourself!
