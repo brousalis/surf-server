@@ -34,7 +34,7 @@ public OnPluginStart()
 	gB_Enabled = true;
 	
 	gH_PTG = CreateConVar("sm_smadder_ptg", "25", "Default base money to pay and start the billing algorithm calculation with.\nAlgorithm - CVAR / 4.1 / jumps * 5.4 * fps_max value * difficulty index / 75.4.", FCVAR_PLUGIN, true, 1.0);
-	gI_PTG = 25;
+	gI_PTG = GetConVarInt(gH_PTG);
 	
 	Physics = LibraryExists("timer-physics");
 	
