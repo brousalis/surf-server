@@ -2968,7 +2968,7 @@ GetZoneEntityCount()
 		new String:EntName[256];
 		Entity_GetName(i, EntName, sizeof(EntName));
 		
-		new valid = StrContains(EntName, "#DHC_");
+		new valid = StrContains(EntName, "#TIMER_");
 		if(valid > -1)
 		{
 			count++;
@@ -2990,31 +2990,21 @@ DeleteAllZoneEntitys()
 		new String:EntName[256];
 		Entity_GetName(i, EntName, sizeof(EntName));
 		
-		
-		new valid_npc = StrContains(EntName, "#DHC_NPC");
-		if(valid_npc > -1)
-		{
+		if(StrContains(EntName, "#TIMER_NPC") != -1)
 			SDKUnhook(i, SDKHook_StartTouch, NPC_Use);
-		}
 		
-		new valid_trigger = StrContains(EntName, "#DHC_TRIGGER");
-		if(valid_trigger > -1)
+		if(StrContains(EntName, "#TIMER_TRIGGER") != -1)
 		{
 			SDKUnhook(i, SDKHook_StartTouch, StartTouchTrigger);
 			SDKUnhook(i, SDKHook_EndTouch, EndTouchTrigger);
 			SDKUnhook(i, SDKHook_Touch, OnTouchTrigger);
 		}
 		
-		new valid_timer_entity = StrContains(EntName, "#DHC_");
-		if(valid_timer_entity > -1)
-		{
+		if(StrContains(EntName, "#TIMER_") != -1)
 			DeleteEntity(i);
-		}
 		
 		for (new client = 1; client <= MaxClients; client++)
-		{
 			g_bZone[i][client] = false;
-		}
 	}
 }
 
@@ -3122,7 +3112,7 @@ SpawnZoneTrigger(zone)
 			DispatchKeyValue(entity, "OnTrigger", "!activator,IgnitePlayer,,0,-1");
 			
 			new String:EntName[256];
-			FormatEx(EntName, sizeof(EntName), "#DHC_Trigger_%d", g_mapZones[zone][Id]);
+			FormatEx(EntName, sizeof(EntName), "#TIMER_Trigger_%d", g_mapZones[zone][Id]);
 			DispatchKeyValue(entity, "targetname", EntName);
 			
 			if(g_mapZones[zone][Type] == ZtBlock) DispatchKeyValue(entity, "Solid", "6"); 
@@ -3257,7 +3247,7 @@ stock SpawnSpotLight(Float:pos[3], Float:color[3], Float:ang[3])
 	
 	
 	decl String:EntName[256];
-	FormatEx(EntName, sizeof(EntName), "#DHC_SPOTLIGHT");
+	FormatEx(EntName, sizeof(EntName), "#TIMER_SPOTLIGHT_%d_%d_%d", RoundToFloor(pos[0]), RoundToFloor(pos[1]), RoundToFloor(pos[2]));
 	DispatchKeyValue(entity, "targetname", EntName);
 	
 	DispatchKeyValue(entity, "SpotlightLength", "350");
@@ -3323,7 +3313,7 @@ SpawnNPC(zone)
 	}
 	
 	decl String:EntName[256];
-	FormatEx(EntName, sizeof(EntName), "#DHC_NPC_%d", g_mapZones[zone][Id]);
+	FormatEx(EntName, sizeof(EntName), "#TIMER_NPC_%d", g_mapZones[zone][Id]);
 	
 	new String:Classname[] = "prop_physics_override";
 	
@@ -3382,7 +3372,7 @@ SpawnZoneDebugEntitys(zone)
 	PrecacheModel("models/props_junk/trafficcone001a.mdl", true);
 	
 	decl String:EntName[256];
-	FormatEx(EntName, sizeof(EntName), "#DHC_Zone_%d", g_mapZones[zone][Id]);
+	FormatEx(EntName, sizeof(EntName), "#TIMER_Zone_%d", g_mapZones[zone][Id]);
 	
 	new String:ModePath[] = "models/props_junk/trafficcone001a.mdl";
 	new String:Classname[] = "prop_physics_override";
