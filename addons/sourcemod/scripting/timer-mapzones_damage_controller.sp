@@ -1,7 +1,9 @@
 #include <sourcemod>
 #include <sdkhooks>
+#include <smlib>
 #include <timer>
 #include <timer-mapzones>
+#include <timer-physics>
 #include <timer-config_loader.sp>
 
 new Handle:g_hFF;
@@ -96,47 +98,50 @@ public Action:Event_Player_Death(Handle:event, const String:name[], bool:dontBro
 
 public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype)
 {
-	new bool:ff = GetConVarBool(g_hFF); 
-
-	if (g_Settings[Godmode])
-	{
-		if (attacker == 0 || attacker >= MaxClients)
-		{
-			new style = Timer_GetStyle(victim);
-			if(g_Physics[style][StyleAllowWorldDamage])
-			{
-				return Plugin_Continue;
-			}
-		
-			RemovePunchAngle(victim);
-			return Plugin_Handled;
-		}
+	new style_victim = Timer_GetStyle(victim);
+	new style_attacker = Timer_GetStyle(attacker);
 	
-		//PvP Zone
-		if(Timer_IsPlayerTouchingZoneType(victim, ZtArena) && Timer_IsPlayerTouchingZoneType(attacker, ZtArena))
-		{
-			return Plugin_Continue;
-		}
+	//World damage
+	if (attacker == 0 || attacker >= MaxClients)
+	{
+		new style = Timer_GetStyle(victim);
 		
+		//Allow world damage
+		if(g_Physics[style][StyleAllowWorldDamage])
+			return Plugin_Continue;
+		
+		//Remove punsish angle and prevent damage
 		RemovePunchAngle(victim);
 		return Plugin_Handled;
 	}
 	
-	if (attacker == 0 || attacker >= MaxClients)
+	//Player vs. player damage
+	if(Client_IsValid(attacker, true) && IsClientInGame(attacker) && IsPlayerAlive(attacker))
 	{
-		new style = Timer_GetStyle(victim);
-		if(g_Physics[style][StyleAllowWorldDamage])
-		{
+		//Allow damage for PvP styles
+		if(g_Physics[style_victim][StylePvP] && g_Physics[style_attacker][StylePvP])
 			return Plugin_Continue;
-		}
-	}
-	else if(GetClientTeam(victim) == GetClientTeam(attacker))
-	{
-		if(ff)
-		{
-			return Plugin_Continue;
-		}
 		
+		//Allow damage inside PvP zones
+		if(Timer_IsPlayerTouchingZoneType(victim, ZtArena) && Timer_IsPlayerTouchingZoneType(attacker, ZtArena))
+			return Plugin_Continue;
+	}
+	
+	//Godmode
+	if (g_Settings[Godmode])
+	{
+		//Remove punsish angle and prevent damage
+		RemovePunchAngle(victim);
+		return Plugin_Handled;
+	}
+	
+	//Friendly fire
+	if(GetClientTeam(victim) == GetClientTeam(attacker))
+	{
+		if(GetConVarBool(g_hFF))
+			return Plugin_Continue;
+		
+		//Remove punsish angle and prevent damage
 		RemovePunchAngle(victim);
 		return Plugin_Handled;
 	}

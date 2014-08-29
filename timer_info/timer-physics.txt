@@ -117,8 +117,11 @@ Here are all setings you can use for a style:
 "fps_min"				"300"		//Default = 0
 "fps_redirect_style"	"3"			//Default = -1
 
-//Allow world damage
+//Allow world damage (requires damage controller module)
 "allow_world_damage"	"1"			//Default = 0
+
+//PvP (requires damage controller module)
+"pvp"					"1"			//Default = 0
 
 //Player spawn health
 "spawn_health"			"250"		//Default = 100

@@ -234,6 +234,11 @@ enum Styles
 	Float:StyleMaxSpeed,
 	bool:StyleAntiBhop,
 	
+	//Damage
+	bool:StylePvP,
+	bool:StyleAllowWorldDamage,
+	StyleSpawnHealth,
+	
 	//other
 	bool:StyleReplay,
 	bool:StyleReplayBonus,
@@ -243,8 +248,6 @@ enum Styles
 	StyleFPSMax,
 	StyleFPSMin,
 	StyleFPSRedirectStyle,
-	bool:StyleAllowWorldDamage,
-	StyleSpawnHealth,
 	StyleAutoStrafe,
 	StyleQuakeBhop,
 	StyleStrafeBoost
@@ -570,6 +573,7 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StyleFPSRedirectStyle] = KvGetNum(hKv, "fps_redirect_style", -1);
 			g_Physics[g_StyleCount][StyleAllowWorldDamage] = bool:KvGetNum(hKv, "allow_world_damage", 0);
 			g_Physics[g_StyleCount][StyleSpawnHealth] = KvGetNum(hKv, "spawn_health", 100);
+			g_Physics[g_StyleCount][StylePvP] = bool:KvGetNum(hKv, "pvp", 0);
 			g_Physics[g_StyleCount][StyleBlockPreSpeeding] = KvGetFloat(hKv, "prespeed", 0.0);
 			g_Physics[g_StyleCount][StylePointsMulti] = KvGetFloat(hKv, "points_multi", 1.0);
 			g_Physics[g_StyleCount][StyleHoverScale] = KvGetFloat(hKv, "hover_scale", 0.0);
