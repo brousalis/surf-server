@@ -2,6 +2,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <emitsoundany>
 
 #include <timer>
 #include <timer-logging>
@@ -82,7 +83,7 @@ public PrepareSound(String: sound[MAX_FILE_LEN])
 
 	if (FileExists(fileSound))
 	{
-		PrecacheSound(sound, true);
+		PrecacheSoundAny(sound, true);
 		AddFileToDownloadsTable(fileSound);
 		Timer_LogTrace("[Sound] File '%s' added to downloads table.", fileSound);
 	}
@@ -94,28 +95,28 @@ public PrepareSound(String: sound[MAX_FILE_LEN])
 
 public OnTimerPaused(client)
 {
-	EmitSoundToClient(client, SND_TIMER_PAUSE);
+	EmitSoundToClientAny(client, SND_TIMER_PAUSE);
 }
 
 public OnTimerResumed(client)
 {
-	EmitSoundToClient(client, SND_TIMER_RESUME);
+	EmitSoundToClientAny(client, SND_TIMER_RESUME);
 }
 
 public OnTimerWorldRecord(client)
 {
 	//Stop the sound first
-	EmitSoundToAll(SND_TIMER_WORLDRECORD_ALL, _, _, _, SND_STOPLOOPING);
+	EmitSoundToAllAny(SND_TIMER_WORLDRECORD_ALL, _, _, _, SND_STOPLOOPING);
 	
-	EmitSoundToAll(SND_TIMER_WORLDRECORD_ALL);
+	EmitSoundToAllAny(SND_TIMER_WORLDRECORD_ALL);
 }
 
 public OnTimerPersonalRecord(client)
 {
-	EmitSoundToClient(client, SND_TIMER_PERSONALBEST);
+	EmitSoundToClientAny(client, SND_TIMER_PERSONALBEST);
 }
 
 public OnTimerRecord(client)
 {
-	EmitSoundToClient(client, SND_TIMER_FINISH);
+	EmitSoundToClientAny(client, SND_TIMER_FINISH);
 }
