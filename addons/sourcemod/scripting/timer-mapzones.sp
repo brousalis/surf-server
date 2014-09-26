@@ -2990,17 +2990,35 @@ DeleteAllZoneEntitys()
 		new String:EntName[256];
 		Entity_GetName(i, EntName, sizeof(EntName));
 		
+<<<<<<< HEAD
 		if(StrContains(EntName, "#TIMER_NPC") != -1)
+=======
+		
+		new valid = StrContains(EntName, "#DHC_NPC");
+		if(valid > -1)
+		{
+>>>>>>> parent of f4aa1d0... Added spot lights for zones
 			SDKUnhook(i, SDKHook_StartTouch, NPC_Use);
 		
+<<<<<<< HEAD
 		if(StrContains(EntName, "#TIMER_TRIGGER") != -1)
+=======
+		new valid2 = StrContains(EntName, "#DHC_TRIGGER");
+		if(valid2 > -1)
+>>>>>>> parent of f4aa1d0... Added spot lights for zones
 		{
 			SDKUnhook(i, SDKHook_StartTouch, StartTouchTrigger);
 			SDKUnhook(i, SDKHook_EndTouch, EndTouchTrigger);
 			SDKUnhook(i, SDKHook_Touch, OnTouchTrigger);
 		}
 		
+<<<<<<< HEAD
 		if(StrContains(EntName, "#TIMER_") != -1)
+=======
+		new valid3 = StrContains(EntName, "#DHC_");
+		if(valid3 > -1)
+		{
+>>>>>>> parent of f4aa1d0... Added spot lights for zones
 			DeleteEntity(i);
 		
 		for (new client = 1; client <= MaxClients; client++)
@@ -3015,7 +3033,7 @@ DeleteEntity(entity)
 
 SpawnZoneEntitys(zone)
 {
-	if(g_mapZones[zone][Point1][0] == 0.0 && g_mapZones[zone][Point1][1]  == 0.0 && g_mapZones[zone][Point1][2] == 0.0 )
+	if(g_mapZones[zone][Point1][0] != 0.0 || g_mapZones[zone][Point1][1]  != 0.0 || g_mapZones[zone][Point1][2] != 0.0 )
 	{
 		// No valid zone
 		return;
@@ -3035,23 +3053,12 @@ SpawnZoneEntitys(zone)
 	//Spawn PlayerClip
 	else if(g_mapZones[zone][Type] == ZtPlayerClip)
 	{
-		SpawnPlayerClip(zone);
+		//SpawnPlayerClip(zone);
 	}
 	//Spawn trigger_multiple
 	else
 	{
 		SpawnZoneTrigger(zone);
-	}
-	
-	//Spawn spot lights
-	if(g_mapZones[zone][Type] == ZtStart || 
-		g_mapZones[zone][Type] == ZtEnd || 
-		g_mapZones[zone][Type] == ZtLevel || 
-		g_mapZones[zone][Type] == ZtBonusStart || 
-		g_mapZones[zone][Type] == ZtBonusEnd || 
-		g_mapZones[zone][Type] == ZtBonusLevel)
-	{
-		SpawnZoneSpotLights(zone);
 	}
 }
 
@@ -3155,6 +3162,7 @@ SpawnZoneTrigger(zone)
 	}
 }
 
+<<<<<<< HEAD
 SpawnZoneSpotLights(zone)
 {
 	new Float:fFrom[3];
@@ -3288,6 +3296,8 @@ SpawnPlayerClip(zone)
 	
 }
 
+=======
+>>>>>>> parent of f4aa1d0... Added spot lights for zones
 SpawnNPC(zone)
 {
 	new Float:vecNPC[3];
