@@ -16,8 +16,14 @@
 * You can also use custom sprites for zone beam effects ([video tutorial] (https://www.youtube.com/watch?v=uka1Iq_I6W4&feature=youtu.be)).
 * There are also many other optional modules.
 
+**Requirements**
+* CS:S or CS:GO gameserver
+* MySQL database (SqLite isn't supported)
+* MetaMod:Source & Sourcemod 1.6.x+
+* Additional various requirements for some modules
+
 **Problems?**
-* If you have trouble goto our [FAQ] (https://github.com/Zipcore/Timer/wiki/FAQ) page first.
+* If you have trouble goto our [WIKI] (https://github.com/Zipcore/Timer/wiki)/[FAQ] (https://github.com/Zipcore/Timer/wiki/FAQ) page first.
 * If you have still no clue you can ask for help [here] (https://github.com/Zipcore/Timer/issues/new).
 
 **Links:**
