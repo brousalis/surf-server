@@ -10,9 +10,9 @@
 #include <clientprefs>
 #include <timer-config_loader.sp>
 #include <autoexecconfig>	//https://github.com/Impact123/AutoExecConfig
-#include <scp>
 
 #undef REQUIRE_PLUGIN
+#include <scp>
 #include <timer-maptier>
 #include <timer-physics>
 #include <timer-worldrecord>
@@ -948,6 +948,9 @@ public MenuHandler_InfoMenu(Handle:menu, MenuAction:action, param1, param2)
 
 public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:message[])
 {
+	if(!g_bSimpleChatProcessor)
+		return Plugin_Continue;
+	
 	if(!g_iEnabled || !g_bAuthed[author] || !g_iDisplayMethod)
 		return Plugin_Continue;
 	
