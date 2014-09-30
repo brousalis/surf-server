@@ -44,7 +44,8 @@ enum TimerSettings
 	
 	//Mapzones
 	bool:NoblockEnable,
-	bool:ZoneEffects,
+	bool:ZoneSprites,
+	bool:ZoneSpotlights,
 	bool:NPCConfirm,
 	bool:LevelTeleportEnable,
 	bool:TeleportOnSpawn,
@@ -332,7 +333,8 @@ stock LoadTimerSettings()
 		}
 		else if(StrEqual(sSectionName, "Mapzone"))
 		{
-			g_Settings[ZoneEffects] = bool:KvGetNum(hKv, "zone_effects_enable", 1);
+			g_Settings[ZoneSprites] = bool:KvGetNum(hKv, "zone_sprites_enable", 1);
+			g_Settings[ZoneSpotlights] = bool:KvGetNum(hKv, "zone_spotlights_enable", 1);
 			g_Settings[NoblockEnable] = bool:KvGetNum(hKv, "noblock_enable", 1);
 			g_Settings[NPCConfirm] = bool:KvGetNum(hKv, "npc_confirm", 1);
 			g_Settings[TeleportOnSpawn] = bool:KvGetNum(hKv, "teleport_onspawn", 1);

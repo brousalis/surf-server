@@ -154,6 +154,8 @@ new Handle:g_OnClientStartTouchBonusLevel;
 
 new bool:g_bAllowRoundEnd = false;
 
+new bool:g_bSpawnSpotlights;
+
 public Plugin:myinfo =
 {
 	name        = "[Timer] MapZones",
@@ -360,6 +362,7 @@ public OnMapStart()
 	g_bZonesLoaded = false;
 	adminmode = 0;
 	
+	g_bSpawnSpotlights = true;
 	GetCurrentMap(g_currentMap, sizeof(g_currentMap));
 	ConnectSQL();
 	
@@ -1417,6 +1420,7 @@ public LoadMapZonesCallback(Handle:owner, Handle:hndl, const String:error[], any
 	}
 	
 	g_bZonesLoaded = true;
+	g_bSpawnSpotlights = false;
 	
 	/* Forwards */
 	Call_StartForward(g_OnMapZonesLoaded);
@@ -2638,7 +2642,7 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat, iSpriteI
 	if(iSpriteIndex == 0)
 		iSpriteIndex = precache_laser_default;
 	
-	if(g_Settings[ZoneEffects])
+	if(g_Settings[ZoneSprites] || !flat)
 	{
 		//initialize tempoary variables bottom front
 		decl Float:fLeftBottomFront[3];
@@ -3010,7 +3014,7 @@ DeleteAllZoneEntitys()
 
 DeleteEntity(entity)
 {
-	AcceptEntityInput(entity, "kill");
+	AcceptEntityInput(entity, "Kill");
 }
 
 SpawnZoneEntitys(zone)
@@ -3044,14 +3048,17 @@ SpawnZoneEntitys(zone)
 	}
 	
 	//Spawn spot lights
-	if(g_mapZones[zone][Type] == ZtStart || 
-		g_mapZones[zone][Type] == ZtEnd || 
-		g_mapZones[zone][Type] == ZtLevel || 
-		g_mapZones[zone][Type] == ZtBonusStart || 
-		g_mapZones[zone][Type] == ZtBonusEnd || 
-		g_mapZones[zone][Type] == ZtBonusLevel)
+	if(g_bSpawnSpotlights && g_Settings[ZoneSpotlights])
 	{
-		SpawnZoneSpotLights(zone);
+		if(g_mapZones[zone][Type] == ZtStart || 
+			g_mapZones[zone][Type] == ZtEnd || 
+			g_mapZones[zone][Type] == ZtLevel || 
+			g_mapZones[zone][Type] == ZtBonusStart || 
+			g_mapZones[zone][Type] == ZtBonusEnd || 
+			g_mapZones[zone][Type] == ZtBonusLevel)
+		{
+			SpawnZoneSpotLights(zone);
+		}
 	}
 }
 
