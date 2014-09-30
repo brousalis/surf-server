@@ -1510,9 +1510,6 @@ UpdateRankIndexbyRecordTime(client)
 
 ShowConnectMsg(client)
 {
-	if(g_iPositionMethod == 2)
-		return;
-	
 	if(g_bLateLoad)
 		return;
 	
@@ -1522,7 +1519,7 @@ ShowConnectMsg(client)
 	if(!g_bShowConnectMsg[client])
 		return;
 	
-	if(g_iCurrentPoints[client] < 0)
+	if(g_iCurrentPoints[client] < 0 && g_iPositionMethod != 2)
 		return;
 	
 	if(g_iCurrentIndex[client] < 0)
@@ -1559,13 +1556,26 @@ ShowConnectMsg(client)
 		
 	}
 	
-	#if defined LEGACY_COLORS
-	CFormat(sNameBuffer, 1024, client);
-	CPrintToChatAll("%s%N {olive}[{lightred}%d points{olive}] connected from %s.", sNameBuffer, client, g_iCurrentPoints[client], s_Country);
-	#else
-	CReplaceColorCodes(sNameBuffer, client, false, 1024);
-	CPrintToChatAll("%s%N {green}[{yellow}%d points{green}] connected from %s.", sNameBuffer, client, g_iCurrentPoints[client], s_Country);
-	#endif
+	if(g_iPositionMethod == 2)
+	{
+		#if defined LEGACY_COLORS
+		CFormat(sNameBuffer, 1024, client);
+		CPrintToChatAll("%s%N {olive} connected from %s.", sNameBuffer, client, s_Country);
+		#else
+		CReplaceColorCodes(sNameBuffer, client, false, 1024);
+		CPrintToChatAll("%s%N {green} connected from %s.", sNameBuffer, client, s_Country);
+		#endif
+	}
+	else
+	{
+		#if defined LEGACY_COLORS
+		CFormat(sNameBuffer, 1024, client);
+		CPrintToChatAll("%s%N {olive}[{lightred}%d points{olive}] connected from %s.", sNameBuffer, client, g_iCurrentPoints[client], s_Country);
+		#else
+		CReplaceColorCodes(sNameBuffer, client, false, 1024);
+		CPrintToChatAll("%s%N {green}[{yellow}%d points{green}] connected from %s.", sNameBuffer, client, g_iCurrentPoints[client], s_Country);
+		#endif
+	}
 }
 
 public CallBack_Top(Handle:owner, Handle:hndl, const String:error[], any:userid)
