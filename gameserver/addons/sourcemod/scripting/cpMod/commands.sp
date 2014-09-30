@@ -183,7 +183,7 @@ public Client_TelePos(client, pos)
 	//if plugin is enabled
 	if(g_bEnabled)
 	{
-		if(g_timer && !g_bRestore) Timer_Reset(client);
+		if(g_timer) Timer_Reset(client);
 		
 		new current = g_CurrentCp[client];
 		new whole = g_WholeCp[client];
