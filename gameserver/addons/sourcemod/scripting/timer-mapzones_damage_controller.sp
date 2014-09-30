@@ -99,7 +99,6 @@ public Action:Event_Player_Death(Handle:event, const String:name[], bool:dontBro
 public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype)
 {
 	new style_victim = Timer_GetStyle(victim);
-	new style_attacker = Timer_GetStyle(attacker);
 	
 	//World damage
 	if (attacker == 0 || attacker >= MaxClients)
@@ -118,6 +117,8 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 	//Player vs. player damage
 	if(Client_IsValid(attacker, true) && IsClientInGame(attacker) && IsPlayerAlive(attacker))
 	{
+		new style_attacker = Timer_GetStyle(attacker);
+		
 		//Allow damage for PvP styles
 		if(g_Physics[style_victim][StylePvP] && g_Physics[style_attacker][StylePvP])
 			return Plugin_Continue;

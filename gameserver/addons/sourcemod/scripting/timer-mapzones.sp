@@ -1563,7 +1563,7 @@ public AdminMenu_AddMapZone(Handle:topmenu,
 	if (action == TopMenuAction_DisplayOption) {
 		FormatEx(buffer, maxlength, "Add Map Zone");
 	} else if (action == TopMenuAction_SelectOption) {
-		RestartMapZoneEditor(param);
+		ResetMapZoneEditor(param);
 		g_mapZoneEditors[param][Step] = 1;
 		DisplaySelectPointMenu(param, 1);
 	}
@@ -1708,15 +1708,18 @@ public Handle_DeleteMapZonesMenu(Handle:menu, MenuAction:action, client, itemNum
 	}
 }
 
-RestartMapZoneEditor(client)
+ResetMapZoneEditor(client)
 {
-	g_mapZoneEditors[client][Step] = 0;
-	
-	for (new i = 0; i < 3; i++)
-		g_mapZoneEditors[client][Point1][i] = 0.0;
-	
-	for (new i = 0; i < 3; i++)
-		g_mapZoneEditors[client][Point1][i] = 0.0;		
+	if(!client)
+	{
+		g_mapZoneEditors[client][Step] = 0;
+		
+		for (new i = 0; i < 3; i++)
+			g_mapZoneEditors[client][Point1][i] = 0.0;
+		
+		for (new i = 0; i < 3; i++)
+			g_mapZoneEditors[client][Point1][i] = 0.0;
+	}
 }
 
 DeleteMapZone(client)
@@ -1804,7 +1807,7 @@ public PointSelect(Handle:menu, MenuAction:action, param1, param2)
 			DisplayTopMenu(hTopMenu, param1, TopMenuPosition_LastCategory);
 		}
 		
-		RestartMapZoneEditor(param1);
+		ResetMapZoneEditor(param1);
 	}
 }
 
@@ -1825,9 +1828,9 @@ DisplaySelectZoneTypeMenu(client, category)
 	
 	if(category == 0)
 	{
-		AddMenuItem(menu, "cat_timer", "Timer");
+		AddMenuItem(menu, "cat_timer", "Timer (Basic)");
 		AddMenuItem(menu, "cat_timer_bonus", "Timer (Bonus)");
-		AddMenuItem(menu, "cat_timer_other", "Timer (Other)");
+		AddMenuItem(menu, "cat_timer_other", "Timer (More)");
 		AddMenuItem(menu, "cat_physics", "Physics");
 		AddMenuItem(menu, "cat_teleport", "Teleport");
 		AddMenuItem(menu, "cat_control", "Control");
@@ -2247,7 +2250,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				point2[2] += 100;
 				
 				AddMapZone(g_currentMap, MapZoneType:zonetype, ZoneName, LvlID, point1, point2);
-				RestartMapZoneEditor(client);
+				ResetMapZoneEditor(client);
 				LoadMapZones();
 			}
 		}
@@ -2255,14 +2258,14 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 	else if (action == MenuAction_End) 
 	{
 		CloseHandle(menu);
-		RestartMapZoneEditor(client);
+		ResetMapZoneEditor(client);
 	} 
 	else if (action == MenuAction_Cancel) 
 	{
 		if (itemNum == MenuCancel_Exit && hTopMenu != INVALID_HANDLE) 
 		{
 			DisplayTopMenu(hTopMenu, client, TopMenuPosition_LastCategory);
-			RestartMapZoneEditor(client);
+			ResetMapZoneEditor(client);
 		}
 	}
 }
