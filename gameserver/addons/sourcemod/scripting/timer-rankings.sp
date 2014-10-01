@@ -427,8 +427,11 @@ public Action:Timer_Advertisement(Handle:timer)
 	if(!g_iEnabled)
 		return Plugin_Continue;
 
-	CPrintToChatAll(PLUGIN_PREFIX, "Advertisement");
+	if(g_fAdvertisement <= 0.0)
+		return Plugin_Stop;
 
+	CPrintToChatAll(PLUGIN_PREFIX, "Advertisement");
+	
 	return Plugin_Continue;
 }
 
