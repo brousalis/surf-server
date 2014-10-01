@@ -82,19 +82,19 @@ ConnectSQL()
 
 public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
 {
-	if (g_reconnectCounter >= 5)
-	{
-		SetFailState("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
-		return;
-	}
-
 	if (hndl == INVALID_HANDLE)
 	{
 		Timer_LogError("Connection to SQL database has failed, Reason: %s", error);
 		
 		g_reconnectCounter++;
-		ConnectSQL();
+		if (g_reconnectCounter >= 5)
+		{
+			Timer_LogError("!! [timer-maptier.smx] Failed to connect to the database !!");
+			//SetFailState("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
+			//return;
+		}
 		
+		ConnectSQL();
 		return;
 	}
 
