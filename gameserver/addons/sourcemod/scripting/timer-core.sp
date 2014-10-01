@@ -4,11 +4,11 @@
 #include <sdktools>
 #include <smlib>
 #include <timer>
-#include <timer-logging>
 #include <timer-config_loader.sp>
 #include <timer-stocks>
 
 #undef REQUIRE_PLUGIN
+#include <timer-logging>
 #include <timer-mapzones>
 #include <timer-teams>
 #include <timer-physics>
@@ -19,6 +19,7 @@
 
 #define MAX_FILE_LEN 128
 
+new bool:g_timerLogging = false;
 new bool:g_timerPhysics = false;
 new bool:g_timerStrafes = false;
 new bool:g_timerScripterDB = false;
@@ -167,6 +168,7 @@ public OnPluginStart()
 	AutoExecConfig(true, "timer/timer-core");
 	
 
+	g_timerLogging = LibraryExists("timer-logging");
 	g_timerPhysics = LibraryExists("timer-physics");
 	g_timerStrafes = LibraryExists("timer-strafes");
 	g_timerScripterDB = LibraryExists("timer-scripter_db");
@@ -177,7 +179,11 @@ public OnPluginStart()
 
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-logging"))
+	{
+		g_timerLogging = true;
+	}
+	else if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = true;
 	}
@@ -205,7 +211,11 @@ public OnLibraryAdded(const String:name[])
 
 public OnLibraryRemoved(const String:name[])
 {	
-	if (StrEqual(name, "timer-physics"))
+	if (StrEqual(name, "timer-logging"))
+	{
+		g_timerLogging = false;
+	}
+	else if (StrEqual(name, "timer-physics"))
 	{
 		g_timerPhysics = false;
 	}
@@ -360,7 +370,7 @@ public DropTable(Handle:owner, Handle:hndl, const String:error[], any:client)
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on DropTable: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on DropTable: %s", error);
 	}
 }
 
@@ -691,7 +701,7 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 	
 	if (time < 1.0)
 	{
-		Timer_Log(Timer_LogLevelWarning, "Detected illegal record by %N on %s [time:%.2f|style:%d|track:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, style, track, jumps, auth);
+		if(g_timerLogging) Timer_Log(Timer_LogLevelWarning, "Detected illegal record by %N on %s [time:%.2f|style:%d|track:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, style, track, jumps, auth);
 		return;
 	}
 	
@@ -699,7 +709,7 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 	{
 		if (Timer_IsScripter(client))
 		{
-			Timer_Log(Timer_LogLevelWarning, "Detected scripter record by %N on %s [time:%.2f|style:%d|track:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, style, track, jumps, auth);
+			if(g_timerLogging) Timer_Log(Timer_LogLevelWarning, "Detected scripter record by %N on %s [time:%.2f|style:%d|track:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, style, track, jumps, auth);
 			return;
 		}
 	}
@@ -939,7 +949,7 @@ public UpdateNameCallback(Handle:owner, Handle:hndl, const String:error[], any:p
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on UpdateName: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on UpdateName: %s", error);
 		return;
 	}
 
@@ -953,7 +963,7 @@ public DeletePlayersRecordCallback(Handle:owner, Handle:hndl, const String:error
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on DeletePlayerRecord: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on DeletePlayerRecord: %s", error);
 		return;
 	}
 }
@@ -962,7 +972,7 @@ public FinishRoundCallback(Handle:owner, Handle:hndl, const String:error[], any:
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on FinishRound: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on FinishRound: %s", error);
 		return;
 	}
 
@@ -1007,7 +1017,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("Connection to SQL database has failed, Reason: %s", error);
+		if(g_timerLogging) Timer_LogError("Connection to SQL database has failed, Reason: %s", error);
 		
 		g_reconnectCounter++;
 		ConnectSQL();
@@ -1038,7 +1048,7 @@ public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], a
 {
 	if (owner == INVALID_HANDLE)
 	{
-		Timer_LogError(error);
+		if(g_timerLogging) Timer_LogError(error);
 		
 		g_reconnectCounter++;
 		ConnectSQL();
@@ -1048,7 +1058,7 @@ public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], a
 	
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on CreateSQLTable: %s", error);
+		if(g_timerLogging) Timer_LogError("SQL Error on CreateSQLTable: %s", error);
 		return;
 	}
 }

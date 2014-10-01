@@ -1,7 +1,8 @@
 #pragma semicolon 1
-
-#include <timer>
 #include <timer-logging>
+
+#undef REQUIRE_PLUGIN
+#include <timer>
 
 static Handle:g_log_file = INVALID_HANDLE;
 static const String:g_log_level_names[][] = { "     ", "ERROR", "WARN ", "INFO ", "DEBUG", "TRACE" };
