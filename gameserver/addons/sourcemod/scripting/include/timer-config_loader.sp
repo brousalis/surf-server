@@ -252,7 +252,8 @@ enum Styles
 	StyleFPSRedirectStyle,
 	StyleAutoStrafe,
 	StyleQuakeBhop,
-	StyleStrafeBoost
+	StyleStrafeBoost,
+	bool:StyleThirdPerson
 }
 
 new g_Physics[MAX_STYLES][Styles];
@@ -585,6 +586,7 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StyleAutoStrafe] = KvGetNum(hKv, "auto_strafe", 0);
 			g_Physics[g_StyleCount][StyleQuakeBhop] = KvGetNum(hKv, "quake_bhop", 0);
 			g_Physics[g_StyleCount][StyleStrafeBoost] = KvGetNum(hKv, "strafe_boost", 0);
+			g_Physics[g_StyleCount][StyleThirdPerson] = bool:KvGetNum(hKv, "thirdperson", 0);
 			g_Physics[g_StyleCount][StyleAntiBhop] = bool:KvGetNum(hKv, "anti_bhop", 0);
 			
 			KvGetString(hKv, "tag_name", g_Physics[g_StyleCount][StyleTagName], 32);
