@@ -90,6 +90,7 @@ enum TimerSettings
 	bool:HUDMapEnable,
 	bool:HUDStyleEnable,
 	bool:HUDWREnable,
+	bool:HUDWRHolderEnable,
 	bool:HUDPBEnable,
 	bool:HUDTTWREnable,
 	bool:HUDKeysEnable,
@@ -377,6 +378,7 @@ stock LoadTimerSettings()
 			g_Settings[HUDMapEnable] = bool:KvGetNum(hKv, "hud_show_mapname", 1);
 			g_Settings[HUDStyleEnable] = bool:KvGetNum(hKv, "hud_show_style", 1);
 			g_Settings[HUDWREnable] = bool:KvGetNum(hKv, "hud_show_wr", 1);
+			g_Settings[HUDWRHolderEnable] = bool:KvGetNum(hKv, "hud_show_wr_holder", 1);
 			g_Settings[HUDPBEnable] = bool:KvGetNum(hKv, "hud_show_pb", 1);
 			g_Settings[HUDTTWREnable] = bool:KvGetNum(hKv, "hud_show_wwtr", 1);
 			g_Settings[HUDKeysEnable] = bool:KvGetNum(hKv, "hud_show_keys", 1);

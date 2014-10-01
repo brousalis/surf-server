@@ -35,6 +35,7 @@ enum Hud
 	Map,
 	Mode,
 	WR,
+	WRHolder,
 	Rank,
 	PB,
 	TTWR,
@@ -86,6 +87,7 @@ new Handle:cookieHudSidePref;
 new Handle:cookieHudSideMapPref;
 new Handle:cookieHudSideModePref;
 new Handle:cookieHudSideWRPref;
+new Handle:cookieHudSideWRHolderPref;
 new Handle:cookieHudSideRankPref;
 new Handle:cookieHudSidePBPref;
 new Handle:cookieHudSideTTWRPref;
@@ -155,6 +157,7 @@ public OnPluginStart()
 		cookieHudSideMapPref = RegClientCookie("timer_hud_side_map", "Turn on or off map component", CookieAccess_Private);
 		cookieHudSideModePref = RegClientCookie("timer_hud_side_mode", "Turn on or off mode component", CookieAccess_Private);
 		cookieHudSideWRPref = RegClientCookie("timer_hud_side_wr", "Turn on or off wr component", CookieAccess_Private);
+		cookieHudSideWRHolderPref = RegClientCookie("timer_hud_side_wr_holder", "Turn on or off wr holder component", CookieAccess_Private);
 		cookieHudSideRankPref = RegClientCookie("timer_hud_side_rank", "Turn on or off rank component", CookieAccess_Private);
 		cookieHudSidePBPref = RegClientCookie("timer_hud_side_pb", "Turn on or off pb component", CookieAccess_Private);
 		cookieHudSideTTWRPref = RegClientCookie("timer_hud_side_ttwr", "Turn on or off ttwr component", CookieAccess_Private);
@@ -369,6 +372,13 @@ loadClientCookiesFor(client)
 	if(!StrEqual(buffer, ""))
 	{
 		hudSettings[Mode][client] = StringToInt(buffer);
+	}
+	
+	//Show Side WR Holder?
+	GetClientCookie(client, cookieHudSideWRHolderPref, buffer, 5);
+	if(!StrEqual(buffer, ""))
+	{
+		hudSettings[WRHolder][client] = StringToInt(buffer);
 	}
 	
 	//Show Side WR?
@@ -624,6 +634,22 @@ public MenuHandlerHud(Handle:menu, MenuAction:action, client, itemNum)
 				decl String:buffer[5];
 				IntToString(hudSettings[Mode][client], buffer, 5);
 				SetClientCookie(client, cookieHudSideModePref, buffer);		
+			}
+			
+			if(StrEqual(info, "wrholder"))
+			{
+				if (hudSettings[WRHolder][client] == 0)
+				{
+					hudSettings[WRHolder][client] = 1;
+				} 
+				else if (hudSettings[WRHolder][client] == 1) 
+				{
+					hudSettings[WRHolder][client] = 0;
+				}
+				
+				decl String:buffer[5];
+				IntToString(hudSettings[WRHolder][client], buffer, 5);
+				SetClientCookie(client, cookieHudSideWRHolderPref, buffer);		
 			}
 			
 			if(StrEqual(info, "wr"))
@@ -979,11 +1005,23 @@ ShowHudMenu(client, start_item)
 		{
 			if(hudSettings[WR][client] == 0)
 			{
-				AddMenuItem(menu, "wr", "Enable WR Display [SideHUD]");	
+				AddMenuItem(menu, "wrholder", "Enable WR Holder Display [SideHUD]");	
 			}
 			else
 			{
-				AddMenuItem(menu, "wr", "Disable WR Display [SideHUD]");	
+				AddMenuItem(menu, "wrholder", "Disable WR Holder Display [SideHUD]");	
+			}
+		}
+		
+		if(g_Settings[HUDWREnable])
+		{
+			if(hudSettings[WR][client] == 0)
+			{
+				AddMenuItem(menu, "wr", "Enable WR Time Display [SideHUD]");	
+			}
+			else
+			{
+				AddMenuItem(menu, "wr", "Disable WR Time Display [SideHUD]");	
 			}
 		}
 		
@@ -1147,6 +1185,7 @@ public OnClientPutInServer(client)
 		hudSettings[Map][client] = 1;
 		hudSettings[Mode][client] = 1;
 		hudSettings[WR][client] = 1;
+		hudSettings[WRHolder][client] = 1;
 		hudSettings[Level][client] = 1;
 		hudSettings[Rank][client] = 1;
 		hudSettings[PB][client] = 1;
@@ -1310,6 +1349,7 @@ UpdateHUD_CSS(client)
 	new RecordId;
 	new Float:RecordTime;
 	new RankTotal;
+	new String:WrName[32];
 	
 	Timer_GetClientTimer(iClientToShow, enabled, time, jumps, fpsmax);
 	
@@ -1333,11 +1373,11 @@ UpdateHUD_CSS(client)
 	}
 	
 	//get bhop mode
-	if (g_timerPhysics) 
+	if (g_timerPhysics && g_timerWorldRecord) 
 	{
-		if(g_timerWorldRecord) Timer_GetStyleRecordWRStats(style, bonus, RecordId, RecordTime, RankTotal);
-		//correct fail format
+		Timer_GetStyleRecordWRStats(style, bonus, RecordId, RecordTime, RankTotal);
 		Timer_SecondsToTime(time, buffer, sizeof(buffer), 0);
+		Timer_GetRecordHolderName(style, bonus, 1, WrName, 32);
 	}
 	
 	//get maptier
@@ -1573,10 +1613,14 @@ UpdateHUD_CSS(client)
 			Format(hintText, sizeof(hintText), "%sStyle: %s\n", hintText, g_Physics[style][StyleName]);
 	}
 	
-	if(ranked)
+	if(ranked && RecordTime > 0.0)
 	{
+		if (hudSettings[WRHolder][client] && g_Settings[HUDWRHolderEnable])
+			Format(hintText, sizeof(hintText), "%sWR Holder: %s\n", hintText, RecordTimeString);
+		
 		if (hudSettings[WR][client] && g_Settings[HUDWREnable])
-			Format(hintText, sizeof(hintText), "%sWorld Record: %s\n", hintText, RecordTimeString);
+			Format(hintText, sizeof(hintText), "%sWR Time: %s\n", hintText, RecordTimeString);
+		
 		if (hudSettings[WR][client] || hudSettings[Mode][client] || hudSettings[Map][client])
 			Format(hintText, sizeof(hintText), "%s\n", hintText);
 		//Format(hintText, sizeof(hintText), "%s\n%N:\n", hintText, iClientToShow);
