@@ -513,10 +513,14 @@ public OnClientDisconnect(client)
 
 	//g_sAuth[client][0] = '\0';
 	
-	if(g_bAuthed[client] && KvJumpToKey(g_hSession, g_sAuth[client], false) && g_iCurrentIndex[client] >= 0 && g_iPositionMethod != 2)
+	if(g_bAuthed[client])
 	{
-		new points_start = KvGetNum(g_hSession, "points", 0);
-		new points = Timer_GetPoints(client);
+		new points, points_start;
+		if(KvJumpToKey(g_hSession, g_sAuth[client], false))
+		{
+			points_start = KvGetNum(g_hSession, "points", 0);
+			points = Timer_GetPoints(client);
+		}
 		
 		KvSetFloat(g_hSession, "disconnec_time", GetEngineTime());
 		
@@ -524,17 +528,34 @@ public OnClientDisconnect(client)
 		if(points-points_start >= 0)
 			Format(sPre, sizeof(sPre), "+");
 		
-		decl String:sNameBuffer[1024];
-		GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[client], sNameBuffer, sizeof(sNameBuffer));
+		UpdateRankIndexbyRecordTime(client);
 		
-		#if defined LEGACY_COLORS
-		CFormat(sNameBuffer, 1024, client);
-		CPrintToChatAll("%s{lightred}%s {olive}disconnected with {lightred}%d {olive}points {lightred}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
-		#else
-		CReplaceColorCodes(sNameBuffer, client, false, 1024);
-		CPrintToChatAll("%s{red}%s {green}disconnected with {yellow}%d {green}points {yellow}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
-		#endif
-			
+		decl String:sNameBuffer[1024];
+		if(g_iCurrentIndex[client] >= 0)
+		{
+			GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[client], sNameBuffer, sizeof(sNameBuffer));
+		}
+		
+		if(g_iPositionMethod == 2)
+		{
+			#if defined LEGACY_COLORS
+			CFormat(sNameBuffer, 1024, client);
+			CPrintToChatAll("%s{lightred}%s {olive}disconnected.", sNameBuffer, g_sName[client]);
+			#else
+			CReplaceColorCodes(sNameBuffer, client, false, 1024);
+			CPrintToChatAll("%s{red}%s {green}disconnected.", sNameBuffer, g_sName[client]);
+			#endif
+		}
+		else
+		{
+			#if defined LEGACY_COLORS
+			CFormat(sNameBuffer, 1024, client);
+			CPrintToChatAll("%s{lightred}%s {olive}disconnected with {lightred}%d {olive}points {lightred}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
+			#else
+			CReplaceColorCodes(sNameBuffer, client, false, 1024);
+			CPrintToChatAll("%s{red}%s {green}disconnected with {yellow}%d {green}points {yellow}(%s%d).", sNameBuffer, g_sName[client], points, sPre, points-points_start);
+			#endif
+		}
 	}
 	KvRewind(g_hSession);
 	g_sAuth[client][0] = '\0';
@@ -1527,6 +1548,9 @@ ShowConnectMsg(client)
 	
 	if(!g_bShowConnectMsg[client])
 		return;
+	
+	GetClientName(client, g_sName[client], sizeof(g_sName[]));
+	UpdateRankIndexbyRecordTime(client);
 	
 	if(g_iCurrentPoints[client] < 0 && g_iPositionMethod != 2)
 		return;
