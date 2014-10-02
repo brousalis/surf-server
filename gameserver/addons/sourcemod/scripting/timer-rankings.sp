@@ -1454,8 +1454,8 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 	{
 		if(KvJumpToKey(g_hSession, g_sAuth[client], false))
 		{
-			new Float:disconnec_time = GetEngineTime()-KvGetFloat(g_hSession, "disconnec_time", 0.0);
-			if(disconnec_time > 180.0)
+			new Float:disconnect_time = GetEngineTime()-KvGetFloat(g_hSession, "disconnec_time", 0.0);
+			if(disconnect_time > 180.0)
 				CreateSession(client, g_iCurrentPoints[client], false);
 		}
 		else CreateSession(client, g_iCurrentPoints[client], true);
