@@ -1437,7 +1437,7 @@ UpdateHUD_CSGO(client)
 		}
 		else if (enabled)
 		{
-			if(RecordTime == 0.0 && RecordTime > time)
+			if(RecordTime == 0.0 || RecordTime > time)
 			{
 				Format(centerText, sizeof(centerText), "%sTime: <font color='#00ff00'>%s</font>", centerText, timeString);
 			}
