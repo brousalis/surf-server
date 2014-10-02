@@ -441,9 +441,15 @@ public OnClientPostAdminCheck(client)
 		return;
 
 	g_bShowConnectMsg[client] = true;
+	
 	g_bCheck[client] = true;
 	
 	g_bAuthed[client] = GetClientAuthString(client, g_sAuth[client], sizeof(g_sAuth[]));
+	
+	//Position method 2 is using no points and the plugin does not fire the connect msg, retry on Timer_AuthClient
+	if(g_bAuthed[client] && g_iPositionMethod == 2)
+		ShowConnectMsg(client);
+	
 	if(!g_bAuthed[client])
 	{
 		CreateTimer(2.0, Timer_AuthClient, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
@@ -2425,6 +2431,9 @@ public Action:Timer_AuthClient(Handle:timer, any:userid)
 			return Plugin_Continue;
 		else
 		{
+			//Position method 2 is using no points and the plugin does not fire the connect msg
+			if(g_iPositionMethod == 2) ShowConnectMsg(client);
+		
 			if(g_hDatabase != INVALID_HANDLE && !g_bInitalizing)
 				return Plugin_Continue;
 
