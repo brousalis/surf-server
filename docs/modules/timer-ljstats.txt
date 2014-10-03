@@ -12,3 +12,6 @@ sm_ljtop - Displays top ling jumps
 
 Admin Commands:
 sm_ljadm - Delete long jumps
+
+
+Config file in cfg/sourcemode/timer/timer-ljstats.cfg

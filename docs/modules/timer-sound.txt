@@ -1,3 +1,5 @@
 Timer-Sound
 
 This plugin plays sounds on different events.
+
+Config file in cfg/sourcemod/timer/timer-sounds.cfg

@@ -1,3 +1,5 @@
 Timer-Replay
 
 This plugins can record players and save it to disk and a bot will loop his movements.
+
+This module doesn't work properly ATM!

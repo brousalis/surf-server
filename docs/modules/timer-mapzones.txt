@@ -22,3 +22,5 @@ sm_zonetype <type> - Overwrite zone type
 sm_zonereload - Reload zones
 sm_npc_next - Spawn NPC teleporter
 sm_zone - List zones and let admins teleport to them
+
+Config file in cfg/sourcemod/timer/timer-mapzones.cfg
