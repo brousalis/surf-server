@@ -17,6 +17,7 @@
 #define MESSAGE_BUFFERSIZE 1024
 
 new String:g_Msg[MAX_RECORD_MESSAGES][MESSAGE_BUFFERSIZE];
+new String:Msg[MAX_RECORD_MESSAGES][MESSAGE_BUFFERSIZE];
 new g_MessageCount = 0;
 
 new bool:g_timerPhysics = false;
@@ -287,8 +288,6 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	
 	//Replace msg lines
 	
-	new String:Msg[MAX_RECORD_MESSAGES][MESSAGE_BUFFERSIZE];
-
 	for (new i = 0; i < g_MessageCount; i++)
 	{
 		//load msg buffer here
@@ -296,7 +295,7 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		if(StrEqual(g_Msg[i], "", true))
 			continue;
 
-		strcopy(Msg[i], sizeof(Msg[i]), g_Msg[i]);
+		strcopy(Msg[i], sizeof(Msg[]), g_Msg[i]);
 		
 		// Filter msg lines
 		
@@ -375,7 +374,7 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 				
 		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_CONSOLE}", "", true))
 		{
-			CRemoveTags(Msg[i], sizeof(Msg[i]));
+			CRemoveTags(Msg[i], sizeof(Msg[]));
 			PrintToConsole(client, Msg[i]);
 		}
 		else
