@@ -1,6 +1,7 @@
 #pragma semicolon 1
 #include <sourcemod>
 #include <timer>
+#include <timer-logging>
 #include <timer-config_loader.sp>
 
 public Plugin:myinfo =
@@ -14,6 +15,13 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	if(GetEngineVersion() != Engine_CSGO)
+	{
+		Timer_LogError("Don't use this plugin for other games then CS:GO.");
+		SetFailState("Check timer error logs.");
+		return;
+	}
+	
 	LoadPhysics();
 	LoadTimerSettings();
 	

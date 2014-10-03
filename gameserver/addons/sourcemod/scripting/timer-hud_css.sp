@@ -111,6 +111,13 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	if(GetEngineVersion() != Engine_CSS)
+	{
+		Timer_LogError("Don't use this plugin for other games then CS:S.");
+		SetFailState("Check timer error logs.");
+		return;
+	}
+	
 	g_timerCore = LibraryExists("timer");
 	g_timerPhysics = LibraryExists("timer-physics");
 	g_timerMapzones = LibraryExists("timer-mapzones");

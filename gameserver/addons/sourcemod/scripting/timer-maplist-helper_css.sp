@@ -1,4 +1,6 @@
 #include <sourcemod>
+#include <timer>
+#include <timer-logging>
 
 new Handle:g_hSQL = INVALID_HANDLE;
 new g_iSQLReconnectCounter;
@@ -9,12 +11,19 @@ public Plugin:myinfo =
 	name = "[Timer] Maplist Helper",
 	author = "Zipcore",
 	description = "Re-writes maplist.txt and mapcycle.txt with valid maps",
-	version = "1.0",
+	version = PL_VERSION,
 	url = "forums.alliedmods.net/showthread.php?p=2074699"
 }
 
 public OnPluginStart()
 {
+	if(GetEngineVersion() != Engine_CSS)
+	{
+		Timer_LogError("Don't use this plugin for other games then CS:S.");
+		SetFailState("Check timer error logs.");
+		return;
+	}
+	
 	RegAdminCmd("sm_maplist_rewrite", Cmd_Rewrite, ADMFLAG_BAN);
 	RegAdminCmd("sm_nav_create", Cmd_NavCreate, ADMFLAG_BAN);
 	
