@@ -11,6 +11,10 @@
 #include <timer-worldrecord>
 #include <timer-strafes>
 
+#define MAX_RECORD_MESSAGES 256
+#define MESSAGE_BUFFERSIZE 1024
+
+new String:g_Msg[MESSAGE_BUFFERSIZE];
 new Handle:g_hSQL = INVALID_HANDLE;
 new g_reconnectCounter = 0;
 
@@ -25,7 +29,7 @@ new bool:g_timerPhysics = false;
 public Plugin:myinfo = 
 {
 	name = "[Timer] Cross Announce",
-	author = "Zipcore",
+	author = "Zipcore, SeriTools",
 	description = "World record announce cross server.",
 	version = "1.0",
 	url = "zipcore#googlemail.com"
@@ -116,7 +120,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 			//SetFailState("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
 			//return;
 		}
-		
+
 		ConnectSQL();
 		
 		return;
@@ -145,6 +149,24 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 	SQL_TQuery(g_hSQL, SelectStartCallback, query, _, DBPrio_Normal);
 	
 	CreateTimer(10.0, Timer_CheckCross, _, TIMER_REPEAT);
+
+	
+
+	// Load msg preset
+	decl String:file[256];
+	
+	BuildPath(Path_SM, file, 256, "configs/timer/cross_announce_msg.cfg"); 
+	new Handle:fileh = OpenFile(file, "r");
+	
+	if (fileh == INVALID_HANDLE)
+	{
+		Timer_LogError("Could not read configs/timer/cross_announce_msg.cfg.");
+		SetFailState("Check timer error logs.");
+	}
+
+	ReadFileLine(fileh, g_Msg[g_MessageCount], MESSAGE_BUFFERSIZE));
+		
+	CloseHandle(fileh);
 }
 
 public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
@@ -175,59 +197,51 @@ public InsertCallback(Handle:owner, Handle:hndl, const String:error[], any:param
 }
 
 public OnTimerWorldRecord(client, bonus, mode, Float:time, Float:lasttime, currentrank, newrank)
-{
-	decl String:Buffer[2048];
-	
-	
-	decl String:name[MAX_NAME_LENGTH];
-	GetClientName(client, name, sizeof(name));
-	SQL_EscapeString(g_hSQL, name, name, sizeof(name));
-	
-	new bool:ranked, Float:jumpacc;
+{	
+	new bool:ranked = false;
 	
 	if(g_timerPhysics) 
 	{
 		ranked = bool:Timer_IsStyleRanked(mode);
-		Timer_GetJumpAccuracy(client, jumpacc);
 	}
 	
-	new bool:enabled = false;
-	new jumps = 0;
-	new fpsmax;
-
-	Timer_GetClientTimer(client, enabled, time, jumps, fpsmax);
-	
-	decl String:TimeString[32];
-	Timer_SecondsToTime(time, TimeString, sizeof(TimeString), 2);
-	
-	new String:BonusString[32];
-	
-	if(bonus == 1)
+	if (ranked)
 	{
-		FormatEx(BonusString, sizeof(BonusString), " bonus");
-	}
-	else if(bonus == 2)
-	{
-		FormatEx(BonusString, sizeof(BonusString), " short");
-	}
-	
-	new String:StyleString[128];
-	if(g_Settings[MultimodeEnable]) 
-		FormatEx(StyleString, sizeof(StyleString), " on %s", g_Physics[mode][StyleName]);
-	
-	if(ranked)
-	{
+		decl String:name[MAX_NAME_LENGTH];
+		GetClientName(client, name, sizeof(name));
+		SQL_EscapeString(g_hSQL, name, name, sizeof(name));
 		
-		#if defined LEGACY_COLORS
-		Format(Buffer, sizeof(Buffer), "{lightred}[CROSS-SERVER] {olive}New WR by {lightred}%s{olive} Map: %s%s%s. Time: {lightred}[%ss]", name, g_sCurrentMap, BonusString, StyleString, TimeString);
-		#else
-		Format(Buffer, sizeof(Buffer), "{red}[CROSS-SERVER] {lightblue}New WR by {red}%s{lightblue} Map: %s%s%s. Time: {yellow}[%ss]", name, g_sCurrentMap, BonusString, StyleString, TimeString);
-		#endif
-	}
+		decl String:TimeString[32];
+		Timer_SecondsToTime(time, TimeString, sizeof(TimeString), 2);
+		
+		new String:sTrack[32];
+		if(bonus == 1) sTrack = "Bonus";
+		else if(bonus == 2)	sTrack = "Short";
+		else sTrack = "Normal";
 	
-	new String:query[2048];
-	FormatEx(query, sizeof(query), "INSERT INTO `cross` (text, server) VALUES ('%s','%d');", Buffer, g_iServerID);
-	SQL_TQuery(g_hSQL, InsertCallback, query, _, DBPrio_Normal);
+		//Replace msg lines
+		new String:Msg[MESSAGE_BUFFERSIZE];
+		//load msg buffer here
+		if(StrEqual(g_Msg, "", true))
+			continue;
+		
+		strcopy(Msg, sizeof(Msg, g_Msg);
+
+		// Replace placeholders
+		ReplaceString(Msg, MESSAGE_BUFFERSIZE, "{STYLE}", g_Physics[mode][StyleName], true);
+		ReplaceString(Msg, MESSAGE_BUFFERSIZE, "{TRACK}", sTrack, true);
+		ReplaceString(Msg, MESSAGE_BUFFERSIZE, "{NAME}", name, true);
+		ReplaceString(Msg, MESSAGE_BUFFERSIZE, "{TIME}", TimeString, true);
+		ReplaceString(Msg, MESSAGE_BUFFERSIZE, "{MAP}", g_sCurrentMap, true);
+		
+		// fix to show '%' chars in messages
+		ReplaceString(Msg, MESSAGE_BUFFERSIZE, "%", "%%", true);
+		
+		// Send messages	
+		new String:query[2048];
+		FormatEx(query, sizeof(query), "INSERT INTO `cross` (text, server) VALUES ('%s','%d');", Msg, g_iServerID);
+		SQL_TQuery(g_hSQL, InsertCallback, query, _, DBPrio_Normal);			
+	}
 }
 
 public Action:Timer_CheckCross(Handle:timer, any:data)
