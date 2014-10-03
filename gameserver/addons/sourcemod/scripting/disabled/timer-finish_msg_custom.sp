@@ -369,7 +369,11 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		
 		// Send messages
 				
-		if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_CONSOLE}", "", true)) PrintToConsole(client, g_Msg[i]);
+		if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_CONSOLE}", "", true))
+		{
+			CRemoveTags(g_Msg[i], sizeof(g_Msg[i]));
+			PrintToConsole(client, g_Msg[i]);
+		}
 		else
 		{
 			if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_ALL}", "", true) > 0 || ranked) CPrintToChatAll(g_Msg[i]);
