@@ -244,6 +244,7 @@ enum Styles
 	//other
 	bool:StyleReplay,
 	bool:StyleReplayBonus,
+	bool:StyleThirdPerson,
 	bool:StyleLJStats,
 	bool:StyleCustom,
 	String:StyleOnFinishExec[128],
@@ -571,6 +572,7 @@ stock LoadPhysics()
 			
 			g_Physics[g_StyleCount][StyleReplay] = bool:KvGetNum(hKv, "replay", 0);
 			g_Physics[g_StyleCount][StyleReplayBonus] = bool:KvGetNum(hKv, "replay_bonus", 0);
+			g_Physics[g_StyleCount][StyleThirdPerson] = bool:KvGetNum(hKv, "thirdperson", 0);
 			g_Physics[g_StyleCount][StyleCustom] = bool:KvGetNum(hKv, "custom", 0);
 			g_Physics[g_StyleCount][StyleFPSMax] = KvGetNum(hKv, "fps_max", 0);
 			g_Physics[g_StyleCount][StyleFPSMin] = KvGetNum(hKv, "fps_min", 0);

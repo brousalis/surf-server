@@ -106,6 +106,9 @@ Here are all setings you can use for a style:
 // Time to block movement control for punish type 1
 "punish_movement_cooldown"	"1.0"
 
+//Third person view
+"thirdperson"			"1"			//Default = 0
+
 //Anti Bhop for skill-surf
 "anti_bhop"				"1"			//Default = 0
 
