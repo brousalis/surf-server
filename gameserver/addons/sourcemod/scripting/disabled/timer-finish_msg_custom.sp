@@ -287,97 +287,101 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	
 	//Replace msg lines
 	
+	new String:Msg[MAX_RECORD_MESSAGES][MESSAGE_BUFFERSIZE];
+
 	for (new i = 0; i < g_MessageCount; i++)
 	{
 		//load msg buffer here
 		
 		if(StrEqual(g_Msg[i], "", true))
 			continue;
+
+		strcopy(Msg[i], sizeof(Msg[i]), g_Msg[i]);
 		
 		// Filter msg lines
 		
-		if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_RANKED}", "", true) && !ranked)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_RANKED}", "", true) && !ranked)
 			continue;
-		if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_UNRANKED}", "", true) && ranked)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_UNRANKED}", "", true) && ranked)
 			continue;
-		if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_FIRSTWR}", "", true) && !first_world_record)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_FIRSTWR}", "", true) && !first_world_record)
 			continue;
-		if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_WR_SELF}", "", true) && !world_record_self)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_WR_SELF}", "", true) && !world_record_self)
 			continue;
-		if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_TOP}", "", true) && !top_record)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_TOP}", "", true) && !top_record)
 			continue;
-		if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_TIME}", "", true) && !time_improved)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_TIME}", "", true) && !time_improved)
 			continue;
-		if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_FIRST}", "", true) && !first_record)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_FIRST}", "", true) && !first_record)
 			continue;
-		if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_RANK}", "", true) && !rank_improved)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_RANK}", "", true) && !rank_improved)
 			continue;
 		
 		// Replace placeholders
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{STYLE}", sStyleName, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{STYLE_SHORT}", sStyleShortName, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{STYLE_ID}", sStyleID, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{STYLE_POINTS_MUL}", sStylePointsMul, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STYLE}", sStyleName, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STYLE_SHORT}", sStyleShortName, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STYLE_ID}", sStyleID, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STYLE_POINTS_MUL}", sStylePointsMul, true);
 		
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TRACK}", sTrack, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TIER}", sTier, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TIER_POINTS_MUL}", sTierPointsMul, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TRACK}", sTrack, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIER}", sTier, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIER_POINTS_MUL}", sTierPointsMul, true);
 		
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{NAME}", sName, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{NAME_BEATEN}", sBeatenName, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{NAME_NEXT}", sNextName, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{NAME_WR}", sWrName, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{NAME}", sName, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{NAME_BEATEN}", sBeatenName, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{NAME_NEXT}", sNextName, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{NAME_WR}", sWrName, true);
 		
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHATRANK}", sChatrank, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHATRANK}", sChatrank, true);
 		
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TIME}", sTime, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TIME_BEATEN}", sBeatenTime, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TIME_NEXT}", sNextTime, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TIME_WR}", sWrTime, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TIME_OLD}", sOldTime, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME}", sTime, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_BEATEN}", sBeatenTime, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_NEXT}", sNextTime, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_WR}", sWrTime, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_OLD}", sOldTime, true);
 		
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES}", sStrafes, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_BEATEN}", sBeatenStrafes, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_NEXT}", sNextStrafes, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_WR}", sWrStrafes, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_OLD}", sOldStrafes, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES}", sStrafes, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_BEATEN}", sBeatenStrafes, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_NEXT}", sNextStrafes, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_WR}", sWrStrafes, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_OLD}", sOldStrafes, true);
 		
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS}", sJumps, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_BEATEN}", sBeatenJumps, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_NEXT}", sNextJumps, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_WR}", sWrJumps, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_OLD}", sOldJumps, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS}", sJumps, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_BEATEN}", sBeatenJumps, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_NEXT}", sNextJumps, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_WR}", sWrJumps, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_OLD}", sOldJumps, true);
 
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{JUMP_ACC}", sJumpAcc, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMP_ACC}", sJumpAcc, true);
 		
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_BEATEN}", sTimeBeatenDiff, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_NEXT}", sTimeNextDiff, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_WR}", sTimeWRDiff, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_OLD}", sTimeOldDiff, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_BEATEN}", sTimeBeatenDiff, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_NEXT}", sTimeNextDiff, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_WR}", sTimeWRDiff, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_OLD}", sTimeOldDiff, true);
 		
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{OLDRANK}", sOldRank, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{NEWRANK}", sNewRank, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{TOTALRANK}", sTotalRank, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{OLDRANK}", sOldRank, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{NEWRANK}", sNewRank, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TOTALRANK}", sTotalRank, true);
 		
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{RANK_DIFF_OLD}", sOldRankDiff, true);
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{RANK_WR_DIFF}", sRankWrDiff, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{RANK_DIFF_OLD}", sOldRankDiff, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{RANK_WR_DIFF}", sRankWrDiff, true);
 		
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{STAGECOUNT}", sStageCount, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STAGECOUNT}", sStageCount, true);
 		
 		// fix to show '%' chars in messages
-		ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "%", "%%", true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "%", "%%", true);
 		
 		// Send messages
 				
-		if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_CONSOLE}", "", true))
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_CONSOLE}", "", true))
 		{
-			CRemoveTags(g_Msg[i], sizeof(g_Msg[i]));
-			PrintToConsole(client, g_Msg[i]);
+			CRemoveTags(Msg[i], sizeof(Msg[i]));
+			PrintToConsole(client, Msg[i]);
 		}
 		else
 		{
-			if(ReplaceString(g_Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_ALL}", "", true) > 0 || ranked) CPrintToChatAll(g_Msg[i]);
-			else CPrintToChat(client, g_Msg[i]);
+			if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_ALL}", "", true) > 0 || ranked) CPrintToChatAll(Msg[i]);
+			else CPrintToChat(client, Msg[i]);
 		}		
 	}
 }
