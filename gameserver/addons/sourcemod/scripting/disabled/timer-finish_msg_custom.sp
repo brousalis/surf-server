@@ -89,13 +89,12 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	BuildPath(Path_SM, file, 256, "configs/timer/finish_msg.cfg"); 
 	new Handle:fileh = OpenFile(file, "r");
 	
-	if (fileh != INVALID_HANDLE)
-	{
-		while (ReadFileLine(fileh, Msg[msgcount], buffersize)) 
-		{
-			msgcount++;
-		}
-	}
+	if (fileh == INVALID_HANDLE)
+		
+	while (ReadFileLine(fileh, Msg[msgcount], buffersize)) 
+		msgcount++;
+		
+	CloseHandle(fileh);
 	
 	// Prepare
 	new enabled, jumps, fpsmax;
