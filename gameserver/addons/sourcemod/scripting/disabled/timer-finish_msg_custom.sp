@@ -21,6 +21,7 @@ new String:Msg[MAX_RECORD_MESSAGES][MESSAGE_BUFFERSIZE];
 new g_MessageCount = 0;
 
 new bool:g_timerPhysics = false;
+new bool:g_timerRankings = false;
 new bool:g_timerStrafes = false;
 new bool:g_timerWorldRecord = false;
 
@@ -36,6 +37,7 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	g_timerPhysics = LibraryExists("timer-physics");
+	g_timerRankings = LibraryExists("timer-rankings");
 	g_timerStrafes = LibraryExists("timer-strafes");
 	g_timerWorldRecord = LibraryExists("timer-worldrecord");
 	
@@ -69,6 +71,10 @@ public OnLibraryAdded(const String:name[])
 	{
 		g_timerPhysics = true;
 	}	
+	else if (StrEqual(name, "timer-rankings"))
+	{
+		g_timerRankings = true;
+	}
 	else if (StrEqual(name, "timer-strafes"))
 	{
 		g_timerStrafes = true;
@@ -85,6 +91,10 @@ public OnLibraryRemoved(const String:name[])
 	{
 		g_timerPhysics = false;
 	}	
+	else if (StrEqual(name, "timer-rankings"))
+	{
+		g_timerRankings = false;
+	}
 	else if (StrEqual(name, "timer-strafes"))
 	{
 		g_timerStrafes = false;
@@ -147,7 +157,7 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		rank_improved = true;
 	
 	// Get Static Names
-		
+	
 	decl String:sTrack[32];
 	
 	if(track == TRACK_NORMAL) sTrack = "Normal";
@@ -246,6 +256,7 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	sNextTime = "--- TODO ---";
 	sWrTime = "--- TODO ---";
 	sOldTime = "--- TODO ---";
+	
 	sJumps = "--- TODO ---";
 	sBeatenJumps = "--- TODO ---";
 	sNextJumps = "--- TODO ---";
@@ -269,22 +280,22 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	
 	// Strafes
 	
-	new strafes, beatenstrafes, nextstrafes, wrstrafes, oldstrafes;
-
-	//// TODO: Get these values.
-	if(g_timerStrafes) strafes = Timer_GetStrafeCount(client);
-	
 	decl String:sStrafes[8], String:sBeatenStrafes[8], String:sNextStrafes[8], String:sWrStrafes[8], String:sOldStrafes[8];
 	
-	IntToString(strafes, sStrafes, sizeof(sStrafes));
+	new strafes, beatenstrafes, nextstrafes, wrstrafes, oldstrafes;
+	
+	if(g_timerStrafes) strafes = Timer_GetStrafeCount(client);
+	
 	sBeatenStrafes = "TODO";
 	sNextStrafes = "TODO";
 	sWrStrafes = "TODO";
 	sOldStrafes = "TODO";
-	//IntToString(beatenstrafes, sBeatenStrafes, sizeof(sBeatenStrafes));
-	//IntToString(nextstrafes, sNextStrafes, sizeof(sNextStrafes));
-	//IntToString(wrstrafes, sWrStrafes, sizeof(sWrStrafes));
-	//IntToString(oldstrafes, sOldStrafes, sizeof(sOldStrafes));
+	
+	IntToString(strafes, sStrafes, sizeof(sStrafes));
+	IntToString(beatenstrafes, sBeatenStrafes, sizeof(sBeatenStrafes));
+	IntToString(nextstrafes, sNextStrafes, sizeof(sNextStrafes));
+	IntToString(wrstrafes, sWrStrafes, sizeof(sWrStrafes));
+	IntToString(oldstrafes, sOldStrafes, sizeof(sOldStrafes));
 	
 	//Replace msg lines
 	
@@ -299,21 +310,21 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		
 		// Filter msg lines
 		
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_RANKED}", "", true) && !ranked)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_RANKED}", "", true) && !ranked)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_UNRANKED}", "", true) && ranked)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_UNRANKED}", "", true) && ranked)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_FIRSTWR}", "", true) && !first_world_record)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_FIRSTWR}", "", true) && !first_world_record)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_WR_SELF}", "", true) && !world_record_self)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_WR_SELF}", "", true) && !world_record_self)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_TOP}", "", true) && !top_record)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_TOP}", "", true) && !top_record)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_TIME}", "", true) && !time_improved)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_TIME}", "", true) && !time_improved)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_FIRST}", "", true) && !first_record)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_FIRST}", "", true) && !first_record)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_RANK}", "", true) && !rank_improved)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_RANK}", "", true) && !rank_improved)
 			continue;
 		
 		// Replace placeholders
@@ -370,17 +381,27 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		// fix to show '%' chars in messages
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "%", "%%", true);
 		
-		// Send messages
-				
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_CONSOLE}", "", true))
-		{
-			CRemoveTags(Msg[i], sizeof(Msg[]));
-			PrintToConsole(client, Msg[i]);
-		}
-		else
-		{
-			if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{CHANNEL_ALL}", "", true) > 0 || ranked) CPrintToChatAll(Msg[i]);
-			else CPrintToChat(client, Msg[i]);
-		}		
+		// Get message type
+		new bool:chat = ( ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{OUTPUT_CHAT}", "", true) > 0 );
+		new bool:chat_all = ( ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{OUTPUT_CHAT_ALL}", "", true) > 0 );
+		new bool:center = ( ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{OUTPUT_CENTER}", "", true) > 0 );
+		new bool:center_all = ( ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{OUTPUT_CENTER_ALL}", "", true) > 0 );
+		new bool:console = ( ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{OUTPUT_CONSOLE}", "", true) > 0 );
+		new bool:server = ( ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{OUTPUT_SERVER}", "", true) > 0 );
+		
+		// Chat
+		if(chat_all) CPrintToChatAll(Msg[i]);
+		else if(chat) CPrintToChat(client, Msg[i]);
+		
+		// Remove Tags
+		CRemoveTags(Msg[i], sizeof(Msg[]));
+		
+		// Center Text
+		if(center_all) PrintCenterTextAll(Msg[i]);
+		else if(center) PrintCenterText(client, Msg[i]);
+		
+		// Console
+		if(console) PrintToConsole(client, Msg[i]);	// Player console
+		if(server) PrintToServer(Msg[i]); // Server console
 	}
 }
