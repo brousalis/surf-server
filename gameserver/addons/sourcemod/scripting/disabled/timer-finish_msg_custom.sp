@@ -118,8 +118,8 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	new enabled, jumps, fpsmax;
 	Timer_GetClientTimer(client, enabled, time, jumps, fpsmax);
 	
-	new Float:wrtime, wrid, ranktotal;
-	if(g_timerWorldRecord) Timer_GetStyleRecordWRStats(style, track, wrid, wrtime, ranktotal);
+	new Float:timewr, wrid, ranktotal;
+	if(g_timerWorldRecord) Timer_GetStyleRecordWRStats(style, track, wrid, timewr, ranktotal);
 	
 	// What kind of record is this?
 	
@@ -129,7 +129,7 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	if(g_timerPhysics) ranked = bool:Timer_IsStyleRanked(style);
 		
 	// First record on this map
-	if(wrtime == 0.0)
+	if(timewr == 0.0)
 		first_world_record = true;
 	
 	// World record
@@ -200,12 +200,14 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	
 	// Get Tier Info
 	
-	decl String:sTier[8], String:sTierPointsMul[16];
+	decl String:sTier[8];
 	
 	new tier = Timer_GetTier(track);
 	if(track == TRACK_BONUS) tier = 1;
 	IntToString(tier, sTier, sizeof(sTier));
 
+	// Get Tier Multiplier
+	
 	new Float:tier_scale;
 	switch(tier)
 	{
@@ -230,6 +232,8 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		case 10:
 			tier_scale = g_Settings[Tier10Scale];
 	}
+	
+	decl String:sTierPointsMul[16];
 	Format(sTierPointsMul, sizeof(sTierPointsMul), "%.2f", tier_scale);
 	
 	// Ranks Info
@@ -239,63 +243,78 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	IntToString(newrank, sNewRank, sizeof(sNewRank));
 	IntToString(ranktotal, sTotalRank, sizeof(sTotalRank));
 	
-	decl String:sOldRankDiff[32],		String:sRankWrDiff[32];
-
-	sOldRankDiff = "--- TODO ---";
-	sRankWrDiff = "--- TODO ---";
+	// Ranks Improved
+	
+	decl String:sRanksImproved[32];
+	IntToString(currentrank-newrank, sRanksImproved, sizeof(sRanksImproved));
 	
 	// Record Info
 	
-	decl String:sTime[32],				String:sBeatenTime[32],			String:sNextTime[32],				String:sWrTime[32],					String:sOldTime[32];
-	decl String:sJumps[32],				String:sBeatenJumps[32],		String:sNextJumps[32],				String:sWrJumps[32],				String:sOldJumps[32];
-	decl String:sTimeBeatenDiff[32],	String:sTimeNextDiff[32],		String:sTimeWRDiff[32],				String:sTimeOldDiff[32];
-	//Timer_SecondsToTime(time, TimeString, sizeof(TimeString), 2);
+	decl String:sTime[32], String:sBeatenTime[32], String:sNextTime[32], String:sWrTime[32], String:sOldTime[32];
+	new Float:timebeaten,  Float:timenext,  Float:timeold;
+	Timer_SecondsToTime(time, sTime, sizeof(sTime), 2);
+	Timer_GetRecordTimeInfo(style, track, newrank, timebeaten, sBeatenTime, sizeof(sBeatenTime));
+	Timer_GetRecordTimeInfo(style, track, currentrank, timeold, sOldTime, sizeof(sOldTime));
+	Timer_GetRecordTimeInfo(style, track, 1, timewr, sWrTime, sizeof(sWrTime));
+	if(!world_record) Timer_GetRecordTimeInfo(style, track, newrank-1, timenext, sNextTime, sizeof(sNextTime));
 	
-	sTime = "--- TODO ---";
-	sBeatenTime = "--- TODO ---";
-	sNextTime = "--- TODO ---";
-	sWrTime = "--- TODO ---";
-	sOldTime = "--- TODO ---";
+	// Jumps / Strafes
 	
-	sJumps = "--- TODO ---";
-	sBeatenJumps = "--- TODO ---";
-	sNextJumps = "--- TODO ---";
-	sWrJumps = "--- TODO ---";
-	sOldJumps = "--- TODO ---";
-	sTimeBeatenDiff = "--- TODO ---";
-	sTimeNextDiff = "--- TODO ---";
-	sTimeWRDiff = "--- TODO ---";
-	sTimeOldDiff = "--- TODO ---";
-
-	// Jump Accuracy
+	new jumpsbeaten, jumpsnext, jumpswr, jumpsold;
+	new Float:jumpsaccbeaten, Float:jumpsaccnext, Float:jumpsaccwr, Float:jumpsaccold;
+	new strafes, strafesbeaten, strafesnext, strafeswr, strafesold;
+	new Float:strafesaccbeaten, Float:strafesaccnext, Float:strafesaccwr, Float:strafesaccold;
 	
-	decl String:sJumpAcc[16];
-	if(g_timerPhysics)
-	{
-		new Float:jumpacc;
-		Timer_GetJumpAccuracy(client, jumpacc);
-		Format(sJumpAcc, sizeof(sJumpAcc), "%.2f", jumpacc);
-	}
-	else sJumpAcc = "";
+	decl String:sJumps[32], String:sBeatenJumps[32], String:sNextJumps[32], String:sWrJumps[32], String:sOldJumps[32];
+	decl String:sStrafes[32], String:sBeatenStrafes[32], String:sNextStrafes[32], String:sWrStrafes[32], String:sOldStrafes[32];
 	
-	// Strafes
-	
-	decl String:sStrafes[8], String:sBeatenStrafes[8], String:sNextStrafes[8], String:sWrStrafes[8], String:sOldStrafes[8];
-	
-	new strafes, beatenstrafes, nextstrafes, wrstrafes, oldstrafes;
+	decl String:sJumpsAcc[32], String:sBeatenJumpsAcc[32], String:sNextJumpsAcc[32], String:sWrJumpsAcc[32], String:sOldJumpsAcc[32];
+	decl String:sStrafesAcc[32], String:sBeatenStrafesAcc[32], String:sNextStrafesAcc[32], String:sWrStrafesAcc[32], String:sOldStrafesAcc[32];
 	
 	if(g_timerStrafes) strafes = Timer_GetStrafeCount(client);
 	
-	sBeatenStrafes = "TODO";
-	sNextStrafes = "TODO";
-	sWrStrafes = "TODO";
-	sOldStrafes = "TODO";
+	if(g_timerWorldRecord)
+	{
+		Timer_GetRecordStrafeJumpInfo(style, track, newrank, strafesbeaten, strafesaccbeaten, jumpsbeaten, jumpsaccbeaten);
+		if(!world_record) Timer_GetRecordStrafeJumpInfo(style, track, newrank+1, strafesnext, strafesaccnext, jumpsnext, jumpsaccnext);
+		Timer_GetRecordStrafeJumpInfo(style, track, 1, strafeswr, strafesaccwr, jumpswr, jumpsaccwr);
+		Timer_GetRecordStrafeJumpInfo(style, track, currentrank, strafesold, strafesaccold, jumpsold, jumpsaccold);
+	}
+	
+	IntToString(jumps, sJumps, sizeof(sJumps));
+	IntToString(jumpsbeaten, sBeatenJumps, sizeof(sBeatenJumps));
+	IntToString(jumpsnext, sNextJumps, sizeof(sNextJumps));
+	IntToString(jumpswr, sWrJumps, sizeof(sWrJumps));
+	IntToString(jumpsold, sOldJumps, sizeof(sOldJumps));
 	
 	IntToString(strafes, sStrafes, sizeof(sStrafes));
-	IntToString(beatenstrafes, sBeatenStrafes, sizeof(sBeatenStrafes));
-	IntToString(nextstrafes, sNextStrafes, sizeof(sNextStrafes));
-	IntToString(wrstrafes, sWrStrafes, sizeof(sWrStrafes));
-	IntToString(oldstrafes, sOldStrafes, sizeof(sOldStrafes));
+	IntToString(strafesbeaten, sBeatenStrafes, sizeof(sBeatenStrafes));
+	IntToString(strafesnext, sNextStrafes, sizeof(sNextStrafes));
+	IntToString(strafeswr, sWrStrafes, sizeof(sWrStrafes));
+	IntToString(strafesold, sOldStrafes, sizeof(sOldStrafes));
+	
+	new Float:jumpsacc;
+	Timer_GetJumpAccuracy(client, jumpsacc);
+	FloatToString(jumpsacc, sJumps, sizeof(sJumpsAcc));
+	FloatToString(jumpsaccbeaten, sBeatenJumps, sizeof(sBeatenJumpsAcc));
+	FloatToString(jumpsaccnext, sNextJumps, sizeof(sNextJumpsAcc));
+	FloatToString(jumpsaccwr, sWrJumps, sizeof(sWrJumpsAcc));
+	FloatToString(jumpsaccold, sOldJumps, sizeof(sOldJumpsAcc));
+	
+	//FloatToString(strafesacc, sStrafesAcc, sizeof(sStrafesAcc));
+	FloatToString(strafesaccbeaten, sBeatenStrafesAcc, sizeof(sBeatenStrafesAcc));
+	FloatToString(strafesaccnext, sNextStrafesAcc, sizeof(sNextStrafesAcc));
+	FloatToString(strafesaccwr, sWrStrafesAcc, sizeof(sWrStrafesAcc));
+	FloatToString(strafesaccold, sOldStrafesAcc, sizeof(sOldStrafesAcc));
+	
+	
+	decl String:sTimeBeatenDiff[32],	String:sTimeNextDiff[32],		String:sTimeWRDiff[32],				String:sTimeDiff[32];
+	//Timer_SecondsToTime(time, TimeString, sizeof(TimeString), 2);
+	
+	sTimeDiff = "--- TODO ---";
+	sTimeBeatenDiff = "--- TODO ---";
+	sTimeNextDiff = "--- TODO ---";
+	sTimeWRDiff = "--- TODO ---";
 	
 	//Replace msg lines
 	
@@ -350,31 +369,40 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_WR}", sWrTime, true);
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_OLD}", sOldTime, true);
 		
-		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES}", sStrafes, true);
-		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_BEATEN}", sBeatenStrafes, true);
-		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_NEXT}", sNextStrafes, true);
-		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_WR}", sWrStrafes, true);
-		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_OLD}", sOldStrafes, true);
-		
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS}", sJumps, true);
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_BEATEN}", sBeatenJumps, true);
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_NEXT}", sNextJumps, true);
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_WR}", sWrJumps, true);
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMPS_OLD}", sOldJumps, true);
+		
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES}", sStrafes, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_BEATEN}", sBeatenStrafes, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_NEXT}", sNextStrafes, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_WR}", sWrStrafes, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFES_OLD}", sOldStrafes, true);
 
-		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMP_ACC}", sJumpAcc, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMP_ACC}", sJumpsAcc, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMP_ACC_BEATEN}", sBeatenJumpsAcc, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMP_ACC_NEXT}", sNextJumpsAcc, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMP_ACC_WR}", sWrJumpsAcc, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{JUMP_ACC_OLD}", sOldJumpsAcc, true);
+		
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFE_ACC}", sStrafesAcc, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFE_ACC_BEATEN}", sBeatenStrafesAcc, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFE_ACC_NEXT}", sNextStrafesAcc, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFE_ACC_WR}", sWrStrafesAcc, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STRAFE_ACC_OLD}", sOldStrafesAcc, true);
 		
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_BEATEN}", sTimeBeatenDiff, true);
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_NEXT}", sTimeNextDiff, true);
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_WR}", sTimeWRDiff, true);
-		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF_OLD}", sTimeOldDiff, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TIME_DIFF}", sTimeDiff, true);
 		
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{OLDRANK}", sOldRank, true);
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{NEWRANK}", sNewRank, true);
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{TOTALRANK}", sTotalRank, true);
 		
-		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{RANK_DIFF_OLD}", sOldRankDiff, true);
-		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{RANK_WR_DIFF}", sRankWrDiff, true);
+		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{RANKS_IMPROVED}", sRanksImproved, true);
 		
 		ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{STAGECOUNT}", sStageCount, true);
 		
