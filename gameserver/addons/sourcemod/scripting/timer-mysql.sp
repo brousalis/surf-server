@@ -11,7 +11,7 @@
 
 new Handle:g_hSQL;
 
-new String:g_Version[] = "2.1.4.7";
+new String:g_Version[] = PL_VERSION;
 new String:g_DB_Version[32];
 
 new g_reconnectCounter = 0;
