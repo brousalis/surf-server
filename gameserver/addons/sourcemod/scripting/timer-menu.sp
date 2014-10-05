@@ -222,7 +222,7 @@ Menu(client)
 	if (0 < client < MaxClients)
 	{
 		new Handle:menu = CreateMenu(Handle_Menu);
-		SetMenuTitle(menu, "DMT|Timer - Main Menu \nby Zipcore");		
+		SetMenuTitle(menu, "Timer - Main Menu \nby Zipcore");		
 			
 		AddMenuItem(menu, "mode", "Change Style");			
 		if(PluginEnabled("timer-physicsinfo.smx"))
