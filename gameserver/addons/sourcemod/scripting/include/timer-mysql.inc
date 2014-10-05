@@ -12,7 +12,7 @@
  * @param sql The database handle.
  * @noreturn
  */
-forward OnTimerSqlUpdate(Handle:sql);
+forward OnTimerSqlConnected(Handle:sql);
 
 /**
  * Called when the sql connection handle will be closed
@@ -21,7 +21,14 @@ forward OnTimerSqlUpdate(Handle:sql);
  */
 forward OnTimerSqlStop();
 
+/**
+ * Get MySQL database connection Handle
+ * 
+ * return The database connection handle
+ */
+native Timer_SqlGetConnection();
+
 public __pl_timer_mysql_SetNTVOptional() 
 {
-	//
+	MarkNativeAsOptional("Timer_SqlGetConnection");
 }

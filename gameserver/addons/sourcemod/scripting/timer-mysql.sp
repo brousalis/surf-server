@@ -11,9 +11,12 @@
 
 new Handle:g_hSQL;
 
+new String:g_Version[] = "2.1.4.7";
+new String:g_DB_Version[32];
+
 new g_reconnectCounter = 0;
 
-new Handle:g_timerOnTimerSqlUpdate;
+new Handle:g_timerOnTimerSqlConnected;
 new Handle:g_timerOnTimerSqlStop;
 
 public Plugin:myinfo =
@@ -29,14 +32,16 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
 	RegPluginLibrary("timer-mysql");
 	
-	g_timerOnTimerSqlUpdate = CreateGlobalForward("OnTimerSqlUpdate", ET_Event, Param_Cell);
-	g_timerOnTimerSqlStop = CreateGlobalForward("OnTimerSqlStop", ET_Event);
+	CreateNative("Timer_SqlGetConnection", Native_SqlGetConnection);
 
 	return APLRes_Success;
 }
 
 public OnPluginStart()
 {
+	g_timerOnTimerSqlConnected = CreateGlobalForward("OnTimerSqlConnected", ET_Event, Param_Cell);
+	g_timerOnTimerSqlStop = CreateGlobalForward("OnTimerSqlStop", ET_Event);
+	
 	ConnectSQL();
 }
 
@@ -120,7 +125,7 @@ public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], a
 {
 	if (owner == INVALID_HANDLE)
 	{
-		Timer_LogError("[timer-mysql.smx] +Failed to create table: %s",error);
+		Timer_LogError("[timer-mysql.smx] Failed to create table: %s",error);
 		
 		g_reconnectCounter++;
 		ConnectSQL();
@@ -134,7 +139,47 @@ public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], a
 		return;
 	}
 	
-	Call_StartForward(g_timerOnTimerSqlUpdate);
+	SQL_TQuery(g_hSQL, GetDBVersionCallback, "SELECT `setting` FROM `data` WHERE `key` = db_version;");
+}
+
+public GetDBVersionCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
+{
+	if (owner == INVALID_HANDLE)
+	{
+		Timer_LogError("[timer-mysql.smx] Failed to get database version: %s",error);
+		return;
+	}
+	
+	if (hndl == INVALID_HANDLE)
+	{
+		Timer_LogError("SQL Error on CreateSQLTable: %s", error);
+		return;
+	}
+	
+	if(SQL_FetchRow(hndl))
+	{
+		SQL_FetchString(hndl, 0, g_DB_Version, 32);
+		decl String:query[512];
+		Format(query, sizeof(query), "UPDATE `data` SET `setting` = %s WHERE `key` = db_version;", g_Version);
+		SQL_TQuery(g_hSQL, UpdateDBVersionCallback, query);
+	}
+}
+
+public UpdateDBVersionCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
+{
+	if (owner == INVALID_HANDLE)
+	{
+		Timer_LogError("[timer-mysql.smx] Failed to get database version: %s",error);
+		return;
+	}
+	
+	if (hndl == INVALID_HANDLE)
+	{
+		Timer_LogError("SQL Error on CreateSQLTable: %s", error);
+		return;
+	}
+	
+	Call_StartForward(g_timerOnTimerSqlConnected);
 	Call_PushCell(_:g_hSQL);
 	Call_Finish();
 	
@@ -143,13 +188,7 @@ public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], a
 
 public Action:Timer_HeartBeat(Handle:timer, any:data)
 {
-	if(g_hSQL != INVALID_HANDLE)
-	{
-		Call_StartForward(g_timerOnTimerSqlUpdate);
-		Call_PushCell(_:g_hSQL);
-		Call_Finish();
-	}
-	else 
+	if(g_hSQL == INVALID_HANDLE)
 	{
 		Call_StartForward(g_timerOnTimerSqlStop);
 		Call_Finish();
@@ -157,4 +196,8 @@ public Action:Timer_HeartBeat(Handle:timer, any:data)
 	
 	return Plugin_Continue;
 }
-	
+
+public Native_SqlGetConnection(Handle:plugin, numParams)
+{
+	return _:g_hSQL;
+}
