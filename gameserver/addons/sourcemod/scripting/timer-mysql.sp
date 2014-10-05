@@ -166,7 +166,7 @@ public GetDBVersionCallback(Handle:owner, Handle:hndl, const String:error[], any
 	// Existing database
 	if(SQL_FetchRow(hndl))
 	{
-		SQL_FetchString(hndl, 0, g_DB_Version, 32);
+		SQL_FetchString(hndl, 0, g_DB_Version, sizeof(g_DB_Version));
 		
 		// Database up to date
 		if(StrEqual(g_DB_Version, g_Version, true))
@@ -174,31 +174,16 @@ public GetDBVersionCallback(Handle:owner, Handle:hndl, const String:error[], any
 			Timer_LogInfo("[timer-mysql.smx] MySQL connection passed version check.");
 			g_DatabaseReady = true;
 		}
+		
 		/// Database outdated
 		else if(CheckVersionOutdated(g_DB_Version, g_Version))
 		{
 			Timer_LogError("[timer-mysql.smx] ############################################################");
 			Timer_LogError("[timer-mysql.smx] MySQL v%s is outdated or no valid.", g_DB_Version);
-			if(CheckVersionOutdated(g_DB_Version, "2.1.4.7"))
-			{
-				Timer_LogError("[timer-mysql.smx] Executing fixes for v2.1.4.7.");
-				
-				decl String:query[512];
-				Format(query, sizeof(query), "UPDATE `round` SET `levelprocess` = 999 WHERE `bonus` = 0 AND `levelprocess` < 1;");
-				Timer_LogError("[timer-mysql.smx] Query: %s", query);
-				SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
-				Format(query, sizeof(query), "UPDATE `round` SET `levelprocess` = 1999 WHERE `bonus` = 1 AND `levelprocess` < 1;");
-				Timer_LogError("[timer-mysql.smx] Query: %s", query);
-				SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
-				Format(query, sizeof(query), "UPDATE `round` SET `levelprocess` = 500 WHERE `bonus` = 2 AND `levelprocess` < 1;");
-				Timer_LogError("[timer-mysql.smx] Query: %s", query);
-				SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
-				
-				Format(query, sizeof(query), "UPDATE mapzone SET level_id = 1001 WHERE level_id = 1000");
-				Timer_LogError("[timer-mysql.smx] Query: %s", query);
-				SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
-			}
 			
+			CheckForUpdates();
+			
+			Timer_LogError("[timer-mysql.smx] MySQL v%s version ready to use.", g_Version);
 			Timer_LogError("[timer-mysql.smx] ############################################################");
 			decl String:query[512];
 			Format(query, sizeof(query), "UPDATE `data` SET `setting` = %s WHERE `key` = db_version;", g_Version);
@@ -206,6 +191,7 @@ public GetDBVersionCallback(Handle:owner, Handle:hndl, const String:error[], any
 			g_DatabaseReady = true;
 		}
 	}
+	
 	// Install new database
 	else
 	{
@@ -299,4 +285,29 @@ public Native_SqlGetConnection(Handle:plugin, numParams)
 	if(g_DatabaseReady)
 		return _:g_hSQL;
 	else return _:INVALID_HANDLE;
+}
+
+stock CheckForUpdates()
+{
+	// Write missing values into levelprocess
+	// Change wrong level id for bonus start
+	if(CheckVersionOutdated(g_DB_Version, "2.1.4.7"))
+	{
+		Timer_LogError("[timer-mysql.smx] Executing fixes for v2.1.4.7.");
+		
+		decl String:query[512];
+		Format(query, sizeof(query), "UPDATE `round` SET `levelprocess` = 999 WHERE `bonus` = 0 AND `levelprocess` < 1;");
+		Timer_LogError("[timer-mysql.smx] Query: %s", query);
+		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+		Format(query, sizeof(query), "UPDATE `round` SET `levelprocess` = 1999 WHERE `bonus` = 1 AND `levelprocess` < 1;");
+		Timer_LogError("[timer-mysql.smx] Query: %s", query);
+		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+		Format(query, sizeof(query), "UPDATE `round` SET `levelprocess` = 500 WHERE `bonus` = 2 AND `levelprocess` < 1;");
+		Timer_LogError("[timer-mysql.smx] Query: %s", query);
+		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+		
+		Format(query, sizeof(query), "UPDATE mapzone SET level_id = 1001 WHERE level_id = 1000");
+		Timer_LogError("[timer-mysql.smx] Query: %s", query);
+		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+	}
 }
