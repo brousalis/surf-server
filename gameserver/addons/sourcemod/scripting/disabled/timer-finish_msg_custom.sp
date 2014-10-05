@@ -121,40 +121,44 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	new Float:timewr, wrid, ranktotal;
 	if(g_timerWorldRecord) Timer_GetStyleRecordWRStats(style, track, wrid, timewr, ranktotal);
 	
+	// Is style ranked
+	
+	new bool:ranked;
+	if(g_timerPhysics) ranked = bool:Timer_IsStyleRanked(style);
+	
 	// What kind of record is this?
 	
-	new bool:ranked, bool:first_world_record, bool:world_record_self, bool:world_record, bool:top_record, bool:first_record, bool:rank_improved, bool:time_improved;
-	
-	// Is style ranked
-	if(g_timerPhysics) ranked = bool:Timer_IsStyleRanked(style);
+	new bool:first_world_record, bool:world_record_self, bool:world_record, bool:top_record, bool:first_record, bool:rank_improved, bool:time_improved;
+	if(ranked)
+	{
+		// First record on this map
+		if(timewr == 0.0)
+			first_world_record = true;
 		
-	// First record on this map
-	if(timewr == 0.0)
-		first_world_record = true;
-	
-	// World record
-	if(newrank == 1)
-		world_record = true;
-	
-	// Worldrecord but beaten themself
-	if(currentrank == 1 && newrank == 1)
-		world_record_self = true;
-	
-	// Top10 record
-	if(newrank <= 10)
-		top_record = true;
-	
-	// First player record
-	if(currentrank == 0)
-		first_record = true;
-	
-	// Rank improved
-	if(currentrank > 0 && currentrank > newrank)
-		rank_improved = true;
-	
-	// Time improved
-	if(time < lasttime)
-		rank_improved = true;
+		// Worldrecord but beaten themself
+		else if(currentrank == 1 && newrank == 1)
+			world_record_self = true;
+		
+		// World record
+		else if(newrank == 1)
+			world_record = true;
+		
+		// Top10 record
+		else if(newrank <= 10 && currentrank > newrank)
+			top_record = true;
+		
+		// Rank improved
+		if(currentrank > 0 && currentrank > newrank)
+			rank_improved = true;
+		
+		// Time improved
+		if(currentrank > 0 && time < lasttime)
+			rank_improved = true;
+		
+		// First player record
+		if(currentrank == 0)
+			first_record = true;
+	}
 	
 	// Get Static Names
 	
@@ -308,13 +312,12 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	FloatToString(strafesaccold, sOldStrafesAcc, sizeof(sOldStrafesAcc));
 	
 	
-	decl String:sTimeBeatenDiff[32],	String:sTimeNextDiff[32],		String:sTimeWRDiff[32],				String:sTimeDiff[32];
-	//Timer_SecondsToTime(time, TimeString, sizeof(TimeString), 2);
+	decl String:sTimeDiff[32], String:sTimeBeatenDiff[32], String:sTimeNextDiff[32], String:sTimeWRDiff[32];
 	
-	sTimeDiff = "--- TODO ---";
-	sTimeBeatenDiff = "--- TODO ---";
-	sTimeNextDiff = "--- TODO ---";
-	sTimeWRDiff = "--- TODO ---";
+	Timer_SecondsToTime(timeold-time, sTimeDiff, sizeof(sTimeDiff), 2);
+	Timer_SecondsToTime(time-timebeaten, sTimeBeatenDiff, sizeof(sTimeBeatenDiff), 2);
+	Timer_SecondsToTime(time-timenext, sTimeNextDiff, sizeof(sTimeNextDiff), 2);
+	Timer_SecondsToTime(time-timewr, sTimeWRDiff, sizeof(sTimeWRDiff), 2);
 	
 	//Replace msg lines
 	
@@ -329,21 +332,25 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		
 		// Filter msg lines
 		
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_RANKED}", "", true) && !ranked)
-			continue;
 		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_UNRANKED}", "", true) && ranked)
+			continue;
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_RANKED}", "", true) && !ranked)
 			continue;
 		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_FIRSTWR}", "", true) && !first_world_record)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_WR_SELF}", "", true) && !world_record_self)
-			continue;
 		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_TOP}", "", true) && !top_record)
+			continue;
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_RANK}", "", true) && !rank_improved)
 			continue;
 		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_TIME}", "", true) && !time_improved)
 			continue;
 		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_FIRST}", "", true) && !first_record)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_RANK}", "", true) && !rank_improved)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_NORMAL}", "", true) && track == TRACK_NORMAL)
+			continue;
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_BONUS}", "", true) && track == TRACK_BONUS)
+			continue;
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_SHORT}", "", true) && track == TRACK_SHORT)
 			continue;
 		
 		// Replace placeholders
