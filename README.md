@@ -8,7 +8,7 @@
 * Players can choose their level of difficulty (style). (Each style is seperated by ranking, physics, etc.)
 * You can create up to 32 styles and mix their settings with many [adjustments](https://github.com/Zipcore/Timer/blob/master/docs/modules/timer-physics.txt).
 * It has an advanced world record system. There are also more advanceds stats available like playerinfo, latest records, etc.
-* A map start and end is determined by map zones. You can add map zones in-game ([video (ountdated)] (http://www.youtube.com/watch?v=YAX7FAF_N8Q)). 
+* A map start and end is determined by map zones. You can add map zones in-game ([video (outdated)] (http://www.youtube.com/watch?v=YAX7FAF_N8Q)). 
 * There are also glitch map zones, that try to stop players from exploiting map bugs that can possibly be used to cheat the timer (~ zones types).
 * It has a customizable HUD that displays players their current timer and other info (or if you're a spectator it displays the timer of the player you're spectating).
 * It has a Chatrank system which is based on a points-system.
