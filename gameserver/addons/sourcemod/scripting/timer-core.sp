@@ -699,6 +699,15 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 	if (g_timers[client][ShortEndReached] && track == 2)
 		return;
 	
+	new levelprocess;
+	
+	if(track == TRACK_NORMAL)
+		levelprocess = LEVEL_END;
+	else if(track == TRACK_BONUS)
+		levelprocess = LEVEL_BONUS_END;
+	else
+		levelprocess = Timer_GetClientLevel(client);
+	
 	if (time < 1.0)
 	{
 		if(g_timerLogging) Timer_Log(Timer_LogLevelWarning, "Detected illegal record by %N on %s [time:%.2f|style:%d|track:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, style, track, jumps, auth);
@@ -912,13 +921,13 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 	{
 		//Save record
 		decl String:query[2048];
-		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, '%s') ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', replaypath = '%s', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, g_timers[client][ReplayFile], time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, g_timers[client][ReplayFile]);
+		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, levelprocess, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, %d, '%s') ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', levelprocess =  '%d', replaypath = '%s', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, levelprocess, g_timers[client][ReplayFile], time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, levelprocess, g_timers[client][ReplayFile]);
 		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
 	}
 	else
 	{
 		decl String:query[2048];
-		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, '%s') ON DUPLICATE KEY UPDATE name = '%s', finishcount = finishcount + 1;", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, g_timers[client][ReplayFile], safeName);
+		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, levelprocess, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, %d, '%s') ON DUPLICATE KEY UPDATE name = '%s', finishcount = finishcount + 1;", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, levelprocess, g_timers[client][ReplayFile], safeName);
 		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
 	}
 }
