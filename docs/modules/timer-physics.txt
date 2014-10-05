@@ -1,6 +1,6 @@
 Timer-Physics
 
-This module manages all styles, it's main confing is located here: addons/sourcemod/timer/physics.cfg
+This module manages all styles, it's main confing is located here: addons/sourcemod/configs/timer/physics.cfg
 You can use map specific configs (example: addons/sourcemod/timer/physics_de_dust2.cfg).
 
 Commands:
