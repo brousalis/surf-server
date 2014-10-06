@@ -15,7 +15,7 @@ public Plugin:myinfo =
 {
 	name = "[Timer] Players Online DB",
 	author = "Zipcore",
-	description = "Save server into database as long they are connected.",
+	description = "Save online players into database as long they are connected.",
 	version = "1.0",
 	url = "zipcore#googlemail.com"
 }
@@ -30,7 +30,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 public OnPluginStart()
 {
 	AutoExecConfig_SetFile("timer/timer-online_DB");
-	g_hServerID = AutoExecConfig_CreateConVar("timer_online_db_server_id", "1", "Server ID");
+	g_hServerID = AutoExecConfig_CreateConVar("timer_online_db_server_id", "1", "Server ID, don't use the same ID for multiple server which are sharing all database tables.");
 	HookConVarChange(g_hServerID, OnCVarChange);
 	g_iServerID = GetConVarInt(g_hServerID);
 
@@ -39,6 +39,13 @@ public OnPluginStart()
 	
 	RegAdminCmd("sm_online_refresh", Command_RefreshTable, ADMFLAG_ROOT);
 	ConnectSQL();
+}
+
+public OnPluginEnd()
+{
+	decl String:query[512];
+	Format(query, sizeof(query), "DELETE FROM `online` WHERE `server` = %d", g_iServerID);
+	SQL_TQuery(g_hSQL, DeleteCallback, query, _, DBPrio_High);
 }
 
 public OnCVarChange(Handle:cvar, const String:oldvalue[], const String:newvalue[])
