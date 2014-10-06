@@ -1710,7 +1710,7 @@ public Handle_DeleteMapZonesMenu(Handle:menu, MenuAction:action, client, itemNum
 
 ResetMapZoneEditor(client)
 {
-	if(!client)
+	if(client)
 	{
 		g_mapZoneEditors[client][Step] = 0;
 		
