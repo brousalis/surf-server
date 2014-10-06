@@ -286,15 +286,26 @@ stock InstallNew()
 	Timer_LogError("[timer-mysql.smx] Query: %s", query);
 	SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
 	
+	/* Create ROUND table */ 
 	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `round` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` int(11) NOT NULL, `physicsdifficulty` int(11) NOT NULL, `bonus` int(11) NOT NULL, `name` varchar(64) NOT NULL, `finishcount` int(11) NOT NULL, `levelprocess` int(11) NOT NULL, `fpsmax` int(11) NOT NULL, `jumpacc` float NOT NULL, `strafes` int(11) NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `finishspeed` float NOT NULL, `flashbangcount` int(11) NULL, `rank` int(11) NOT NULL, `replaypath` varchar(32) NOT NULL, `custom1` varchar(32) NOT NULL, `custom2` varchar(32) NOT NULL, `custom3` varchar(32) NOT NULL, date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `single_record` (`auth`, `map`, `physicsdifficulty`, `bonus`));");
 	SQL_SetCharset(g_hSQL, "utf8");
 	Timer_LogError("[timer-mysql.smx] Query: %s", query);
 	SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
 	
+	/* Create MAPZONE table */ 
 	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `mapzone` (`id` int(11) NOT NULL AUTO_INCREMENT, `type` int(11) NOT NULL, `level_id` int(11) NOT NULL, `point1_x` float NOT NULL, `point1_y` float NOT NULL, `point1_z` float NOT NULL, `point2_x` float NOT NULL, `point2_y` float NOT NULL, `point2_z` float NOT NULL, `map` varchar(64) NOT NULL, `name` varchar(32) NOT NULL, PRIMARY KEY (`id`));");
 	SQL_SetCharset(g_hSQL, "utf8");
 	Timer_LogError("[timer-mysql.smx] Query: %s", query);
 	SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+	
+	/* Create RANKS table */ 
+	if(LibraryExists("timer-rankings"))
+	{
+		Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `ranks` (`auth` varchar(24) NOT NULL PRIMARY KEY, `points` int(11) NOT NULL default 0, `lastname` varchar(65) NOT NULL default '', `lastplay` int(11) NOT NULL default 0);");
+		SQL_SetCharset(g_hSQL, "utf8");
+		Timer_LogError("[timer-mysql.smx] Query: %s", query);
+		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+	}
 	
 	g_DatabaseReady = true;
 }
