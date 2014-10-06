@@ -310,4 +310,16 @@ stock CheckForUpdates()
 		Timer_LogError("[timer-mysql.smx] Query: %s", query);
 		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
 	}
+	
+	// Change wrong level id for bonus start
+	if(CheckVersionOutdated(g_DB_Version, "2.1.5.1"))
+	{
+		Timer_LogError("[timer-mysql.smx] Executing fixes for v2.1.5.1.");
+		
+		decl String:query[512];
+		Format(query, sizeof(query), "ALTER TABLE `round` MODIFY `levelprocess` DEFAULT 0;");
+		Format(query, sizeof(query), "UPDATE `round` SET `flashbangcount` = 0 WHERE `flashbangcount` < 1;");
+		Timer_LogError("[timer-mysql.smx] Query: %s", query);
+		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+	}
 }
