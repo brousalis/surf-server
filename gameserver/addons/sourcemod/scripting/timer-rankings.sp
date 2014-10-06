@@ -528,7 +528,7 @@ public OnClientDisconnect(client)
 		if(points-points_start >= 0)
 			Format(sPre, sizeof(sPre), "+");
 		
-		UpdateRankIndexbyRecordTime(client);
+		if(g_iPositionMethod == 2) UpdateRankIndexbyRecordTime(client);
 		
 		decl String:sNameBuffer[1024];
 		if(g_iCurrentIndex[client] >= 0)
@@ -1550,7 +1550,7 @@ ShowConnectMsg(client)
 		return;
 	
 	GetClientName(client, g_sName[client], sizeof(g_sName[]));
-	UpdateRankIndexbyRecordTime(client);
+	if(g_iPositionMethod == 2) UpdateRankIndexbyRecordTime(client);
 	
 	if(g_iCurrentPoints[client] < 0 && g_iPositionMethod != 2)
 		return;
@@ -2766,7 +2766,8 @@ SessionStats(client)
 {
 	if(KvJumpToKey(g_hSession, g_sAuth[client], false))
 	{
-		UpdateRankIndexbyRecordTime(client);
+		if(g_iPositionMethod == 2) UpdateRankIndexbyRecordTime(client);
+		
 		decl String:sTag[20];
 		if(g_iCurrentIndex[client] != -1) GetArrayString(g_hCfgArray_DisplayTag, g_iCurrentIndex[client], sTag, sizeof(sTag));
 		
