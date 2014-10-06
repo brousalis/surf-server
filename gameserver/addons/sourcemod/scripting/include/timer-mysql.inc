@@ -1,7 +1,7 @@
-#if defined _timer_physics_included
+#if defined _timer_mysql_included
  #endinput
 #endif
-#define _timer_physics_included
+#define _timer_mysql_included
 
 
 /* Forwards */

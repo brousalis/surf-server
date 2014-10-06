@@ -4,6 +4,7 @@
 #include <sdktools>
 #include <smlib>
 #include <timer>
+#include <timer-mysql>
 #include <timer-config_loader.sp>
 #include <timer-stocks>
 
@@ -63,7 +64,6 @@ enum BestTimeCacheEntity
 new Handle:g_hSQL;
 
 new String:g_currentMap[64];
-new g_reconnectCounter = 0;
 
 new g_GetPauseLevel[MAXPLAYERS+1];
 
@@ -244,10 +244,9 @@ public OnLibraryRemoved(const String:name[])
 public OnClientAuthorized(client, const String:auth[])
 {
 	if (g_hSQL == INVALID_HANDLE)
-	{
 		ConnectSQL();
-	}
-	else
+	
+	if (g_hSQL != INVALID_HANDLE)
 	{
 		if(StrContains(auth, "STEAM", true) > -1)
 		{
@@ -357,11 +356,16 @@ public Action:Command_Resume(client, args)
 }
 
 public Action:Command_DropTable(client, args)
-{	
-	decl String:query[64];
-	FormatEx(query, sizeof(query), "DROP TABLE round");
-
-	SQL_TQuery(g_hSQL, DropTable, query, _, DBPrio_Normal);
+{
+	if (g_hSQL == INVALID_HANDLE)
+		ConnectSQL();
+	
+	if (g_hSQL != INVALID_HANDLE)
+	{
+		decl String:query[64];
+		FormatEx(query, sizeof(query), "DROP TABLE round");
+		SQL_TQuery(g_hSQL, DropTable, query, _, DBPrio_Normal);
+	}
 	
 	return Plugin_Handled;
 }
@@ -699,6 +703,17 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 	if (g_timers[client][ShortEndReached] && track == 2)
 		return;
 	
+	new flashbangcount; //TODO
+	
+	new levelprocess;
+	
+	if(track == TRACK_NORMAL)
+		levelprocess = LEVEL_END;
+	else if(track == TRACK_BONUS)
+		levelprocess = LEVEL_BONUS_END;
+	else
+		levelprocess = Timer_GetClientLevel(client);
+	
 	if (time < 1.0)
 	{
 		if(g_timerLogging) Timer_Log(Timer_LogLevelWarning, "Detected illegal record by %N on %s [time:%.2f|style:%d|track:%d|jumps:%d] SteamID: %s", client, g_currentMap, time, style, track, jumps, auth);
@@ -769,9 +784,16 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 
 	decl String:name[MAX_NAME_LENGTH];
 	GetClientName(client, name, sizeof(name));
-
+	
 	decl String:safeName[2 * strlen(name) + 1];
-	SQL_EscapeString(g_hSQL, name, safeName, 2 * strlen(name) + 1);
+
+	if (g_hSQL == INVALID_HANDLE)
+		ConnectSQL();
+	
+	if (g_hSQL != INVALID_HANDLE)
+	{
+		SQL_EscapeString(g_hSQL, name, safeName, 2 * strlen(name) + 1);
+	}
 	
 	/* Get Personal Record */
 	if(g_timerWorldRecord && Timer_GetBestRound(client, style, track, LastTime, LastJumps))
@@ -908,18 +930,21 @@ FinishRound(client, const String:map[], Float:time, jumps, style, fpsmax, track)
 		}
 	}
 	
-	if(FirstRecord || NewPersonalRecord)
+	if (g_hSQL != INVALID_HANDLE)
 	{
-		//Save record
-		decl String:query[2048];
-		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, '%s') ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', replaypath = '%s', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, g_timers[client][ReplayFile], time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, g_timers[client][ReplayFile]);
-		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
-	}
-	else
-	{
-		decl String:query[2048];
-		FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, '%s') ON DUPLICATE KEY UPDATE name = '%s', finishcount = finishcount + 1;", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, g_timers[client][ReplayFile], safeName);
-		SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
+		if(FirstRecord || NewPersonalRecord)
+		{
+			//Save record
+			decl String:query[2048];
+			FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, flashbangcount, levelprocess, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, %d, %d, '%s') ON DUPLICATE KEY UPDATE time = '%f', jumps = '%d', name = '%s', fpsmax = '%d', rank = '%d', jumpacc = '%f', maxspeed = '%f', avgspeed = '%f', finishspeed = '%f', finishcount = finishcount + 1, strafes = '%d', strafeacc = '%f', flashbangcount = '%d', levelprocess = '%d', replaypath = '%s', date = CURRENT_TIMESTAMP();", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, flashbangcount, levelprocess, g_timers[client][ReplayFile], time, jumps, safeName, fpsmax, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, flashbangcount, levelprocess, g_timers[client][ReplayFile]);
+			SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
+		}
+		else
+		{
+			decl String:query[2048];
+			FormatEx(query, sizeof(query), "INSERT INTO round (map, auth, time, jumps, physicsdifficulty, name, fpsmax, bonus, rank, jumpacc, maxspeed, avgspeed, finishspeed, finishcount, strafes, strafeacc, flashbangcount, levelprocess, replaypath) VALUES ('%s', '%s', %f, %d, %d, '%s', %d, %d, %d, %f, %f, %f, %f, 1, %d, %f, %d, %d, '%s') ON DUPLICATE KEY UPDATE name = '%s', finishcount = finishcount + 1;", map, auth, time, jumps, style, safeName, fpsmax, track, newrank, jumpacc, maxspeed, avgspeed, currentspeed, strafes, strafeacc, flashbangcount, levelprocess, g_timers[client][ReplayFile], safeName);
+			SQL_TQuery(g_hSQL, FinishRoundCallback, query, client, DBPrio_High);
+		}
 	}
 }
 
@@ -990,77 +1015,31 @@ Float:CalculateTime(client)
 		return (g_timers[client][Enabled] ? GetGameTime() : g_timers[client][EndTime]) - g_timers[client][StartTime] - g_timers[client][PauseTotalTime];	
 }
 
+public OnTimerSqlConnected(Handle:sql)
+{
+	g_hSQL = sql;
+	g_hSQL = INVALID_HANDLE;
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public OnTimerSqlStop()
+{
+	g_hSQL = INVALID_HANDLE;
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
 ConnectSQL()
 {
-    if (g_hSQL != INVALID_HANDLE)
-        CloseHandle(g_hSQL);
+	g_hSQL = Handle:Timer_SqlGetConnection();
 	
-    g_hSQL = INVALID_HANDLE;
-
-    if (SQL_CheckConfig("timer"))
-	{
-		SQL_TConnect(ConnectSQLCallback, "timer");
-	}
-    else
-	{
-		SetFailState("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
-	}
+	if (g_hSQL == INVALID_HANDLE)
+		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
 }
 
-public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
+public Action:Timer_SQLReconnect(Handle:timer, any:data)
 {
-	if (hndl == INVALID_HANDLE)
-	{
-		Timer_LogError("Connection to SQL database has failed, Reason: %s", error);
-		
-		g_reconnectCounter++;
-		if (g_reconnectCounter >= 5)
-		{
-			Timer_LogError("!! [timer-core.smx] Failed to connect to the database !!");
-			//SetFailState("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
-			//return;
-		}
-		
-		ConnectSQL();
-		return;
-	}
-
-	decl String:driver[16];
-	SQL_GetDriverIdent(owner, driver, sizeof(driver));
-
-	g_hSQL = CloneHandle(hndl);
-	
-	if (StrEqual(driver, "mysql", false))
-	{
-		SQL_SetCharset(g_hSQL, "utf8");
-		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `round` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` int(11) NOT NULL, `physicsdifficulty` int(11) NOT NULL, `bonus` int(11) NOT NULL, `name` varchar(64) NOT NULL, `finishcount` int(11) NOT NULL, `levelprocess` int(11) NOT NULL, `fpsmax` int(11) NOT NULL, `jumpacc` float NOT NULL, `strafes` int(11) NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `finishspeed` float NOT NULL, `flashbangcount` int(11) NOT NULL, `rank` int(11) NOT NULL, `replaypath` varchar(32) NOT NULL, `custom1` varchar(32) NOT NULL, `custom2` varchar(32) NOT NULL, `custom3` varchar(32) NOT NULL, date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `single_record` (`auth`, `map`, `physicsdifficulty`, `bonus`));");
-	}
-	
-	else if (StrEqual(driver, "sqlite", false))
-	{
-		SetFailState("Timer ERROR: SqLite is not supported, please check you databases.cfg and use MySQL driver");
-	}
-	
-	g_reconnectCounter = 1;
-}
-
-public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
-{
-	if (owner == INVALID_HANDLE)
-	{
-		if(g_timerLogging) Timer_LogError(error);
-		
-		g_reconnectCounter++;
-		ConnectSQL();
-
-		return;
-	}
-	
-	if (hndl == INVALID_HANDLE)
-	{
-		if(g_timerLogging) Timer_LogError("SQL Error on CreateSQLTable: %s", error);
-		return;
-	}
+	ConnectSQL();
+	return Plugin_Stop;
 }
 
 public Native_Reset(Handle:plugin, numParams)

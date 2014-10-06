@@ -114,7 +114,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 	
 	if (StrEqual(driver, "mysql", false))
 	{
-		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `data` (`key` varchar(32) NOT NULL, `setting` varchar(256) NOT NULL, PRIMARY KEY (`key`));");
+		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `settings` (`key` varchar(32) NOT NULL, `setting` varchar(256) NOT NULL, PRIMARY KEY (`key`));");
 	}
 	else if (StrEqual(driver, "sqlite", false))
 	{
@@ -144,7 +144,7 @@ public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], a
 		return;
 	}
 	
-	SQL_TQuery(g_hSQL, GetDBVersionCallback, "SELECT `setting` FROM `data` WHERE `key` = db_version;");
+	SQL_TQuery(g_hSQL, GetDBVersionCallback, "SELECT `setting` FROM `settings` WHERE `key` = db_version;");
 }
 
 public GetDBVersionCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
@@ -171,35 +171,21 @@ public GetDBVersionCallback(Handle:owner, Handle:hndl, const String:error[], any
 		// Database up to date
 		if(StrEqual(g_DB_Version, g_Version, true))
 		{
-			Timer_LogInfo("[timer-mysql.smx] MySQL connection passed version check.");
+			Timer_LogInfo("[timer-mysql.smx] MySQL connection established and ready.");
 			g_DatabaseReady = true;
 		}
 		
 		/// Database outdated
 		else if(CheckVersionOutdated(g_DB_Version, g_Version))
 		{
-			Timer_LogError("[timer-mysql.smx] ############################################################");
-			Timer_LogError("[timer-mysql.smx] MySQL v%s is outdated or no valid.", g_DB_Version);
-			
-			CheckForUpdates();
-			
-			Timer_LogError("[timer-mysql.smx] MySQL v%s version ready to use.", g_Version);
-			Timer_LogError("[timer-mysql.smx] ############################################################");
-			decl String:query[512];
-			Format(query, sizeof(query), "UPDATE `data` SET `setting` = %s WHERE `key` = db_version;", g_Version);
-			SQL_TQuery(g_hSQL, UpdateDBVersionCallback, query, _, DBPrio_High);
-			g_DatabaseReady = true;
+			InstallUpdates();
 		}
 	}
 	
 	// Install new database
 	else
 	{
-		g_DatabaseReady = true;
-		decl String:query[512];
-		Format(query, sizeof(query), "INSERT INTO `data`(`key`, `setting`) VALUES (db_version,%s);", g_Version);
-		SQL_TQuery(g_hSQL, UpdateDBVersionCallback, query, _, DBPrio_High);
-		Timer_LogInfo("[timer-mysql.smx] MySQL connection installed with version %s.", g_Version);
+		InstallNew();
 	}
 	
 	if(g_DatabaseReady)
@@ -272,6 +258,7 @@ public Action:Timer_HeartBeat(Handle:timer, any:data)
 {
 	if(g_hSQL == INVALID_HANDLE)
 	{
+		Timer_LogError("[timer-mysql.smx] ##### Lost connection to database. #####");
 		g_DatabaseReady = false;
 		Call_StartForward(g_timerOnTimerSqlStop);
 		Call_Finish();
@@ -287,39 +274,75 @@ public Native_SqlGetConnection(Handle:plugin, numParams)
 	else return _:INVALID_HANDLE;
 }
 
-stock CheckForUpdates()
+stock InstallNew()
 {
-	// Write missing values into levelprocess
-	// Change wrong level id for bonus start
-	if(CheckVersionOutdated(g_DB_Version, "2.1.4.7"))
+	decl String:query[2048];
+	Format(query, sizeof(query), "INSERT INTO `settings`(`key`, `setting`) VALUES (db_version,%s);", g_Version);
+	SQL_TQuery(g_hSQL, UpdateDBVersionCallback, query, _, DBPrio_High);
+	Timer_LogInfo("[timer-mysql.smx] No existing settings table found.");
+	Timer_LogInfo("[timer-mysql.smx] MySQL connection installed with version %s.", g_Version);
+	
+	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `round` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` int(11) NOT NULL, `physicsdifficulty` int(11) NOT NULL, `bonus` int(11) NOT NULL, `name` varchar(64) NOT NULL, `finishcount` int(11) NOT NULL, `levelprocess` int(11) NOT NULL, `fpsmax` int(11) NOT NULL, `jumpacc` float NOT NULL, `strafes` int(11) NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `finishspeed` float NOT NULL, `flashbangcount` int(11) NULL, `rank` int(11) NOT NULL, `replaypath` varchar(32) NOT NULL, `custom1` varchar(32) NOT NULL, `custom2` varchar(32) NOT NULL, `custom3` varchar(32) NOT NULL, date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `single_record` (`auth`, `map`, `physicsdifficulty`, `bonus`));");
+	SQL_SetCharset(g_hSQL, "utf8");
+	Timer_LogError("[timer-mysql.smx] Query: %s", query);
+	SQL_TQuery(g_hSQL, CreateSQLTableCallback, query, _, DBPrio_High);
+	
+	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `mapzone` (`id` int(11) NOT NULL AUTO_INCREMENT, `type` int(11) NOT NULL, `level_id` int(11) NOT NULL, `point1_x` float NOT NULL, `point1_y` float NOT NULL, `point1_z` float NOT NULL, `point2_x` float NOT NULL, `point2_y` float NOT NULL, `point2_z` float NOT NULL, `map` varchar(64) NOT NULL, `name` varchar(32) NOT NULL, PRIMARY KEY (`id`));");
+	SQL_SetCharset(g_hSQL, "utf8");
+	Timer_LogError("[timer-mysql.smx] Query: %s", query);
+	SQL_TQuery(g_hSQL, CreateSQLTableCallback, query, _, DBPrio_High);
+}
+
+stock InstallUpdates()
+{
+	decl String:update_version[32];
+	decl String:query[2048];
+	
+	Timer_LogError("[timer-mysql.smx] ############################################################");
+	Timer_LogError("[timer-mysql.smx] MySQL v%s is outdated.", g_DB_Version);
+	
+	Format(update_version, sizeof(update_version), "2.1.4.7");
+	if(CheckVersionOutdated(g_DB_Version, update_version))
 	{
-		Timer_LogError("[timer-mysql.smx] Executing fixes for v2.1.4.7.");
+		Timer_LogError("[timer-mysql.smx] Executing updates for v%s: Levelprocess fix", update_version);
 		
-		decl String:query[512];
 		Format(query, sizeof(query), "UPDATE `round` SET `levelprocess` = 999 WHERE `bonus` = 0 AND `levelprocess` < 1;");
 		Timer_LogError("[timer-mysql.smx] Query: %s", query);
 		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+		
 		Format(query, sizeof(query), "UPDATE `round` SET `levelprocess` = 1999 WHERE `bonus` = 1 AND `levelprocess` < 1;");
 		Timer_LogError("[timer-mysql.smx] Query: %s", query);
 		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+		
 		Format(query, sizeof(query), "UPDATE `round` SET `levelprocess` = 500 WHERE `bonus` = 2 AND `levelprocess` < 1;");
 		Timer_LogError("[timer-mysql.smx] Query: %s", query);
 		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+		
+		Timer_LogError("[timer-mysql.smx] Executing updates for v%s: Bonus start fix", update_version);
 		
 		Format(query, sizeof(query), "UPDATE mapzone SET level_id = 1001 WHERE level_id = 1000");
 		Timer_LogError("[timer-mysql.smx] Query: %s", query);
 		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
 	}
 	
-	// Change wrong level id for bonus start
-	if(CheckVersionOutdated(g_DB_Version, "2.1.5.1"))
+	Format(update_version, sizeof(update_version), "2.1.5.1");
+	if(CheckVersionOutdated(g_DB_Version, update_version))
 	{
-		Timer_LogError("[timer-mysql.smx] Executing fixes for v2.1.5.1.");
+		Timer_LogError("[timer-mysql.smx] Executing updates for v%s: Flashbangcount fix", update_version);
 		
-		decl String:query[512];
-		Format(query, sizeof(query), "ALTER TABLE `round` MODIFY `levelprocess` DEFAULT 0;");
+		// flashbangcount fix
+		Format(query, sizeof(query), "ALTER TABLE `round` MODIFY `flashbangcount` DEFAULT 0;");
+		Timer_LogError("[timer-mysql.smx] Query: %s", query);
+		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+		
 		Format(query, sizeof(query), "UPDATE `round` SET `flashbangcount` = 0 WHERE `flashbangcount` < 1;");
 		Timer_LogError("[timer-mysql.smx] Query: %s", query);
 		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
 	}
+	
+	Format(query, sizeof(query), "UPDATE `settings` SET `setting` = %s WHERE `key` = db_version;", g_Version);
+	SQL_TQuery(g_hSQL, UpdateDBVersionCallback, query, _, DBPrio_High);
+	
+	Timer_LogError("[timer-mysql.smx] MySQL v%s version ready to use.", g_Version);
+	Timer_LogError("[timer-mysql.smx] ############################################################");
 }
