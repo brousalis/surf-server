@@ -3,6 +3,7 @@
 #include <sourcemod>
 #include <cstrike>
 #include <timer>
+#include <timer-mysql>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
@@ -25,7 +26,6 @@ enum Record
 }
 
 new Handle:g_hSQL = INVALID_HANDLE;
-new g_iSQLReconnectCounter;
 
 new g_latestRecords[3][LATEST_LIMIT][Record];
 new g_RecordCount[3];
@@ -66,44 +66,32 @@ public OnMapStart()
 	LoadTimerSettings();
 }
 
-ConnectSQL()
+public OnTimerSqlConnected(Handle:sql)
 {
-	if (g_hSQL != INVALID_HANDLE)
-	{
-		CloseHandle(g_hSQL);
-	}
-
+	g_hSQL = sql;
 	g_hSQL = INVALID_HANDLE;
-
-	if (SQL_CheckConfig("timer"))
-	{
-		SQL_TConnect(ConnectSQLCallback, "timer");
-	}
-	else
-	{
-		SetFailState("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
-	}
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
 }
 
-public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
+public OnTimerSqlStop()
 {
-	if (g_iSQLReconnectCounter >= 5)
-	{
-		PrintToServer("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
-		return;
-	}
+	g_hSQL = INVALID_HANDLE;
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
+ConnectSQL()
+{
+	g_hSQL = Handle:Timer_SqlGetConnection();
 	
-	if (hndl == INVALID_HANDLE)
-	{
-		PrintToServer("Connection to SQL database has failed, Reason: %s", error);
-		g_iSQLReconnectCounter++;
-		ConnectSQL();
-		return;
-	}
-	g_hSQL = CloneHandle(hndl);
-	
-	g_iSQLReconnectCounter = 1;
-	LoadLatestRecords();
+	if (g_hSQL == INVALID_HANDLE)
+		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+	else LoadLatestRecords();
+}
+
+public Action:Timer_SQLReconnect(Handle:timer, any:data)
+{
+	ConnectSQL();
+	return Plugin_Stop;
 }
 
 public OnTimerRecord(client, track, mode, Float:time, Float:lasttime, currentrank, newrank)
