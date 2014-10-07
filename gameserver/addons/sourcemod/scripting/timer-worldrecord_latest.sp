@@ -115,13 +115,13 @@ LoadLatestRecords()
 {
 	decl String:sQuery[1024];
 	
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` ORDER BY `date` DESC LIMIT %d", LATEST_LIMIT);
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `style`, `auth`, `name`, `time`, `rank`, `date` FROM `round` ORDER BY `date` DESC LIMIT %d", LATEST_LIMIT);
 	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_ANY, DBPrio_Low);
 	
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` <= 10 ORDER BY `date` DESC LIMIT %d", LATEST_LIMIT);
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `style`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` <= 10 ORDER BY `date` DESC LIMIT %d", LATEST_LIMIT);
 	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_TOP, DBPrio_Low);
 	
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `physicsdifficulty`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` = 1 ORDER BY `date` DESC LIMIT %d", LATEST_LIMIT);
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `map`, `bonus`, `style`, `auth`, `name`, `time`, `rank`, `date` FROM `round` WHERE `rank` = 1 ORDER BY `date` DESC LIMIT %d", LATEST_LIMIT);
 	SQL_TQuery(g_hSQL, LoadLatestRecordsCallback, sQuery, RECORD_WORLD, DBPrio_Low);
 }
 

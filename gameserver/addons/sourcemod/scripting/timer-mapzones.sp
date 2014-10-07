@@ -1475,10 +1475,7 @@ ConnectSQL()
 	if (g_hSQL == INVALID_HANDLE)
 		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
 	else
-	{
-		Timer_LogError("MAPZONES CONNECTED");
 		LoadMapZones();
-	}
 }
 
 public Action:Timer_SQLReconnect(Handle:timer, any:data)

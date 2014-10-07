@@ -229,7 +229,7 @@ UpdateRanks()
 				decl String:query[2048];
 				FormatEx(query, sizeof(query), "SET @r=0;");
 				SQL_TQuery(g_hSQL, UpdateRanksCallback, query, _, DBPrio_High);
-				FormatEx(query, sizeof(query), "UPDATE `round` SET `rank` = @r:= (@r+1) WHERE `map` = '%s' AND `physicsdifficulty` = %d AND `bonus` = %d  ORDER BY `time` ASC;", g_currentMap, style, track);
+				FormatEx(query, sizeof(query), "UPDATE `round` SET `rank` = @r:= (@r+1) WHERE `map` = '%s' AND `style` = %d AND `track` = %d  ORDER BY `time` ASC;", g_currentMap, style, track);
 				SQL_TQuery(g_hSQL, UpdateRanksCallback, query, _, DBPrio_High);
 			}
 		}
@@ -768,20 +768,20 @@ RefreshCache()
 			g_cacheLoaded[style][2] = false;
 			
 			decl String:query[512];
-			FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_NORMAL, MAX_CACHE);	
+			FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_NORMAL, MAX_CACHE);	
 			
 			SQL_TQuery(g_hSQL, RefreshCacheCallback, query, style, DBPrio_Low);
 			
 			if(g_Settings[BonusWrEnable])
 			{
-				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_BONUS, MAX_CACHE);	
+				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_BONUS, MAX_CACHE);	
 				
 				SQL_TQuery(g_hSQL, RefreshBonusCacheCallback, query, style, DBPrio_Low);
 			}
 			
 			if(g_Settings[ShortWrEnable])
 			{
-				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, physicsdifficulty, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND physicsdifficulty = %d AND bonus = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_SHORT, MAX_CACHE);	
+				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_SHORT, MAX_CACHE);	
 				
 				SQL_TQuery(g_hSQL, RefreshShortCacheCallback, query, style, DBPrio_Low);
 			}
@@ -1428,7 +1428,7 @@ CreateDeleteMenu(client, target, String:targetmap[64], ignored = -1)
 		GetClientAuthString(target, auth, sizeof(auth));
 			
 		decl String:query[512];
-		FormatEx(query, sizeof(query), "SELECT id, time, jumps, physicsdifficulty, auth FROM `round` WHERE map = '%s' AND auth = '%s'%s ORDER BY physicsdifficulty, time, jumps", targetmap, auth, buffer);	
+		FormatEx(query, sizeof(query), "SELECT id, time, jumps, style, auth FROM `round` WHERE map = '%s' AND auth = '%s'%s ORDER BY style, time, jumps", targetmap, auth, buffer);	
 		
 		g_deleteMenuSelection[client] = target;
 		SQL_TQuery(g_hSQL, CreateDeleteMenuCallback, query, client, DBPrio_Normal);
@@ -1439,7 +1439,7 @@ CreateDeleteMenu(client, target, String:targetmap[64], ignored = -1)
 		GetClientAuthString(target, auth, sizeof(auth));
 		
 		decl String:query[512];
-		FormatEx(query, sizeof(query), "SELECT id, time, jumps, physicsdifficulty, auth FROM `round` WHERE map = '%s' AND auth = '%s'%s ORDER BY physicsdifficulty, time, jumps", targetmap, auth, buffer);	
+		FormatEx(query, sizeof(query), "SELECT id, time, jumps, style, auth FROM `round` WHERE map = '%s' AND auth = '%s'%s ORDER BY style, time, jumps", targetmap, auth, buffer);	
 		
 		g_deleteMenuSelection[client] = target;
 		SQL_TQuery(g_hSQL, CreateDeleteMenuCallback, query, client, DBPrio_Normal);

@@ -8,7 +8,7 @@
 
 new Handle:g_hSQL = INVALID_HANDLE;
 
-public OnTimerSqlUpdate(Handle:sql)
+public OnTimerSqlConnected(Handle:sql)
 {
 	g_hSQL = sql;
 	

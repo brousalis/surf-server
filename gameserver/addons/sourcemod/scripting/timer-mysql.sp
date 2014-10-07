@@ -44,7 +44,23 @@ public OnPluginStart()
 	g_timerOnTimerSqlConnected = CreateGlobalForward("OnTimerSqlConnected", ET_Event, Param_Cell);
 	g_timerOnTimerSqlStop = CreateGlobalForward("OnTimerSqlStop", ET_Event);
 	
+	RegAdminCmd("timer_sql_force_update", Command_ForceUpdate, ADMFLAG_RCON, "timer_sql_force_update <version>");
+	
 	ConnectSQL();
+}
+
+public Action:Command_ForceUpdate(client, args)
+{
+	if(args == 1)
+	{
+		decl String:version[32];
+		GetCmdArg(1, version,sizeof(version));
+		strcopy(g_DB_Version, sizeof(g_DB_Version), version);
+		InstallUpdates();
+	}
+	else strcopy(g_DB_Version, sizeof(g_DB_Version), "2.1.3");
+	
+	return Plugin_Handled;	
 }
 
 public OnPluginEnd()
@@ -287,7 +303,7 @@ stock InstallNew()
 	SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
 	
 	/* Create ROUND table */ 
-	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `round` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` int(11) NOT NULL, `physicsdifficulty` int(11) NOT NULL, `bonus` int(11) NOT NULL, `name` varchar(64) NOT NULL, `finishcount` int(11) NOT NULL, `levelprocess` int(11) NOT NULL, `fpsmax` int(11) NOT NULL, `jumpacc` float NOT NULL, `strafes` int(11) NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `finishspeed` float NOT NULL, `flashbangcount` int(11) NULL, `rank` int(11) NOT NULL, `replaypath` varchar(32) NOT NULL, `custom1` varchar(32) NOT NULL, `custom2` varchar(32) NOT NULL, `custom3` varchar(32) NOT NULL, date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `single_record` (`auth`, `map`, `physicsdifficulty`, `bonus`));");
+	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `round` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `auth` varchar(32) NOT NULL, `time` float NOT NULL, `jumps` int(11) NOT NULL, `style` int(11) NOT NULL, `track` int(11) NOT NULL, `name` varchar(64) NOT NULL, `finishcount` int(11) NOT NULL, `levelprocess` int(11) NOT NULL, `fpsmax` int(11) NOT NULL, `jumpacc` float NOT NULL, `strafes` int(11) NOT NULL, `strafeacc` float NOT NULL, `avgspeed` float NOT NULL, `maxspeed` float NOT NULL, `finishspeed` float NOT NULL, `flashbangcount` int(11) NULL, `rank` int(11) NOT NULL, `replaypath` varchar(32) NOT NULL, `custom1` varchar(32) NOT NULL, `custom2` varchar(32) NOT NULL, `custom3` varchar(32) NOT NULL, date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `single_record` (`auth`, `map`, `style`, `track`));");
 	SQL_SetCharset(g_hSQL, "utf8");
 	Timer_LogError("[timer-mysql.smx] Query: %s", query);
 	SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
@@ -298,14 +314,17 @@ stock InstallNew()
 	Timer_LogError("[timer-mysql.smx] Query: %s", query);
 	SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
 	
+	/* Create MAPTIER table */ 
+	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `maptier` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `track` int(11) NOT NULL, `tier` int(11) NOT NULL, `stagecount` int(11) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `single_record` (`map`, `track`));");
+	SQL_SetCharset(g_hSQL, "utf8");
+	Timer_LogError("[timer-mysql.smx] Query: %s", query);
+	SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+	
 	/* Create RANKS table */ 
-	if(LibraryExists("timer-rankings"))
-	{
-		Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `ranks` (`auth` varchar(24) NOT NULL PRIMARY KEY, `points` int(11) NOT NULL default 0, `lastname` varchar(65) NOT NULL default '', `lastplay` int(11) NOT NULL default 0);");
-		SQL_SetCharset(g_hSQL, "utf8");
-		Timer_LogError("[timer-mysql.smx] Query: %s", query);
-		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
-	}
+	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `ranks` (`auth` varchar(24) NOT NULL PRIMARY KEY, `points` int(11) NOT NULL default 0, `lastname` varchar(65) NOT NULL default '', `lastplay` int(11) NOT NULL default 0);");
+	SQL_SetCharset(g_hSQL, "utf8");
+	Timer_LogError("[timer-mysql.smx] Query: %s", query);
+	SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
 	
 	g_DatabaseReady = true;
 }
@@ -313,6 +332,7 @@ stock InstallNew()
 stock InstallUpdates()
 {
 	decl String:update_version[32];
+	
 	decl String:query[2048];
 	
 	Timer_LogError("[timer-mysql.smx] ############################################################");
@@ -353,6 +373,32 @@ stock InstallUpdates()
 		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
 		
 		Format(query, sizeof(query), "UPDATE `round` SET `flashbangcount` = 0 WHERE `flashbangcount` < 1;");
+		Timer_LogError("[timer-mysql.smx] Query: %s", query);
+		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+	}
+	
+	
+	Format(update_version, sizeof(update_version), "2.1.5.2");
+	if(CheckVersionOutdated(g_DB_Version, update_version))
+	{
+		Timer_LogError("[timer-mysql.smx] Executing updates for v%s: Flashbangcount fix", update_version);
+		
+		// Rename bonus to track
+		Format(query, sizeof(query), "ALTER TABLE round CHANGE bonus track int(11);");
+		Timer_LogError("[timer-mysql.smx] Query: %s", query);
+		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+		
+		Format(query, sizeof(query), "ALTER TABLE maptier CHANGE bonus track int(11);");
+		Timer_LogError("[timer-mysql.smx] Query: %s", query);
+		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+		
+		// Rename physicsdifficulty to style
+		Format(query, sizeof(query), "ALTER TABLE round CHANGE physicsdifficulty style int(11);");
+		Timer_LogError("[timer-mysql.smx] Query: %s", query);
+		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
+		
+		// Rename levelprocess to stage
+		Format(query, sizeof(query), "ALTER TABLE round CHANGE levelprocess stage int(11);");
 		Timer_LogError("[timer-mysql.smx] Query: %s", query);
 		SQL_TQuery(g_hSQL, EmptyCallback, query, _, DBPrio_High);
 	}
