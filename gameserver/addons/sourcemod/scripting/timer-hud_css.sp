@@ -1623,7 +1623,7 @@ UpdateHUD_CSS(client)
 	if(ranked && RecordTime > 0.0)
 	{
 		if (hudSettings[WRHolder][client] && g_Settings[HUDWRHolderEnable])
-			Format(hintText, sizeof(hintText), "%sWR Holder: %s\n", hintText, RecordTimeString);
+			Format(hintText, sizeof(hintText), "%sWR Holder: %s\n", hintText, WrName);
 		
 		if (hudSettings[WR][client] && g_Settings[HUDWREnable])
 			Format(hintText, sizeof(hintText), "%sWR Time: %s\n", hintText, RecordTimeString);
