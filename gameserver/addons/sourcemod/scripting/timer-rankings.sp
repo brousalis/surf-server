@@ -6,6 +6,7 @@
 #include <basecomm>
 #include <timer>
 #include <timer-logging>
+#include <timer-mysql>
 #include <timer-rankings>
 #include <clientprefs>
 #include <timer-config_loader.sp>
@@ -42,7 +43,7 @@
 //Handles
 //* * * * * * * * * * * * * * * * * * * * * * * * * *
 new Handle:g_hEnabled = INVALID_HANDLE;
-new Handle:g_hDatabase = INVALID_HANDLE;
+new Handle:g_hSQL = INVALID_HANDLE;
 new Handle:g_hDisplayMethod = INVALID_HANDLE;
 new Handle:g_hRequiredPoints = INVALID_HANDLE;
 new Handle:g_hGlobalMessage = INVALID_HANDLE;
@@ -70,7 +71,6 @@ new Handle:g_hAllchat = INVALID_HANDLE;
 //* * * * * * * * * * * * * * * * * * * * * * * * * *
 new bool:g_bLateLoad;
 new bool:g_bLateQuery;
-new bool:g_bSql;
 new bool:g_bSimpleChatProcessor;
 new bool:g_bInitalizing;
 new bool:g_bGlobalMessage;
@@ -373,9 +373,47 @@ public OnConfigsExecuted()
 		return;
 
 	Parse_Points();
-
-	if(g_bLateLoad)
+	
+	if (g_hSQL == INVALID_HANDLE || g_bLateLoad)
 	{
+		ConnectSQL();
+	}
+	
+	if (g_hSQL == INVALID_HANDLE)
+	{
+		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+		return;
+	}
+	
+	/*
+	if(g_hSQL == INVALID_HANDLE && (g_iPositionMethod == 0 || g_iPositionMethod == 1))
+		SQL_TConnect(SQL_Connect_Database, "timer");
+	*/
+}
+
+public OnTimerSqlConnected(Handle:sql)
+{
+	g_hSQL = sql;
+	g_hSQL = INVALID_HANDLE;
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public OnTimerSqlStop()
+{
+	g_hSQL = INVALID_HANDLE;
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
+ConnectSQL()
+{
+	g_hSQL = Handle:Timer_SqlGetConnection();
+	
+	if (g_hSQL == INVALID_HANDLE)
+		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+	else
+	{
+		Timer_LogError("RANKINGS CONNECTED");
+		
 		for(new i = 1; i <= MaxClients; i++)
 		{
 			if(IsClientInGame(i) && !IsFakeClient(i))
@@ -391,13 +429,16 @@ public OnConfigsExecuted()
 				}
 			}
 		}
-
 		GetCurrentMap(g_sCurrentMap, sizeof(g_sCurrentMap));
+		
 		g_bLateLoad = false;
 	}
-	
-	if(g_hDatabase == INVALID_HANDLE && (g_iPositionMethod == 0 || g_iPositionMethod == 1))
-		SQL_TConnect(SQL_Connect_Database, "timer");
+}
+
+public Action:Timer_SQLReconnect(Handle:timer, any:data)
+{
+	ConnectSQL();
+	return Plugin_Stop;
 }
 
 public OnMapStart()
@@ -454,7 +495,7 @@ public OnClientPostAdminCheck(client)
 	{
 		CreateTimer(2.0, Timer_AuthClient, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
 	}
-	else if(g_hDatabase != INVALID_HANDLE && !g_bInitalizing && (g_iPositionMethod == 0 || g_iPositionMethod == 1))
+	else if(g_hSQL != INVALID_HANDLE && !g_bInitalizing && (g_iPositionMethod == 0 || g_iPositionMethod == 1))
 	{
 		GetClientName(client, g_sName[client], sizeof(g_sName[]));
 		g_sAuth[client][6] = '0';
@@ -464,7 +505,7 @@ public OnClientPostAdminCheck(client)
 			FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
 			if(g_iEnabled == 2)
 				PrintToDebug("OnClientPostAdminCheck(%N): Issuing Query `%s`", client, sQuery);
-			SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(client), DBPrio_Low);
+			SQL_TQuery(g_hSQL, CallBack_ClientConnect, sQuery, GetClientUserId(client), DBPrio_Low);
 		}
 
 		if(!g_bLoadedCookies[client] && AreClientCookiesCached(client))
@@ -643,7 +684,7 @@ Command_Top(client)
 	FormatEx(query, sizeof(query), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC LIMIT %d", g_iRequiredPoints, g_iLimitTopPlayers);
 	if(g_iEnabled == 2)
 		PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, query);
-	SQL_TQuery(g_hDatabase, CallBack_Top, query, GetClientUserId(client));
+	SQL_TQuery(g_hSQL, CallBack_Top, query, GetClientUserId(client));
 }
 
 Command_Rank(client)
@@ -668,7 +709,7 @@ Command_Rank(client)
 		FormatEx(query, sizeof(query), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
 		if(g_iEnabled == 2)
 			PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, query);
-		SQL_TQuery(g_hDatabase, CallBack_Rank, query, GetClientUserId(client));
+		SQL_TQuery(g_hSQL, CallBack_Rank, query, GetClientUserId(client));
 	}
 }
 
@@ -697,7 +738,7 @@ Command_Next(client)
 	FormatEx(query, sizeof(query), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d AND `auth` != '%s' ORDER BY `points` ASC LIMIT %d", g_iCurrentPoints[client], g_sAuth[client], g_iLimitTopPlayers);
 	if(g_iEnabled == 2)
 		PrintToDebug("Command_Say(%N): Issuing Query `%s`", client, query);
-	SQL_TQuery(g_hDatabase, CallBack_Next, query, GetClientUserId(client));
+	SQL_TQuery(g_hSQL, CallBack_Next, query, GetClientUserId(client));
 }
 
 CreateCookieMenu(client)
@@ -991,7 +1032,7 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 	{
 		UpdateRankIndexbyRecordTime(author);
 	}
-	else if(g_hDatabase == INVALID_HANDLE)
+	else if(g_hSQL == INVALID_HANDLE)
 	{
 		return Plugin_Continue;
 	}
@@ -1237,27 +1278,10 @@ UpdateClientStars(client)
 
 public SQL_Connect_Database(Handle:owner, Handle:hndl, const String:error[], any:data)
 {
-	ErrorCheck(owner, error, "SQL_Connect_Database.Owner");
-	ErrorCheck(hndl, error, "SQL_Connect_Database.Handle");
+	SQL_TQuery(g_hSQL, CallBack_Names, "SET NAMES  'utf8'", _, DBPrio_High);
+	SQL_TQuery(g_hSQL, CallBack_Creation, "CREATE TABLE IF NOT EXISTS `ranks` (`auth` varchar(24) NOT NULL PRIMARY KEY, `points` int(11) NOT NULL default 0, `lastname` varchar(65) NOT NULL default '', `lastplay` int(11) NOT NULL default 0);");
 
-	g_hDatabase = hndl;
-	decl String:sDriver[16];
-	SQL_GetDriverIdent(owner, sDriver, sizeof(sDriver));
-
-	g_bSql = StrEqual(sDriver, "mysql", false);
-	if(g_bSql)
-	{
-		SQL_TQuery(g_hDatabase, CallBack_Names, "SET NAMES  'utf8'", _, DBPrio_High);
-
-		SQL_TQuery(g_hDatabase, CallBack_Creation, "CREATE TABLE IF NOT EXISTS `ranks` (`auth` varchar(24) NOT NULL PRIMARY KEY, `points` int(11) NOT NULL default 0, `lastname` varchar(65) NOT NULL default '', `lastplay` int(11) NOT NULL default 0);");
-
-	}
-	else
-	{
-		SQL_TQuery(g_hDatabase, CallBack_Creation, "CREATE TABLE IF NOT EXISTS `ranks` (`auth` varchar(24) NOT NULL PRIMARY KEY, `points` INTEGER NOT NULL default 0, `lastname` varchar(65) NOT NULL default '', `lastplay` INTEGER NOT NULL default 0);");
-	}
-
-	SQL_TQuery(g_hDatabase, CallBack_Total, "SELECT COUNT(*) FROM `ranks`", _, DBPrio_Low);
+	SQL_TQuery(g_hSQL, CallBack_Total, "SELECT COUNT(*) FROM `ranks`", _, DBPrio_Low);
 }
 
 public CallBack_Total(Handle:owner, Handle:hndl, const String:error[], any:ref)
@@ -1289,7 +1313,7 @@ public CallBack_Creation(Handle:owner, Handle:hndl, const String:error[], any:da
 				FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[i]);
 				if(g_iEnabled == 2)
 					PrintToDebug("CallBack_Creation(%N): Issuing Query `%s`", i, sQuery);
-				SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(i), DBPrio_Low);
+				SQL_TQuery(g_hSQL, CallBack_ClientConnect, sQuery, GetClientUserId(i), DBPrio_Low);
 			}
 		}
 
@@ -1322,7 +1346,7 @@ public CallBack_CreateClient(Handle:owner, Handle:hndl, const String:error[], an
 		FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_CreateClient(%N): Issuing Query `%s`", client, sQuery);
-		SQL_TQuery(g_hDatabase, CallBack_LoadRank, sQuery, userid);
+		SQL_TQuery(g_hSQL, CallBack_LoadRank, sQuery, userid);
 	}
 	else
 	{
@@ -1374,7 +1398,7 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 	decl String:sName[MAX_NAME_LENGTH];
 	decl String:sSafeName[((MAX_NAME_LENGTH * 2) + 1)];
 	GetClientName(client, sName, sizeof(sName));
-	SQL_EscapeString(g_hDatabase, sName, sSafeName, sizeof(sSafeName));
+	SQL_EscapeString(g_hSQL, sName, sSafeName, sizeof(sSafeName));
 	
 	g_iCurrentPoints[client] = -1;
 	
@@ -1386,7 +1410,7 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 		FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `ranks` (auth, points, lastname, lastplay) VALUES ('%s', 0, '%s', %d)", g_sAuth[client], sSafeName, GetTime());
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_ClientConnect(%N): Issuing Query `%s`", client, sQuery);
-		SQL_TQuery(g_hDatabase, CallBack_CreateClient, sQuery, userid);
+		SQL_TQuery(g_hSQL, CallBack_CreateClient, sQuery, userid);
 
 		g_iTotalPlayers++;
 		
@@ -1397,7 +1421,7 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 		FormatEx(sQuery, sizeof(sQuery), "UPDATE `ranks` SET lastname = '%s', lastplay = %d WHERE auth = '%s'", sSafeName, GetTime(), g_sAuth[client]);
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_ClientConnect(%N): Issuing Query `%s`", client, sQuery);
-		SQL_TQuery(g_hDatabase, CallBack_UpdateClient, sQuery, _);
+		SQL_TQuery(g_hSQL, CallBack_UpdateClient, sQuery, _);
 
 		g_iCurrentPoints[client] = SQL_FetchInt(hndl, 0);
 
@@ -1406,7 +1430,7 @@ public CallBack_ClientConnect(Handle:owner, Handle:hndl, const String:error[], a
 			FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
 			if(g_iEnabled == 2)
 				PrintToDebug("CallBack_ClientConnect(%N): Issuing Query `%s`", client, sQuery);
-			SQL_TQuery(g_hDatabase, CallBack_LoadRank, sQuery, userid);
+			SQL_TQuery(g_hSQL, CallBack_LoadRank, sQuery, userid);
 		}
 		else
 		{
@@ -1804,7 +1828,7 @@ public MenuHandler_SettingsMenu(Handle:menu, MenuAction:action, param1, param2)
 					FormatEx(sQuery, sizeof(sQuery), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC LIMIT %d", g_iRequiredPoints, g_iLimitTopPlayers);
 					if(g_iEnabled == 2)
 						PrintToDebug("Command_Say(%N): Issuing Query `%s`", param1, sQuery);
-					SQL_TQuery(g_hDatabase, CallBack_Top, sQuery, GetClientUserId(param1));
+					SQL_TQuery(g_hSQL, CallBack_Top, sQuery, GetClientUserId(param1));
 				}
 				case 3:
 				{
@@ -1822,7 +1846,7 @@ public MenuHandler_SettingsMenu(Handle:menu, MenuAction:action, param1, param2)
 						FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[param1]);
 						if(g_iEnabled == 2)
 							PrintToDebug("Command_Say(%N): Issuing Query `%s`", param1, sQuery);
-						SQL_TQuery(g_hDatabase, CallBack_Rank, sQuery, GetClientUserId(param1));
+						SQL_TQuery(g_hSQL, CallBack_Rank, sQuery, GetClientUserId(param1));
 					}
 
 					CreateSettingsMenu(param1);
@@ -1839,7 +1863,7 @@ public MenuHandler_SettingsMenu(Handle:menu, MenuAction:action, param1, param2)
 					FormatEx(sQuery, sizeof(sQuery), "SELECT `lastname`,`points` FROM `ranks` WHERE `points` >= %d AND `auth` != '%s' ORDER BY `points` ASC LIMIT %d", g_iCurrentPoints[param1], g_sAuth[param1], g_iLimitTopPlayers);
 					if(g_iEnabled == 2)
 						PrintToDebug("Command_Say(%N): Issuing Query `%s`", param1, sQuery);
-					SQL_TQuery(g_hDatabase, CallBack_Next, sQuery, GetClientUserId(param1));
+					SQL_TQuery(g_hSQL, CallBack_Next, sQuery, GetClientUserId(param1));
 				}
 				case 5:
 				{
@@ -1913,7 +1937,7 @@ public Action:Command_SetRankPoints(client, args)
 	if(!g_iEnabled)
 		return Plugin_Handled;
 
-	if(g_hDatabase != INVALID_HANDLE && !g_bInitalizing)
+	if(g_hSQL != INVALID_HANDLE && !g_bInitalizing)
 	{
 		if(args < 2)
 		{
@@ -1942,7 +1966,7 @@ public Action:Command_SetRankPoints(client, args)
 		FormatEx(sText, sizeof(sText), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", sAuth);
 		if(g_iEnabled == 2)
 			PrintToDebug("Command_SetRankPoints(%N): Issuing Query `%s`", client, sText);
-		SQL_TQuery(g_hDatabase, CallBack_CommandSetRankPoints, sText, hPack);
+		SQL_TQuery(g_hSQL, CallBack_CommandSetRankPoints, sText, hPack);
 	}
 	else
 		ReplyToCommand(client, "[SM] Database offline; cannot complete action!");
@@ -1970,7 +1994,7 @@ public CallBack_CommandSetRankPoints(Handle:owner, Handle:hndl, const String:err
 		FormatEx(sQuery, sizeof(sQuery), "UPDATE `ranks` SET `points` = %d WHERE `auth` = '%s'", iPoints, sAuth);
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_CommandSetRankPoints(): Issuing Query `%s`", sQuery);
-		SQL_TQuery(g_hDatabase, CallBack_UpdateClient, sQuery, _);
+		SQL_TQuery(g_hSQL, CallBack_UpdateClient, sQuery, _);
 
 		for(new i = 1; i <= MaxClients; i++)
 		{
@@ -1988,7 +2012,7 @@ public Action:Command_ChangeRankPoints(client, args)
 	if(!g_iEnabled)
 		return Plugin_Handled;
 
-	if(g_hDatabase != INVALID_HANDLE && !g_bInitalizing)
+	if(g_hSQL != INVALID_HANDLE && !g_bInitalizing)
 	{
 		if(args < 2)
 		{
@@ -2017,7 +2041,7 @@ public Action:Command_ChangeRankPoints(client, args)
 		FormatEx(sText, sizeof(sText), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", sAuth);
 		if(g_iEnabled == 2)
 			PrintToDebug("Command_ChangeRankPoints(): Issuing Query `%s`", sText);
-		SQL_TQuery(g_hDatabase, CallBack_CommandChangeRankPoints, sText, hPack);
+		SQL_TQuery(g_hSQL, CallBack_CommandChangeRankPoints, sText, hPack);
 	}
 	else
 		ReplyToCommand(client, "[SM] Database offline; cannot complete action!");
@@ -2046,7 +2070,7 @@ public CallBack_CommandChangeRankPoints(Handle:owner, Handle:hndl, const String:
 		FormatEx(sQuery, sizeof(sQuery), "UPDATE `ranks` SET `points` = %d WHERE `auth` = '%s'", (iCurrent + iPoints), sAuth);
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_CommandChangeRankPoints(): Issuing Query `%s`", sQuery);
-		SQL_TQuery(g_hDatabase, CallBack_UpdateClient, sQuery, _);
+		SQL_TQuery(g_hSQL, CallBack_UpdateClient, sQuery, _);
 
 		for(new i = 1; i <= MaxClients; i++)
 		{
@@ -2073,13 +2097,13 @@ public Action:Command_ListRanks(client, args)
 	if(!g_iEnabled)
 		return Plugin_Handled;
 
-	if(g_hDatabase != INVALID_HANDLE && !g_bInitalizing)
+	if(g_hSQL != INVALID_HANDLE && !g_bInitalizing)
 	{
 		decl String:sQuery[128];
 		FormatEx(sQuery, sizeof(sQuery), "SELECT `lastname`,`points` FROM `ranks` ORDER BY `points` DESC");
 		if(g_iEnabled == 2)
 			PrintToDebug("Command_ListRanks(%N): Issuing Query `%s`", client, sQuery);
-		SQL_TQuery(g_hDatabase, CallBack_CommandListRanks, sQuery, client ? GetClientUserId(client) : 0);
+		SQL_TQuery(g_hSQL, CallBack_CommandListRanks, sQuery, client ? GetClientUserId(client) : 0);
 	}
 
 	return Plugin_Handled;
@@ -2375,7 +2399,7 @@ public Action:Command_PrintRanks(args)
 		g_iCurrentDebug = (g_iTotalPlayers > 500) ? 500 : g_iTotalPlayers;
 		decl String:sPlayerQuery[256];
 		FormatEx(sPlayerQuery, sizeof(sPlayerQuery), "SELECT `lastname`,`auth`,`points` FROM `ranks` ORDER BY `points` DESC LIMIT %d,%d", 0, g_iCurrentDebug);
-		SQL_TQuery(g_hDatabase, CallBack_DebugPrintPlayers, sPlayerQuery, 0);
+		SQL_TQuery(g_hSQL, CallBack_DebugPrintPlayers, sPlayerQuery, 0);
 	}
 
 	return Plugin_Handled;
@@ -2442,7 +2466,7 @@ public CallBack_DebugPrintPlayers(Handle:owner, Handle:hndl, const String:error[
 
 	decl String:sPlayerQuery[256];
 	FormatEx(sPlayerQuery, sizeof(sPlayerQuery), "SELECT `lastname`,`auth`,`points` FROM `ranks` ORDER BY `points` DESC LIMIT %d,%d", iStart, g_iCurrentDebug);
-	SQL_TQuery(g_hDatabase, CallBack_DebugPrintPlayers, sPlayerQuery, iStart);
+	SQL_TQuery(g_hSQL, CallBack_DebugPrintPlayers, sPlayerQuery, iStart);
 }
 
 public Action:Timer_AuthClient(Handle:timer, any:userid)
@@ -2458,7 +2482,7 @@ public Action:Timer_AuthClient(Handle:timer, any:userid)
 			//Position method 2 is using no points and the plugin does not fire the connect msg
 			if(g_iPositionMethod == 2) ShowConnectMsg(client);
 		
-			if(g_hDatabase != INVALID_HANDLE && !g_bInitalizing)
+			if(g_hSQL != INVALID_HANDLE && !g_bInitalizing)
 				return Plugin_Continue;
 
 			g_sAuth[client][6] = '0';
@@ -2467,7 +2491,7 @@ public Action:Timer_AuthClient(Handle:timer, any:userid)
 			{
 				decl String:sQuery[192];
 				FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
-				SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(client));
+				SQL_TQuery(g_hSQL, CallBack_ClientConnect, sQuery, GetClientUserId(client));
 			}
 
 			if(!g_bLoadedCookies[client] && AreClientCookiesCached(client))
@@ -2544,7 +2568,7 @@ SavePoints(client)
 		FormatEx(sQuery, sizeof(sQuery), "UPDATE `ranks` SET `points` = %d WHERE `auth` = '%s'", g_iCurrentPoints[client], g_sAuth[client]);
 		if(g_iEnabled == 2)
 			PrintToDebug("OnFinishRound(%N): Issuing Query `%s`", client, sQuery);
-		SQL_TQuery(g_hDatabase, CallBack_UpdateClient, sQuery, GetClientUserId(client), DBPrio_High);
+		SQL_TQuery(g_hSQL, CallBack_UpdateClient, sQuery, GetClientUserId(client), DBPrio_High);
 	}
 
 	if(g_iPositionMethod == 1)
@@ -2553,7 +2577,7 @@ SavePoints(client)
 		FormatEx(sQuery, sizeof(sQuery), "SELECT COUNT(*) FROM `ranks` WHERE `points` >= %d ORDER BY `points` DESC", g_iCurrentPoints[client]);
 		if(g_iEnabled == 2)
 			PrintToDebug("OnFinishRound(%N): Issuing Query `%s`", client, sQuery);
-		SQL_TQuery(g_hDatabase, CallBack_LoadRank, sQuery, GetClientUserId(client));
+		SQL_TQuery(g_hSQL, CallBack_LoadRank, sQuery, GetClientUserId(client));
 	}
 	else
 	{
@@ -2680,7 +2704,7 @@ public Native_RefreshPoints(Handle:plugin, numParams)
 		FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[client]);
 		if(g_iEnabled == 2)
 			PrintToDebug("CallBack_Creation(%N): Issuing Query `%s`", client, sQuery);
-		SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(client), DBPrio_Low);
+		SQL_TQuery(g_hSQL, CallBack_ClientConnect, sQuery, GetClientUserId(client), DBPrio_Low);
 	}
 }
 
@@ -2695,7 +2719,7 @@ public Native_RefreshPointsAll(Handle:plugin, numParams)
 			FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[i]);
 			if(g_iEnabled == 2)
 				PrintToDebug("CallBack_Creation(%N): Issuing Query `%s`", i, sQuery);
-			SQL_TQuery(g_hDatabase, CallBack_ClientConnect, sQuery, GetClientUserId(i), DBPrio_Low);
+			SQL_TQuery(g_hSQL, CallBack_ClientConnect, sQuery, GetClientUserId(i), DBPrio_Low);
 		}
 	}
 }

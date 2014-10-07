@@ -4,6 +4,7 @@
 
 #include <timer>
 #include <timer-logging>
+#include <timer-mysql>
 #include <timer-mapzones>
 #include <timer-maptier>
 #include <timer-stocks>
@@ -11,7 +12,6 @@
 new Handle:g_hSQL;
 
 new String:g_currentMap[32];
-new g_reconnectCounter = 0;
 
 new g_maptier[2];
 new g_stagecount[2];
@@ -63,91 +63,52 @@ public OnMapStart()
 	if (g_hSQL != INVALID_HANDLE) LoadMapTier();
 }
 
+public OnTimerSqlConnected(Handle:sql)
+{
+	g_hSQL = sql;
+	g_hSQL = INVALID_HANDLE;
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public OnTimerSqlStop()
+{
+	g_hSQL = INVALID_HANDLE;
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
 ConnectSQL()
 {
-    if (g_hSQL != INVALID_HANDLE)
-        CloseHandle(g_hSQL);
+	g_hSQL = Handle:Timer_SqlGetConnection();
 	
-    g_hSQL = INVALID_HANDLE;
-
-    if (SQL_CheckConfig("timer"))
-	{
-		SQL_TConnect(ConnectSQLCallback, "timer");
-	}
-    else
-	{
-		SetFailState("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
-	}
+	if (g_hSQL == INVALID_HANDLE)
+		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+	else LoadMapTier();
 }
 
-public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
+public Action:Timer_SQLReconnect(Handle:timer, any:data)
 {
-	if (hndl == INVALID_HANDLE)
-	{
-		Timer_LogError("Connection to SQL database has failed, Reason: %s", error);
-		
-		g_reconnectCounter++;
-		if (g_reconnectCounter >= 5)
-		{
-			Timer_LogError("!! [timer-maptier.smx] Failed to connect to the database !!");
-			//SetFailState("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
-			//return;
-		}
-		
-		ConnectSQL();
-		return;
-	}
-
-	decl String:driver[16];
-	SQL_GetDriverIdent(owner, driver, sizeof(driver));
-
-	g_hSQL = CloneHandle(hndl);
-	
-	if (StrEqual(driver, "mysql", false))
-	{
-		SQL_FastQuery(hndl, "SET NAMES  'utf8'");
-		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `maptier` (`id` int(11) NOT NULL AUTO_INCREMENT, `map` varchar(32) NOT NULL, `bonus` int(11) NOT NULL, `tier` int(11) NOT NULL, `stagecount` int(11) NOT NULL, PRIMARY KEY (`id`));");
-	}
-		
-	g_reconnectCounter = 1;
-}
-
-public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
-{
-	if (owner == INVALID_HANDLE)
-	{
-		Timer_LogError(error);
-
-		g_reconnectCounter++;
-		ConnectSQL();
-		
-		return;
-	}
-	
-	if (hndl == INVALID_HANDLE)
-	{
-		Timer_LogError("SQL Error on CreateSQLTable: %s", error);
-		return;
-	}
-	
-	LoadMapTier();
+	ConnectSQL();
+	return Plugin_Stop;
 }
 
 LoadMapTier()
 {
+	if (g_hSQL == INVALID_HANDLE)
+		ConnectSQL();
+	
 	if (g_hSQL != INVALID_HANDLE)
 	{
 		decl String:query[128];
-		FormatEx(query, sizeof(query), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND bonus = 0", g_currentMap);
+		FormatEx(query, sizeof(query), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND track = 0", g_currentMap);
 		SQL_TQuery(g_hSQL, LoadTierCallback, query, 0, DBPrio_Normal);
 		
 		decl String:query2[128];
-		FormatEx(query2, sizeof(query2), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND bonus = 1", g_currentMap);
+		FormatEx(query2, sizeof(query2), "SELECT tier, stagecount FROM maptier WHERE map = '%s' AND track = 1", g_currentMap);
 		SQL_TQuery(g_hSQL, LoadTierCallback, query2, 1, DBPrio_Normal); 
 	}
 }
 
-public LoadTierCallback(Handle:owner, Handle:hndl, const String:error[], any:bonus)
+public LoadTierCallback(Handle:owner, Handle:hndl, const String:error[], any:track)
 {
 	if (hndl == INVALID_HANDLE)
 	{
@@ -157,24 +118,30 @@ public LoadTierCallback(Handle:owner, Handle:hndl, const String:error[], any:bon
 	
 	while (SQL_FetchRow(hndl))
 	{
-		g_maptier[bonus] = SQL_FetchInt(hndl, 0);
-		g_stagecount[bonus] = SQL_FetchInt(hndl, 1);
+		g_maptier[track] = SQL_FetchInt(hndl, 0);
+		g_stagecount[track] = SQL_FetchInt(hndl, 1);
 	}
 	
-	if (g_maptier[bonus] == 0)
+	if (g_maptier[track] == 0)
 	{
 		decl String:query[128];
-		FormatEx(query, sizeof(query), "INSERT INTO maptier (map, bonus, tier, stagecount) VALUES ('%s','%d','1', '0');", g_currentMap, bonus);
+		FormatEx(query, sizeof(query), "INSERT INTO maptier (map, track, tier, stagecount) VALUES ('%s','%d','1', '0');", g_currentMap, track);
 
-		SQL_TQuery(g_hSQL, InsertTierCallback, query, bonus, DBPrio_Normal);
+		if (g_hSQL == INVALID_HANDLE)
+			ConnectSQL();
+		
+		if (g_hSQL != INVALID_HANDLE)
+		{
+			SQL_TQuery(g_hSQL, InsertTierCallback, query, track, DBPrio_Normal);
+		}
 	}
 }
 
-public InsertTierCallback(Handle:owner, Handle:hndl, const String:error[], any:bonus)
+public InsertTierCallback(Handle:owner, Handle:hndl, const String:error[], any:track)
 {
 	if (hndl == INVALID_HANDLE)
 	{
-		Timer_LogError("SQL Error on InsertTier Map:%s (%d): %s", g_currentMap, bonus, error);
+		Timer_LogError("SQL Error on InsertTier Map:%s (%d): %s", g_currentMap, track, error);
 		return;
 	}
 	
@@ -185,16 +152,16 @@ public Action:Command_MapTier(client, args)
 {
 	if (args != 2)
 	{
-		ReplyToCommand(client, "[SM] Usage: sm_maptier [bonus] [tier]");
+		ReplyToCommand(client, "[SM] Usage: sm_maptier [track] [tier]");
 		return Plugin_Handled;	
 	}
 	else if (args == 2)
 	{
-		decl String:bonus[64];
-		GetCmdArg(1,bonus,sizeof(bonus));
+		decl String:track[64];
+		GetCmdArg(1,track,sizeof(track));
 		decl String:tier[64];
 		GetCmdArg(2,tier,sizeof(tier));
-		Timer_SetTier(StringToInt(bonus), StringToInt(tier));	
+		Timer_SetTier(StringToInt(track), StringToInt(tier));	
 	}
 	return Plugin_Handled;	
 }
@@ -203,14 +170,14 @@ public Action:Command_StageCount(client, args)
 {
 	if (args != 2)
 	{
-		ReplyToCommand(client, "[SM] Usage: sm_stagecount [bonus]");
+		ReplyToCommand(client, "[SM] Usage: sm_stagecount [track]");
 		return Plugin_Handled;	
 	}
 	else if(args == 2)
 	{
-		decl String:bonus[64];
-		GetCmdArg(1,bonus,sizeof(bonus));
-		ReplyToCommand(client, "Stagecount updated, old was %d new is %d", g_stagecount[StringToInt(bonus)], Timer_UpdateStageCount(StringToInt(bonus)));
+		decl String:track[64];
+		GetCmdArg(1,track,sizeof(track));
+		ReplyToCommand(client, "Stagecount updated, old was %d new is %d", g_stagecount[StringToInt(track)], Timer_UpdateStageCount(StringToInt(track)));
 	}
 	return Plugin_Handled;	
 }
@@ -244,11 +211,16 @@ public Native_GetMapTier(Handle:plugin, numParams)
 
 public Native_SetMapTier(Handle:plugin, numParams)
 {
-	new bonus = GetNativeCell(1);
+	new track = GetNativeCell(1);
 	new tier = GetNativeCell(2);
 	decl String:query[256];
-	FormatEx(query, sizeof(query), "UPDATE maptier SET tier = '%d' WHERE map = '%s' AND bonus = '%d'", tier, g_currentMap, bonus);
-	SQL_TQuery(g_hSQL, UpdateTierCallback, query, bonus, DBPrio_Normal);	
+	FormatEx(query, sizeof(query), "UPDATE maptier SET tier = '%d' WHERE map = '%s' AND track = '%d'", tier, g_currentMap, track);
+	
+	if (g_hSQL == INVALID_HANDLE)
+		ConnectSQL();
+	
+	if (g_hSQL != INVALID_HANDLE)
+		SQL_TQuery(g_hSQL, UpdateTierCallback, query, track, DBPrio_Normal);	
 }
 
 public Native_GetStageCount(Handle:plugin, numParams)
@@ -258,15 +230,15 @@ public Native_GetStageCount(Handle:plugin, numParams)
 
 public Native_UpdateStageCount(Handle:plugin, numParams)
 {
-	new bonus = GetNativeCell(1);
-	if(bonus == 0)
-		g_stagecount[bonus] = Timer_GetMapzoneCount(ZtLevel)+1;
-	else if(bonus == 1)
-		g_stagecount[bonus] = Timer_GetMapzoneCount(ZtBonusLevel)+1;
+	new track = GetNativeCell(1);
+	if(track == 0)
+		g_stagecount[track] = Timer_GetMapzoneCount(ZtLevel)+1;
+	else if(track == 1)
+		g_stagecount[track] = Timer_GetMapzoneCount(ZtBonusLevel)+1;
 	
 	decl String:query[256];
-	FormatEx(query, sizeof(query), "UPDATE maptier SET stagecount = '%d' WHERE map = '%s' AND bonus = '%d'", g_stagecount[bonus], g_currentMap, bonus);
-	SQL_TQuery(g_hSQL, UpdateStageCountCallback, query, bonus, DBPrio_Normal);
+	FormatEx(query, sizeof(query), "UPDATE maptier SET stagecount = '%d' WHERE map = '%s' AND track = '%d'", g_stagecount[track], g_currentMap, track);
+	SQL_TQuery(g_hSQL, UpdateStageCountCallback, query, track, DBPrio_Normal);
 	
-	return g_stagecount[bonus];
+	return g_stagecount[track];
 }

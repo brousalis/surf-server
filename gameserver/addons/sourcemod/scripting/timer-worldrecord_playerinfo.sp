@@ -1,10 +1,10 @@
 #include <sourcemod>
 #include <timer>
+#include <timer-mysql>
 #include <timer-stocks>
 #include <timer-config_loader.sp>
 
 new Handle:g_hSQL = INVALID_HANDLE;
-new g_iSQLReconnectCounter;
 
 enum eTarget
 {
@@ -27,19 +27,19 @@ new Handle:g_hMaps[2] = {INVALID_HANDLE, ...};
 new g_MenuPos[MAXPLAYERS+1];
 
 new String:sql_QueryPlayerName[] = "SELECT name, auth FROM round WHERE name LIKE \"%%%s%%\" ORDER BY `round`.`name` ASC, `round`.`auth` ASC;";
-new String:sql_selectSingleRecord[] = "SELECT auth, name, jumps, time, date, rank, finishcount, avgspeed, maxspeed, finishspeed FROM round WHERE auth LIKE '%s' AND map = '%s' AND bonus = '0' AND `physicsdifficulty` = '%d';";
+new String:sql_selectSingleRecord[] = "SELECT auth, name, jumps, time, date, rank, finishcount, avgspeed, maxspeed, finishspeed FROM round WHERE auth LIKE '%s' AND map = '%s' AND bonus = '0' AND `style` = '%d';";
 new String:sql_selectPlayer_Points[] = "SELECT auth, lastname, points FROM ranks WHERE auth LIKE '%s' AND points NOT LIKE '0';";
 new String:sql_selectPlayerPRowCount[] = "SELECT lastname FROM ranks WHERE points >= (SELECT points FROM ranks WHERE auth = '%s' AND points NOT LIKE '0') AND points NOT LIKE '0' ORDER BY points;";
 
-new String:sql_selectPlayerMaps[] = "SELECT time, map, auth FROM round WHERE auth LIKE '%s' AND bonus = '0' AND `physicsdifficulty` = '%d' ORDER BY map ASC;";
-new String:sql_selectPlayerMapsBonus[] = "SELECT time, map, auth FROM round WHERE auth LIKE '%s' AND bonus = '1' AND `physicsdifficulty` = '%d' ORDER BY map ASC;";
+new String:sql_selectPlayerMaps[] = "SELECT time, map, auth FROM round WHERE auth LIKE '%s' AND bonus = '0' AND `style` = '%d' ORDER BY map ASC;";
+new String:sql_selectPlayerMapsBonus[] = "SELECT time, map, auth FROM round WHERE auth LIKE '%s' AND bonus = '1' AND `style` = '%d' ORDER BY map ASC;";
 
 new String:sql_selectMaps[] = "SELECT map FROM mapzone WHERE type = 0 GROUP BY map ORDER BY map;";
 new String:sql_selectMapsBonus[] = "SELECT map FROM mapzone WHERE type = 7 GROUP BY map ORDER BY map;";
 
-new String:sql_selectPlayerWRs[] = "SELECT * FROM (SELECT * FROM (SELECT `time`,`map`,`auth` FROM `round` WHERE `bonus` = '0' AND `physicsdifficulty` = '%d' GROUP BY `round`.`map`, `round`.`time`) AS temp GROUP BY LOWER(`map`)) AS temp2 WHERE `auth` = '%s';";
-new String:sql_selectPlayerWRsBonus[] = "SELECT * FROM (SELECT * FROM (SELECT `time`,`map`,`auth` FROM `round` WHERE `bonus` = '1' AND `physicsdifficulty` = '%d' GROUP BY `round`.`map`, `round`.`time`) AS temp GROUP BY LOWER(`map`)) AS temp2 WHERE `auth` = '%s';";
-new String:sql_selectPlayerMapRecord[] = "SELECT auth, name, jumps, time, date, rank, finishcount, avgspeed, maxspeed, finishspeed FROM round WHERE auth LIKE '%s' AND map = '%s' AND bonus = '%i' AND `physicsdifficulty` = '%d';";
+new String:sql_selectPlayerWRs[] = "SELECT * FROM (SELECT * FROM (SELECT `time`,`map`,`auth` FROM `round` WHERE `bonus` = '0' AND `style` = '%d' GROUP BY `round`.`map`, `round`.`time`) AS temp GROUP BY LOWER(`map`)) AS temp2 WHERE `auth` = '%s';";
+new String:sql_selectPlayerWRsBonus[] = "SELECT * FROM (SELECT * FROM (SELECT `time`,`map`,`auth` FROM `round` WHERE `bonus` = '1' AND `style` = '%d' GROUP BY `round`.`map`, `round`.`time`) AS temp GROUP BY LOWER(`map`)) AS temp2 WHERE `auth` = '%s';";
+new String:sql_selectPlayerMapRecord[] = "SELECT auth, name, jumps, time, date, rank, finishcount, avgspeed, maxspeed, finishspeed FROM round WHERE auth LIKE '%s' AND map = '%s' AND bonus = '%i' AND `style` = '%d';";
 
 public Plugin:myinfo = 
 {
@@ -81,47 +81,36 @@ public OnMapStart()
 	}
 }
 
+public OnTimerSqlConnected(Handle:sql)
+{
+	g_hSQL = sql;
+	g_hSQL = INVALID_HANDLE;
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public OnTimerSqlStop()
+{
+	g_hSQL = INVALID_HANDLE;
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
 ConnectSQL()
 {
-	if (g_hSQL != INVALID_HANDLE)
+	g_hSQL = Handle:Timer_SqlGetConnection();
+	
+	if (g_hSQL == INVALID_HANDLE)
+		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+	else 
 	{
-		CloseHandle(g_hSQL);
-	}
-
-	g_hSQL = INVALID_HANDLE;
-
-	if (SQL_CheckConfig("timer"))
-	{
-		SQL_TConnect(ConnectSQLCallback, "timer");
-	}
-	else
-	{
-		SetFailState("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
+		countmaps();
+		countbonusmaps();
 	}
 }
 
-public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
+public Action:Timer_SQLReconnect(Handle:timer, any:data)
 {
-	if (g_iSQLReconnectCounter >= 5)
-	{
-		PrintToServer("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
-		return;
-	}
-	
-	if (hndl == INVALID_HANDLE)
-	{
-		PrintToServer("Connection to SQL database has failed, Reason: %s", error);
-		g_iSQLReconnectCounter++;
-		ConnectSQL();
-		return;
-	}
-	g_hSQL = CloneHandle(hndl);
-	SQL_SetCharset(g_hSQL, "utf8");
-	
-	g_iSQLReconnectCounter = 1;
-	
-	countmaps();
-	countbonusmaps();
+	ConnectSQL();
+	return Plugin_Stop;
 }
 
 public countmaps()
@@ -839,7 +828,7 @@ GetIncompleteMaps(client, String:auth[], track, style)
 	
 	decl String:sQuery[255];
 	if(style > -1)
-		Format(sQuery, sizeof(sQuery), "SELECT DISTINCT map FROM round WHERE bonus = %d AND auth = '%s' AND physicsdifficulty = %d ORDER BY map", track, auth, style);
+		Format(sQuery, sizeof(sQuery), "SELECT DISTINCT map FROM round WHERE bonus = %d AND auth = '%s' AND style = %d ORDER BY map", track, auth, style);
 	else
 		Format(sQuery, sizeof(sQuery), "SELECT DISTINCT map FROM round WHERE bonus = %d AND auth = '%s' ORDER BY map", track, auth);
 	SQL_TQuery(g_hSQL, CallBack_IncompleteMaps, sQuery, pack, DBPrio_Low);

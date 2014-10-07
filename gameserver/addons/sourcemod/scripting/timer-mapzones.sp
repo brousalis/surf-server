@@ -9,6 +9,8 @@
 #include <timer-mapzones>
 #include <timer-logging>
 #include <timer-stocks>
+#include <timer-logging>
+#include <timer-mysql>
 #include <timer-config_loader.sp>
 
 #undef REQUIRE_PLUGIN
@@ -1104,6 +1106,9 @@ public Action:CheckEntitysLoaded(Handle:timer)
 {
 	if(GetZoneEntityCount() < g_mapZonesCount)
 	{
+		if (g_hSQL == INVALID_HANDLE)
+			ConnectSQL();
+		
 		if (g_hSQL != INVALID_HANDLE)
 		{
 			Timer_LogInfo("No mapzone entitys spawned, reloading...");
@@ -1213,10 +1218,26 @@ public Action:CS_OnTerminateRound(&Float:delay, &CSRoundEndReason:reason)
 
 public Action:Event_RoundStart(Handle:event,const String:name[],bool:dontBroadcast)
 {
+	if (g_hSQL == INVALID_HANDLE)
+		ConnectSQL();
+	
 	if (g_hSQL != INVALID_HANDLE)
 		LoadMapZones();
-	else 
+	
+	else CreateTimer(3.0, Timer_LoadMapzones, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public Action:Timer_LoadMapzones(Handle:timer, any:data)
+{
+	if (g_hSQL == INVALID_HANDLE)
 		ConnectSQL();
+	
+	if (g_hSQL != INVALID_HANDLE)
+		LoadMapZones();
+	
+	else CreateTimer(3.0, Timer_LoadMapzones, _ , TIMER_FLAG_NO_MAPCHANGE);
+	
+	return Plugin_Stop;
 }
 
 public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
@@ -1329,24 +1350,31 @@ public Action_OnSettingsChange(Handle:cvar, const String:oldvalue[], const Strin
 
 AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:point1[3], Float:point2[3])
 {
-	decl String:query[512];
 	
-	if ((type == ZtStart && !g_Settings[AllowMultipleStart])
-	|| (type == ZtEnd && !g_Settings[AllowMultipleEnd])
-	|| (type == ZtBonusStart && !g_Settings[AllowMultipleBonusStart]
-	|| (type == ZtBonusEnd && !g_Settings[AllowMultipleBonusEnd])
-	|| (type == ZtShortEnd) && !g_Settings[AllowMultipleShortEnd]))
+	if (g_hSQL == INVALID_HANDLE)
+		ConnectSQL();
+	
+	if (g_hSQL != INVALID_HANDLE)
 	{
-		decl String:deleteQuery[256];
-		FormatEx(deleteQuery, sizeof(deleteQuery), "DELETE FROM mapzone WHERE map = '%s' AND type = %d;", map, type);
+		decl String:query[512];
 		
-		SQL_TQuery(g_hSQL, MapZoneChangedCallback, deleteQuery, _, DBPrio_High);	
+		if ((type == ZtStart && !g_Settings[AllowMultipleStart])
+		|| (type == ZtEnd && !g_Settings[AllowMultipleEnd])
+		|| (type == ZtBonusStart && !g_Settings[AllowMultipleBonusStart]
+		|| (type == ZtBonusEnd && !g_Settings[AllowMultipleBonusEnd])
+		|| (type == ZtShortEnd) && !g_Settings[AllowMultipleShortEnd]))
+		{
+			decl String:deleteQuery[256];
+			FormatEx(deleteQuery, sizeof(deleteQuery), "DELETE FROM mapzone WHERE map = '%s' AND type = %d;", map, type);
+			
+			SQL_TQuery(g_hSQL, MapZoneChangedCallback, deleteQuery, _, DBPrio_High);	
+		}
+		
+		//add new zone
+		FormatEx(query, sizeof(query), "INSERT INTO mapzone (map, type, name, level_id, point1_x, point1_y, point1_z, point2_x, point2_y, point2_z) VALUES ('%s','%d','%s','%d', %f, %f, %f, %f, %f, %f);", map, type, name, level_id, point1[0], point1[1], point1[2], point2[0], point2[1], point2[2]);
+		
+		SQL_TQuery(g_hSQL, MapZoneChangedCallback, query, _, DBPrio_Normal);
 	}
-	
-	//add new zone
-	FormatEx(query, sizeof(query), "INSERT INTO mapzone (map, type, name, level_id, point1_x, point1_y, point1_z, point2_x, point2_y, point2_z) VALUES ('%s','%d','%s','%d', %f, %f, %f, %f, %f, %f);", map, type, name, level_id, point1[0], point1[1], point1[2], point2[0], point2[1], point2[2]);
-	
-	SQL_TQuery(g_hSQL, MapZoneChangedCallback, query, _, DBPrio_Normal);	
 }
 
 public MapZoneChangedCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
@@ -1427,23 +1455,33 @@ public LoadMapZonesCallback(Handle:owner, Handle:hndl, const String:error[], any
 	Call_Finish();
 }
 
+public OnTimerSqlConnected(Handle:sql)
+{
+	g_hSQL = sql;
+	g_hSQL = INVALID_HANDLE;
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public OnTimerSqlStop()
+{
+	g_hSQL = INVALID_HANDLE;
+	CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+}
+
 ConnectSQL()
 {
-	if (g_hSQL != INVALID_HANDLE)
-	{
-		CloseHandle(g_hSQL);
-	}
+	g_hSQL = Handle:Timer_SqlGetConnection();
 	
-	g_hSQL = INVALID_HANDLE;
-	
-	if (SQL_CheckConfig("timer"))
-	{
-		SQL_TConnect(ConnectSQLCallback, "timer");
-	}
+	if (g_hSQL == INVALID_HANDLE)
+		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
 	else
-	{
-		SetFailState("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
-	}
+		LoadMapZones();
+}
+
+public Action:Timer_SQLReconnect(Handle:timer, any:data)
+{
+	ConnectSQL();
+	return Plugin_Stop;
 }
 
 public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
@@ -1471,11 +1509,7 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 	
 	if (StrEqual(driver, "mysql", false))
 	{
-		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `mapzone` (`id` int(11) NOT NULL AUTO_INCREMENT, `type` int(11) NOT NULL, `level_id` int(11) NOT NULL, `point1_x` float NOT NULL, `point1_y` float NOT NULL, `point1_z` float NOT NULL, `point2_x` float NOT NULL, `point2_y` float NOT NULL, `point2_z` float NOT NULL, `map` varchar(64) NOT NULL, `name` varchar(32) NOT NULL, PRIMARY KEY (`id`));");
-	}
-	else if (StrEqual(driver, "sqlite", false))
-	{
-		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `mapzone` (`id` INTEGER PRIMARY KEY, `type` INTEGER NOT NULL, `level_id` INTEGER NOT NULL, `point1_x` float NOT NULL, `point1_y` float NOT NULL, `point1_z` float NOT NULL, `point2_x` float NOT NULL, `point2_y` float NOT NULL, `point2_z` float NOT NULL, `map` varchar(32) NOT NULL, `name` varchar(32) NOT NULL);");
+		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "");
 	}
 	
 	g_reconnectCounter = 1;
@@ -3042,7 +3076,7 @@ SpawnZoneEntitys(zone)
 	//Spawn PlayerClip
 	else if(g_mapZones[zone][Type] == ZtPlayerClip)
 	{
-		SpawnPlayerClip(zone);
+		//SpawnPlayerClip(zone);
 	}
 	//Spawn trigger_multiple
 	else
@@ -3291,11 +3325,6 @@ stock SpawnSpotLight(Float:pos[3], Float:color[3], Float:ang[3])
 	TeleportEntity(entity, pos, NULL_VECTOR, NULL_VECTOR);
 	
 	AcceptEntityInput(entity, "LightOn");
-}
-
-SpawnPlayerClip(zone)
-{
-	
 }
 
 SpawnNPC(zone)
