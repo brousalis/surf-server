@@ -378,10 +378,10 @@ stock InstallUpdates()
 	}
 	
 	
-	Format(update_version, sizeof(update_version), "2.1.5.2");
+	Format(update_version, sizeof(update_version), "2.2.0.0");
 	if(CheckVersionOutdated(g_DB_Version, update_version))
 	{
-		Timer_LogError("[timer-mysql.smx] Executing updates for v%s: Flashbangcount fix", update_version);
+		Timer_LogError("[timer-mysql.smx] Executing updates for v%s: Major update mysql module fix", update_version);
 		
 		// Rename bonus to track
 		Format(query, sizeof(query), "ALTER TABLE round CHANGE bonus track int(11);");
