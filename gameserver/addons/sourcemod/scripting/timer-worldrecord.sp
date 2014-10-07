@@ -30,7 +30,7 @@ enum RecordCache
 	Float:MaxSpeed,
 	Float:FinishSpeed,
 	Flashbangcount,
-	LevelProcess,
+	Stage,
 	CurrentRank,
 	FinishCount,
 	String:ReplayFile[32],
@@ -768,20 +768,20 @@ RefreshCache()
 			g_cacheLoaded[style][2] = false;
 			
 			decl String:query[512];
-			FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_NORMAL, MAX_CACHE);	
+			FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, stage, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_NORMAL, MAX_CACHE);	
 			
 			SQL_TQuery(g_hSQL, RefreshCacheCallback, query, style, DBPrio_Low);
 			
 			if(g_Settings[BonusWrEnable])
 			{
-				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_BONUS, MAX_CACHE);	
+				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, stage, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_BONUS, MAX_CACHE);	
 				
 				SQL_TQuery(g_hSQL, RefreshBonusCacheCallback, query, style, DBPrio_Low);
 			}
 			
 			if(g_Settings[ShortWrEnable])
 			{
-				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, levelprocess, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_SHORT, MAX_CACHE);	
+				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, stage, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_SHORT, MAX_CACHE);	
 				
 				SQL_TQuery(g_hSQL, RefreshShortCacheCallback, query, style, DBPrio_Low);
 			}
@@ -811,7 +811,7 @@ ClearCache()
 				
 				g_cache[style][track][cache][Time] = 0.0;
 				g_cache[style][track][cache][FinishCount] = 0;
-				g_cache[style][track][cache][LevelProcess] = 0;
+				g_cache[style][track][cache][Stage] = 0;
 				g_cache[style][track][cache][Style] = 0;
 				g_cache[style][track][cache][CurrentRank] = 0;
 				g_cache[style][track][cache][Jumps] = 0;
@@ -842,7 +842,7 @@ CollectCache(track, any:style, Handle:hndl)
 		SQL_FetchString(hndl, 5, g_cache[style][track][g_cacheCount[style][track]][Name], 32);
 		SQL_FetchString(hndl, 6, g_cache[style][track][g_cacheCount[style][track]][Date], 32);
 		g_cache[style][track][g_cacheCount[style][track]][FinishCount] = SQL_FetchInt(hndl, 7);
-		g_cache[style][track][g_cacheCount[style][track]][LevelProcess] = SQL_FetchInt(hndl, 8);
+		g_cache[style][track][g_cacheCount[style][track]][Stage] = SQL_FetchInt(hndl, 8);
 		g_cache[style][track][g_cacheCount[style][track]][CurrentRank] = SQL_FetchInt(hndl, 9);
 		g_cache[style][track][g_cacheCount[style][track]][JumpAcc] = SQL_FetchFloat(hndl, 10);
 		

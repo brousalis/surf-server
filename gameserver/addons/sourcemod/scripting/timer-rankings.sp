@@ -412,8 +412,6 @@ ConnectSQL()
 		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
 	else
 	{
-		Timer_LogError("RANKINGS CONNECTED");
-		
 		for(new i = 1; i <= MaxClients; i++)
 		{
 			if(IsClientInGame(i) && !IsFakeClient(i))
