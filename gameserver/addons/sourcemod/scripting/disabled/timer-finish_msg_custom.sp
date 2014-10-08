@@ -346,11 +346,11 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 			continue;
 		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_FIRST}", "", true) && !first_record)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_NORMAL}", "", true) && track == TRACK_NORMAL)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_NORMAL}", "", true) && track != TRACK_NORMAL)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_BONUS}", "", true) && track == TRACK_BONUS)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_BONUS}", "", true) && track != TRACK_BONUS)
 			continue;
-		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_SHORT}", "", true) && track == TRACK_SHORT)
+		if(ReplaceString(Msg[i], MESSAGE_BUFFERSIZE, "{FILTER_SHORT}", "", true) && track != TRACK_SHORT)
 			continue;
 		
 		// Replace placeholders
