@@ -127,7 +127,6 @@ new Handle:Sound_TimerStart = INVALID_HANDLE;
 new String:SND_TIMER_START[MAX_FILE_LEN];
 
 new String:g_currentMap[64];
-new g_reconnectCounter = 0;
 
 new g_mapZones[128][MapZone];
 new g_mapZonesCount = 0;
@@ -1482,58 +1481,6 @@ public Action:Timer_SQLReconnect(Handle:timer, any:data)
 {
 	ConnectSQL();
 	return Plugin_Stop;
-}
-
-public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
-{
-	if (hndl == INVALID_HANDLE)
-	{
-		Timer_LogError("Connection to SQL database has failed, Reason: %s", error);
-		
-		g_reconnectCounter++;
-		if (g_reconnectCounter >= 5)
-		{
-			Timer_LogError("!! [timer-mapzones.smx] Failed to connect to the database !!");
-			//SetFailState("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
-			//return;
-		}
-		
-		ConnectSQL();
-		return;
-	}
-	
-	decl String:driver[16];
-	SQL_GetDriverIdent(owner, driver, sizeof(driver));
-	
-	g_hSQL = CloneHandle(hndl);
-	
-	if (StrEqual(driver, "mysql", false))
-	{
-		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "");
-	}
-	
-	g_reconnectCounter = 1;
-}
-
-public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
-{
-	if (owner == INVALID_HANDLE)
-	{
-		Timer_LogError(error);
-		
-		g_reconnectCounter++;
-		ConnectSQL();
-		
-		return;
-	}
-	
-	if (hndl == INVALID_HANDLE)
-	{
-		Timer_LogError("SQL Error on CreateSQLTable: %s", error);
-		return;
-	}
-	
-	LoadMapZones();
 }
 
 public OnAdminMenuReady(Handle:topmenu)
