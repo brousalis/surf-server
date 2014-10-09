@@ -6,6 +6,7 @@
 /* Natives */
 native Timer_GetTier(track);
 native Timer_SetTier(track, tier);
+native Timer_GetMapTier(String:map[], track);
 native Timer_GetStageCount(track);
 native Timer_UpdateStageCount(track);
 	
