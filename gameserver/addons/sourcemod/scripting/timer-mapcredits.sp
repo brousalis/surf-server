@@ -23,7 +23,7 @@ public Plugin:myinfo =
 	author = "TimeBomb/x69 ml & Zipcore",
 	description = "Gives \"Store\" money when you finish a map, followed by an algorithm.",
 	version = PL_VERSION,
-	url = "http://hl2.co.il/"
+	url = "forums.alliedmods.net/showthread.php?p=2074699"
 }
 
 public OnPluginStart()
