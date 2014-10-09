@@ -213,32 +213,19 @@ public GetDBVersionCallback(Handle:owner, Handle:hndl, const String:error[], any
 
 stock CheckVersionOutdated(String:version_old[], String:version_new[])
 {
-	decl String:versions_old[5][32];
-	ExplodeString(version_old, ".", versions_old, 5, 32);
+	decl String:versions_old[4][32];
+	ExplodeString(version_old, ".", versions_old, 4, 32);
 	
-	decl String:versions_new[5][32];
-	ExplodeString(version_new, ".", versions_new, 5, 32);
+	decl String:versions_new[4][32];
+	ExplodeString(version_new, ".", versions_new, 4, 32);
 	
-	if(StringToInt(version_old[0]) < StringToInt(version_new[0]))
-		return true;
-	if(StringToInt(version_old[0]) > StringToInt(version_new[0]))
-		return false;
-	if(StringToInt(version_old[1]) < StringToInt(version_new[1]))
-		return true;
-	if(StringToInt(version_old[1]) > StringToInt(version_new[1]))
-		return false;
-	if(StringToInt(version_old[2]) < StringToInt(version_new[2]))
-		return true;
-	if(StringToInt(version_old[2]) > StringToInt(version_new[2]))
-		return false;
-	if(StringToInt(version_old[3]) < StringToInt(version_new[3]))
-		return true;
-	if(StringToInt(version_old[3]) > StringToInt(version_new[3]))
-		return false;
-	if(StringToInt(version_old[4]) < StringToInt(version_new[4]))
-		return true;
-	if(StringToInt(version_old[4]) > StringToInt(version_new[4]))
-		return false;
+	for (new i = 0; i < 4; i++)
+	{
+		if(StringToInt(versions_old[i]) < StringToInt(versions_new[i]))
+			return true;
+		else if(StringToInt(versions_old[i]) > StringToInt(versions_new[i]))
+			return false;
+	}
 	
 	return false;
 }
