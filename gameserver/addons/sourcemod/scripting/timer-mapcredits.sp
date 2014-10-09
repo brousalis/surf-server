@@ -4,6 +4,7 @@
 
 #include <store>
 #include <timer>
+#include <timer-maptier>
 #include <timer-worldrecord>
 #include <timer-config_loader.sp>
 
@@ -106,7 +107,31 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 		style = 1;
 	}
 	
-	new Float:PTG = float(gI_PTG)/4.1/float(jumps)*4.5*float(fpsmax)*g_Physics[style][StylePointsMulti]/75.4;
+	new tier = Timer_GetTier(track);
+	new Float:tier_scale = 1.0;
+	
+	if(tier == 1)
+		tier_scale = g_Settings[Tier1Scale];
+	else if(tier == 2)
+		tier_scale = g_Settings[Tier2Scale];
+	else if(tier == 3)
+		tier_scale = g_Settings[Tier3Scale];
+	else if(tier == 4)
+		tier_scale = g_Settings[Tier4Scale];
+	else if(tier == 5)
+		tier_scale = g_Settings[Tier5Scale];
+	else if(tier == 6)
+		tier_scale = g_Settings[Tier6Scale];
+	else if(tier == 7)
+		tier_scale = g_Settings[Tier7Scale];
+	else if(tier == 8)
+		tier_scale = g_Settings[Tier8Scale];
+	else if(tier == 9)
+		tier_scale = g_Settings[Tier9Scale];
+	else if(tier == 10)
+		tier_scale = g_Settings[Tier10Scale];
+	
+	new Float:PTG = float(gI_PTG)/4.1/float(jumps)*4.5*float(fpsmax)*g_Physics[style][StylePointsMulti]*tier_scale/75.4;
 	
 	if(currentrank > 0)
 	{
