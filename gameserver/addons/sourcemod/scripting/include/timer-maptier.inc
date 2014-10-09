@@ -8,6 +8,7 @@ native Timer_GetTier(track);
 native Timer_SetTier(track, tier);
 native Timer_GetMapTier(String:map[], track);
 native Timer_GetStageCount(track);
+native Timer_GetMapStageCount(String:map[], track);
 native Timer_UpdateStageCount(track);
 	
 public SharedPlugin:__pl_timer_maptier = 
