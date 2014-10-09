@@ -2315,8 +2315,6 @@ stock CreateNPC(client, step, bool:double = false)
 			
 			if(!double) AddMapZone(g_currentMap, MapZoneType:ZtNPC_Next, lvlbuffer, hcount, point1, point2);
 			else AddMapZone(g_currentMap, MapZoneType:ZtNPC_Next_Double, lvlbuffer, hcount, point1, point2);
-			
-			LoadMapZones();
 		}
 	}
 }
