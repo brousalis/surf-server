@@ -59,7 +59,7 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon, &subtype, &cmdnum, &tickcount, &seed, mouse[2])
 {
 	new bool:onground;
-	if(GetEntityFlags(client) & FL_ONGROUND)
+	if(GetEntityFlags(client) & FL_ONGROUND || Client_IsOnLadder(client))
 	{
 		onground = true;
 		bFirstJump[client] = false;
