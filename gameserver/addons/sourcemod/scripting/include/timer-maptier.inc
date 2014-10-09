@@ -4,10 +4,10 @@
 #define _timer_maptier_included
 
 /* Natives */
-native Timer_GetTier(bonus);
-native Timer_SetTier(bonus, tier);
-native Timer_GetStageCount(bonus);
-native Timer_UpdateStageCount(bonus);
+native Timer_GetTier(track);
+native Timer_SetTier(track, tier);
+native Timer_GetStageCount(track);
+native Timer_UpdateStageCount(track);
 	
 public SharedPlugin:__pl_timer_maptier = 
 {
