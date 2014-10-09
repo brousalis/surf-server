@@ -1023,9 +1023,6 @@ public Action:OnChatMessage(&author, Handle:recipients, String:name[], String:me
 	if(!g_iEnabled || !g_bAuthed[author] || !g_iDisplayMethod)
 		return Plugin_Continue;
 	
-	if(!g_bSimpleChatProcessor)
-		return Plugin_Continue;
-	
 	if(g_iPositionMethod == 2)
 	{
 		UpdateRankIndexbyRecordTime(author);
