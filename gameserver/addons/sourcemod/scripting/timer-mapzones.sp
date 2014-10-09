@@ -1347,9 +1347,8 @@ public Action_OnSettingsChange(Handle:cvar, const String:oldvalue[], const Strin
 	}
 }
 
-AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:point1[3], Float:point2[3])
+bool:AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:point1[3], Float:point2[3])
 {
-	
 	if (g_hSQL == INVALID_HANDLE)
 		ConnectSQL();
 	
@@ -1373,7 +1372,11 @@ AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:point1
 		FormatEx(query, sizeof(query), "INSERT INTO mapzone (map, type, name, level_id, point1_x, point1_y, point1_z, point2_x, point2_y, point2_z) VALUES ('%s','%d','%s','%d', %f, %f, %f, %f, %f, %f);", map, type, name, level_id, point1[0], point1[1], point1[2], point2[0], point2[1], point2[2]);
 		
 		SQL_TQuery(g_hSQL, MapZoneChangedCallback, query, _, DBPrio_Normal);
+		
+		return true;
 	}
+	
+	return false;
 }
 
 public MapZoneChangedCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
@@ -2230,7 +2233,8 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				point1[2] -= 2;
 				point2[2] += 100;
 				
-				AddMapZone(g_currentMap, MapZoneType:zonetype, ZoneName, LvlID, point1, point2);
+				if(!AddMapZone(g_currentMap, MapZoneType:zonetype, ZoneName, LvlID, point1, point2))
+					PrintToChat(client, "[Timer] Can't save mapzone, no database connection.");
 				ResetMapZoneEditor(client);
 			}
 		}
@@ -2313,8 +2317,16 @@ stock CreateNPC(client, step, bool:double = false)
 			new Float:point2[3];
 			Array_Copy(g_mapZoneEditors[client][Point2], point2, 3);
 			
-			if(!double) AddMapZone(g_currentMap, MapZoneType:ZtNPC_Next, lvlbuffer, hcount, point1, point2);
-			else AddMapZone(g_currentMap, MapZoneType:ZtNPC_Next_Double, lvlbuffer, hcount, point1, point2);
+			if(!double)
+			{
+				if(!AddMapZone(g_currentMap, MapZoneType:ZtNPC_Next, lvlbuffer, hcount, point1, point2))
+					PrintToChat(client, "[Timer] Can't save NPC, no database connection.");
+			}
+			else
+			{
+				if(!AddMapZone(g_currentMap, MapZoneType:ZtNPC_Next_Double, lvlbuffer, hcount, point1, point2))
+					PrintToChat(client, "[Timer] Can't save NPC(double), no database connection.");
+			}
 		}
 	}
 }
