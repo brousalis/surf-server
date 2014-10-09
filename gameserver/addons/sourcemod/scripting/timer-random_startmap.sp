@@ -3,11 +3,7 @@
 new Handle:g_hSQL = INVALID_HANDLE;
 new g_iSQLReconnectCounter;
 
-new limit = 10;
-
-new String:sql_selectMapsAab[] = "SELECT map FROM mapzone WHERE type = 0 GROUP BY map ORDER BY map LIMIT 100;";
-new String:sql_selectMapsNew[] = "";
-new String:sql_selectMapsTop[] = "";
+new String:sql_selectMaps[] = "SELECT map FROM mapzone WHERE type = 0 GROUP BY map ORDER BY map LIMIT 100;";
 
 public Plugin:myinfo = 
 {
