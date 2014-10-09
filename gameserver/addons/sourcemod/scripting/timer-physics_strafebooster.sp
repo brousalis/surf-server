@@ -15,6 +15,10 @@ new nStrafeDir[MAXPLAYERS + 1];
 new bool:bStrafeAngleGain[MAXPLAYERS + 1];
 new Float:vLastAngles[MAXPLAYERS + 1][3];
 
+new Float:fLanded[MAXPLAYERS + 1];
+new bool:bOnGround[MAXPLAYERS + 1];
+new bool:bFirstJump[MAXPLAYERS + 1];
+
 public Plugin:myinfo = 
 {
 	name = "Strafe Booster",
@@ -54,6 +58,27 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon, &subtype, &cmdnum, &tickcount, &seed, mouse[2])
 {
+	new bool:onground;
+	if(GetEntityFlags(client) & FL_ONGROUND)
+	{
+		onground = true;
+		bFirstJump[client] = false;
+	}
+	else onground = false;
+	
+	if(!bOnGround[client] && onground)
+	{
+		fLanded[client] = GetGameTime();
+	}
+	
+	// Player jumped first time since a while
+	if(bOnGround[client] && !onground && GetGameTime() - fLanded[client] > 1.0)
+	{
+		bFirstJump[client] = true;
+	}
+	
+	bOnGround[client] = onground;
+	
 	/* Prepare angle */
 	new Float:vAngles[3];
 	vAngles[1] = angles[1];
@@ -167,17 +192,20 @@ stock StrafeBooster(client)
 	if(bStrafeBoostDisabled[client])
 		return;
 	
+	if(bOnGround[client])
+		return;
+	
 	new Float:fVelocity[3];
 	GetEntPropVector(client, Prop_Data, "m_vecVelocity", fVelocity);
 	
 	if(fVelocity[0] == 0.0)
-		fVelocity[0] = 0.1;
+		fVelocity[0] = 0.001;
 	
 	if(fVelocity[1] == 0.0)
-		fVelocity[1] = 0.1;
+		fVelocity[1] = 0.001;
 	
 	if(fVelocity[2] == 0.0)
-		fVelocity[2] = 0.1;
+		fVelocity[2] = 0.001;
 		
 	new Float:currentspeed = SquareRoot(Pow(fVelocity[0],2.0)+Pow(fVelocity[1],2.0));
 	
@@ -186,14 +214,21 @@ stock StrafeBooster(client)
 	if(g_Physics[style][StyleStrafeBoost] == 0)
 		return;
 	
-	if (!(GetEntityFlags(client) & FL_ONGROUND))
+	new Float:boost = float(g_Physics[style][StyleStrafeBoost]);
+	
+	if(boost < 0)
 	{
-		new Float:Multpl = currentspeed / (currentspeed+(float(g_Physics[style][StyleStrafeBoost])/1000000.0));	
-		fVelocity[0] /= Multpl;
-		fVelocity[1] /= Multpl;
+		if(!bFirstJump[client])
+			return;
 		
-		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
+		boost *= -1.0;
 	}
+	
+	new Float:Multpl = currentspeed / (currentspeed+(boost/1000000.0));	
+	fVelocity[0] /= Multpl;
+	fVelocity[1] /= Multpl;
+	
+	TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVelocity);
 }
 
 HookTouch() 
