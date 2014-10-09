@@ -1257,13 +1257,11 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	
 	if(g_Settings[TeleportOnSpawn])
 	{
-		FakeClientCommand(client, "sm_restart");
+		Client_Restart(client, false);
 	}
 	
 	if(IsClientInGame(client) && IsPlayerAlive(client))
 	{
-		if(g_Settings[TeleportOnSpawn]) Tele_Level(client, LEVEL_START);
-		
 		if(g_Settings[NoblockEnable])
 			SetNoBlock(client);
 		else SetBlock(client);
@@ -4000,7 +3998,7 @@ bool:Client_Start(client)
 	return true;
 }
 
-bool:Client_Restart(client)
+bool:Client_Restart(client, bool:teleport = true)
 {
 	if(!IsClientInGame(client)) 
 		return false;
@@ -4038,7 +4036,7 @@ bool:Client_Restart(client)
 	}
 	
 	//Teleport player to starzone
-	if(g_Settings[TeleportOnRestart])
+	if(g_Settings[TeleportOnRestart] && teleport)
 	{
 		Tele_Level(client, LEVEL_START);
 	} 
