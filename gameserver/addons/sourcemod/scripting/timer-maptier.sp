@@ -151,7 +151,7 @@ public LoadTierAllCallback(Handle:owner, Handle:hndl, const String:error[], any:
 		return;
 	}
 	
-	if(g_hMaps == INVALID_HANDLE)
+	if(g_hMaps != INVALID_HANDLE)
 		CloseHandle(g_hMaps);
 	
 	g_hMaps = CreateKeyValues("data");
