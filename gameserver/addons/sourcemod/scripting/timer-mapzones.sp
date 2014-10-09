@@ -1372,7 +1372,7 @@ bool:AddMapZone(String:map[], MapZoneType:type, String:name[], level_id, Float:p
 		//add new zone
 		FormatEx(query, sizeof(query), "INSERT INTO mapzone (map, type, name, level_id, point1_x, point1_y, point1_z, point2_x, point2_y, point2_z) VALUES ('%s','%d','%s','%d', %f, %f, %f, %f, %f, %f);", map, type, name, level_id, point1[0], point1[1], point1[2], point2[0], point2[1], point2[2]);
 		
-		SQL_TQuery(g_hSQL, MapZoneChangedCallback, query, _, DBPrio_Normal);
+		SQL_TQuery(g_hSQL, MapZoneChangedCallback, query, StrEqual(map, g_currentMap), DBPrio_Normal);
 		
 		return true;
 	}
@@ -1388,13 +1388,15 @@ public MapZoneChangedCallback(Handle:owner, Handle:hndl, const String:error[], a
 		return;
 	}
 	
-	if(g_timerMapTier)
+	if(data)
 	{
-		Timer_UpdateStageCount(TRACK_NORMAL);
-		Timer_UpdateStageCount(TRACK_BONUS);
+		if(g_timerMapTier)
+		{
+			Timer_UpdateStageCount(TRACK_NORMAL);
+			Timer_UpdateStageCount(TRACK_BONUS);
+		}
+		LoadMapZones();
 	}
-	
-	LoadMapZones();
 }
 
 bool:LoadMapZones()
