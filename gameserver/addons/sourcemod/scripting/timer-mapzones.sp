@@ -177,6 +177,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Timer_IsPlayerTouchingZoneType", Native_IsPlayerTouchingZoneType);
 	CreateNative("Timer_GetMapzoneCount", Native_GetMapzoneCount);
 	CreateNative("Timer_ClientTeleportLevel", Native_ClientTeleportLevel);
+	CreateNative("Timer_AddMapZone", Native_AddMapZone);
 	
 	return APLRes_Success;
 }

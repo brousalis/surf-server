@@ -164,7 +164,6 @@ native Timer_GetClientLevelID(client);
  */
 native Timer_ClientTeleportLevel(client, level);
 
-
 /**
  * Ignore the next ent touch of start or bonus start zone
  *
@@ -183,6 +182,16 @@ native Timer_SetIgnoreEndTouchStart(client, ignore);
  * @return The mapzone count.
  */
 native Timer_GetMapzoneCount(MapZoneType:type);
+
+/**
+ * Add a new mapzone to timers database
+ *
+ * @param client The target client
+ * @param ignore Ignore the next output or not
+ * 
+ * @noreturn
+ */
+native Timer_AddMapZone(String:map[], MapZoneType:type, String:name[], Float:point1[3], Float:point2[3]);
 	
 public SharedPlugin:__pl_timer_mapzones = 
 {
