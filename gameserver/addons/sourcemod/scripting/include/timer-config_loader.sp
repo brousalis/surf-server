@@ -339,8 +339,8 @@ stock LoadTimerSettings()
 			g_Settings[ZoneSpotlights] = bool:KvGetNum(hKv, "zone_spotlights_enable", 1);
 			g_Settings[NoblockEnable] = bool:KvGetNum(hKv, "noblock_enable", 1);
 			g_Settings[NPCConfirm] = bool:KvGetNum(hKv, "npc_confirm", 1);
-			g_Settings[TeleportOnSpawn] = bool:KvGetNum(hKv, "teleport_onspawn", 1);
-			g_Settings[TeleportOnRestart] = bool:KvGetNum(hKv, "teleport_onrestart", 1);
+			g_Settings[TeleportOnSpawn] = bool:KvGetNum(hKv, "teleport_onspawn", 0);
+			g_Settings[TeleportOnRestart] = bool:KvGetNum(hKv, "teleport_onrestart", 0);
 			g_Settings[LevelTeleportEnable] = bool:KvGetNum(hKv, "level_teleport_enable", 1);
 			g_Settings[StuckEnable] = bool:KvGetNum(hKv, "stuck_enable", 1);
 			g_Settings[StuckPenaltyTime] = KvGetFloat(hKv, "stuck_penalty_time", 10.0);
