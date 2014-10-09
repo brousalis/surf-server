@@ -2232,7 +2232,6 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				
 				AddMapZone(g_currentMap, MapZoneType:zonetype, ZoneName, LvlID, point1, point2);
 				ResetMapZoneEditor(client);
-				LoadMapZones();
 			}
 		}
 	}
