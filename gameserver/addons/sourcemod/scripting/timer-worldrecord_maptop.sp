@@ -22,7 +22,7 @@ new Handle:g_hSQL = INVALID_HANDLE;
 
 new String:g_SelectedMap[MAXPLAYERS+1][64];
 
-new String:sql_select[] = "SELECT name, time, jumps, map FROM round WHERE map = '%s' AND bonus = '%d' AND `style` = '%d' ORDER BY time ASC LIMIT %d;";
+new String:sql_select[] = "SELECT name, time, jumps, map FROM round WHERE map = '%s' AND track = '%d' AND `style` = '%d' ORDER BY time ASC LIMIT %d;";
 
 public OnPluginStart()
 {
