@@ -235,6 +235,9 @@ enum Styles
 	Float:StyleHoverScale,
 	Float:StyleMaxSpeed,
 	bool:StyleAntiBhop,
+	bool:StyleRealBhop,
+	StyleRealBhopMaxFrames,
+	Float:StyleRealBhopFramePenalty,
 	
 	//Damage
 	bool:StylePvP,
@@ -588,6 +591,9 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StyleQuakeBhop] = KvGetNum(hKv, "quake_bhop", 0);
 			g_Physics[g_StyleCount][StyleStrafeBoost] = KvGetNum(hKv, "strafe_boost", 0);
 			g_Physics[g_StyleCount][StyleAntiBhop] = bool:KvGetNum(hKv, "anti_bhop", 0);
+			g_Physics[g_StyleCount][StyleRealBhop] = bool:KvGetNum(hKv, "real_bhop", 0);
+			g_Physics[g_StyleCount][StyleRealBhopMaxFrames] = KvGetNum(hKv, "real_bhop_maxframes", 11);
+			g_Physics[g_StyleCount][StyleRealBhopFramePenalty] = KvGetFloat(hKv, "real_bhop_framepenalty", 0.78);
 			
 			KvGetString(hKv, "tag_name", g_Physics[g_StyleCount][StyleTagName], 32);
 			KvGetString(hKv, "tag_shortname", g_Physics[g_StyleCount][StyleTagShortName], 32);
