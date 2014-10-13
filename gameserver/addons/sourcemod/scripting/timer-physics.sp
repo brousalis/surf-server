@@ -142,6 +142,8 @@ new g_iButtonOffs_vecPosition2 = -1;
 new g_iButtonOffs_flSpeed = -1;
 new g_iButtonOffs_spawnflags = -1;
 
+new Float:g_fLastTimeLadderUsed[MAXPLAYERS+1];
+
 //SDK Stuff
 new Handle:g_hSDK_Touch = INVALID_HANDLE;
 
@@ -507,6 +509,9 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	if(!IsPlayerAlive(client))
 		return Plugin_Continue;
 	
+	if(Client_IsOnLadder(client))
+		g_fLastTimeLadderUsed[client] = GetGameTime();
+	
 	new style = Timer_GetStyle(client);
 	new Float:fGameTime = GetGameTime();
 	new bool:abuse = false;
@@ -782,6 +787,12 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				}
 			}
 		}
+	}
+	
+	// Freestyle for players which touched a ladder before
+	if(g_Physics[style][StyleLadderFreestyleCooldown] > 0.0 && GetGameTime() - g_fLastTimeLadderUsed[client] < g_Physics[style][StyleLadderFreestyleCooldown])
+	{
+		abuse = false;
 	}
 	
 	if(abuse)

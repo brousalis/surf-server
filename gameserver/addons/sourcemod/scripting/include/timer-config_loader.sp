@@ -253,7 +253,8 @@ enum Styles
 	StyleFPSRedirectStyle,
 	StyleAutoStrafe,
 	StyleQuakeBhop,
-	StyleStrafeBoost
+	StyleStrafeBoost,
+	Float:StyleLadderFreestyleCooldown
 }
 
 new g_Physics[MAX_STYLES][Styles];
@@ -555,6 +556,7 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StyleForceHalfSideways] = KvGetNum(hKv, "hsw", 0);
 			g_Physics[g_StyleCount][StylePunishType] = KvGetNum(hKv, "punish_type", 1);
 			g_Physics[g_StyleCount][StylePunishMovementControlCooldown] = KvGetFloat(hKv, "punish_movement_cooldown", 1.0);
+			g_Physics[g_StyleCount][StyleLadderFreestyleCooldown] = KvGetFloat(hKv, "ladder_freestyle_cooldown", 0.0);
 			
 			if(g_Physics[g_StyleCount][StyleForceHalfSideways] > 0)
 			{
