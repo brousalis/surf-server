@@ -17,7 +17,7 @@ public OnPluginStart()
 {
 	if(GetEngineVersion() != Engine_CSGO)
 	{
-		Timer_LogError("Don't use this plugin for other games then CS:GO.");
+		Timer_LogError("Don't use this plugin for other games than CS:GO.");
 		SetFailState("Check timer error logs.");
 		return;
 	}

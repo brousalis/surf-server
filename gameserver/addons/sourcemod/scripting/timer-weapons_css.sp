@@ -57,7 +57,7 @@ public OnPluginStart()
 {
 	if(GetEngineVersion() != Engine_CSS)
 	{
-		Timer_LogError("Don't use this plugin for other games then CS:S.");
+		Timer_LogError("Don't use this plugin for other games than CS:S.");
 		SetFailState("Check timer error logs.");
 		return;
 	}
