@@ -211,7 +211,7 @@ public OnTimerRecord(client, track, style, Float:time, Float:lasttime, currentra
 	if(NewWorldRecord)
 	{
 		bAll = true;
-		FormatEx(RankString, sizeof(RankString), "{lightred}NEW WORLD RECORD");
+		FormatEx(RankString, sizeof(RankString), "{purple}NEW WORLD RECORD");
 		
 		if(wrtime > 0.0)
 		{
