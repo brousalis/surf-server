@@ -162,22 +162,24 @@
 		"en"			"Bhop Difficulty"
 	}
 	
+	"Word Record Cache Loaded"
+	{
+		"en"			"Word record cache has been loaded."
+	}
+	
 	"World Record Menu Title"
 	{
-		"#format"		"{1:s}"
-		"en"			"World Records for {1}"
+		"en"			"World Records"
 	}
 	
 	"Bonus World Record Menu Title"
 	{
-		"#format"		"{1:s}"
-		"en"			"Bonus World Records for {1}"
+		"en"			"Bonus World Records"
 	}
 	
 	"Short World Record Menu Title"
 	{
-		"#format"		"{1:s}"
-		"en"			"Short World Records for {1}"
+		"en"			"Short World Records"
 	}
 	
 	"World Record Loading"
@@ -482,4 +484,32 @@
 	{
 		"en"			"There is no bonus in this map."
 	}
+	
+	"Multi bhop not available"
+	{
+		"en"			"Multihop and Nohop are not available on this map."
+	}
+	
+	"No styles enabled"
+	{
+		"en"			"No styles enabled."
+	}
+	
+	"You failed vegas mission"
+	{
+		"en"			"You failed vegas mission. You need to restart to collect all vegas plattforms."
+	}
+	
+	"Vegas won"
+	{
+		"#format"		"{1:s},{2:d}"
+		"en"			"{1} collected all vegas plattforms and got {2} points for completing vegas mission."
+	}
+	
+	"Vegas final game"
+	{
+		"en"			"This was the last vegas mission until mapchange!"
+	}
+	
+	
 }

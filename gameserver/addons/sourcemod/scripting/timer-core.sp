@@ -1002,7 +1002,6 @@ public FinishRoundCallback(Handle:owner, Handle:hndl, const String:error[], any:
 	}
 
 	g_bestTimeCache[client][IsCached] = false;
-	//PrintToChat(client, "Your stats have been stored into our database, thank you.");
 	
 	if(g_timerWorldRecord) Timer_ForceReloadCache();
 }
