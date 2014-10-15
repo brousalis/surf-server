@@ -1504,7 +1504,6 @@ public Entity_Touch(bhop,client)
 						CPrintToChat(client, PLUGIN_PREFIX, "You failed vegas mission", client);
 				}
 			}
-			ok idkxD but im gonna random guess
 			
 			if(avoid)
 			{
