@@ -74,7 +74,7 @@ public OnGameFrame()
 {
     for (new i = 1; i <= MaxClients; i++) {
         if(IsClientConnected(i) && !IsFakeClient(i) && IsClientInGame(i) && !IsClientObserver(i) && !PlayerInTriggerPush[i]) {
-            new style = Timer_GetStyle(client);
+            new style = Timer_GetStyle(i);
             if (g_Physics[style][StyleRealBhop]) {
                 if(GetEntityFlags(i) & FL_ONGROUND) { // on ground
                     if (!PlayerOnGround[i]) { // first ground frame
@@ -135,7 +135,7 @@ public OnGameFrame()
 
 ResetValues(client)
 {
-    FloorFrames[client] = g_Physics[style][StyleRealBhopMaxFrames] + 1;
+    FloorFrames[client] = g_Physics[Timer_GetStyle(client)][StyleRealBhopMaxFrames] + 1;
     AirSpeed[client][0] = 0.0;
     AirSpeed[client][1] = 0.0;
     AfterJumpFrame[client] = false;
