@@ -307,6 +307,16 @@
 		"en"			"Bonus End"
 	}
 	
+	"Already inside bonus start zone"
+	{
+		"en"			"You are already inside a bonus start zone."
+	}
+	
+	"Already inside start zone"
+	{
+		"en"			"You are already inside a start zone."
+	}
+	
 	"Enable NoBlock"
 	{
 		"en"			"Enable NoBlock"

@@ -3841,6 +3841,12 @@ public Action:Command_Restart(client, args)
 	if(Timer_GetMapzoneCount(ZtStart) < 1)
 		return Plugin_Handled;
 	
+	if(Timer_IsPlayerTouchingZoneType(client, ZtStart))
+	{
+		CPrintToChat(client, PLUGIN_PREFIX, "Already inside start zone");
+		return Plugin_Handled;
+	}
+	
 	if(g_timerTeams)
 	{
 		if(Timer_GetChallengeStatus(client) == 1 || Timer_GetCoopStatus(client) == 1)
@@ -3898,6 +3904,12 @@ public Action:Command_BonusRestart(client, args)
 	
 	if(!IsClientInGame(client)) 
 		return Plugin_Handled;
+	
+	if(Timer_IsPlayerTouchingZoneType(client, ZtBonusStart))
+	{
+		CPrintToChat(client, PLUGIN_PREFIX, "Already inside bonus start zone");
+		return Plugin_Handled;
+	}
 		
 	if(Timer_GetMapzoneCount(ZtBonusStart) < 1)
 	{
