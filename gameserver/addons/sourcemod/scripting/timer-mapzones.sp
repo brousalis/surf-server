@@ -3647,8 +3647,18 @@ stock Tele_Zone(client, zone, bool:stopspeed = true, bool:overwrite_physics = tr
 	
 	// Don't teleport from inside a startzone to the same zone
 	if(g_bZone[zone][client])
-		if(g_mapZones[zone][Type] == ZtStart || g_mapZones[zone][Type] == ZtBonusStart)
+	{
+		if(g_mapZones[zone][Type] == ZtStart)
+		{
+			CPrintToChat(client, PLUGIN_PREFIX, "Already inside start zone");
 			return;
+		}
+		else if(g_mapZones[zone][Type] == ZtBonusStart)
+		{
+			CPrintToChat(client, PLUGIN_PREFIX, "Already inside bonus start zone");
+			return;
+		}
+	}
 	
 	// Get zone center cords
 	new Float:center[3];
