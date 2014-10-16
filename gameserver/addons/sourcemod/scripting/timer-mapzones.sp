@@ -261,6 +261,7 @@ public OnPluginStart()
 	RegAdminCmd("sm_zonename", Command_LevelName, ADMFLAG_RCON);
 	RegAdminCmd("sm_zoneid", Command_LevelID, ADMFLAG_RCON);
 	RegAdminCmd("sm_zonetype", Command_LevelType, ADMFLAG_RCON);
+	RegAdminCmd("sm_zoneadd", Command_AddZone, ADMFLAG_RCON);
 	RegAdminCmd("sm_zonereload", Command_ReloadZones, ADMFLAG_SLAY);
 	RegAdminCmd("sm_npc_next", Command_NPC_Next, ADMFLAG_RCON);
 	RegAdminCmd("sm_zone", Command_AdminZone, ADMFLAG_ROOT);
@@ -1547,11 +1548,15 @@ public AdminMenu_AddMapZone(Handle:topmenu,
 {
 	if (action == TopMenuAction_DisplayOption) {
 		FormatEx(buffer, maxlength, "Add Map Zone");
-	} else if (action == TopMenuAction_SelectOption) {
-		ResetMapZoneEditor(param);
-		g_mapZoneEditors[param][Step] = 1;
-		DisplaySelectPointMenu(param, 1);
-	}
+	} else if (action == TopMenuAction_SelectOption)
+		StartAddingZone(param);
+}
+
+StartAddingZone(client)
+{
+	ResetMapZoneEditor(client);
+	g_mapZoneEditors[client][Step] = 1;
+	DisplaySelectPointMenu(client, 1);
 }
 
 public AdminMenu_RemoveMapZone(Handle:topmenu, 
@@ -3733,18 +3738,22 @@ public Action:Command_LevelAdminMode(client, args)
 	return Plugin_Handled;	
 }
 
+public Action:Command_AddZone(client, args)
+{
+	StartAddingZone(client);
+	return Plugin_Handled;
+}
+
 public Action:Command_ReloadZones(client, args)
 {
 	LoadMapZones();
 	CPrintToChat(client, PLUGIN_PREFIX, "Zones Reloaded");
-	
 	return Plugin_Handled;
 }
 
 public Action:Command_NPC_Next(client, args)
 {
 	CreateNPC(client, 0);
-	
 	return Plugin_Handled;
 }
 
