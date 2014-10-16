@@ -3328,6 +3328,8 @@ SpawnNPC(zone)
 	SDKHook(entity1, SDKHook_StartTouch, NPC_Use);
 }
 
+// Showing to much sprites crashes the server to fast for much zones
+// Showning props instead works better with performence
 SpawnZoneDebugEntitys(zone)
 {
 	if(g_mapZones[zone][Type] == ZtNPC_Next || g_mapZones[zone][Type] == ZtNPC_Next_Double)
@@ -3638,35 +3640,48 @@ stock bool:Tele_Level(client, level)
 	return false;
 }
 
-stock Tele_Zone(client, zone)
+stock Tele_Zone(client, zone, bool:stopspeed = true, bool:overwrite_physics = true)
 {
-	new Float:zero[3];
+	if(!IsClientInGame(client))
+		return;
 	
+	// Don't teleport from inside a startzone to the same zone
+	if(g_bZone[zone][client])
+		if(g_mapZones[zone][Type] == ZtStart || g_mapZones[zone][Type] == ZtBonusStart)
+			return;
+	
+	// Get zone center cords
 	new Float:center[3];
 	center[0] = (g_mapZones[zone][Point1][0] + g_mapZones[zone][Point2][0]) / 2.0;
 	center[1] = (g_mapZones[zone][Point1][1] + g_mapZones[zone][Point2][1]) / 2.0;
-	if(g_Settings[UseZoneTeleportZ])
-	{
-		center[2] = g_mapZones[zone][Point1][2] + g_Settings[ZoneTeleportZ];
-	}
-	else
-	{
-		center[2] = (g_mapZones[zone][Point1][2] + g_mapZones[zone][Point2][2]) / 2.0;
-	}
 	
-	if(IsClientInGame(client)) 
+	// Use static height
+	if(g_Settings[UseZoneTeleportZ])
+		center[2] = g_mapZones[zone][Point1][2] + g_Settings[ZoneTeleportZ];
+	// Use center height
+	else center[2] = (g_mapZones[zone][Point1][2] + g_mapZones[zone][Point2][2]) / 2.0;
+	
+	//If teleporting outside a startzone skip the next end touch output
+	if((Timer_IsPlayerTouchingZoneType(client, ZtStart) || Timer_IsPlayerTouchingZoneType(client, ZtBonusStart)) 
+		&& g_mapZones[zone][Type] != ZtStart && g_mapZones[zone][Type] != ZtBonusStart)
+	Timer_SetIgnoreEndTouchStart(client, 1);
+	
+	// Stop speed before and after teleporting
+	if(stopspeed)
 	{
-		if((Timer_IsPlayerTouchingZoneType(client, ZtStart) || Timer_IsPlayerTouchingZoneType(client, ZtBonusStart)) 
-			&& g_mapZones[zone][Type] != ZtStart && g_mapZones[zone][Type] != ZtBonusStart)
-		Timer_SetIgnoreEndTouchStart(client, 1);
-		
-		new style = Timer_GetStyle(client);
-		
-		//Anti-Chat
-		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[style][StyleTimeScale]);
-		SetEntityGravity(client, g_Physics[style][StyleGravity]);
+		//Stop speed in this and next tick
+		new Float:zero[3];
 		TeleportEntity(client, center, NULL_VECTOR, zero);
 		CreateTimer(0.0, Timer_StopSpeed, client, TIMER_FLAG_NO_MAPCHANGE);
+	}
+	else TeleportEntity(client, center, NULL_VECTOR, NULL_VECTOR);
+	
+	// Anti cheat
+	if(overwrite_physics)
+	{
+		new style = Timer_GetStyle(client);
+		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", g_Physics[style][StyleTimeScale]);
+		SetEntityGravity(client, g_Physics[style][StyleGravity]);
 	}
 }
 
