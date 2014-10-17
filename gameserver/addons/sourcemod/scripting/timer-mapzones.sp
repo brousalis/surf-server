@@ -265,6 +265,7 @@ public OnPluginStart()
 	RegAdminCmd("sm_zonereload", Command_ReloadZones, ADMFLAG_SLAY);
 	RegAdminCmd("sm_npc_next", Command_NPC_Next, ADMFLAG_RCON);
 	RegAdminCmd("sm_zone", Command_AdminZone, ADMFLAG_ROOT);
+	RegAdminCmd("sm_zonedel", Command_AdminZoneDel, ADMFLAG_ROOT);
 	
 	RegConsoleCmd("sm_levels", Command_Levels);
 	RegConsoleCmd("sm_stage", Command_Levels);
@@ -4171,6 +4172,48 @@ public MenuHandlerAdminZone(Handle:menu, MenuAction:action, client, param2)
 		{
 			Timer_Reset(client);
 			Tele_Zone(client, zone);
+		}
+	}
+}
+
+public Action:Command_AdminZoneDel(client, args)
+{
+	AdminZoneDelete(client);
+	return Plugin_Handled;
+}
+
+AdminZoneDelete(client)
+{
+	new Handle:menu = CreateMenu(MenuHandlerAdminZoneDelete);
+	SetMenuTitle(menu, "Zone Selection");
+	
+	for (new zone = 0; zone < g_mapZonesCount; zone++)
+	{
+		decl String:zone_name[32];
+		FormatEx(zone_name, sizeof(zone_name), "%s", g_mapZones[zone][zName]);
+		
+		decl String:zone_id[32];
+		FormatEx(zone_id,sizeof(zone_id), "%d", zone);
+		AddMenuItem(menu, zone_id, zone_name);
+	}
+	
+	SetMenuExitButton(menu, true);
+	DisplayMenu(menu, client, MENU_TIME_FOREVER);
+}
+
+public MenuHandlerAdminZoneDelete(Handle:menu, MenuAction:action, client, param2)
+{
+	if (action == MenuAction_Select)
+	{
+		decl String:info[100], String:info2[100];
+		new bool:found = GetMenuItem(menu, param2, info, sizeof(info), _, info2, sizeof(info2));
+		new zone = StringToInt(info);
+		if(found)
+		{
+			decl String:query[64];
+			FormatEx(query, sizeof(query), "DELETE FROM mapzone WHERE id = %d", g_mapZones[zone][Id]);
+			
+			SQL_TQuery(g_hSQL, DeleteMapZoneCallback, query, client, DBPrio_Normal);
 		}
 	}
 }
