@@ -270,6 +270,18 @@ public OnPluginStart()
 	RegServerCmd("timer_rankingsdump", Command_PrintRanks, "Generates a dump file in /logs/ that contains all definitions and rankings.");
 	
 	g_bSimpleChatProcessor = LibraryExists("scp");
+	
+	g_hSQL = Handle:Timer_SqlGetConnection();
+	
+	if (g_hSQL == INVALID_HANDLE || g_bLateLoad)
+	{
+		ConnectSQL();
+	}
+	
+	if (g_hSQL == INVALID_HANDLE)
+	{
+		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+	}
 }
 
 public OnLibraryAdded(const String:name[])
@@ -369,26 +381,7 @@ public OnCVarChange(Handle:cvar, const String:oldvalue[], const String:newvalue[
 
 public OnConfigsExecuted()
 {
-	if(!g_iEnabled)
-		return;
-
 	Parse_Points();
-	
-	if (g_hSQL == INVALID_HANDLE || g_bLateLoad)
-	{
-		ConnectSQL();
-	}
-	
-	if (g_hSQL == INVALID_HANDLE)
-	{
-		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
-		return;
-	}
-	
-	/*
-	if(g_hSQL == INVALID_HANDLE && (g_iPositionMethod == 0 || g_iPositionMethod == 1))
-		SQL_TConnect(SQL_Connect_Database, "timer");
-	*/
 }
 
 public OnTimerSqlConnected(Handle:sql)
@@ -412,6 +405,8 @@ ConnectSQL()
 		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
 	else
 	{
+		SQL_TQuery(g_hSQL, CallBack_Total, "SELECT COUNT(*) FROM `ranks`", _, DBPrio_Low);
+		
 		for(new i = 1; i <= MaxClients; i++)
 		{
 			if(IsClientInGame(i) && !IsFakeClient(i))
@@ -424,6 +419,10 @@ ConnectSQL()
 					g_sAuth[i][6] = '0';
 					if(!g_bLoadedCookies[i] && AreClientCookiesCached(i))
 						LoadClientData(i);
+					
+					decl String:sQuery[192];
+					FormatEx(sQuery, sizeof(sQuery), "SELECT `points` FROM `ranks` WHERE `auth` = '%s'", g_sAuth[i]);
+					SQL_TQuery(g_hSQL, CallBack_ClientConnect, sQuery, GetClientUserId(i), DBPrio_Low);
 				}
 			}
 		}
@@ -1267,16 +1266,6 @@ UpdateClientStars(client)
 			CS_SetMVPCount(client, GetArrayCell(g_hCfgArray_DisplayStars, g_iCurrentIndex[client]));
 		}
 	}
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-public SQL_Connect_Database(Handle:owner, Handle:hndl, const String:error[], any:data)
-{
-	SQL_TQuery(g_hSQL, CallBack_Names, "SET NAMES  'utf8'", _, DBPrio_High);
-	SQL_TQuery(g_hSQL, CallBack_Creation, "CREATE TABLE IF NOT EXISTS `ranks` (`auth` varchar(24) NOT NULL PRIMARY KEY, `points` int(11) NOT NULL default 0, `lastname` varchar(65) NOT NULL default '', `lastplay` int(11) NOT NULL default 0);");
-
-	SQL_TQuery(g_hSQL, CallBack_Total, "SELECT COUNT(*) FROM `ranks`", _, DBPrio_Low);
 }
 
 public CallBack_Total(Handle:owner, Handle:hndl, const String:error[], any:ref)
