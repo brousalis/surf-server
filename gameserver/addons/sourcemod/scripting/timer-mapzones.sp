@@ -1887,6 +1887,8 @@ public Action:Timer_LoadMapzones(Handle:timer, any:data)
 	return Plugin_Stop;
 }
 
+new Float:g_fSpawnTime[MAXPLAYERS+1];
+
 public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -1904,7 +1906,9 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	
 	if(g_Settings[TeleportOnSpawn])
 	{
-		Client_Restart(client, false);
+		// Prevent infinite loop
+		if(GetGameTime()-g_fSpawnTime[client] > 0.5)
+			Client_Restart(client, false);
 	}
 	
 	if(IsClientInGame(client) && IsPlayerAlive(client))
@@ -1913,6 +1917,8 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 			SetNoBlock(client);
 		else SetBlock(client);
 	}
+	
+	g_fSpawnTime[client] = GetGameTime();
 }
 
 public Action_OnSettingsChange(Handle:cvar, const String:oldvalue[], const String:newvalue[])
