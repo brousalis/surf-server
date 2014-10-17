@@ -257,6 +257,11 @@
 		"en"			"Delete map zone"
 	}
 	
+	"Adjust zone"
+	{
+		"en"			"Adjust zone:"
+	}
+	
 	"Select zone type"
 	{
 		"en"			"Select zone type:"
