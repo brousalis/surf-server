@@ -501,8 +501,15 @@ DisplayAdjustZoneMenu(client, category)
 	DisplayMenu(menu, client, 360);
 }
 
+new Float:g_fLastAdjust[MAXPLAYERS+1];
+
 public ZoneAdjust(Handle:menu, MenuAction:action, client, itemNum)
 {
+	new Float:adjust_units = 1.0;
+	
+	if(GetGameTime()-g_fLastAdjust[client] < 1.0)
+		adjust_units = 5.0;
+	
 	if ( action == MenuAction_Select )
 	{
 		decl String:info[100], String:info2[100];
@@ -529,63 +536,75 @@ public ZoneAdjust(Handle:menu, MenuAction:action, client, itemNum)
 			// Point 1
 			else if(StrEqual(info, "point1_x+"))
 			{
-				g_mapZoneEditors[client][Point1][0] += 1.0;
+				g_mapZoneEditors[client][Point1][0] += adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 1);
 			}
 			else if(StrEqual(info, "point1_x-"))
 			{
-				g_mapZoneEditors[client][Point1][0] -= 1.0;
+				g_mapZoneEditors[client][Point1][0] -= adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 1);
 			}
 			else if(StrEqual(info, "point1_y+"))
 			{
-				g_mapZoneEditors[client][Point1][1] += 1.0;
+				g_mapZoneEditors[client][Point1][1] += adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 1);
 			}
 			else if(StrEqual(info, "point1_y-"))
 			{
-				g_mapZoneEditors[client][Point1][1] -= 1.0;
+				g_mapZoneEditors[client][Point1][1] -= adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 1);
 			}
 			else if(StrEqual(info, "point1_z+"))
 			{
-				g_mapZoneEditors[client][Point1][2] += 1.0;
+				g_mapZoneEditors[client][Point1][2] += adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 1);
 			}
 			else if(StrEqual(info, "point1_z-"))
 			{
-				g_mapZoneEditors[client][Point1][2] -= 1.0;
+				g_mapZoneEditors[client][Point1][2] -= adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 1);
 			}
 			// Point 2
 			else if(StrEqual(info, "point2_x+"))
 			{
-				g_mapZoneEditors[client][Point2][0] += 1.0;
+				g_mapZoneEditors[client][Point2][0] += adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 2);
 			}
 			else if(StrEqual(info, "point2_x-"))
 			{
-				g_mapZoneEditors[client][Point2][0] -= 1.0;
+				g_mapZoneEditors[client][Point2][0] -= adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 2);
 			}
 			else if(StrEqual(info, "point2_y+"))
 			{
-				g_mapZoneEditors[client][Point2][1] += 1.0;
+				g_mapZoneEditors[client][Point2][1] += adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 2);
 			}
 			else if(StrEqual(info, "point2_y-"))
 			{
-				g_mapZoneEditors[client][Point2][1] -= 1.0;
+				g_mapZoneEditors[client][Point2][1] -= adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 2);
 			}
 			else if(StrEqual(info, "point2_z+"))
 			{
-				g_mapZoneEditors[client][Point2][2] += 1.0;
+				g_mapZoneEditors[client][Point2][2] += adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 2);
 			}
 			else if(StrEqual(info, "point2_z-"))
 			{
-				g_mapZoneEditors[client][Point2][2] -= 1.0;
+				g_mapZoneEditors[client][Point2][2] -= adjust_units;
+				g_fLastAdjust[client] = GetGameTime();
 				DisplayAdjustZoneMenu(client, 2);
 			}
 		}
