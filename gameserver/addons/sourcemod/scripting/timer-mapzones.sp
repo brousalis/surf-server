@@ -456,6 +456,28 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			new Float:vec[3];
 			GetClientAbsOrigin(client, vec);
 			g_mapZoneEditors[client][Point2] = vec;
+			g_mapZoneEditors[client][Point2][2] += 100.0;
+			g_mapZoneEditors[client][Step] = 3;
+			DisplayAdjustZoneMenu(client, 0);
+			return Plugin_Handled;
+		}		
+	}
+	else if (buttons & IN_ATTACK)
+	{ 
+		if (g_mapZoneEditors[client][Step] == 1)
+		{
+			new Float:vec[3];
+			GetAimOrigin(client, vec);
+			g_mapZoneEditors[client][Point1] = vec;
+			DisplayPleaseWaitMenu(client);
+			CreateTimer(1.0, ChangeStep, GetClientSerial(client));
+			return Plugin_Handled;
+		}
+		else if (g_mapZoneEditors[client][Step] == 2)
+		{
+			new Float:vec[3];
+			GetAimOrigin(client, vec);
+			g_mapZoneEditors[client][Point2] = vec;
 			g_mapZoneEditors[client][Step] = 3;
 			DisplayAdjustZoneMenu(client, 0);
 			return Plugin_Handled;
@@ -1067,9 +1089,6 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				
 				new Float:point2[3];
 				Array_Copy(g_mapZoneEditors[client][Point2], point2, 3);
-				
-				point1[2] -= 2;
-				point2[2] += 100;
 				
 				if(!AddMapZone(g_currentMap, MapZoneType:zonetype, ZoneName, LvlID, point1, point2))
 					PrintToChat(client, "[Timer] Can't save mapzone, no database connection.");
@@ -2559,7 +2578,6 @@ public Action:DrawAdminBox(Handle:timer, any:serial)
 	
 	new color[4] = {255, 255, 255, 255};
 	
-	a[2]=a[2]+100;
 	DrawBox(a, b, 0.1, color, false);
 	return Plugin_Continue;
 }
@@ -2887,25 +2905,30 @@ DrawBox(Float:fFrom[3], Float:fTo[3], Float:fLife, color[4], bool:flat, iSpriteI
 		else
 		fRightTopBack[2] = fFrom[2];
 		
+		new Float:width = g_Settings[ZoneBeamThickness];
+		
+		if(flat == false)
+			width = 0.5;
+		
 		//create the box
-		TE_SetupBeamPoints(fLeftTopFront,fRightTopFront,iSpriteIndex,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,10);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(fLeftTopBack,fLeftTopFront,iSpriteIndex,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,10);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(fRightTopBack,fLeftTopBack,iSpriteIndex,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,10);TE_SendToAll(0.0);
-		TE_SetupBeamPoints(fRightTopFront,fRightTopBack,iSpriteIndex,0,0,0,0.99,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],10,0.0,color,10);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fLeftTopFront,fRightTopFront,iSpriteIndex,0,0,0,0.99,width,width,10,0.0,color,10);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fLeftTopBack,fLeftTopFront,iSpriteIndex,0,0,0,0.99,width,width,10,0.0,color,10);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fRightTopBack,fLeftTopBack,iSpriteIndex,0,0,0,0.99,width,width,10,0.0,color,10);TE_SendToAll(0.0);
+		TE_SetupBeamPoints(fRightTopFront,fRightTopBack,iSpriteIndex,0,0,0,0.99,width,width,10,0.0,color,10);TE_SendToAll(0.0);
 		
 		if(!flat)
 		{
-			TE_SetupBeamPoints(fRightBottomFront,fLeftBottomFront,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
-			TE_SetupBeamPoints(fLeftBottomBack,fLeftBottomFront,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
-			TE_SetupBeamPoints(fLeftTopFront,fLeftBottomFront,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fRightBottomFront,fLeftBottomFront,iSpriteIndex,0,0,0,fLife,width,width,0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fLeftBottomBack,fLeftBottomFront,iSpriteIndex,0,0,0,fLife,width,width,0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fLeftTopFront,fLeftBottomFront,iSpriteIndex,0,0,0,fLife,width,width,0,0.0,color,0);TE_SendToAll(0.0);
 			
 			
-			TE_SetupBeamPoints(fLeftBottomBack,fRightBottomBack,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
-			TE_SetupBeamPoints(fRightBottomFront,fRightBottomBack,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
-			TE_SetupBeamPoints(fRightTopBack,fRightBottomBack,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fLeftBottomBack,fRightBottomBack,iSpriteIndex,0,0,0,fLife,width,width,0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fRightBottomFront,fRightBottomBack,iSpriteIndex,0,0,0,fLife,width,width,0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fRightTopBack,fRightBottomBack,iSpriteIndex,0,0,0,fLife,width,width,0,0.0,color,0);TE_SendToAll(0.0);
 			
-			TE_SetupBeamPoints(fRightTopFront,fRightBottomFront,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
-			TE_SetupBeamPoints(fLeftTopBack,fLeftBottomBack,iSpriteIndex,0,0,0,fLife,g_Settings[ZoneBeamThickness],g_Settings[ZoneBeamThickness],0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fRightTopFront,fRightBottomFront,iSpriteIndex,0,0,0,fLife,width,width,0,0.0,color,0);TE_SendToAll(0.0);
+			TE_SetupBeamPoints(fLeftTopBack,fLeftBottomBack,iSpriteIndex,0,0,0,fLife,width,width,0,0.0,color,0);TE_SendToAll(0.0);
 		}
 	}
 }
