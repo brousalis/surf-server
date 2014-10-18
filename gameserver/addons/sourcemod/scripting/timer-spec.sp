@@ -172,13 +172,3 @@ public Action:Cmd_SpecFar(client, args)
 
 	return Plugin_Handled;
 }
-
-stock bool:IsValidClient(client, bool:alive = false)
-{
-	if(client >= 1 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && (!alive || IsPlayerAlive(client)))
-	{
-		return true;
-	}
-	
-	return false;
-}
