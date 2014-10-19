@@ -187,12 +187,12 @@
        
     "Bonus World Record Loading"
     {
-        "en"            "Bonus Världsrekord laddar fortfarande, försök igen om en liten stund."
+        "sv"            "Bonus Världsrekord laddar fortfarande, försök igen om en liten stund."
     }
        
     "Short World Record Loading"
     {
-        "en"            "Korta Världsrekord laddar fortfarande, försök igen om en liten stund."
+        "sv"            "Korta Världsrekord laddar fortfarande, försök igen om en liten stund."
     }
        
     "No Records"
@@ -485,27 +485,27 @@
 	
 	"Multi bhop not available"
 	{
-		"sv"			"Multihop and Nohop are not available on this map."
+		"sv"			"Multihop och Nohop är inte tillgängliga på den här banan."
 	}
 	
 	"No styles enabled"
 	{
-		"sv"			"No styles enabled."
+		"sv"			"Ingen spelstil aktiverad."
 	}
 	
 	"You failed vegas mission"
 	{
-		"sv"			"You failed vegas mission. You need to restart to collect all vegas plattforms."
+		"sv"			"Du har misslyckats med vegas uppdraget. Du måste starta om för att samla alla vegas plattformer."
 	}
 	
 	"Vegas won"
 	{
 		"#format"		"{1:s},{2:d}"
-		"sv"			"{1} collected all vegas plattforms and got {2} points for completing vegas mission."
+		"sv"			"{1} samlade alla vegas plattformer och fick {2} poäng för att klara uppdraget."
 	}
 	
 	"Vegas final game"
 	{
-		"sv"			"This was the last vegas mission until mapchange!"
+		"sv"			"Det här var det sista vegas uppdraget tills banan byts!"
 	}
 }
