@@ -4037,7 +4037,7 @@ public Action:Command_Stuck(client, args)
 	if(Timer_GetStatus(client) && g_Settings[StuckPenaltyTime] > 0)
 	{
 		Timer_AddPenaltyTime(client, g_Settings[StuckPenaltyTime]);
-		CPrintToChatAll("%s %N used !stuck and got %ds penalty time.", PLUGIN_PREFIX2, client, RoundToFloor(g_Settings[StuckPenaltyTime]));
+		CPrintToChat(client, "%s You have used !stuck and got an %ds penalty time.", PLUGIN_PREFIX2, RoundToFloor(g_Settings[StuckPenaltyTime]));
 	}
 	
 	TeleLastCheckpoint(client);
