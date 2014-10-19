@@ -157,6 +157,8 @@ new bool:g_bAllowRoundEnd = false;
 
 new bool:g_bSpawnSpotlights;
 
+new bool:g_bTeleportersDisabled;
+
 public Plugin:myinfo =
 {
 	name        = "[Timer] MapZones",
@@ -266,6 +268,7 @@ public OnPluginStart()
 	RegAdminCmd("sm_npc_next", Command_NPC_Next, ADMFLAG_RCON);
 	RegAdminCmd("sm_zone", Command_AdminZone, ADMFLAG_ROOT);
 	RegAdminCmd("sm_zonedel", Command_AdminZoneDel, ADMFLAG_ROOT);
+	RegAdminCmd("sm_toggle_tp", Command_ToggleTeleporters, ADMFLAG_RCON);
 	
 	RegConsoleCmd("sm_levels", Command_Levels);
 	RegConsoleCmd("sm_stage", Command_Levels);
@@ -355,6 +358,8 @@ public OnLibraryRemoved(const String:name[])
 
 public OnMapStart()
 {
+	g_bTeleportersDisabled = false;
+	
 	LoadPhysics();
 	LoadTimerSettings();
 	
@@ -4664,4 +4669,47 @@ public Action:Hook_NormalSound(clients[64], &numClients, String:sample[PLATFORM_
 		return Plugin_Stop;
 	
 	return Plugin_Continue;
+}
+
+public Action:Command_ToggleTeleporters(client, args)
+{
+	ToggleTeleporters(client);
+	
+	return Plugin_Handled;	
+}
+
+stock ToggleTeleporters(client)
+{
+	if(g_bTeleportersDisabled)
+	{
+		g_bTeleportersDisabled = false;
+		
+		ReplyToCommand(client, "(Re-)Enabled all trigger_teleport entitys");
+		
+		new entity;
+		decl String:targetname[256];
+		
+		while ((entity = FindEntityByClassname(entity, "info_teleport_destination")) != -1)
+		{
+			GetEntPropString(entity, Prop_Data, "m_iName", targetname, sizeof(targetname));
+			ReplaceString(targetname, sizeof(targetname), "_disabled", "", true);
+			DispatchKeyValue(entity, "targetname", targetname);
+		}
+	}
+	else
+	{
+		g_bTeleportersDisabled = true;
+		
+		ReplyToCommand(client, "Disabled all trigger_teleport entitys");
+		
+		new entity;
+		decl String:targetname[256];
+		
+		while ((entity = FindEntityByClassname(entity, "info_teleport_destination")) != -1)
+		{
+			GetEntPropString(entity, Prop_Data, "m_iName", targetname, sizeof(targetname));
+			Format(targetname, sizeof(targetname), "%s_disabled", targetname);
+			DispatchKeyValue(entity, "targetname", targetname);
+		}
+	}
 }
