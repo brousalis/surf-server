@@ -434,7 +434,7 @@
 	
 	"Tier Limit"
 	{
-		"en"			"You only receive points for the first 2 times you complete a tier 1 or 2 map."
+		"en"			"You only receive points for the first X times you complete a tier 1 or 2 map."
 	}
 	
 	"Cheater Finish"

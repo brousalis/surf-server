@@ -13,7 +13,7 @@
 	"Advertisement"
 	{
 		"#format"	""
-		"en"		"Check the global ranks with !top10, !rank. Check the map worth with !points. Check the list of ranks with !chatranks."
+		"en"		"Check the global ranks with !ptop, !prank. Check the map worth with !points. Check the list of ranks with !ranks."
 	}
 	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	"Phrase_Loading"
@@ -50,7 +50,7 @@
 	"Phrase_Rank_Remaining"
 	{
 		"#format"	"{1:d}"
-		"en"		"You will unlock the next rank level in {1} points!"
+		"en"		"You will unlock the next rank in {1} points!"
 	}
 	"Phrase_Next_None"
 	{
@@ -148,7 +148,7 @@
 	"Phrase_Info_Rank_Rank"
 	{
 		"#format"	"{1:d},{2:d},{3:s}"
-		"en"		"{3}: Available to ranks {1} through {2}."
+		"en"		"{3}: Available from ranks {1} through {2}."
 	}
 	"Phrase_Info_Rank_Display_Tag"
 	{
@@ -191,39 +191,6 @@
 		"#format"	"{1:d},{2:s}"
 		"en"		"You did not receive any points for finishing {2} as you've beaten it at least {1} times!"
 	}
-	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *	
-	"Phrase_Points_Per_Map"
-	{
-		"#format"	"{1:d}"
-		"en"		"This map is worth {1} point(s)!"
-	}		
-	"Phrase_Map_Worth_Exceeded"
-	{
-		"#format"	"{1:d},{2:d},{3:d}"
-		"en"		"This map is worth {1} point(s)! You will not receive points for completion as you've beaten this map {2}/{3} time(s)!"
-	}		
-	"Phrase_Map_Worth_Remaining"
-	{
-		"#format"	"{1:d},{2:d},{3:d}"
-		"en"		"This map is worth {1} point(s)! You may complete this map {2}/{3} more time(s) for points."
-	}
-	"Phrase_Complete_Round_Exceeded"
-	{
-		"#format"	"{1:d},{2:d}"
-		"en"		"You received 0 points for completing the map as you've beaten it {1}/{2} time(s) already!"
-	}
-	"Phrase_Complete_Round_Remaining"
-	{
-		"#format"	"{1:d},{2:d},{3:d}"
-		"en"		"You received {1} points for completing the map; You may beat it {2}/{3} more time(s) for points."
-	}
-	"Phrase_Complete_Round_Last"
-	{
-		"#format"	"{1:d}"
-		"en"		"You received {1} points for completing the map; You may no longer gain points from this map."
-	}	
-	//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	//v1.0.5e
 	"Menu_Core_Title"
 	{
 		"#format"	""
