@@ -477,4 +477,35 @@
 	{
 		"fr"			"Les autres joueurs sont maintenant visibles."
 	}
+	
+	"There is no bonus in this map"
+	{
+		"fr"			"There is no bonus in this map."
+	}
+	
+	"Multi bhop not available"
+	{
+		"fr"			"Multihop and Nohop are not available on this map."
+	}
+	
+	"No styles enabled"
+	{
+		"fr"			"No styles enabled."
+	}
+	
+	"You failed vegas mission"
+	{
+		"fr"			"You failed vegas mission. You need to restart to collect all vegas plattforms."
+	}
+	
+	"Vegas won"
+	{
+		"#format"		"{1:s},{2:d}"
+		"fr"			"{1} collected all vegas plattforms and got {2} points for completing vegas mission."
+	}
+	
+	"Vegas final game"
+	{
+		"fr"			"This was the last vegas mission until mapchange!"
+	}
 }

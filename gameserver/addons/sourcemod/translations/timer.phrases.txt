@@ -525,6 +525,4 @@
 	{
 		"en"			"This was the last vegas mission until mapchange!"
 	}
-	
-	
 }

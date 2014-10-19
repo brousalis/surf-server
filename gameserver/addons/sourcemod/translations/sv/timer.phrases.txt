@@ -482,4 +482,30 @@
     {
         "sv"            "Det finns ingen bonus på denna bana."
     }
+	
+	"Multi bhop not available"
+	{
+		"sv"			"Multihop and Nohop are not available on this map."
+	}
+	
+	"No styles enabled"
+	{
+		"sv"			"No styles enabled."
+	}
+	
+	"You failed vegas mission"
+	{
+		"sv"			"You failed vegas mission. You need to restart to collect all vegas plattforms."
+	}
+	
+	"Vegas won"
+	{
+		"#format"		"{1:s},{2:d}"
+		"sv"			"{1} collected all vegas plattforms and got {2} points for completing vegas mission."
+	}
+	
+	"Vegas final game"
+	{
+		"sv"			"This was the last vegas mission until mapchange!"
+	}
 }
