@@ -42,6 +42,7 @@ public OnPluginStart()
 {
 	LoadTranslations("timer.phrases");
 	RegConsoleCmd("sm_hide", Command_Hide);
+	RegConsoleCmd("sm_unhide", Command_UnHide);
 	
 	AddTempEntHook("Shotgun Shot", CSS_Hook_ShotgunShot);
 
@@ -183,6 +184,15 @@ public Action:Command_Hide(client, args)
 		CPrintToChat(client, PLUGIN_PREFIX, "Hide Enabled");
 	}
 	
+	CheckHooks();
+	
+	return Plugin_Handled;
+}
+
+public Action:Command_UnHide(client, args)
+{
+	g_bHide[client] = false;
+	CPrintToChat(client, PLUGIN_PREFIX, "Hide Disabled");
 	CheckHooks();
 	
 	return Plugin_Handled;
