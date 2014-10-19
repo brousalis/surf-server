@@ -55,13 +55,13 @@
     "Short Round Finish"
     {
         "#format"           "{1:s},{2:s},{3:s},{4:d}"
-        "sv"            "{1} har klarat den korta kartan på {2} och {4} hopp."
+        "sv"            "{1} har klarat den korta banan på {2} och {4} hopp."
     }
        
     "Short Round Finish Without Jumps"
     {
         "#format"           "{1:s},{2:s},{3:s}"
-        "sv"            "{1} har klarat den korta kartan på {2}."
+        "sv"            "{1} har klarat den korta banan på {2}."
     }
        
     "Short Round Finish Difficulty"
@@ -79,7 +79,7 @@
     "Point Select Panel"
     {
         "#format"           "{1:s}"
-        "en"            "Please stand in the {1} point of the zone,\nand click Mouse2."
+        "sv"            "Var snäll och stå på {1} punkten av zonen,\noch tryck på mus2."
     }
        
     "Tier"
@@ -99,12 +99,12 @@
  
     "FIRST"
     {
-        "sv"            "FÖRST"
+        "sv"            "FÖRSTA"
     }
        
     "SECOND"
     {
-        "sv"            "TVÅA"
+        "sv"            "DEN ANDRA"
     }
        
     "Map Zone Delete"
@@ -159,7 +159,7 @@
        
     "Physics Difficulty"
     {
-        "sv"            "Bhop Svårighetsgrad"
+        "sv"            "Svårighetsgrad"
     }
        
     "World Record Menu Title"
@@ -182,17 +182,17 @@
        
     "World Record Loading"
     {
-        "sv"            "Världsrekorden laddar fortfarande; försök igen om en liten stund."
+        "sv"            "Världsrekorden laddar fortfarande, försök igen om en liten stund."
     }
        
     "Bonus World Record Loading"
     {
-        "en"            "Bonus Världsrekord laddar fortfarande; försök igen om en liten stund."
+        "en"            "Bonus Världsrekord laddar fortfarande, försök igen om en liten stund."
     }
        
     "Short World Record Loading"
     {
-        "en"            "Korta Världsrekord laddar fortfarande; försök igen om en liten stund."
+        "en"            "Korta Världsrekord laddar fortfarande, försök igen om en liten stund."
     }
        
     "No Records"
@@ -212,7 +212,7 @@
        
     "Player Name"
     {
-        "sv"            "Spelar namn"
+        "sv"            "Spelarnamn"
     }
        
     "Rank"
@@ -232,12 +232,12 @@
  
     "Delete Map Records"
     {
-        "sv"            "Ta borta alla rekord för den här kartan"
+        "sv"            "Ta borta alla rekord för den här banan"
     }
        
     "Delete All Map Zones"
     {
-        "sv"            "Ta bort alla kart zoner"
+        "sv"            "Ta bort alla ban zoner"
     }
  
     "Delete Player Record"
@@ -247,12 +247,12 @@
  
     "Add Map Zone"
     {
-        "sv"            "Lägg till kart zon"
+        "sv"            "Lägg till zoner"
     }
  
     "Delete Map Zone"
     {
-        "sv"            "Ta bort kart zon"
+        "sv"            "Ta bort zoner"
     }
        
     "Select zone type"
@@ -262,12 +262,12 @@
        
     "Pause Info"
     {
-        "sv"            "Timer paus. Skriv !resume för att återställa timern."
+        "sv"            "Timer pausad. Skriv !resume för att återställa timern."
     }
        
     "Start"
     {
-        "sv"            "Starta"
+        "sv"            "Start"
     }
        
     "End"
@@ -277,7 +277,7 @@
        
     "Glitch1"
     {
-        "sv"            "Stanna Timern"
+        "sv"            "Stanna Timern" 
     }
        
     "Glitch2"
@@ -287,7 +287,7 @@
        
     "Glitch3"
     {
-        "sv"            "Teleportera spelarens sista kontrollstation"
+        "sv"            "Teleportera spelaren till sista kontrollstation"
     }
        
     "Glitch4"
@@ -297,7 +297,7 @@
        
     "BonusStart"
     {
-        "sv"            "Bonus Starta"
+        "sv"            "Bonus Start"
     }
        
     "BonusEnd"
@@ -327,7 +327,7 @@
        
     "Longjump"
     {
-        "sv"            "Långa hopp"
+        "sv"            "Longjump zon"
     }
        
     "Booster"
@@ -337,7 +337,7 @@
        
     "Full Booster"
     {
-        "sv"            "Max Booster"
+        "sv"            "Full Booster"
     }
        
     "Arena"
@@ -362,7 +362,7 @@
        
     "Bullet Time"
     {
-        "sv"            "Kula Tid"
+        "sv"            "Skott Tid"
     }
        
     "No Gravity Overwrite"
@@ -377,7 +377,7 @@
        
     "NPC Next Double"
     {
-        "sv"            "Nästa Dubbla NPC"
+        "sv"            "Dubbel teleport NPC"
     }
        
     "No Boost"
@@ -397,7 +397,7 @@
        
     "Short End"
     {
-        "sv"            "Korta Slut"
+        "sv"            "Korta Slutet"
     }
        
     "Choose Player"
@@ -412,12 +412,12 @@
        
     "Custom FPS"
     {
-        "sv"            "Du har blivit överflyttad till FPSMAX spelstil, om du skulle vilja spela i NORMAL sätt fps_max till 300."
+        "sv"            "Du har blivit flyttad till en FPS_MAX spelstil, om du skulle vilja spela i NORMAL, sätt fps_max till 300."
     }
        
     "Tier Limit"
     {
-        "sv"            "Du får bara poäng dom första 2 gångerna du klarar en tier 1 eller 2 karta."
+        "sv"            "Du får bara poäng de första X gångerna du klarar en tier 1 eller 2 banan."
     }
        
     "Cheater Finish"
@@ -465,7 +465,7 @@
        
     "Not Alive"
     {
-        "sv"            "Du måste vara vid liv för att använda detta kommandot."
+        "sv"            "Du måste vara vid liv för att använda detta kommando."
     }
        
     "Hide Enabled"
@@ -480,6 +480,6 @@
        
     "There is no bonus in this map"
     {
-        "sv"            "Det finns ingen bonus på denna kartan."
+        "sv"            "Det finns ingen bonus på denna bana."
     }
 }

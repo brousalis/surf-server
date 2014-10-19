@@ -13,7 +13,7 @@
     "Advertisement"
     {
         "#format"       ""
-        "sv"        "Kolla globala ranksen med !top10, !rank. Kolla hur poäng mapen är värd med !points. Kolla listan med ranks med !chatranks."
+        "sv"        "Se globala ranken med !ptop, !prank. Se hur mycket poäng mappen är värd med !points. Se listan över rankerna med !ranks."
     }
     //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     "Phrase_Loading"
@@ -24,7 +24,7 @@
     "Phrase_Rank_Not_Enough"
     {
         "#format"       "{1:d},{2:d}"
-        "sv"        "Du måste ha åtminstånde {1} poäng för att vara berättigade för rankings. Du har för tillfället {2}."
+        "sv"        "Du måste ha åtminstone {1} poäng för att vara berättigade för rankings. Du har för tillfället {2}."
     }
     //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     "Phrase_Rank_Global"
@@ -50,7 +50,7 @@
     "Phrase_Rank_Remaining"
     {
         "#format"       "{1:d}"
-        "sv"        "Du kommer att låsa upp nästa rank nivå om {1} poäng!"
+        "sv"        "Du kommer att låsa upp nästa rank om {1} poäng!"
     }
     "Phrase_Next_None"
     {
@@ -61,7 +61,7 @@
     "Menu_Title_Next"
     {
         "#format"       "{1:d}"
-        "sv"        "[Timer] Ranking\n- Nästa {1} Spelare:"
+        "sv"        "[Timer] Ranking\n- Nästa {1} Spelare:" 
     }
     "Menu_Next_Option"
     {
@@ -143,12 +143,12 @@
     "Phrase_Info_Rank_Points"
     {
         "#format"       "{1:d},{2:s}"
-        "sv"        "{2}: Behöves åtminstånde {1} poäng."
+        "sv"        "{2}: Behövs åtminstone {1} poäng."
     }
     "Phrase_Info_Rank_Rank"
     {
         "#format"       "{1:d},{2:d},{3:s}"
-        "sv"        "{3}: Tillgänglig till ranks {1} genom {2}."
+        "sv"        "{3}: Tillgängligt för ranks {1} genom {2}."
     }
     "Phrase_Info_Rank_Display_Tag"
     {
@@ -173,7 +173,7 @@
     "Phrase_Info_Rank_Remaining"
     {
         "#format"       "{1:d}"
-        "sv"        "- Du kommer at nå denna position om {1} Poäng."
+        "sv"        "- Du kommer att nå denna position om {1} Poäng."
     }
     //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     "Phrase_Complete_Round"
@@ -184,47 +184,14 @@
     "Phrase_Complete_Round_Points"
     {
         "#format"       "{1:d},{2:s}"
-        "sv"        "Du fick {1} poäng för att avsluta {2}."
+        "sv"        "Du fick {1} poäng för att avsluta {2}." 
     }
     "Phrase_Complete_Round_Already_Multiple"
     {
         "#format"       "{1:d},{2:s}"
-        "sv"        "Du fick inga poäng för att avsluta {2} när du har slagit det minst {1} gånger!"
+        "sv"        "Du fick inga poäng för att avsluta {2} när du har slagit det minst {1} antal gånger!"
     }
-    //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *      
-    "Phrase_Points_Per_Map"
-    {
-        "#format"       "{1:d}"
-        "sv"        "Denna map är värd {1} poäng(s)!"
-    }          
-    "Phrase_Map_Worth_Exceeded"
-    {
-        "#format"       "{1:d},{2:d},{3:d}"
-        "sv"        "Denna map är värd {1} poäng(s)! Du kommer inte att få några poäng när du har slagit denna map {2}/{3} gång(s)!"
-    }          
-    "Phrase_Map_Worth_Remaining"
-    {
-        "#format"       "{1:d},{2:d},{3:d}"
-        "sv"        "Denna map är värd {1} poäng(s)! Du kan avsluta denna map {2}/{3} mer gånger(s) för poäng."
-    }
-    "Phrase_Complete_Round_Exceeded"
-    {
-        "#format"       "{1:d},{2:d}"
-        "sv"        "Du fick 0 poäng för att ha genomfört denna map när du har redan slagit den {1}/{2} gång(s) redan!"
-    }
-    "Phrase_Complete_Round_Remaining"
-    {
-        "#format"       "{1:d},{2:d},{3:d}"
-        "sv"        "Du fick {1} poäng för att ha slagit mapen; Du kan slå den {2}/{3} gånger till(s) för poäng."
-    }
-    "Phrase_Complete_Round_Last"
-    {
-        "#format"       "{1:d}"
-        "sv"        "Du fick {1} poäng för att ha slagit mapen; Du kan inte få nå mer poäng från den här mapen."
-    }      
-    //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    //v1.0.5e
-    "Menu_Core_Title"
+    "Menu_Core_Title" 
     {
         "#format"       ""
         "sv"        "[Timer] Rankings"
@@ -257,7 +224,7 @@
     "Menu_Settings_Option_Worth"
     {
         "#format"       ""
-        "sv"        "Se Map Värden"
+        "sv"        "Se Banans Värde"
     }
     "Menu_Settings_Option_Positions"
     {
