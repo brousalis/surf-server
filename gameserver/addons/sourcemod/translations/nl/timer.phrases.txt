@@ -164,20 +164,17 @@
 	
 	"World Record Menu Title"
 	{
-		"#format"		"{1:s}"
-		"nl"			"Wereld Records voor {1}"
+		"nl"			"Wereld Records"
 	}
 	
 	"Bonus World Record Menu Title"
 	{
-		"#format"		"{1:s}"
-		"nl"			"Bonus Wereld Records voor {1}"
+		"nl"			"Bonus Wereld Records"
 	}
 	
 	"Short World Record Menu Title"
 	{
-		"#format"		"{1:s}"
-		"nl"			"Korte World Records voor {1}"
+		"nl"			"Korte World Records"
 	}
 	
 	"World Record Loading"

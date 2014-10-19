@@ -164,20 +164,17 @@
        
     "World Record Menu Title"
     {
-        "#format"           "{1:s}"
-        "sv"            "Världsrekord för {1}"
+        "sv"            "Världsrekord"
     }
        
     "Bonus World Record Menu Title"
     {
-        "#format"           "{1:s}"
-        "sv"            "Bonus Världsrekord för {1}"
+        "sv"            "Bonus Världsrekord"
     }
        
     "Short World Record Menu Title"
     {
-        "#format"           "{1:s}"
-        "sv"            "Korta Världsrekord för {1}"
+        "sv"            "Korta Världsrekord"
     }
        
     "World Record Loading"
