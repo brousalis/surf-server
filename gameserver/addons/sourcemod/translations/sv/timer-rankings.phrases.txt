@@ -1,0 +1,267 @@
+"Phrases"
+{
+        "Prefix_Chat"
+        {
+                "#format"       ""
+                "sv"            "{green}[Timer] Rankings: {default}"
+        }
+        "Prefix_Hint"
+        {
+                "#format"       ""
+                "sv"            "[Timer] Rankings: "
+        }
+        "Advertisement"
+        {
+                "#format"       ""
+                "sv"            "Kolla globala ranksen med !top10, !rank. Kolla hur poäng mapen är värd med !points. Kolla listan med ranks med !chatranks."
+        }
+        //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        "Phrase_Loading"
+        {
+                "#format"       ""
+                "sv"            "Din rank information laddar fortfarande; var god och vänta!"
+        }
+        "Phrase_Rank_Not_Enough"
+        {
+                "#format"       "{1:d},{2:d}"
+                "sv"            "Du måste ha åtminstånde {1} poäng för att vara berättigade för rankings. Du har för tillfället {2}."
+        }
+        //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        "Phrase_Rank_Global"
+        {
+                "#format"       "{1:N},{2:d},{3:d},{4:d}"
+                "sv"            "{1} är rankad {2} av {3} med {4} poäng!"
+        }
+        "Phrase_Rank_Player"
+        {
+                "#format"       "{1:d},{2:d},{3:d}"
+                "sv"            "Du är rankad {1} av {2} med {3} poäng!"
+        }
+        "Phrase_Rank_Top"
+        {
+                "#format"       "{1:d},{2:d}"
+                "sv"            "Rank {1} av {2}"
+        }
+        "Phrase_Rank_None"
+        {
+                "#format"       ""
+                "sv"            "Det finns inte tillräckligt med information för att bestämma ranksen; var god och försök igen senare!"
+        }
+        "Phrase_Rank_Remaining"
+        {
+                "#format"       "{1:d}"
+                "sv"            "Du kommer att låsa upp nästa rank nivå om {1} poäng!"
+        }
+        "Phrase_Next_None"
+        {
+                "#format"       ""
+                "sv"            "Det finns inga spelare som ligger före dig!"
+        }
+        //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        "Menu_Title_Next"
+        {
+                "#format"       "{1:d}"
+                "sv"            "[Timer] Ranking\n- Nästa {1} Spelare:"
+        }
+        "Menu_Next_Option"
+        {
+                "#format"       "{1:s},{2:d},{3:d}"
+                "sv"            "(#{3}) {1}, {2} Poäng"
+        }
+        //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        "Menu_Title_Top"
+        {
+                "#format"       "{1:d}"
+                "sv"            "[Timer] Ranking\n- Topp {1} Spelare:"
+        }
+        "Menu_Top_Option"
+        {
+                "#format"       "{1:s},{2:d},{3:d}"
+                "sv"            "(#{3}) {1}, {2} Poäng"
+        }
+        "Menu_Option_Selected"
+        {
+                "#format"       ""
+                "sv"            "[*] "
+        }
+        "Menu_Option_Empty"
+        {
+                "#format"       ""
+                "sv"            "[  ] "
+        }
+        "Menu_Title_Cookie"
+        {
+                "#format"       ""
+                "sv"            "[Timer] Ranking\n- Position Settings:"
+        }
+        "Menu_Cookie_Option_Tag_Default"
+        {
+                "#format"       ""
+                "sv"            "Poängtavla tagg (Om tillgänglig)"
+        }
+        "Menu_Cookie_Option_Tag"
+        {
+                "#format"       "{1:s}"
+                "sv"            "Poängtavla tagg"
+        }
+        "Menu_Cookie_Option_Chat_Default"
+        {
+                "#format"       ""
+                "sv"            "Chat Tagg (Om tillgänglig)"
+        }
+        "Menu_Cookie_Option_Chat"
+        {
+                "#format"       "{1:s}"
+                "sv"            "Chat Tagg"
+        }
+        "Menu_Cookie_Option_Text_Default"
+        {
+                "#format"       ""
+                "sv"            "Modifierad Textfärg (Om tillgänglig)"
+        }
+        "Menu_Cookie_Option_Text"
+        {
+                "#format"       ""
+                "sv"            "Modifierad Textfärg"
+        }
+        "Menu_Cookie_Option_Stars_Default"
+        {
+                "#format"       ""
+                "sv"            "Poängtavla Stjärnor (Om tillgänglig)"
+        }
+        "Menu_Cookie_Option_Stars"
+        {
+                "#format"       ""
+                "sv"            "Poängtavla Stjärnor"
+        }
+        //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        "Menu_Title_Info"
+        {
+                "#format"       ""
+                "sv"            "[Timer] Ranking\n- Rank Position:"
+        }
+        "Phrase_Info_Rank_Points"
+        {
+                "#format"       "{1:d},{2:s}"
+                "sv"            "{2}: Behöves åtminstånde {1} poäng."
+        }
+        "Phrase_Info_Rank_Rank"
+        {
+                "#format"       "{1:d},{2:d},{3:s}"
+                "sv"            "{3}: Tillgänglig till ranks {1} genom {2}."
+        }
+        "Phrase_Info_Rank_Display_Tag"
+        {
+                "#format"       "{1:s}"
+                "sv"            "  - Poängtavla tagg: {1}"
+        }
+        "Phrase_Info_Rank_Display_Chat"
+        {
+                "#format"       "{1:s},{2:N}"
+                "sv"            "  - Chat Tagg: {1}{2}"
+        }
+        "Phrase_Info_Rank_Display_Text"
+        {
+                "#format"       "{1:s}"
+                "sv"            "  - {1}Chat Färg"
+        }
+        "Phrase_Info_Rank_Display_Stars"
+        {
+                "#format"       "{1:d}"
+                "sv"            "  - Poängtavla Stjärnor: x{1}"
+        }
+        "Phrase_Info_Rank_Remaining"
+        {
+                "#format"       "{1:d}"
+                "sv"            "- Du kommer at nå denna position om {1} Poäng."
+        }
+        //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        "Phrase_Complete_Round"
+        {
+                "#format"       "{1:d},{2:s}"
+                "sv"            "Du får {1} poäng för att ha utfört {2}."
+        }
+        "Phrase_Complete_Round_Points"
+        {
+                "#format"       "{1:d},{2:s}"
+                "sv"            "Du fick {1} poäng för att avsluta {2}."
+        }
+        "Phrase_Complete_Round_Already_Multiple"
+        {
+                "#format"       "{1:d},{2:s}"
+                "sv"            "Du fick inga poäng för att avsluta {2} när du har slagit det minst {1} gånger!"
+        }
+        //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *      
+        "Phrase_Points_Per_Map"
+        {
+                "#format"       "{1:d}"
+                "sv"            "Denna map är värd {1} poäng(s)!"
+        }              
+        "Phrase_Map_Worth_Exceeded"
+        {
+                "#format"       "{1:d},{2:d},{3:d}"
+                "sv"            "Denna map är värd {1} poäng(s)! Du kommer inte att få några poäng när du har slagit denna map {2}/{3} gång(s)!"
+        }              
+        "Phrase_Map_Worth_Remaining"
+        {
+                "#format"       "{1:d},{2:d},{3:d}"
+                "sv"            "Denna map är värd {1} poäng(s)! Du kan avsluta denna map {2}/{3} mer gånger(s) för poäng."
+        }
+        "Phrase_Complete_Round_Exceeded"
+        {
+                "#format"       "{1:d},{2:d}"
+                "sv"            "Du fick 0 poäng för att ha genomfört denna map när du har redan slagit den {1}/{2} gång(s) redan!"
+        }
+        "Phrase_Complete_Round_Remaining"
+        {
+                "#format"       "{1:d},{2:d},{3:d}"
+                "sv"            "Du fick {1} poäng för att ha slagit mapen; Du kan slå den {2}/{3} gånger till(s) för poäng."
+        }
+        "Phrase_Complete_Round_Last"
+        {
+                "#format"       "{1:d}"
+                "sv"            "Du fick {1} poäng för att ha slagit mapen; Du kan inte få nå mer poäng från den här mapen."
+        }      
+        //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        //v1.0.5e
+        "Menu_Core_Title"
+        {
+                "#format"       ""
+                "sv"            "[Timer] Rankings"
+        }
+        "Menu_Settings_Title"
+        {
+                "#format"       ""
+                "sv"            "[Timer] Rankings\n- Features:"
+        }
+        "Menu_Settings_Option_Cookie"
+        {
+                "#format"       ""
+                "sv"            "Position Settings"
+        }
+        "Menu_Settings_Option_Top"
+        {
+                "#format"       ""
+                "sv"            "Se Topp Spelare"
+        }
+        "Menu_Settings_Option_Next"
+        {
+                "#format"       ""
+                "sv"            "Se Nästa Spelare"
+        }
+        "Menu_Settings_Option_Rank"
+        {
+                "#format"       ""
+                "sv"            "Se Rank"
+        }
+        "Menu_Settings_Option_Worth"
+        {
+                "#format"       ""
+                "sv"            "Se Map Värden"
+        }
+        "Menu_Settings_Option_Positions"
+        {
+                "#format"       ""
+                "sv"            "Se Position"
+        }
+}

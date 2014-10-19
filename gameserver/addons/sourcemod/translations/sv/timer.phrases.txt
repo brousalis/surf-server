@@ -1,0 +1,485 @@
+"Phrases"
+{
+        "Force Mode"
+        {
+                "sv"                     "Du måste välja en spelstil först! Skriv !style i chatten och välj smart."
+        }
+       
+        "Round Finish"
+        {
+                "#format"               "{1:s},{2:s},{3:s},{4:d}"
+                "sv"                    "{1} klarade mappen på {2} och {4} hopp."
+        }
+       
+        "Round Finish Without Jumps"
+        {
+                "#format"               "{1:s},{2:s},{3:s}"
+                "sv"                    "{1} klarade mappen på {2}."
+        }
+       
+        "Round Finish Difficulty"
+        {
+                "#format"               "{1:s},{2:s},{3:s},{4:s},{5:d}"
+                "sv"                     "{1} klarade mappen på {2} ({4}) och {5} hopp."
+        }
+       
+        "Round Finish Difficulty Without Jumps"
+        {
+                "#format"               "{1:s},{2:s},{3:s},{4:s}"
+                "sv"                     "{1} klarade mappen på {2} ({4})!"
+        }
+        "Bonus Round Finish"
+        {
+                "#format"               "{1:s},{2:s},{3:s},{4:d}"
+                "sv"                    "{1} har klarat bonus nivån på {2} och {4} hopp."
+        }
+       
+        "Bonus Round Finish Without Jumps"
+        {
+                "#format"               "{1:s},{2:s},{3:s}"
+                "sv"                    "{1} har klarat bonus nivån på {2}."
+        }
+       
+        "Bonus Round Finish Difficulty"
+        {
+                "#format"               "{1:s},{2:s},{3:s},{4:s},{5:d}"
+                "sv"                    "{1} har klarat bonus nivån på {2} ({4}) och {5} hopp."
+        }
+       
+        "Bonus Round Finish Difficulty Without Jumps"
+        {
+                "#format"                "{1:s},{2:s},{3:s},{4:s}"
+                "sv"                     "{1} har klarat bonus nivån på {2} ({4})!"
+        }
+       
+        "Short Round Finish"
+        {
+                "#format"               "{1:s},{2:s},{3:s},{4:d}"
+                "sv"                    "{1} har klarat den korta kartan på {2} och {4} hopp."
+        }
+       
+        "Short Round Finish Without Jumps"
+        {
+                "#format"               "{1:s},{2:s},{3:s}"
+                "sv"                    "{1} har klarat den korta kartan på {2}."
+        }
+       
+        "Short Round Finish Difficulty"
+        {
+                "#format"               "{1:s},{2:s},{3:s},{4:s},{5:d}"
+                "sv"                    "{1} har klarat den korta mappen på {2} ({4}) och {5} hopp."
+        }
+       
+        "Short Round Finish Difficulty Without Jumps"
+        {
+                "#format"                "{1:s},{2:s},{3:s},{4:s}"
+                "sv"                     "{1} har klarat den korta mappen på {2} ({4})!"
+        }
+       
+        "Point Select Panel"
+        {
+                "#format"               "{1:s}"
+                "en"                    "Please stand in the {1} point of the zone,\nand click Mouse2."
+        }
+       
+        "Tier"
+        {
+                "sv"                    "Svårighetsgrad"
+        }
+       
+        "Cancel"
+        {
+                "sv"                    "Avbryt"
+        }
+       
+        "Please wait"
+        {
+                "sv"                    "Var god vänta..."
+        }
+ 
+        "FIRST"
+        {
+                "sv"                    "FÖRST"
+        }
+       
+        "SECOND"
+        {
+                "sv"                    "TVÅA"
+        }
+       
+        "Map Zone Delete"
+        {
+                "sv"                    "Map zonen togs bort utan fel."
+        }
+       
+        "Level"
+        {
+                "sv"                    "Nivå"
+        }
+       
+        "Bonus Level"
+        {
+                "sv"                    "Bonus Nivå"
+        }
+       
+        "Time"
+        {
+                "sv"                    "Tid"
+        }
+       
+        "Jumps"
+        {
+                "sv"                    "Hopp"
+        }
+       
+        "HUD Speed"
+        {
+                "sv"                    "Fart"
+        }
+ 
+        "HUD Best Times"
+        {
+                "sv"                    "Bästa Tiderna"
+        }
+       
+        "HUD Difficulty"
+        {
+                "sv"                    "Spelstilar"
+        }
+ 
+        "Rank"
+        {
+                "sv"                    "Rang"
+        }
+       
+        "No target"
+        {
+                "sv"                    "Inget mål hittades."
+        }
+       
+        "Physics Difficulty"
+        {
+                "sv"                    "Bhop Svårighetsgrad"
+        }
+       
+        "World Record Menu Title"
+        {
+                "#format"               "{1:s}"
+                "sv"                    "Världsrekord för {1}"
+        }
+       
+        "Bonus World Record Menu Title"
+        {
+                "#format"               "{1:s}"
+                "sv"                    "Bonus Världsrekord för {1}"
+        }
+       
+        "Short World Record Menu Title"
+        {
+                "#format"               "{1:s}"
+                "sv"                    "Korta Världsrekord för {1}"
+        }
+       
+        "World Record Loading"
+        {
+                "sv"                    "Världsrekorden laddar fortfarande; försök igen om en liten stund."
+        }
+       
+        "Bonus World Record Loading"
+        {
+                "en"                    "Bonus Världsrekord laddar fortfarande; försök igen om en liten stund."
+        }
+       
+        "Short World Record Loading"
+        {
+                "en"                    "Korta Världsrekord laddar fortfarande; försök igen om en liten stund."
+        }
+       
+        "No Records"
+        {
+                "sv"                    "Det finns inga rekord."
+        }
+       
+        "No Difficulty Records"
+        {
+                "sv"                    "Det finns inga rekord för den här svårighetsgraden."
+        }
+       
+        "Record Info"
+        {
+                "sv"                    "Rekord info"
+        }
+       
+        "Player Name"
+        {
+                "sv"                    "Spelar namn"
+        }
+       
+        "Rank"
+        {
+                "sv"                    "Rang"
+        }
+ 
+        "Toggle visibilty"
+        {
+                "sv"                    "Växlade spelares synlighet."
+        }
+ 
+        "Timer Management"
+        {
+                "sv"                    "Tids Förvaltning"
+        }
+ 
+        "Delete Map Records"
+        {
+                "sv"                    "Ta borta alla rekord för den här kartan"
+        }
+       
+        "Delete All Map Zones"
+        {
+                "sv"                    "Ta bort alla kart zoner"
+        }
+ 
+        "Delete Player Record"
+        {
+                "sv"                    "Ta bort rekord"
+        }
+ 
+        "Add Map Zone"
+        {
+                "sv"                    "Lägg till kart zon"
+        }
+ 
+        "Delete Map Zone"
+        {
+                "sv"                    "Ta bort kart zon"
+        }
+       
+        "Select zone type"
+        {
+                "sv"                    "Välj zon typ:"
+        }
+       
+        "Pause Info"
+        {
+                "sv"                    "Timer paus. Skriv !resume för att återställa timern."
+        }
+       
+        "Start"
+        {
+                "sv"                    "Starta"
+        }
+       
+        "End"
+        {
+                "sv"                    "Slut"
+        }
+       
+        "Glitch1"
+        {
+                "sv"                    "Stanna Timern"
+        }
+       
+        "Glitch2"
+        {
+                "sv"                    "Starta Om Timern"
+        }
+       
+        "Glitch3"
+        {
+                "sv"                    "Teleportera spelarens sista kontrollstation"
+        }
+       
+        "Glitch4"
+        {
+                "sv"                    "Teleportera spelaren till nästa kontrollstation"
+        }
+       
+        "BonusStart"
+        {
+                "sv"                    "Bonus Starta"
+        }
+       
+        "BonusEnd"
+        {
+                "sv"                    "Bonus Slut"
+        }
+       
+        "Enable NoBlock"
+        {
+                "sv"                    "Aktivera NoBlock"
+        }
+       
+        "Disable NoBlock"
+        {
+                "sv"                    "Inaktivera NoBlock"
+        }
+       
+        "Speed Limit"
+        {
+                "sv"                    "Hastighetsbegränsning"
+        }
+       
+        "Player Clip"
+        {
+                "sv"                    "Osynlig vägg"
+        }
+       
+        "Longjump"
+        {
+                "sv"                    "Långa hopp"
+        }
+       
+        "Booster"
+        {
+                "sv"                    "Booster"
+        }
+       
+        "Full Booster"
+        {
+                "sv"                    "Max Booster"
+        }
+       
+        "Arena"
+        {
+                "sv"                    "Arena"
+        }
+       
+        "Bounce Back"
+        {
+                "sv"                    "Studsa tillbaka"
+        }
+       
+        "Jail"
+        {
+                "sv"                    "Fängelse"
+        }
+       
+        "Lift"
+        {
+                "sv"                    "Lyfta"
+        }
+       
+        "Bullet Time"
+        {
+                "sv"                    "Kula Tid"
+        }
+       
+        "No Gravity Overwrite"
+        {
+                "sv"                    "Ingen gravitations överskrivning"
+        }
+       
+        "NPC Next"
+        {
+                "sv"                    "Nästa NPC"
+        }
+       
+        "NPC Next Double"
+        {
+                "sv"                    "Nästa Dubbla NPC"
+        }
+       
+        "No Boost"
+        {
+                "sv"                    "Ingen Boost"
+        }
+       
+        "Restart Normal Timer"
+        {
+                "sv"                    "Starta om Normal Timer"
+        }
+       
+        "Restart Bonus Timer"
+        {
+                "sv"                    "Starta om Bonus Timer"
+        }
+       
+        "Short End"
+        {
+                "sv"                    "Korta Slut"
+        }
+       
+        "Choose Player"
+        {
+                "sv"                    "Välj Spelare:"
+        }
+       
+        "Delete Records"
+        {
+                "sv"                    "Ta bort Rekord:"
+        }
+       
+        "Custom FPS"
+        {
+                "sv"                    "Du har blivit överflyttad till FPSMAX spelstil, om du skulle vilja spela i NORMAL sätt fps_max till 300."
+        }
+       
+        "Tier Limit"
+        {
+                "sv"                    "Du får bara poäng dom första 2 gångerna du klarar en tier 1 eller 2 karta."
+        }
+       
+        "Cheater Finish"
+        {
+                "sv"                    "Ditt rekord kommer inte sparas om du har fuskat, besök våran hemsida för att begära unban!"
+        }
+       
+        "Owned"
+        {
+                "#format"               "{1:s},{2:s}"
+                "sv"                    "{1} har slagit {2} i en utmaning till döden!"
+        }
+       
+        "Coop Win"
+        {
+                "#format"               "{1:s},{2:s}"
+                "sv"                    "{1} och {2} har klarat de som ett lag!"
+        }
+       
+        "Coop Fail"
+        {
+                "#format"               "{1:s},{2:s}"
+                "sv"                    "{1} har avbrytit samarbetet med {2}!"
+        }
+       
+        "Adminmode Enabled"
+        {
+                "sv"                    "Zonadminstratörsläge aktiverat."
+        }
+       
+        "Adminmode Disabled"
+        {
+                "sv"                    "Zonadminstratörsläge avaktiverat."
+        }
+       
+        "Zones Reloaded"
+        {
+                "sv"                    "Zoner omladdade."
+        }
+       
+        "No Target"
+        {
+                "sv"                    "Ogiltigt mål"
+        }
+       
+        "Not Alive"
+        {
+                "sv"                    "Du måste vara vid liv för att använda detta kommandot."
+        }
+       
+        "Hide Enabled"
+        {
+                "sv"                    "Andra spelare är nu gömda."
+        }
+       
+        "Hide Disabled"
+        {
+                "sv"                    "Andra spelare är nu synliga."
+        }
+       
+        "There is no bonus in this map"
+        {
+                "sv"                    "Det finns ingen bonus på denna kartan."
+        }
+}
