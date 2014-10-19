@@ -1149,19 +1149,10 @@ public Action:StartTouchTrigger(caller, activator)
 		return;
 	
 	if (activator < 1 || activator > MaxClients)
-	{
 		return;
-	}
 	
 	if (!IsClientInGame(activator))
-	{
 		return;
-	}
-	
-	if (!IsPlayerAlive(activator))
-	{
-		return;
-	}
 	
 	new client = activator;
 	
@@ -1199,6 +1190,9 @@ public Action:StartTouchTrigger(caller, activator)
 	Call_Finish();
 	
 	g_bZone[zone][client] = true;
+	
+	if (!IsPlayerAlive(activator))
+		return;
 	
 	if (g_mapZones[zone][Type] == ZtReset)
 	{
@@ -1447,23 +1441,15 @@ public Action:EndTouchTrigger(caller, activator)
 {
 	if(!g_bZonesLoaded)
 		return;
+	
 	if(g_mapZonesCount < 1)
 		return;
 	
 	if (activator < 1 || activator > MaxClients)
-	{
 		return;
-	}
 	
 	if (!IsClientInGame(activator))
-	{
 		return;
-	}
-	
-	if (!IsPlayerAlive(activator))
-	{
-		return;
-	}
 	
 	new client = activator;
 	
@@ -1491,12 +1477,15 @@ public Action:EndTouchTrigger(caller, activator)
 		return;
 	}
 	
-	g_bZone[zone][client] = false;
-	
 	Call_StartForward(g_OnClientEndTouchZoneType);
 	Call_PushCell(client);
 	Call_PushCell(g_mapZones[zone][Type]);
 	Call_Finish();
+	
+	g_bZone[zone][client] = false;
+	
+	if (!IsPlayerAlive(activator))
+		return;
 	
 	if(Timer_GetForceStyle() && !Timer_GetPickedStyle(client))
 	{
