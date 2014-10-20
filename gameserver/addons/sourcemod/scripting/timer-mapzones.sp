@@ -157,6 +157,8 @@ new bool:g_bAllowRoundEnd = false;
 
 new bool:g_bSpawnSpotlights;
 
+new Float:g_fSpawnTime[MAXPLAYERS+1];
+
 new bool:g_bTeleportersDisabled;
 
 public Plugin:myinfo =
@@ -1494,7 +1496,9 @@ public Action:EndTouchTrigger(caller, activator)
 	
 	if(Timer_GetForceStyle() && !Timer_GetPickedStyle(client))
 	{
-		FakeClientCommand(client, "sm_restart");
+		if(GetGameTime()-g_fSpawnTime[client] > 0.5)
+			Tele_Level(client, LEVEL_START);
+		
 		FakeClientCommand(client, "sm_style");
 		CPrintToChat(client, PLUGIN_PREFIX, "Force Mode");
 	}
@@ -1881,8 +1885,6 @@ public Action:Timer_LoadMapzones(Handle:timer, any:data)
 	return Plugin_Stop;
 }
 
-new Float:g_fSpawnTime[MAXPLAYERS+1];
-
 public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -1902,7 +1904,7 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	{
 		// Prevent infinite loop
 		if(GetGameTime()-g_fSpawnTime[client] > 0.5)
-			Client_Restart(client, false);
+			Tele_Level(client, LEVEL_START);
 	}
 	
 	if(IsClientInGame(client) && IsPlayerAlive(client))
