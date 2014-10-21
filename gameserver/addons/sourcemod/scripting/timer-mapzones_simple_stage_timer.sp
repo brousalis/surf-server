@@ -54,23 +54,23 @@ stock PrintTimeDiff(client, level, lastlevel)
 			if(g_MapLevelBestTime[level][client] == 0.0)
 			{
 				Timer_SecondsToTime(time, buffer, sizeof(buffer), 2);
-				PrintCenterText(client, "-00:00.00");
+				CPrintToChat(client,"{lightred}[{green}Timer{lightred}]{green} Checkpoint {lightred}[{green}-00:00.00{lightred}]");
 				g_MapLevelBestTime[level][client] = time;
 			}
 			else if(g_MapLevelBestTime[level][client] > time)
 			{
 				Timer_SecondsToTime(g_MapLevelBestTime[level][client]-time, buffer, sizeof(buffer), 2);
-				PrintCenterText(client, "-%s", buffer);
+				CPrintToChat(client, "{lightred}[{green}Timer{lightred}]{green} Checkpoint {lightred}[{green}-%s{lightred}]", buffer);
 				g_MapLevelBestTime[level][client] = time;
 			}
 			else if(g_MapLevelBestTime[level][client] == time)
 			{
-				PrintCenterText(client, "+00:00.00");
+				CPrintToChat(client, "{lightred}[{green}Timer{lightred}]{green} Checkpoint {lightred}[+00:00.00]");
 			}
 			else if(g_MapLevelBestTime[level][client] < time)
 			{
 				Timer_SecondsToTime(time-g_MapLevelBestTime[level][client], buffer, sizeof(buffer), 2);
-				PrintCenterText(client, "+%s", buffer);
+				CPrintToChat(client, "{lightred}[{green}Timer{lightred}]{green} Checkpoint {lightred}[+%s]", buffer);
 			}
 		}
 	}
