@@ -487,7 +487,7 @@
 	
 	"Hide Enabled"
 	{
-		"en"			"Other players are now hidden."
+		"en"			"Other players are now hidden, type !unhide to show players again."
 	}
 	
 	"Hide Disabled"
