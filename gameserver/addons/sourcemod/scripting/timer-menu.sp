@@ -107,7 +107,7 @@ public Init_Commands()
 	Add_Command("!spec - Switch to spectators", "timer-spec.smx");
 	Add_Command("!specfar - Spectate player with highest level process", "timer-spec.smx");
 	Add_Command("!specmost - Spectate player with most spectators", "timer-spec.smx");
-	Add_Command("!speclist - List players spactating you", "timer-spec.smx");
+	Add_Command("!speclist - List players spectating you", "timer-spec.smx");
 	Add_Command("!georank - Displays Top countrys", "timer-rankings_georank.smx");
 	Add_Command("!lj - Toogle Long Jump Stats", "timer-ljstats.smx");
 	Add_Command("!ljtop - Displays Top Long Jumps", "timer-ljstats.smx");
