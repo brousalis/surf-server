@@ -674,6 +674,7 @@ DisplaySelectZoneTypeMenu(client, category)
 	else if(category == 1)
 	{
 		AddMenuItem(menu, "level", "Level");
+		AddMenuItem(menu, "checkpoint", "Checkpoint");
 		AddMenuItem(menu, "start", "Start");
 		AddMenuItem(menu, "end", "End");
 		AddMenuItem(menu, "short_end", "Short End");
@@ -682,6 +683,7 @@ DisplaySelectZoneTypeMenu(client, category)
 	else if(category == 2)
 	{
 		AddMenuItem(menu, "bonuslevel", "Bonus Level");
+		AddMenuItem(menu, "bonuscheckpoint", "Bonus LCheckpoint");
 		AddMenuItem(menu, "bonusstart", "Bonus Start");
 		AddMenuItem(menu, "bonusend", "Bonus End");
 		AddMenuItem(menu, "back", "Back");
@@ -871,6 +873,26 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				ZoneName = lvlbuffer;
 				valid = true;
 			}
+			else if(StrEqual(info, "checkpoint"))
+			{
+				zonetype = ZtCheckpoint;
+				new String:lvlbuffer[32];
+				
+				new hcount = LEVEL_START;
+				for (new zone = 0; zone < g_mapZonesCount; zone++)
+				{
+					if(g_mapZones[zone][Type] != ZtCheckpoint) continue;
+					if(g_mapZones[zone][Level_Id] <= hcount) continue;
+					hcount = g_mapZones[zone][Level_Id];
+				}
+				hcount++;
+				
+				FormatEx(lvlbuffer, sizeof(lvlbuffer), "Checkpoint %d", hcount);
+				
+				LvlID = hcount;
+				ZoneName = lvlbuffer;
+				valid = true;
+			}
 			else if(StrEqual(info, "bonusstart"))
 			{
 				zonetype = ZtBonusStart;
@@ -885,15 +907,35 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				LvlID = LEVEL_BONUS_END;
 				valid = true;
 			}
-			else if(StrEqual(info, "bonuslevel"))
+			else if(StrEqual(info, "bonuscheckpoint"))
 			{
-				zonetype = ZtBonusLevel;
+				zonetype = ZtBonusCheckpoint;
 				new String:lvlbuffer[32];
 				
 				new hcount = LEVEL_BONUS_START;
 				for (new zone = 0; zone < g_mapZonesCount; zone++)
 				{
 					if(g_mapZones[zone][Type] != ZtBonusLevel) continue;
+					if(g_mapZones[zone][Level_Id] <= hcount) continue;
+					hcount = g_mapZones[zone][Level_Id];
+				}
+				hcount++;
+				
+				FormatEx(lvlbuffer, sizeof(lvlbuffer), "Bonus-Checkpoint %d", hcount);
+				
+				LvlID = hcount;
+				ZoneName = lvlbuffer;
+				valid = true;
+			}
+			else if(StrEqual(info, "bonuslevel"))
+			{
+				zonetype = ZtBonusCheckpoint;
+				new String:lvlbuffer[32];
+				
+				new hcount = LEVEL_BONUS_START;
+				for (new zone = 0; zone < g_mapZonesCount; zone++)
+				{
+					if(g_mapZones[zone][Type] != ZtBonusCheckpoint) continue;
 					if(g_mapZones[zone][Level_Id] <= hcount) continue;
 					hcount = g_mapZones[zone][Level_Id];
 				}
@@ -1404,7 +1446,35 @@ public Action:StartTouchTrigger(caller, activator)
 			Call_Finish();
 		}
 	}
+	else if (g_mapZones[zone][Type] == ZtCheckpoint)
+	{
+		if(Timer_GetTrack(client) == TRACK_NORMAL)
+		{
+			new lastlevel = g_mapZones[g_iClientLastTrackZone[client]][Level_Id];
+			g_iClientLastTrackZone[client] = zone;
+			
+			Call_StartForward(g_OnClientStartTouchLevel);
+			Call_PushCell(client);
+			Call_PushCell(g_mapZones[g_iClientLastTrackZone[client]][Level_Id]);
+			Call_PushCell(lastlevel);
+			Call_Finish();
+		}
+	}
 	else if (g_mapZones[zone][Type] == ZtBonusLevel)
+	{
+		if(Timer_GetTrack(client) == TRACK_BONUS)
+		{
+			new lastlevel = g_mapZones[g_iClientLastTrackZone[client]][Level_Id];
+			g_iClientLastTrackZone[client] = zone;
+			
+			Call_StartForward(g_OnClientStartTouchBonusLevel);
+			Call_PushCell(client);
+			Call_PushCell(g_mapZones[g_iClientLastTrackZone[client]][Level_Id]);
+			Call_PushCell(lastlevel);
+			Call_Finish();
+		}
+	}
+	else if (g_mapZones[zone][Type] == ZtBonusCheckpoint)
 	{
 		if(Timer_GetTrack(client) == TRACK_BONUS)
 		{
