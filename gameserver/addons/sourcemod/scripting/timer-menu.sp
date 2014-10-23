@@ -79,9 +79,9 @@ public Init_Commands()
 	Add_Command("!pause - Pause the timer", "timer-core.smx", g_Settings[PauseEnable]);
 	Add_Command("!resume - Resume the timer", "timer-core.smx", g_Settings[PauseEnable]);
 	Add_Command("!tauto - Toggle auto bhop", "timer-physics");
-	Add_Command("!stage - Teleport to any Stage", "timer-core.smx", g_Settings[LevelTeleportEnable]);
+	Add_Command("!stage - Teleport to any stage", "timer-core.smx", g_Settings[LevelTeleportEnable]);
 	Add_Command("!tpto - Teleport to another player", "timer-teleme.smx", g_Settings[PlayerTeleportEnable]);
-	Add_Command("!stuck - Teleport last stage (penalty time)", "timer-mapzones.smx", g_Settings[PlayerTeleportEnable]);
+	Add_Command("!stuck - Teleport to previous stage (penalty time)", "timer-mapzones.smx", g_Settings[PlayerTeleportEnable]);
 	Add_Command("!hide - Hide other players", "timer-hide.smx");
 	Add_Command("!nc - Turn On/Off noclip mode", "timer-mapzones.smx", g_Settings[NoclipEnable]);
 	Add_Command("!hud - Customize your HUD", "timer-hud.smx");
@@ -105,10 +105,10 @@ public Init_Commands()
 	Add_Command("!styleinfo - Displays Styleinfo", "timer-physics_info.smx");
 	Add_Command("!mapinfo - Displays info about current map", "timer-mapinfo.smx");
 	Add_Command("!spec - Switch to spectators", "timer-spec.smx");
-	Add_Command("!specfar - Spectate player with highest level process", "timer-spec.smx");
+	Add_Command("!specfar - Spectate player with highest level progress", "timer-spec.smx");
 	Add_Command("!specmost - Spectate player with most spectators", "timer-spec.smx");
 	Add_Command("!speclist - List players spectating you", "timer-spec.smx");
-	Add_Command("!georank - Displays Top countrys", "timer-rankings_georank.smx");
+	Add_Command("!georank - Displays Top countries", "timer-rankings_georank.smx");
 	Add_Command("!lj - Toogle Long Jump Stats", "timer-ljstats.smx");
 	Add_Command("!ljtop - Displays Top Long Jumps", "timer-ljstats.smx");
 	Add_Command("!ljsound - Toogle Long Jump Sounds", "timer-ljstats.smx");
