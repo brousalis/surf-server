@@ -150,6 +150,8 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	
 	CreateNative("Timer_GetPoints", Native_GetPoints);
 	CreateNative("Timer_GetPointRank", Native_GetPointRank);
+	CreateNative("Timer_GetTag", Native_GetTag);
+	CreateNative("Timer_GetChatTag", Native_GetChatTag);
 	CreateNative("Timer_SetPoints", Native_SetPoints);
 	CreateNative("Timer_AddPoints", Native_AddPoints);
 	CreateNative("Timer_RemovePoints", Native_RemovePoints);
@@ -2590,6 +2592,20 @@ public Native_GetPoints(Handle:plugin, numParams)
 public Native_GetPointRank(Handle:plugin, numParams)
 {
 	return g_iCurrentRank[GetNativeCell(1)];
+}
+
+public Native_GetTag(Handle:plugin, numParams)
+{
+	decl String:sTagBuffer[1024];
+	GetArrayString(g_hCfgArray_DisplayTag, g_iCurrentIndex[GetNativeCell(3)], sTagBuffer, sizeof(sTagBuffer));
+	SetNativeString(1, sTagBuffer, GetNativeCell(2));
+}
+
+public Native_GetChatTag(Handle:plugin, numParams)
+{
+	decl String:sTagBuffer[1024];
+	GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[GetNativeCell(3)], sTagBuffer, sizeof(sTagBuffer));
+	SetNativeString(1, sTagBuffer, GetNativeCell(2));
 }
 
 public Native_SetPoints(Handle:plugin, numParams)

@@ -14,6 +14,8 @@ forward OnPlayerRankLoaded(client, rank);
 /* Natives */
 native Timer_GetPoints(client);
 native Timer_GetPointRank(client);
+native Timer_GetTag(String:tag[], size, client);
+native Timer_GetChatTag(String:tag[], size, client);
 native Timer_SetPoints(client, points);
 native Timer_AddPoints(client, points);
 native Timer_RemovePoints(client, points);
