@@ -2603,9 +2603,9 @@ public Native_GetTag(Handle:plugin, numParams)
 
 public Native_GetChatTag(Handle:plugin, numParams)
 {
-	decl String:sTagBuffer[1024];
-	GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[GetNativeCell(3)], sTagBuffer, sizeof(sTagBuffer));
-	SetNativeString(1, sTagBuffer, GetNativeCell(2));
+	decl String:sChatTagBuffer[1024];
+	GetArrayString(g_hCfgArray_DisplayChat, g_iCurrentIndex[GetNativeCell(3)], sChatTagBuffer, sizeof(sChatTagBuffer));
+	SetNativeString(1, sChatTagBuffer, GetNativeCell(2));
 }
 
 public Native_SetPoints(Handle:plugin, numParams)
