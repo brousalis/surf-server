@@ -38,6 +38,9 @@ public __pl_timer_rankings_SetNTVOptional()
 {
 	MarkNativeAsOptional("Timer_GetPoints");
 	MarkNativeAsOptional("Timer_GetPointRank");
+	MarkNativeAsOptional("Timer_GetTag");
+	MarkNativeAsOptional("Timer_GetChatTag");
+	MarkNativeAsOptional("Timer_GetPointRank");
 	MarkNativeAsOptional("Timer_SavePoints");
 	MarkNativeAsOptional("Timer_AddPoints");
 	MarkNativeAsOptional("Timer_SetPoints");
