@@ -25,7 +25,12 @@ public Action:Event_PlayerJump(Handle:event, const String:name[], bool:dontBroad
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 
 	if(Timer_IsPlayerTouchingZoneType(client, ZtStart) || Timer_IsPlayerTouchingZoneType(client, ZtBonusStart))
-		CreateTimer(0.05, DelayedSlowDown, client);
+	{
+		if(IsClientInGame(client))
+		{
+			CreateTimer(0.05, DelayedSlowDown, client);
+		}
+	}
 
 	return Plugin_Continue;
 }
