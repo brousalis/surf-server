@@ -26,10 +26,7 @@ public Action:Event_PlayerJump(Handle:event, const String:name[], bool:dontBroad
 
 	if(Timer_IsPlayerTouchingZoneType(client, ZtStart) || Timer_IsPlayerTouchingZoneType(client, ZtBonusStart))
 	{
-		if(IsClientInGame(client))
-		{
-			CreateTimer(0.05, DelayedSlowDown, client);
-		}
+		CreateTimer(0.05, DelayedSlowDown, client);
 	}
 
 	return Plugin_Continue;
@@ -37,7 +34,10 @@ public Action:Event_PlayerJump(Handle:event, const String:name[], bool:dontBroad
 
 public Action:DelayedSlowDown(Handle:timer, any:client)
 {
-	CheckVelocity(client, 1, 120.0);
+	if(IsClientInGame(client))
+	{
+		CheckVelocity(client, 1, 120.0);
+	}
 }
 
 public OnClientEndTouchZoneType(client, MapZoneType:type)
