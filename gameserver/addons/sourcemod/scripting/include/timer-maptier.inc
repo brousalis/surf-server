@@ -3,6 +3,15 @@
 #endif
 #define _timer_maptier_included
 
+/* Forwards */
+
+/**
+ * Called when all tiers are loaded from the database.
+ *
+ * @noreturn
+ */
+forward OnMapTiersLoaded();
+
 /* Natives */
 native Timer_GetTier(track);
 native Timer_SetTier(track, tier);

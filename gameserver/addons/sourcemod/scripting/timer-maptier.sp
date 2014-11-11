@@ -16,6 +16,8 @@ new String:g_currentMap[32];
 new g_maptier[2];
 new g_stagecount[2];
 
+new Handle:g_OnMapTiersLoaded;
+
 public Plugin:myinfo =
 {
     name        = "[Timer] Map Tier System",
@@ -50,6 +52,8 @@ public OnPluginStart()
 	RegAdminCmd("sm_stagecount", Command_StageCount, ADMFLAG_RCON, "sm_stagecount [bonus]");
 	
 	AutoExecConfig(true, "timer-maptier");
+	
+	g_OnMapTiersLoaded = CreateGlobalForward("OnMapTiersLoaded", ET_Event);
 }
 
 public OnMapStart()
@@ -122,6 +126,7 @@ public LoadTierCallback(Handle:owner, Handle:hndl, const String:error[], any:tra
 	
 	while (SQL_FetchRow(hndl))
 	{
+		g_maptier[track] = 0;
 		g_maptier[track] = SQL_FetchInt(hndl, 0);
 		g_stagecount[track] = SQL_FetchInt(hndl, 1);
 	}
@@ -129,7 +134,7 @@ public LoadTierCallback(Handle:owner, Handle:hndl, const String:error[], any:tra
 	if (g_maptier[track] == 0)
 	{
 		decl String:query[128];
-		FormatEx(query, sizeof(query), "INSERT INTO maptier (map, track, tier, stagecount) VALUES ('%s','%d','1', '0');", g_currentMap, track);
+		FormatEx(query, sizeof(query), "INSERT IGNORE INTO maptier (map, track, tier, stagecount) VALUES ('%s','%d','1', '1');", g_currentMap, track);
 
 		if (g_hSQL == INVALID_HANDLE)
 			ConnectSQL();
@@ -152,7 +157,10 @@ public LoadTierAllCallback(Handle:owner, Handle:hndl, const String:error[], any:
 	}
 	
 	if(g_hMaps != INVALID_HANDLE)
+	{
 		CloseHandle(g_hMaps);
+		g_hMaps = INVALID_HANDLE;
+	}
 	
 	g_hMaps = CreateKeyValues("data");
 	
@@ -160,8 +168,8 @@ public LoadTierAllCallback(Handle:owner, Handle:hndl, const String:error[], any:
 	{
 		decl String:map[32];
 		SQL_FetchString(hndl, 0, map, sizeof(map));
-		new tier = SQL_FetchInt(hndl, 1);
-		new track = SQL_FetchInt(hndl, 2);
+		new track = SQL_FetchInt(hndl, 1);
+		new tier = SQL_FetchInt(hndl, 2);
 		new stagecount = SQL_FetchInt(hndl, 3);
 		
 		KvJumpToKey(g_hMaps, map, true);
@@ -179,6 +187,9 @@ public LoadTierAllCallback(Handle:owner, Handle:hndl, const String:error[], any:
 		
 		KvRewind(g_hMaps);
 	}
+	
+	Call_StartForward(g_OnMapTiersLoaded);
+	Call_Finish();
 }
 
 public InsertTierCallback(Handle:owner, Handle:hndl, const String:error[], any:track)
@@ -274,16 +285,24 @@ public Native_GetMapTier(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new tier = 1;
 	
+	if(g_hMaps == INVALID_HANDLE)
+		return -1;
+	
 	new Handle:hMaps = CloneHandle(g_hMaps);
-	KvJumpToKey(hMaps, map, false);
-	if(track == TRACK_NORMAL)
+	KvRewind(hMaps);
+	
+	if(KvJumpToKey(hMaps, map, false))
 	{
-		tier = KvGetNum(hMaps, "tier");
+		if(track == TRACK_NORMAL)
+		{
+			tier = KvGetNum(hMaps, "tier");
+		}
+		else if(track == TRACK_BONUS)
+		{
+			tier = KvGetNum(hMaps, "tier_bonus");
+		}
 	}
-	else if(track == TRACK_BONUS)
-	{
-		tier = KvGetNum(hMaps, "tier_bonus");
-	}
+	
 	CloseHandle(hMaps);
 	
 	return tier;
@@ -301,15 +320,20 @@ public Native_GetMapStageCount(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new stagecount = 1;
 	
+	if(g_hMaps == INVALID_HANDLE)
+		return -1;
+	
 	new Handle:hMaps = CloneHandle(g_hMaps);
-	KvJumpToKey(hMaps, map, false);
-	if(track == TRACK_NORMAL)
+	if(KvJumpToKey(hMaps, map, false))
 	{
-		stagecount = KvGetNum(hMaps, "stagecount");
-	}
-	else if(track == TRACK_BONUS)
-	{
-		stagecount = KvGetNum(hMaps, "stagecount_bonus");
+		if(track == TRACK_NORMAL)
+		{
+			stagecount = KvGetNum(hMaps, "stagecount");
+		}
+		else if(track == TRACK_BONUS)
+		{
+			stagecount = KvGetNum(hMaps, "stagecount_bonus");
+		}
 	}
 	CloseHandle(hMaps);
 	
