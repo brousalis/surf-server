@@ -151,8 +151,11 @@ public LoadTierAllCallback(Handle:owner, Handle:hndl, const String:error[], any:
 		return;
 	}
 	
-	if(g_hMaps == INVALID_HANDLE)
+	if(g_hMaps != INVALID_HANDLE)
+	{
 		CloseHandle(g_hMaps);
+		g_hMaps = INVALID_HANDLE;
+	}
 	
 	g_hMaps = CreateKeyValues("data");
 	
@@ -274,15 +277,21 @@ public Native_GetMapTier(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new tier = 1;
 	
+	if(g_hMaps == INVALID_HANDLE)
+		return -1;
+	
 	new Handle:hMaps = CloneHandle(g_hMaps);
-	KvJumpToKey(hMaps, map, false);
-	if(track == TRACK_NORMAL)
+	
+	if(KvJumpToKey(hMaps, map, false))
 	{
-		tier = KvGetNum(hMaps, "tier");
-	}
-	else if(track == TRACK_BONUS)
-	{
-		tier = KvGetNum(hMaps, "tier_bonus");
+		if(track == TRACK_NORMAL)
+		{
+			tier = KvGetNum(hMaps, "tier");
+		}
+		else if(track == TRACK_BONUS)
+		{
+			tier = KvGetNum(hMaps, "tier_bonus");
+		}
 	}
 	CloseHandle(hMaps);
 	
@@ -301,15 +310,20 @@ public Native_GetMapStageCount(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new stagecount = 1;
 	
+	if(g_hMaps == INVALID_HANDLE)
+		return -1;
+	
 	new Handle:hMaps = CloneHandle(g_hMaps);
-	KvJumpToKey(hMaps, map, false);
-	if(track == TRACK_NORMAL)
+	if(KvJumpToKey(hMaps, map, false))
 	{
-		stagecount = KvGetNum(hMaps, "stagecount");
-	}
-	else if(track == TRACK_BONUS)
-	{
-		stagecount = KvGetNum(hMaps, "stagecount_bonus");
+		if(track == TRACK_NORMAL)
+		{
+			stagecount = KvGetNum(hMaps, "stagecount");
+		}
+		else if(track == TRACK_BONUS)
+		{
+			stagecount = KvGetNum(hMaps, "stagecount_bonus");
+		}
 	}
 	CloseHandle(hMaps);
 	
