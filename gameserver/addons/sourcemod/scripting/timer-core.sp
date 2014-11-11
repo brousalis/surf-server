@@ -1267,7 +1267,7 @@ public CreditsPanel2(client)
 	DrawPanelText(panel, "Miu - Strafe stats");
 	DrawPanelText(panel, "Inami - Macrodox detection");
 	DrawPanelText(panel, "SMAC Team - Auto jump trigger detection");
-	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "fr3shz - CS:GO pack for surf map");
 	DrawPanelItem(panel, "- Back -");
 	DrawPanelItem(panel, "- Next -");
 	DrawPanelItem(panel, "- Exit -");
