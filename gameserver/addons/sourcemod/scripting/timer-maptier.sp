@@ -126,6 +126,7 @@ public LoadTierCallback(Handle:owner, Handle:hndl, const String:error[], any:tra
 	
 	while (SQL_FetchRow(hndl))
 	{
+		g_maptier[track] = 0;
 		g_maptier[track] = SQL_FetchInt(hndl, 0);
 		g_stagecount[track] = SQL_FetchInt(hndl, 1);
 	}
@@ -133,7 +134,7 @@ public LoadTierCallback(Handle:owner, Handle:hndl, const String:error[], any:tra
 	if (g_maptier[track] == 0)
 	{
 		decl String:query[128];
-		FormatEx(query, sizeof(query), "INSERT INTO maptier (map, track, tier, stagecount) VALUES ('%s','%d','1', '0');", g_currentMap, track);
+		FormatEx(query, sizeof(query), "INSERT IGNORE INTO maptier (map, track, tier, stagecount) VALUES ('%s','%d','1', '1');", g_currentMap, track);
 
 		if (g_hSQL == INVALID_HANDLE)
 			ConnectSQL();
@@ -167,8 +168,8 @@ public LoadTierAllCallback(Handle:owner, Handle:hndl, const String:error[], any:
 	{
 		decl String:map[32];
 		SQL_FetchString(hndl, 0, map, sizeof(map));
-		new tier = SQL_FetchInt(hndl, 1);
-		new track = SQL_FetchInt(hndl, 2);
+		new track = SQL_FetchInt(hndl, 1);
+		new tier = SQL_FetchInt(hndl, 2);
 		new stagecount = SQL_FetchInt(hndl, 3);
 		
 		KvJumpToKey(g_hMaps, map, true);
@@ -288,6 +289,7 @@ public Native_GetMapTier(Handle:plugin, numParams)
 		return -1;
 	
 	new Handle:hMaps = CloneHandle(g_hMaps);
+	KvRewind(hMaps);
 	
 	if(KvJumpToKey(hMaps, map, false))
 	{
@@ -300,6 +302,7 @@ public Native_GetMapTier(Handle:plugin, numParams)
 			tier = KvGetNum(hMaps, "tier_bonus");
 		}
 	}
+	
 	CloseHandle(hMaps);
 	
 	return tier;
