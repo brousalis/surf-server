@@ -152,7 +152,10 @@ public LoadTierAllCallback(Handle:owner, Handle:hndl, const String:error[], any:
 	}
 	
 	if(g_hMaps != INVALID_HANDLE)
+<<<<<<< HEAD
 	{
+=======
+>>>>>>> origin/mapchooser-extended-devel
 		CloseHandle(g_hMaps);
 		g_hMaps = INVALID_HANDLE;
 	}

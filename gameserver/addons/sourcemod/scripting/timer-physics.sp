@@ -142,6 +142,8 @@ new g_iButtonOffs_vecPosition2 = -1;
 new g_iButtonOffs_flSpeed = -1;
 new g_iButtonOffs_spawnflags = -1;
 
+new Float:g_fLastTimeLadderUsed[MAXPLAYERS+1];
+
 //SDK Stuff
 new Handle:g_hSDK_Touch = INVALID_HANDLE;
 
@@ -507,6 +509,9 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	if(!IsPlayerAlive(client))
 		return Plugin_Continue;
 	
+	if(Client_IsOnLadder(client))
+		g_fLastTimeLadderUsed[client] = GetGameTime();
+	
 	new style = Timer_GetStyle(client);
 	new Float:fGameTime = GetGameTime();
 	new bool:abuse = false;
@@ -784,6 +789,12 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 		}
 	}
 	
+	// Freestyle for players which touched a ladder before
+	if(g_Physics[style][StyleLadderFreestyleCooldown] > 0.0 && GetGameTime() - g_fLastTimeLadderUsed[client] < g_Physics[style][StyleLadderFreestyleCooldown])
+	{
+		abuse = false;
+	}
+	
 	if(abuse)
 	{
 		PunishAbuse(client);
@@ -896,7 +907,6 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 		{
 			if(!g_bStayOnGround[client] && g_fBoost[client] > 0.0) 
 			{
-				//PrintToChat(client, "Ready to boost");
 				g_bPushWait[client] = false;
 			}
 			
@@ -1037,7 +1047,7 @@ public MenuHandler_Physics(Handle:menu, MenuAction:action, client, itemNum)
 			{
 				if((g_iBhopButtonCount == 0 && g_iBhopDoorCount == 0) && g_Physics[style][StyleMultiBhop] > 0)
 				{
-					CPrintToChat(client, "%s Multihop and Nohop are not available on this map.", PLUGIN_PREFIX2);
+					CPrintToChat(client, PLUGIN_PREFIX, "Multi bhop not available", client);
 					if(IsClientInGame(client)) FakeClientCommand(client, "sm_style");
 				}
 				else
@@ -1095,7 +1105,7 @@ CreateDifficultyMenu(client)
 				DisplayMenu(menu, client, MENU_TIME_FOREVER);
 			}
 		}
-		else CPrintToChatAll("%s No styles enabled.", PLUGIN_PREFIX2);
+		else CPrintToChatAll(PLUGIN_PREFIX, "No styles enabled");
 	}
 }
 
@@ -1481,7 +1491,7 @@ public Entity_Touch(bhop,client)
 					g_bBhopDoorClientAvoid[doorID][client] = true;
 					avoid = true;
 					if(g_iBhopClientAvoid[client] == 1) 
-						CPrintToChat(client, "%s You failed vegas mission. You need to restart to collect all vegas plattforms.", PLUGIN_PREFIX2);
+						CPrintToChat(client, PLUGIN_PREFIX, "You failed vegas mission", client);
 				}
 			}
 			else if(buttonID != -1  && g_bBhopButtonAvoid[buttonID])
@@ -1491,7 +1501,7 @@ public Entity_Touch(bhop,client)
 					g_bBhopButtonClientAvoid[buttonID][client] = true;
 					avoid = true;
 					if(g_iBhopClientAvoid[client] == 1) 
-						CPrintToChat(client, "%s You failed vegas mission. You need to restart to collect all vegas plattforms.", PLUGIN_PREFIX2);
+						CPrintToChat(client, PLUGIN_PREFIX, "You failed vegas mission", client);
 				}
 			}
 			
@@ -1533,14 +1543,17 @@ public Entity_Touch(bhop,client)
 					{
 						Timer_AddPoints(client, g_Settings[PointsVegas]+(g_Settings[PointsVegasAdd]*g_iVegasWinCount));
 						Timer_SavePoints(client);
-						CPrintToChatAll("%s %N Collected all vegas plattforms and got %d points for completing vegas mission.", PLUGIN_PREFIX2, client, g_Settings[PointsVegasAdd]*g_iVegasWinCount);
+						
+						decl String:sName[32];
+						GetClientName(client, sName, sizeof(sName));
+						CPrintToChatAll(PLUGIN_PREFIX, "Vegas won", sName, g_Settings[PointsVegasAdd]*g_iVegasWinCount);
 						AlterBhopBlocks(true);
 						AlterBhopBlocks(false);
 					}
 				
 					if(g_iVegasWinCount >= g_Settings[VegasMapMaxGames])
 					{
-						CPrintToChatAll("%s This was the last vegas mission until mapchange!", PLUGIN_PREFIX2);
+						CPrintToChatAll(PLUGIN_PREFIX, "Vegas final game");
 					}
 				}
 				else

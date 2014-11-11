@@ -345,3 +345,27 @@ stock CheckVelocity(client, type, Float:maxspeed)
 		}
 	}
 }
+
+stock GetAimOrigin(client, Float:hOrigin[3]) 
+{
+    new Float:vAngles[3], Float:fOrigin[3];
+    GetClientEyePosition(client,fOrigin);
+    GetClientEyeAngles(client, vAngles);
+
+    new Handle:trace = TR_TraceRayFilterEx(fOrigin, vAngles, MASK_SHOT, RayType_Infinite, TraceEntityFilterPlayer);
+
+    if(TR_DidHit(trace)) 
+    {
+        TR_GetEndPosition(hOrigin, trace);
+        CloseHandle(trace);
+        return 1;
+    }
+
+    CloseHandle(trace);
+    return 0;
+}
+
+public bool:TraceEntityFilterPlayer(entity, contentsMask) 
+{
+    return entity > MaxClients;
+}

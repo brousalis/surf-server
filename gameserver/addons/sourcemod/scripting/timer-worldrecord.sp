@@ -537,7 +537,7 @@ public AdminMenu_ReloadCache(Handle:topmenu,
 		FormatEx(buffer, maxlength, "Refresh Cache");
 	} else if (action == TopMenuAction_SelectOption) 
 	{
-		CPrintToChatAll("%s Worldrecord cache reloaded!", PLUGIN_PREFIX2);
+		CPrintToChatAll(PLUGIN_PREFIX, "Word Record Cache Loaded");
 		RefreshCache();
 	}
 }
@@ -989,7 +989,7 @@ CreateRankedWRMenu(client)
 	{
 		new Handle:menu = CreateMenu(MenuHandler_RankedWR);
 
-		SetMenuTitle(menu, "World Record", client);
+		SetMenuTitle(menu, "%t", "World Record Menu Title", client);
 		
 		SetMenuExitBackButton(menu, true);
 		SetMenuExitButton(menu, true);
@@ -1060,7 +1060,7 @@ CreateRankedBWRMenu(client)
 	{
 		new Handle:menu = CreateMenu(MenuHandler_RankedBWR);
 
-		SetMenuTitle(menu, "Bonus World Record", client);
+		SetMenuTitle(menu, "%t", "Bonus World Record Menu Title", client);
 		
 		SetMenuExitBackButton(menu, true);
 		SetMenuExitButton(menu, true);
@@ -1131,7 +1131,7 @@ CreateRankedSWRMenu(client)
 	{
 		new Handle:menu = CreateMenu(MenuHandler_RankedSWR);
 
-		SetMenuTitle(menu, "Short World Record", client);
+		SetMenuTitle(menu, "%t", "Short World Record Menu Title", client);
 		
 		SetMenuExitBackButton(menu, true);
 		SetMenuExitButton(menu, true);

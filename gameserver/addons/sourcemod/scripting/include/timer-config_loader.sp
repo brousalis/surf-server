@@ -235,6 +235,9 @@ enum Styles
 	Float:StyleHoverScale,
 	Float:StyleMaxSpeed,
 	bool:StyleAntiBhop,
+	bool:StyleRealBhop,
+	StyleRealBhopMaxFrames,
+	Float:StyleRealBhopFramePenalty,
 	
 	//Damage
 	bool:StylePvP,
@@ -253,7 +256,8 @@ enum Styles
 	StyleFPSRedirectStyle,
 	StyleAutoStrafe,
 	StyleQuakeBhop,
-	StyleStrafeBoost
+	StyleStrafeBoost,
+	Float:StyleLadderFreestyleCooldown
 }
 
 new g_Physics[MAX_STYLES][Styles];
@@ -339,8 +343,8 @@ stock LoadTimerSettings()
 			g_Settings[ZoneSpotlights] = bool:KvGetNum(hKv, "zone_spotlights_enable", 1);
 			g_Settings[NoblockEnable] = bool:KvGetNum(hKv, "noblock_enable", 1);
 			g_Settings[NPCConfirm] = bool:KvGetNum(hKv, "npc_confirm", 1);
-			g_Settings[TeleportOnSpawn] = bool:KvGetNum(hKv, "teleport_onspawn", 1);
-			g_Settings[TeleportOnRestart] = bool:KvGetNum(hKv, "teleport_onrestart", 1);
+			g_Settings[TeleportOnSpawn] = bool:KvGetNum(hKv, "teleport_onspawn", 0);
+			g_Settings[TeleportOnRestart] = bool:KvGetNum(hKv, "teleport_onrestart", 0);
 			g_Settings[LevelTeleportEnable] = bool:KvGetNum(hKv, "level_teleport_enable", 1);
 			g_Settings[StuckEnable] = bool:KvGetNum(hKv, "stuck_enable", 1);
 			g_Settings[StuckPenaltyTime] = KvGetFloat(hKv, "stuck_penalty_time", 10.0);
@@ -555,6 +559,7 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StyleForceHalfSideways] = KvGetNum(hKv, "hsw", 0);
 			g_Physics[g_StyleCount][StylePunishType] = KvGetNum(hKv, "punish_type", 1);
 			g_Physics[g_StyleCount][StylePunishMovementControlCooldown] = KvGetFloat(hKv, "punish_movement_cooldown", 1.0);
+			g_Physics[g_StyleCount][StyleLadderFreestyleCooldown] = KvGetFloat(hKv, "ladder_freestyle_cooldown", 0.0);
 			
 			if(g_Physics[g_StyleCount][StyleForceHalfSideways] > 0)
 			{
@@ -588,6 +593,9 @@ stock LoadPhysics()
 			g_Physics[g_StyleCount][StyleQuakeBhop] = KvGetNum(hKv, "quake_bhop", 0);
 			g_Physics[g_StyleCount][StyleStrafeBoost] = KvGetNum(hKv, "strafe_boost", 0);
 			g_Physics[g_StyleCount][StyleAntiBhop] = bool:KvGetNum(hKv, "anti_bhop", 0);
+			g_Physics[g_StyleCount][StyleRealBhop] = bool:KvGetNum(hKv, "real_bhop", 0);
+			g_Physics[g_StyleCount][StyleRealBhopMaxFrames] = KvGetNum(hKv, "real_bhop_maxframes", 11);
+			g_Physics[g_StyleCount][StyleRealBhopFramePenalty] = KvGetFloat(hKv, "real_bhop_framepenalty", 0.78);
 			
 			KvGetString(hKv, "tag_name", g_Physics[g_StyleCount][StyleTagName], 32);
 			KvGetString(hKv, "tag_shortname", g_Physics[g_StyleCount][StyleTagShortName], 32);
