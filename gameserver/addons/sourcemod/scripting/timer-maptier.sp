@@ -16,6 +16,8 @@ new String:g_currentMap[32];
 new g_maptier[2];
 new g_stagecount[2];
 
+new Handle:g_OnMapTiersLoaded;
+
 public Plugin:myinfo =
 {
     name        = "[Timer] Map Tier System",
@@ -50,6 +52,8 @@ public OnPluginStart()
 	RegAdminCmd("sm_stagecount", Command_StageCount, ADMFLAG_RCON, "sm_stagecount [bonus]");
 	
 	AutoExecConfig(true, "timer-maptier");
+	
+	g_OnMapTiersLoaded = CreateGlobalForward("OnMapTiersLoaded", ET_Event);
 }
 
 public OnMapStart()
@@ -182,6 +186,9 @@ public LoadTierAllCallback(Handle:owner, Handle:hndl, const String:error[], any:
 		
 		KvRewind(g_hMaps);
 	}
+	
+	Call_StartForward(g_OnMapTiersLoaded);
+	Call_Finish();
 }
 
 public InsertTierCallback(Handle:owner, Handle:hndl, const String:error[], any:track)
