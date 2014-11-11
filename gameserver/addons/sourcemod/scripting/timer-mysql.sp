@@ -3,11 +3,13 @@
 #include <sourcemod>
 #include <sdktools>
 #include <smlib>
-#include <timer>
 #include <timer-mysql>
 #include <timer-config_loader.sp>
 #include <timer-stocks>
 #include <timer-logging>
+
+#undef REQUIRE_PLUGIN
+#include <timer>
 
 new Handle:g_hSQL;
 
