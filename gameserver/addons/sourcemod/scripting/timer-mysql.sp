@@ -8,9 +8,6 @@
 #include <timer-stocks>
 #include <timer-logging>
 
-#undef REQUIRE_PLUGIN
-#include <timer>
-
 new Handle:g_hSQL;
 
 new String:g_Version[] = PL_VERSION;
