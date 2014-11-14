@@ -302,14 +302,14 @@ stock LoadTimerSettings()
 		decl String:sSectionName[32];
 		KvGetSectionName(hKv, sSectionName, sizeof(sSectionName));
 		
-		if(StrEqual(sSectionName, "Timer"))
+		if(StrEqual(sSectionName, "Timer", false))
 		{
 			g_Settings[PauseEnable] = bool:KvGetNum(hKv, "pause_enable", 1);
 			g_Settings[StartEnable] = bool:KvGetNum(hKv, "start_enable", 1);
 			g_Settings[RestartEnable] = bool:KvGetNum(hKv, "restart_enable", 1);
 			g_Settings[TerminateRoundEnd] = bool:KvGetNum(hKv, "terminate_round", 1);
 		}
-		else if(StrEqual(sSectionName, "Physics"))
+		else if(StrEqual(sSectionName, "Physics", false))
 		{
 			g_Settings[MultimodeEnable] = bool:KvGetNum(hKv, "multimode_enable", 1);
 			g_Settings[BhopEnable] = bool:KvGetNum(hKv, "bhop_enable", 1);
@@ -330,14 +330,14 @@ stock LoadTimerSettings()
 			g_Settings[VegasCollectChance] = KvGetFloat(hKv, "vegas_collect_chance", 20.0);
 			g_Settings[VegasCollectChanceAdd] = KvGetFloat(hKv, "vegas_collect_chance_add", 3.0);
 		}
-		else if(StrEqual(sSectionName, "Multibhop"))
+		else if(StrEqual(sSectionName, "Multibhop", false))
 		{
 			g_Settings[MultiBhopEnable] = bool:KvGetNum(hKv, "multibhop_enable", 1);
 			g_Settings[MultiBhopJumpTime] = KvGetFloat(hKv, "multibhop_jump_time", 0.5);
 			g_Settings[MultiBhopDelay] = KvGetFloat(hKv, "multibhop_delay", 0.15);
 			g_Settings[MultiBhopCooldown] = KvGetFloat(hKv, "multibhop_cooldown", 1.0);
 		}
-		else if(StrEqual(sSectionName, "Mapzone"))
+		else if(StrEqual(sSectionName, "Mapzone", false))
 		{
 			g_Settings[ZoneSprites] = bool:KvGetNum(hKv, "zone_sprites_enable", 1);
 			g_Settings[ZoneSpotlights] = bool:KvGetNum(hKv, "zone_spotlights_enable", 1);
@@ -364,7 +364,7 @@ stock LoadTimerSettings()
 			g_Settings[DisableDoorSounds] = bool:KvGetNum(hKv, "disable_door_sounds", 1);
 			g_Settings[ForceMapEndEnable] = bool:KvGetNum(hKv, "force_map_end", 1);
 		}
-		else if(StrEqual(sSectionName, "Hud"))
+		else if(StrEqual(sSectionName, "Hud", false))
 		{
 			g_Settings[HUDUseDeathRank] = bool:KvGetNum(hKv, "hud_use_death_rank", 1);
 			g_Settings[HUDUseClanTag] = bool:KvGetNum(hKv, "hud_use_clan_tag", 1);
@@ -396,7 +396,7 @@ stock LoadTimerSettings()
 			g_Settings[HUDSpeedMaxEnable] = bool:KvGetNum(hKv, "hud_show_speedmax", 1);
 			g_Settings[HUDStrafesEnable] = bool:KvGetNum(hKv, "hud_show_strafes", 1);
 		}
-		else if(StrEqual(sSectionName, "Teams"))
+		else if(StrEqual(sSectionName, "Teams", false))
 		{
 			g_Settings[ChallengeEnable] = bool:KvGetNum(hKv, "challenge_enable", 0);
 			g_Settings[ChallengeIgnoreCooldown] = KvGetFloat(hKv, "challenge_ignore_cooldown", 60.0);
@@ -413,7 +413,7 @@ stock LoadTimerSettings()
 			
 			g_Settings[RaceEnable] = bool:KvGetNum(hKv, "race_enable", 0);
 		}
-		else if(StrEqual(sSectionName, "Points"))
+		else if(StrEqual(sSectionName, "Points", false))
 		{
 			g_Settings[PointsEnable] = bool:KvGetNum(hKv, "points_enable", 1);
 			g_Settings[PointsAnyway] = KvGetNum(hKv, "points_anyway", 1);
@@ -456,7 +456,7 @@ stock LoadTimerSettings()
 			g_Settings[PointsTotalBonus_2001] = KvGetNum(hKv, "points_total_bonus_2001", 200);
 			
 		}
-		else if(StrEqual(sSectionName, "Tierscale"))
+		else if(StrEqual(sSectionName, "Tierscale", false))
 		{
 			g_Settings[Tier1Scale] = KvGetFloat(hKv, "points_tier1", 1.0);
 			g_Settings[Tier2Scale] = KvGetFloat(hKv, "points_tier2", 2.0);
@@ -469,12 +469,12 @@ stock LoadTimerSettings()
 			g_Settings[Tier9Scale] = KvGetFloat(hKv, "points_tier9", 9.0);
 			g_Settings[Tier10Scale] = KvGetFloat(hKv, "points_tier10", 10.0);
 		}
-		else if(StrEqual(sSectionName, "Worldrecord"))
+		else if(StrEqual(sSectionName, "Worldrecord", false))
 		{
 			g_Settings[ShortWrEnable] = bool:KvGetNum(hKv, "worldrecord_shortwr_enable", 1);
 			g_Settings[BonusWrEnable] = bool:KvGetNum(hKv, "worldrecord_bonuswr_enable", 1);
 		}
-		else if(StrEqual(sSectionName, "Weapons"))
+		else if(StrEqual(sSectionName, "Weapons", false))
 		{
 			g_Settings[AllowWeapons] = bool:KvGetNum(hKv, "weapons_allow", 0);
 			g_Settings[RemoveWeapons] = bool:KvGetNum(hKv, "weapons_remove", 1);
