@@ -2228,30 +2228,33 @@ Client_BoostForward(client, Float:scale, Float:maxspeed)
 	}
 }
 
-PunishAbuse(client)
+PunishAbuse(client, type = -1)
 {
 	new style = Timer_GetStyle(client);
 	
-	if(g_Physics[style][StylePunishType] == 0)
+	if(type == -1)
+		type = g_Physics[style][StylePunishType];
+	
+	if(type <= 0)
 		return;
 	
 	//Block controls
-	if(g_Physics[style][StylePunishType] == 1)
+	if(type == 1)
 	{
 		Block_MovementControl(client);
 	}
 	//Stop movement
-	else if(g_Physics[style][StylePunishType] == 2)
+	else if(type == 2)
 	{
 		CheckVelocity(client, 1, 250.0);
 	}
 	//Reset timer
-	else if(g_Physics[style][StylePunishType] == 3)
+	else if(type == 3)
 	{
 		Timer_Reset(client);
 	}
 	//Teleport to startzone
-	else if(g_Physics[style][StylePunishType] == 4)
+	else if(type == 4)
 	{
 		if(Timer_GetTrack(client) == TRACK_BONUS)
 			Timer_ClientTeleportLevel(client, LEVEL_BONUS_START);
@@ -2259,12 +2262,12 @@ PunishAbuse(client)
 			Timer_ClientTeleportLevel(client, LEVEL_START);
 	}
 	//Suiside
-	else if(g_Physics[style][StylePunishType] == 5)
+	else if(type == 5)
 	{
 		ForcePlayerSuicide(client);
 	}
 	//Teleport to last checkpoint
-	else if(g_Physics[style][StylePunishType] == 6)
+	else if(type == 6)
 	{
 		new levelid = Timer_GetClientLevelID(client);
 		Timer_ClientTeleportLevel(client, levelid);

@@ -52,7 +52,9 @@ enum MapZoneType
 	ZtFreeStyle, //37
 	ZtBlockUse, //38
 	ZtBlockDuck, //39
-	ZtBlockAttack //40
+	ZtBlockAttack, //40
+	ZtCheckpoint, //41
+	ZtBonusCheckpoint //42
 }
 
 /* Forwards */
