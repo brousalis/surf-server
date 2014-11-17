@@ -2060,15 +2060,14 @@ public Action:Timer_CheckNoClip(Handle:timer)
 				continue;
 			
 			//has player noclip?
-			if(Timer_IsPlayerTouchingZoneType(client, ZtAntiNoclip))
+			if(GetEntProp(client, Prop_Send, "movetype", 1) == 8)
 			{
-				SetEntityMoveType(client, MOVETYPE_WALK);
-				Timer_Stop(client, false);
-				ResetBhopAvoid(client);
-				ResetBhopCollect(client);
-			}
-			else if(GetEntProp(client, Prop_Send, "movetype", 1) == 8)
-			{
+				if(Timer_IsPlayerTouchingZoneType(client, ZtAntiNoclip))
+				{
+					SetEntityMoveType(client, MOVETYPE_WALK);
+					CheckVelocity(client, 1, 0.1);
+				}
+				
 				Timer_Stop(client, false);
 				ResetBhopAvoid(client);
 				ResetBhopCollect(client);
