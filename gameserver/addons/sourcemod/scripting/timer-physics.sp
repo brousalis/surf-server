@@ -20,7 +20,7 @@
 
 enum UserJumps
 {
-	Float:LastJumpTimes[3],
+	Float:LastJumpTimes[4],
 }
 
 new bool:g_timerMapzones = false;
@@ -472,19 +472,25 @@ public Action:Event_PlayerJump(Handle:event, const String:name[], bool:dontBroad
 		CreateTimer(0.05, DelayedSlowDown, client);
 	}
 	
-	if(g_Physics[style][StyleAntiBhop])
+	if(g_Physics[style][StyleAntiBhop] > 0)
 	{
-		new Float:timediff = time - g_userJumps[client][LastJumpTimes][2];
+		new Float:timediff = time - g_userJumps[client][LastJumpTimes][3];
+		g_userJumps[client][LastJumpTimes][3] = g_userJumps[client][LastJumpTimes][2];
 		g_userJumps[client][LastJumpTimes][2] = g_userJumps[client][LastJumpTimes][1];
 		g_userJumps[client][LastJumpTimes][1] = g_userJumps[client][LastJumpTimes][0];
 		g_userJumps[client][LastJumpTimes][0] = time;
 		
-		if (timediff <= 3.0)
+		if (timediff <= 4.0)
 		{
-			g_userJumps[client][LastJumpTimes][2] = 0.0;
-			g_userJumps[client][LastJumpTimes][1] = 0.0;
-			g_userJumps[client][LastJumpTimes][0] = 0.0;
-			CreateTimer(0.05, DelayedSlowDownDefault, client);
+			// If set to 1 prevent bhop everywhere, if set to 2 use it only inside start zones
+			if(g_Physics[style][StyleAntiBhop] == 1 || Timer_IsPlayerTouchingZoneType(client, ZtStart) || Timer_IsPlayerTouchingZoneType(client, ZtBonusStart))
+			{
+				g_userJumps[client][LastJumpTimes][0] = 0.0;
+				g_userJumps[client][LastJumpTimes][1] = 0.0;
+				g_userJumps[client][LastJumpTimes][2] = 0.0;
+				g_userJumps[client][LastJumpTimes][3] = 0.0;
+				CreateTimer(0.05, DelayedSlowDownDefault, client);
+			}
 		}
 	}
 	
