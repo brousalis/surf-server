@@ -312,6 +312,9 @@ public OnPluginStart()
 	
 	//Check timeleft to enforce mapchange
 	if(g_Settings[ForceMapEndEnable]) CreateTimer(1.0, CheckRemainingTime, INVALID_HANDLE, TIMER_REPEAT);
+	
+	//Fix rotation bugs
+	CreateTimer(300.0, Timer_FixAngRotation, _, TIMER_REPEAT);
 }
 
 public OnLibraryAdded(const String:name[])
@@ -4804,6 +4807,31 @@ stock ToggleTeleporters(client)
 			GetEntPropString(entity, Prop_Data, "m_iName", targetname, sizeof(targetname));
 			Format(targetname, sizeof(targetname), "%s_disabled", targetname);
 			DispatchKeyValue(entity, "targetname", targetname);
+		}
+	}
+}
+
+public Action:Timer_FixAngRotation(Handle:timer)
+{
+	FixAngRotation();
+	return Plugin_Continue;
+}
+
+stock FixAngRotation()
+{
+	new entity;
+	while ((entity = FindEntityByClassname(entity, "func_rotating")) != -1)
+	{
+		new Float:ang[3];
+		GetEntPropVector(entity, Prop_Send, "m_angRotation", ang);
+		
+		if(ang[0] > 360.0 || ang[1] > 360.0 || ang[2] > 360.0 || ang[0] < -360.0 || ang[1] < -360.0 || ang[2] < -360.0)
+		{
+			ang[0] = float(RoundToFloor(ang[0]) % 60);
+			ang[1] = float(RoundToFloor(ang[1]) % 60);
+			ang[2] = float(RoundToFloor(ang[2]) % 60);
+			
+			SetEntPropVector(entity, Prop_Send, "m_angRotation", ang);
 		}
 	}
 }
