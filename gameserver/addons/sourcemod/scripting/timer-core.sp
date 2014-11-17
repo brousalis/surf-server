@@ -1211,7 +1211,7 @@ public CreditsPanel(client)
 	DrawPanelText(panel, " ");
 	DrawPanelText(panel, "Alongub - Timer 1.x");
 	DrawPanelText(panel, "Das D - Player Info, Timer Info");
-	DrawPanelText(panel, "Paduh - Chatrank");
+	DrawPanelText(panel, "Panduh - Chatrank");
 	DrawPanelText(panel, "Peace-Maker - bot mimic 2, backwards and much more");
 	DrawPanelText(panel, "Shavit - Added new features and supported plugin");
 	DrawPanelText(panel, "0wn3r - Many small improvements");
