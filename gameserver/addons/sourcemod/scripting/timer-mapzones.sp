@@ -1094,7 +1094,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			else if(StrEqual(info, "antinoclip"))
 			{
 				zonetype = ZtAntiNoclip;
-				ZoneName = "Anmti Noclip";
+				ZoneName = "Anti Noclip";
 				valid = true;
 			}
 			else if(StrEqual(info, "restart_normal"))
