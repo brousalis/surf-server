@@ -117,15 +117,19 @@ public Action:Cmd_SpecList(client, args)
 		
 		if(Client_IsValid(i, true))
 		{
-			new SpecMode = GetEntProp(i, Prop_Send, "m_iObserverMode");
-			
-			if(SpecMode == 4 || SpecMode == 5)
+			// missing check for IsClientInGame in Client_IsValid?
+			if(IsClientInGame(i))
 			{
-				if(GetEntPropEnt(i, Prop_Send, "m_hObserverTarget") == client)
+				new SpecMode = GetEntProp(i, Prop_Send, "m_iObserverMode");
+				
+				if(SpecMode == 4 || SpecMode == 5)
 				{
-					spectators++;
-					if(spectators > 1) Format(buffer, sizeof(buffer), "%s, %N", buffer, i);
-					else Format(buffer, sizeof(buffer), "%N", i);
+					if(GetEntPropEnt(i, Prop_Send, "m_hObserverTarget") == client)
+					{
+						spectators++;
+						if(spectators > 1) Format(buffer, sizeof(buffer), "%s, %N", buffer, i);
+						else Format(buffer, sizeof(buffer), "%N", i);
+					}
 				}
 			}
 		}
