@@ -2142,7 +2142,7 @@ public Action:Command_NoclipMe(client, args)
 	
 	if(g_Settings[NoclipEnable])
 	{
-		if (GetEntityMoveType(client) != MOVETYPE_NOCLIP)
+		if (GetEntityMoveType(client) != MOVETYPE_NOCLIP && !Timer_IsPlayerTouchingZoneType(client, ZtAntiNoclip))
 		{
 			FakeClientCommand(client, "sm_pause");
 			SetEntityMoveType(client, MOVETYPE_NOCLIP);
