@@ -2058,8 +2058,16 @@ public Action:Timer_CheckNoClip(Handle:timer)
 		{
 			if(IsClientConnected(client) && IsClientSourceTV(client))
 				continue;
+			
 			//has player noclip?
-			if(GetEntProp(client, Prop_Send, "movetype", 1) == 8)
+			if(Timer_IsPlayerTouchingZoneType(client, ZtAntiNoclip))
+			{
+				SetEntityMoveType(client, MOVETYPE_WALK);
+				Timer_Stop(client, false);
+				ResetBhopAvoid(client);
+				ResetBhopCollect(client);
+			}
+			else if(GetEntProp(client, Prop_Send, "movetype", 1) == 8)
 			{
 				Timer_Stop(client, false);
 				ResetBhopAvoid(client);

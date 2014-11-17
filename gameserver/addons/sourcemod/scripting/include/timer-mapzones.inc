@@ -54,7 +54,8 @@ enum MapZoneType
 	ZtBlockDuck, //39
 	ZtBlockAttack, //40
 	ZtCheckpoint, //41
-	ZtBonusCheckpoint //42
+	ZtBonusCheckpoint, //42
+	ZtAntiNoclip //43
 }
 
 /* Forwards */

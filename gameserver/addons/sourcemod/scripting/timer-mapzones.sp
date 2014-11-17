@@ -720,6 +720,7 @@ DisplaySelectZoneTypeMenu(client, category)
 		AddMenuItem(menu, "nogravity", "No Gravity verwrite");
 		AddMenuItem(menu, "noboost", "Disable Style Boost");
 		AddMenuItem(menu, "block", "Toggle Noblock");
+		AddMenuItem(menu, "antinoclip", "Anti Noclip");
 		AddMenuItem(menu, "back", "Back");
 	}
 	else if(category == 5)
@@ -745,7 +746,6 @@ DisplaySelectZoneTypeMenu(client, category)
 	else if(category == 7)
 	{
 		AddMenuItem(menu, "limit", "Speed Limit");
-		
 		AddMenuItem(menu, "booster", "Booster");
 		AddMenuItem(menu, "fullbooster", "Fullbooster");
 		AddMenuItem(menu, "back", "Back");
@@ -1089,6 +1089,12 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			{
 				zonetype = ZtNoBoost;
 				ZoneName = "No Boost";
+				valid = true;
+			}
+			else if(StrEqual(info, "antinoclip"))
+			{
+				zonetype = ZtAntiNoclip;
+				ZoneName = "Anmti Noclip";
 				valid = true;
 			}
 			else if(StrEqual(info, "restart_normal"))
