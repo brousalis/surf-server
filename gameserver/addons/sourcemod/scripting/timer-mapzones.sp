@@ -503,6 +503,7 @@ DisplayAdjustZoneMenu(client, category)
 	{
 		AddMenuItem(menu, "point1", "Adjust point 1");
 		AddMenuItem(menu, "point2", "Adjust point 2");
+		AddMenuItem(menu, "world", "Use world boundary");
 		AddMenuItem(menu, "done", "Done (Select type)");
 	}
 	else if(category == 1)
@@ -548,6 +549,21 @@ public ZoneAdjust(Handle:menu, MenuAction:action, client, itemNum)
 		{
 			if(StrEqual(info, "back"))
 			{
+				DisplayAdjustZoneMenu(client, 0);
+			}
+			else if(StrEqual(info, "world"))
+			{
+				decl Float:Mins[3];
+				decl Float:Maxs[3];
+				GetEntPropVector(0, Prop_Send, "m_WorldMins", Mins);
+				GetEntPropVector(0, Prop_Send, "m_WorldMaxs", Maxs);
+				
+				g_mapZoneEditors[client][Point1][0] = Mins[0];
+				g_mapZoneEditors[client][Point1][1] = Mins[1];
+				g_mapZoneEditors[client][Point1][2] = Mins[2];
+				g_mapZoneEditors[client][Point2][0] = Maxs[0];
+				g_mapZoneEditors[client][Point2][1] = Maxs[1];
+				g_mapZoneEditors[client][Point2][2] = Maxs[2];
 				DisplayAdjustZoneMenu(client, 0);
 			}
 			else if(StrEqual(info, "done"))
