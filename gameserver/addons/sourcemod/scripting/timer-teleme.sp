@@ -115,23 +115,26 @@ public MenuHandlerTeleMe(Handle:menu, MenuAction:action, client, param2)
 		new target = StringToInt(info);
 		if(found)
 		{
-			if(IsPlayerAlive(client) && IsPlayerAlive(target))
+			if(IsClientInGame(client) && IsClientInGame(target))
 			{
-				new Float:origin[3], Float:angles[3];
-				GetClientAbsOrigin(target, origin);
-				GetClientAbsAngles(target, angles);
-				
-				//Do not reset his pretty timer if it can be paused
-				if (g_Settings[PauseEnable])
+				if(IsPlayerAlive(client) && IsPlayerAlive(target))
 				{
-					FakeClientCommand(client, "sm_pause");
+					new Float:origin[3], Float:angles[3];
+					GetClientAbsOrigin(target, origin);
+					GetClientAbsAngles(target, angles);
+					
+					//Do not reset his pretty timer if it can be paused
+					if (g_Settings[PauseEnable])
+					{
+						FakeClientCommand(client, "sm_pause");
+					}
+					else
+					{
+						Timer_Reset(client);
+					}		
+					
+					TeleportEntity(client, origin, angles, NULL_VECTOR);
 				}
-				else
-				{
-					Timer_Reset(client);
-				}		
-				
-				TeleportEntity(client, origin, angles, NULL_VECTOR);
 			}
 		}
 	}
