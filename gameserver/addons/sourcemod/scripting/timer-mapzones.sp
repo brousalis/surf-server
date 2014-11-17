@@ -683,7 +683,7 @@ DisplaySelectZoneTypeMenu(client, category)
 	else if(category == 2)
 	{
 		AddMenuItem(menu, "bonuslevel", "Bonus Level");
-		AddMenuItem(menu, "bonuscheckpoint", "Bonus LCheckpoint");
+		AddMenuItem(menu, "bonuscheckpoint", "Bonus Checkpoint");
 		AddMenuItem(menu, "bonusstart", "Bonus Start");
 		AddMenuItem(menu, "bonusend", "Bonus End");
 		AddMenuItem(menu, "back", "Back");
