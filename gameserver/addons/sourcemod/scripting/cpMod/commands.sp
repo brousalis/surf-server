@@ -340,7 +340,7 @@ public ClearClient(client)
 		g_CurrentCp[client] = -1;
 		g_WholeCp[client] = 0;
 		
-		PrintToChat(client, "%t", "Cleared", YELLOW,LIGHTGREEN,YELLOW);
+		if(g_bRestore) PrintToChat(client, "%t", "Cleared", YELLOW,LIGHTGREEN,YELLOW);
 	}else //plugin disabled
 		PrintToChat(client, "%t", "PluginDisabled", YELLOW,LIGHTGREEN,YELLOW);
 }
