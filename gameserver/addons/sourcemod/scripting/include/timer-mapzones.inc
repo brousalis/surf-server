@@ -23,9 +23,9 @@ enum MapZoneType
     ZtBonusEnd, //8
     ZtBonusLevel, //9
     ZtNPC_Next, //10
-	ZtBlock, //11
+	ZtBlock, //11 - Not working
 	ZtLimitSpeed, //12
-	ZtPlayerClip, //13
+	ZtPlayerClip, //13 - Not working
 	ZtLongjump, //14
 	ZtBooster, //15
 	ZtFullBooster, //16

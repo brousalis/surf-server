@@ -3361,100 +3361,79 @@ SpawnZoneEntitys(zone)
 
 SpawnZoneTrigger(zone)
 {
-	//Center
-	new Float:origin[3];
-	origin[0] = (g_mapZones[zone][Point1][0] + g_mapZones[zone][Point2][0]) / 2.0;
-	origin[1] = (g_mapZones[zone][Point1][1] + g_mapZones[zone][Point2][1]) / 2.0;
-	origin[2] = g_mapZones[zone][Point1][2] / 1.0;
+	// Center
+	new Float:center[3];
+	center[0] = (g_mapZones[zone][Point1][0] + g_mapZones[zone][Point2][0]) / 2.0;
+	center[1] = (g_mapZones[zone][Point1][1] + g_mapZones[zone][Point2][1]) / 2.0;
+	center[2] = g_mapZones[zone][Point1][2];
 	
-	//Min & max bounds
+	// Min & max bounds
 	new Float:minbounds[3]; 
 	new Float:maxbounds[3]; 
 	
 	minbounds[0] = FloatAbs(g_mapZones[zone][Point1][0]-g_mapZones[zone][Point2][0]) / -2.0;
 	minbounds[1] = FloatAbs(g_mapZones[zone][Point1][1]-g_mapZones[zone][Point2][1]) / -2.0;
-	minbounds[2] = -1.0;
+	minbounds[2] = -1.0; // Just to be save it's not buggy like a defective contact
 	
 	maxbounds[0] = FloatAbs(g_mapZones[zone][Point1][0]-g_mapZones[zone][Point2][0]) / 2.0;
 	maxbounds[1] = FloatAbs(g_mapZones[zone][Point1][1]-g_mapZones[zone][Point2][1]) / 2.0;
-	maxbounds[2] = FloatAbs(g_mapZones[zone][Point1][2]-g_mapZones[zone][Point2][2]) / 1.0;
+	maxbounds[2] = FloatAbs(g_mapZones[zone][Point1][2]-g_mapZones[zone][Point2][2]);
 	
-	//Resize trigger (default 16.0)
+	// Resize trigger (by default it's set to 16.0).  A player is 32.0 unity wide, so we need to resize the trigger to have a touching border between the legs
 	minbounds[0] += g_Settings[ZoneResize];
 	minbounds[1] += g_Settings[ZoneResize];
 	minbounds[2] += g_Settings[ZoneResize];
-	
 	maxbounds[0] -= g_Settings[ZoneResize];
 	maxbounds[1] -= g_Settings[ZoneResize];
 	maxbounds[2] -= g_Settings[ZoneResize];
 	
-	//Spawn trigger
+	// Spawn trigger
 	new entity = CreateEntityByName("trigger_multiple");
 	if (entity > 0)
 	{
-		if(!IsValidEntity(entity)) {
-			PrintToServer("DEBUG ----> Invalid entity index %i", entity);
-			return;
-		}
-			
+		// Attach zoneID to the entity
 		g_MapZoneEntityZID[entity] = zone;
 		
+		// Give our trigger_multiple a model (It's totally unimportant which one you are using)
 		SetEntityModel(entity, "models/props_junk/wood_crate001a.mdl"); 
 		
 		if(IsValidEntity(entity))
-		{ 
-			
-			// Spawnflags:	1 - only a player can trigger this by touch, makes it so a NPC cannot fire a trigger_multiple
+		{
+			// Spawnflags for "trigger_multiple"
+			// 1 - only a player can trigger this by touch, makes it so a NPC cannot fire a trigger_multiple
 			// 2 - Won't fire unless triggering ent's view angles are within 45 degrees of trigger's angles (in addition to any other conditions), so if you want the player to only be able to fire the entity at a 90 degree angle you would do ",angles,0 90 0," into your spawnstring.
 			// 4 - Won't fire unless player is in it and pressing use button (in addition to any other conditions), you must make a bounding box,(max\mins) for this to work.
 			// 8 - Won't fire unless player/NPC is in it and pressing fire button, you must make a bounding box,(max\mins) for this to work.
 			// 16 - only non-player NPCs can trigger this by touch
 			// 128 - Start off, has to be activated by a target_activate to be touchable/usable
 			// 256 - multiple players can trigger the entity at the same time
-			DispatchKeyValue(entity, "spawnflags", "257"); 
-			DispatchKeyValue(entity, "StartDisabled", "0");
-			DispatchKeyValue(entity, "OnTrigger", "!activator,IgnitePlayer,,0,-1");
 			
+			DispatchKeyValue(entity, "spawnflags", "257"); 
+			
+			DispatchKeyValue(entity, "StartDisabled", "0");
+			
+			// Give our entity a unique name tag, so we can delete it also if the plugins was reloaded without deleting them
 			new String:EntName[256];
 			FormatEx(EntName, sizeof(EntName), "#TIMER_Trigger_%d", g_mapZones[zone][Id]);
 			DispatchKeyValue(entity, "targetname", EntName);
-			
-			if(g_mapZones[zone][Type] == ZtBlock) DispatchKeyValue(entity, "Solid", "6"); 
 			
 			if(DispatchSpawn(entity))
 			{
 				ActivateEntity(entity);
 				
+				// Set the size of our trigger_multiple box
 				SetEntPropVector(entity, Prop_Send, "m_vecMins", minbounds);
 				SetEntPropVector(entity, Prop_Send, "m_vecMaxs", maxbounds);
 				
-				if(g_mapZones[zone][Type] != ZtBlock) SetEntProp(entity, Prop_Send, "m_nSolidType", 2);
+				SetEntProp(entity, Prop_Send, "m_nSolidType", 2);
+				SetEntProp(entity, Prop_Send, "m_fEffects", GetEntProp(entity, Prop_Send, "m_fEffects") | 32);
 				
-				TeleportEntity(entity, origin, NULL_VECTOR, NULL_VECTOR);
-				
-				// SetVariantString(Buffer);
-				AcceptEntityInput(entity, "SetParent");
-				
-				new iEffects = GetEntProp(entity, Prop_Send, "m_fEffects");
-				iEffects |= 0x020;
-				SetEntProp(entity, Prop_Send, "m_fEffects", iEffects);
+				TeleportEntity(entity, center, NULL_VECTOR, NULL_VECTOR);
 				
 				SDKHook(entity, SDKHook_StartTouch,  StartTouchTrigger);
 				SDKHook(entity, SDKHook_EndTouch, EndTouchTrigger);
 				SDKHook(entity, SDKHook_Touch, OnTouchTrigger);
-				
 			}
-			else 
-			{
-				PrintToServer("Not able to dispatchspawn for Entity %i in SpawnTrigger", entity);
-				PrintToChatAll("Not able to dispatchspawn for Entity %i in SpawnTrigger", entity);
-			}
-			
-		} 
-		else 
-		{
-			PrintToServer("Entity %i did not pass the validation check in SpawnTrigger", entity);
-			PrintToChatAll("Entity %i did not pass the validation check in SpawnTrigger", entity);
 		}
 	}
 }
