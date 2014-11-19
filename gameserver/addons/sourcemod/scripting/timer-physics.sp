@@ -858,10 +858,11 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			if(auto)
 			{
 				//Ladder check
-				if (!Client_IsOnLadder(client))
+				if (!(GetEntityMoveType(client) & MOVETYPE_LADDER))
 				{
-					//Wather check
-					if (GetEntProp(client, Prop_Data, "m_nWaterLevel") <= 1)
+					//Wather double check
+					new water = GetEntProp(client, Prop_Data, "m_nWaterLevel");
+					if (EntIndexToEntRef(water) != INVALID_ENT_REFERENCE && water <= 1)
 					{
 						buttons &= ~IN_JUMP;
 					}
