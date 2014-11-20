@@ -788,8 +788,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 			new LvlID;
 			new bool:valid = false;
 			new MapZoneType:zonetype;
-		
-		
+			
 			if(StrEqual(info, "adjust"))
 			{
 				DisplayAdjustZoneMenu(client, 0);
@@ -934,7 +933,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				new hcount = LEVEL_BONUS_START;
 				for (new zone = 0; zone < g_mapZonesCount; zone++)
 				{
-					if(g_mapZones[zone][Type] != ZtBonusLevel) continue;
+					if(g_mapZones[zone][Type] != ZtBonusCheckpoint) continue;
 					if(g_mapZones[zone][Level_Id] <= hcount) continue;
 					hcount = g_mapZones[zone][Level_Id];
 				}
@@ -954,7 +953,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				new hcount = LEVEL_BONUS_START;
 				for (new zone = 0; zone < g_mapZonesCount; zone++)
 				{
-					if(g_mapZones[zone][Type] != ZtBonusCheckpoint) continue;
+					if(g_mapZones[zone][Type] != ZtBonusLevel) continue;
 					if(g_mapZones[zone][Level_Id] <= hcount) continue;
 					hcount = g_mapZones[zone][Level_Id];
 				}
