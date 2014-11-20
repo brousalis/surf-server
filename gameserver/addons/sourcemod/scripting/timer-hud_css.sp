@@ -1500,11 +1500,11 @@ UpdateHUD_CSS(client)
 	{
 		if(bonus)
 		{
-			stagecount = Timer_GetMapzoneCount(ZtBonusLevel)+1;
+			stagecount = Timer_GetMapzoneCount(ZtBonusLevel)+Timer_GetMapzoneCount(ZtBonusCheckpoint)+1;
 		}
 		else
 		{
-			stagecount = Timer_GetMapzoneCount(ZtLevel)+1;
+			stagecount = Timer_GetMapzoneCount(ZtLevel)+Timer_GetMapzoneCount(ZtCheckpoint)+1;
 		}
 	}
 	
