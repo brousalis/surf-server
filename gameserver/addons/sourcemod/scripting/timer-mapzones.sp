@@ -879,7 +879,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				new hcount = LEVEL_START;
 				for (new zone = 0; zone < g_mapZonesCount; zone++)
 				{
-					if(g_mapZones[zone][Type] != ZtLevel) continue;
+					if(g_mapZones[zone][Type] != ZtLevel && g_mapZones[zone][Type] != ZtCheckpoint) continue;
 					if(g_mapZones[zone][Level_Id] <= hcount) continue;
 					hcount = g_mapZones[zone][Level_Id];
 				}
@@ -899,7 +899,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				new hcount = LEVEL_START;
 				for (new zone = 0; zone < g_mapZonesCount; zone++)
 				{
-					if(g_mapZones[zone][Type] != ZtCheckpoint) continue;
+					if(g_mapZones[zone][Type] != ZtLevel && g_mapZones[zone][Type] != ZtCheckpoint) continue;
 					if(g_mapZones[zone][Level_Id] <= hcount) continue;
 					hcount = g_mapZones[zone][Level_Id];
 				}
@@ -933,7 +933,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				new hcount = LEVEL_BONUS_START;
 				for (new zone = 0; zone < g_mapZonesCount; zone++)
 				{
-					if(g_mapZones[zone][Type] != ZtBonusCheckpoint) continue;
+					if(g_mapZones[zone][Type] != ZtBonusCheckpoint && g_mapZones[zone][Type] != ZtBonusLevel) continue;
 					if(g_mapZones[zone][Level_Id] <= hcount) continue;
 					hcount = g_mapZones[zone][Level_Id];
 				}
@@ -953,7 +953,7 @@ public ZoneTypeSelect(Handle:menu, MenuAction:action, client, itemNum)
 				new hcount = LEVEL_BONUS_START;
 				for (new zone = 0; zone < g_mapZonesCount; zone++)
 				{
-					if(g_mapZones[zone][Type] != ZtBonusLevel) continue;
+					if(g_mapZones[zone][Type] != ZtBonusCheckpoint && g_mapZones[zone][Type] != ZtBonusLevel) continue;
 					if(g_mapZones[zone][Level_Id] <= hcount) continue;
 					hcount = g_mapZones[zone][Level_Id];
 				}
