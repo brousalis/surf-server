@@ -1215,7 +1215,7 @@ public CreditsPanel(client)
 	DrawPanelText(panel, "Peace-Maker - bot mimic 2, backwards and much more");
 	DrawPanelText(panel, "Shavit - Added new features and supported plugin");
 	DrawPanelText(panel, "0wn3r - Many small improvements");
-	DrawPanelText(panel, " ");
+	DrawPanelText(panel, "eagle-vision.de - Rewriting advanced php stats");
 	DrawPanelItem(panel, "- Next -");
 	DrawPanelItem(panel, "- Exit -");
 	SendPanelToClient(panel, client, CreditsHandler1, MENU_TIME_FOREVER);
