@@ -537,7 +537,7 @@ if($valid){
 	echo "</div>";
 	
 	echo "<div class='list'>";
-	echo "<center><h1>Incomplete trackMaps</h1><br>";
+	echo "<center><h1>Incomplete BonusMaps</h1><br>";
 	
 	echo round(100*(count($atrack_maps)-count($atrack_maps_finished))/count($atrack_maps), 2)." %<br><br>";
 	

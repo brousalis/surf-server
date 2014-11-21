@@ -56,7 +56,7 @@ array
 (
 	"ALL" => "-1",
 	"Normal" => "0",
-	"track" => "1",
+	"Bonus" => "1",
 	"Short" => "2"
 );
 
