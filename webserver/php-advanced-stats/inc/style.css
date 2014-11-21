@@ -1,0 +1,325 @@
+
+body,td,th {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  color: #ffffff;
+  background-color: transparent;
+}
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #ffffff;
+	background-color: #000;
+	background-image: url(../img/bg.jpg);
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	background-attachment:fixed;
+}
+
+h1 {
+	font-size: 20px;
+	color: #00B3FF;
+}
+
+h2 {
+	font-size: 16px;
+	color: #FF0000;
+}
+
+select {
+	background:rgba(0,0,55,0.5);
+	color: #FFFFFF;
+}
+
+a {
+  text-decoration:none;
+  color: #ffffff;
+  font-size:1em;
+}
+
+//Header
+#logo {
+	margin:10px;
+	z-index:1;
+}
+
+#logo h1{
+	font-size:2em;
+	color:#ffff00;
+}
+#umenu {
+	margin:10px;
+	z-index:1;
+}
+
+#umenu h1{
+	border-bottom: 1px #ffffff solid;
+	font-size:2em;
+	color:#ffff00;
+}
+
+//Main Menu
+#menu {
+	margin:10px;
+	z-index:1;
+	text-align:right;
+}
+
+#menu li {
+  display: inline;
+  padding: 0px 10px; 
+  text-align:right;
+}
+
+#menu a {
+  padding: 2px 4px 5px;
+  text-decoration:none;
+  color: #ffffff;
+  font-size:1em;
+}
+
+#menu a:hover {
+  color: #ffffff;
+  font-size:1em;
+}
+
+#menu b a home {
+  color: #ffff00;
+}
+
+#menu b a server {
+  color: #fff;
+}
+
+#menu b a mapinfo {
+  color: #fff;
+}
+
+#menu b a points {
+  color: #fff;
+}
+
+#menu b a records {
+  color: #fff;
+}
+
+#menu b a latest {
+  color: #fff;
+}
+
+#menu b a ranks {
+  color: #fff;
+}
+
+#menu b a player {
+  color: #fff;
+}
+
+#menu b a join {
+  color: #ffff00;
+}
+
+//Main Container
+#container {
+	position:relative;
+	margin-left: auto;
+	margin-right: auto;
+	color:#333333;
+
+}
+
+//Server info text box
+
+.bot {
+	position:relative;
+	margin:10px;
+	width:48%;
+	float:left;
+	z-index:2;
+}
+
+.onlinelist {
+	position:relative;
+	margin:10px;
+	width:98%;
+	float:left;
+	z-index:1;
+}
+
+.onlinelist b {
+	color: #FFFF00;
+}
+
+.onlinelist table{
+	background:rgba(0,0,0,0.5);
+}
+
+.onlinelist tr:hover{
+	background:rgba(155,155,0,0.5);
+}
+
+.onlinelist h1 {
+	font-size: 20px;
+	color: #ffff00;
+}
+
+.onlinelist a {
+  text-decoration:none;
+  color: #ffffff;
+  font-size:1em;
+}
+
+.onlinelist a:hover {
+  color: #ffff00;
+}
+
+.serverinfo td {
+	position:relative;
+	margin:10px;
+	width:98%;
+	float:left;
+	z-index:1;
+}
+
+.serverinfo b {
+	color: #FFFF00;
+}
+
+.serverinfo h1 {
+	font-size: 20px;
+	color: #ffff00;
+}
+
+
+.maininfo td {
+	position:relative;
+	margin:10px;
+	width:98%;
+	float:left;
+	z-index:1;
+}
+
+.maininfo b {
+	color: #FFFF00;
+}
+
+.top {
+	position:relative;
+	margin:10px;
+	width:48%;
+	float:left;
+	z-index:1;
+}
+
+.top b {
+	color: #FFFF00;
+}
+
+.top table{
+	background:rgba(0,0,0,0.5);
+}
+
+.top tr:hover{
+	background:rgba(155,155,0,0.5);
+}
+
+.top h1 {
+	border-bottom: 1px #ffffff solid;
+	font-size:2em;
+	font-size: 20px;
+	color: #ffff00;
+}
+
+.top a {
+  text-decoration:none;
+  color: #ffffff;
+  font-size:1em;
+}
+
+.top a:hover {
+  color: #ffff00;
+}
+
+.list {
+	position:relative;
+	margin:10px;
+	width:98%;
+	float:left;
+	z-index:1;
+}
+
+.list b {
+	color: #FFFF00;
+}
+
+.list table{
+	background:rgba(0,0,0,0.5);
+}
+
+.list tr:hover{
+	background:rgba(155,155,0,0.5);
+}
+
+.list h1 {
+	font-size: 20px;
+	color: #ffff00;
+}
+
+.list a {
+  text-decoration:none;
+  color: #ffffff;
+  font-size:1em;
+}
+
+.list a:hover {
+  color: #ffff00;
+}
+
+.detail {
+	position:relative;
+	margin:10px;
+	width:98%;
+	float:left;
+	z-index:1;
+	font-size: 16px;
+}
+
+.detail b {
+	color: #FFFF00;
+}
+
+.detail table{
+	background:rgba(0,0,0,0.5);
+}
+
+.detail tr:hover{
+	background:rgba(155,155,0,0.5);
+}
+
+.detail h1 {
+	font-size: 20px;
+	color: #ffff00;
+}
+
+.detail a {
+  text-decoration:none;
+  color: #ffffff;
+  font-size:1em;
+}
+
+.detail a:hover {
+  color: #ffff00;
+}
+div#menu {
+    line-height: 55px;
+    background-color: rgba(0, 0, 0, 0.66);
+}
+
+div#logo {
+    width: 470px;
+    margin: 0 auto;
+    background-color: rgba(0, 0, 0, 0.66);
+    line-height: 82px;
+}
