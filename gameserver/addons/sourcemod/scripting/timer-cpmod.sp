@@ -21,8 +21,6 @@
 //-----------------------------//
 // nothing to change over here //
 //-----------------------------//
-//...
-#define VERSION "2.1.3"
 
 #define YELLOW 0x01
 #define TEAMCOLOR 0x02
@@ -104,7 +102,7 @@ public Plugin:myinfo = {
 	name = "[Timer] cpMod",
 	author = "Zipcore, byaaaaah",
 	description = "Bunnyhop / Surf / Tricks server modification",
-	version = VERSION,
+	version = PL_VERSION,
 	url = "zipcore#goooglemail.com"
 }
 
@@ -137,7 +135,7 @@ public OnPluginStart()
 	LoadTranslations("cpmod.phrases");
 	
 	db_setupDatabase();
-	CreateConVar("cpMod_version", VERSION, "cp Mod version.", FCVAR_DONTRECORD|FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
+	CreateConVar("cpMod_version", PL_VERSION, "cp Mod version.", FCVAR_DONTRECORD|FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
 	g_hcvarEnable     = CreateConVar("sm_cp_enabled", "1", "Enable/Disable the plugin.", FCVAR_PLUGIN|FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_bEnabled      = GetConVarBool(g_hcvarEnable);
 	HookConVarChange(g_hcvarEnable, OnSettingChanged);
