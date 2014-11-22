@@ -4167,6 +4167,15 @@ public Action:Command_Start(client, args)
 	
 	if(level > 0)
 	{
+		if(g_timerTeams)
+		{
+			if(Timer_GetChallengeStatus(client) == 1 || Timer_GetCoopStatus(client) == 1)
+			{
+				ConfirmAbortMenu(client, SCMD_START);
+				return Plugin_Handled;
+			}
+		}
+		
 		Timer_Reset(client);
 		Tele_Level(client, level);
 		return Plugin_Handled;
@@ -4504,6 +4513,15 @@ public Action:Command_Levels(client, args)
 	
 	if(level > 0)
 	{
+		if(g_timerTeams)
+		{
+			if(Timer_GetChallengeStatus(client) == 1 || Timer_GetCoopStatus(client) == 1)
+			{
+				ConfirmAbortMenu(client, SCMD_START);
+				return Plugin_Handled;
+			}
+		}
+		
 		Timer_Reset(client);
 		Tele_Level(client, level);
 		return Plugin_Handled;
