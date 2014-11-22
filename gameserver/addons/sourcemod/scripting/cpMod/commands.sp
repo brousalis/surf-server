@@ -191,7 +191,7 @@ public TeleClient(client,pos)
 		if(deadplayers > 0)
 		{
 			PrintToChat(client, "You can use this feature only when other players are alive.");
-			return
+			return;
 		}
 	}
 	
