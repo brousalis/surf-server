@@ -91,7 +91,7 @@ echo "<h1>Server Stats</h1><br>";
 echo "<br>";
 echo "This server provides ";
 if($multi_styles == 1) echo "<b>".count($astyleid)."</b> ranked styles on ";
-echo "<b>".$total_maps."</b> maps with <b>".$total_trackmaps."</b> track levels. <br>";
+echo "<b>".$total_maps."</b> maps with <b>".$total_trackmaps."</b> bonus levels. <br>";
 echo "Starring <b>".$total_players."</b> players and their <b>".$total_records."</b> records ";
 echo "with <b>".$total_points."</b> points and an average of <b>".$avg_points."</b> points per player.";
 
