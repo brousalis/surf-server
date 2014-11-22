@@ -665,6 +665,8 @@ public Action:CoopCountdown(Handle:timer, any:client)
 	return Plugin_Continue;
 }
 
+new Float:g_fLastFail[MAXPLAYERS+1];
+
 public Action:EndChallenge(client, force)
 {
 	new mate = Timer_GetClientTeammate(client);
@@ -676,22 +678,31 @@ public Action:EndChallenge(client, force)
 		//Failed?
 		if (force == 1 && fTime-g_fLastRun[client] > 1.0)
 		{
-			Call_StartForward(g_OnChallengeForceEnd);
-			Call_PushCell(client);
-			Call_PushCell(mate);
-			Call_Finish();
-			
-			if(GetGameTime() - g_fStartTime[mate] > g_Settings[ChallengeAbortTime])
+			if(fTime - g_fLastFail[client] > 1.0)
 			{
-				CPrintToChat(client, "%s You have surrendered this challenge.", PLUGIN_PREFIX2);
-				CPrintToChat(mate, "%s %N has surrendered this challenge.", PLUGIN_PREFIX2, client);
+				g_fLastFail[client] = fTime;
 				
-				EndChallenge(mate, 2); //Mate Wins
+				Call_StartForward(g_OnChallengeForceEnd);
+				Call_PushCell(client);
+				Call_PushCell(mate);
+				Call_Finish();
+				
+				if(fTime - g_fStartTime[mate] > g_Settings[ChallengeAbortTime])
+				{
+					CPrintToChat(client, "%s You have surrendered this challenge.", PLUGIN_PREFIX2);
+					CPrintToChat(mate, "%s %N has surrendered this challenge.", PLUGIN_PREFIX2, client);
+					
+					EndChallenge(mate, 2); //Mate Wins
+				}
+				else
+				{
+					CPrintToChat(client, "%s You have aborted this challenge.", PLUGIN_PREFIX2);
+					CPrintToChat(mate, "%s %N has aborted this challenge.", PLUGIN_PREFIX2, client);
+				}
 			}
 			else
 			{
-				CPrintToChat(client, "%s You have aborted this challenge.", PLUGIN_PREFIX2);
-				CPrintToChat(mate, "%s %N has aborted this challenge.", PLUGIN_PREFIX2, client);
+				
 			}
 		}
 		//We have a winner
@@ -777,6 +788,7 @@ public Action:EndChallenge(client, force)
 	}
 	
 	Timer_Reset(client);
+	Timer_Reset(mate);
 }
 
 public Action:EndCoop(client, force)
