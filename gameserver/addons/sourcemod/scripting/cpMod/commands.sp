@@ -165,6 +165,36 @@ public TeleClient(client,pos)
 	if(!IsPlayerAlive(client) || GetClientTeam(client) == 1)
 		return;
 	
+	if(g_bBlockLastPlayerAlive)
+	{
+		new deadplayers;
+		for (new i = 1; i <= MaxClients; i++)
+		{
+			if(i == client)
+				continue;
+			
+			if(!IsClientInGame(i))
+				continue;
+			
+			if(GetClientTeam(i) != CS_TEAM_CT || GetClientTeam(i) != CS_TEAM_T)
+				continue;
+			
+			if(IsPlayerAlive(i))
+			{
+				deadplayers = -1;
+				break;
+			}
+			
+			deadplayers++;
+		}
+		
+		if(deadplayers > 0)
+		{
+			PrintToChat(client, "You can use this feature only when other players are alive.");
+			return
+		}
+	}
+	
 	if(g_timerTeams)
 	{
 		if(Timer_GetCoopStatus(client) == 0 && Timer_GetChallengeStatus(client) == 0)

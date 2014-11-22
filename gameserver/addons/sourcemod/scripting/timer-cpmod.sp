@@ -1,6 +1,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <smlib>
 
 #undef REQUIRE_PLUGIN
 #include <timer>
@@ -60,6 +61,9 @@ new bool:g_bVelocity = false;
 
 new Handle:g_hcvarAir = INVALID_HANDLE;
 new bool:g_bAir = false;
+
+new Handle:g_hcvarBlockLastPlayerAlive = INVALID_HANDLE;
+new bool:g_bBlockLastPlayerAlive = false;
 
 new Float:g_fPlayerCords[MAXPLAYERS+1][CPLIMIT][3];
 new Float:g_fPlayerAngles[MAXPLAYERS+1][CPLIMIT][3];
@@ -137,7 +141,7 @@ public OnPluginStart()
 	g_hcvarEnable     = CreateConVar("sm_cp_enabled", "1", "Enable/Disable the plugin.", FCVAR_PLUGIN|FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_bEnabled      = GetConVarBool(g_hcvarEnable);
 	HookConVarChange(g_hcvarEnable, OnSettingChanged);
-
+	
 	g_hcvarRestore    = CreateConVar("sm_cp_restore", "1", "Enable/Disable automatic saving of checkpoints to database.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_bRestore        = GetConVarBool(g_hcvarRestore);
 	HookConVarChange(g_hcvarRestore, OnSettingChanged);
@@ -153,6 +157,10 @@ public OnPluginStart()
 	g_hcvarAir    = CreateConVar("sm_cp_air", "0", "Enable/Disable allow saving in air.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_bAir        = GetConVarBool(g_hcvarAir);
 	HookConVarChange(g_hcvarAir, OnSettingChanged);
+
+	g_hcvarBlockLastPlayerAlive    = CreateConVar("sm_cp_block_last_player_alive", "0", "Enable/Disable allow using teleports for the last alive player.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_bBlockLastPlayerAlive        = GetConVarBool(g_hcvarBlockLastPlayerAlive);
+	HookConVarChange(g_hcvarBlockLastPlayerAlive, OnSettingChanged);
 	
 	RegConsoleCmd("sm_nextcp", Client_Next, "Next checkpoint");
 	RegConsoleCmd("sm_prevcp", Client_Prev, "Previous checkpoint");
@@ -354,6 +362,13 @@ public OnSettingChanged(Handle:convar, const String:oldValue[], const String:new
 			g_bAir = true;
 		else
 			g_bAir = false;
+	}
+	else if(convar == g_hcvarBlockLastPlayerAlive)
+	{
+		if(newValue[0] == '1')
+			g_bBlockLastPlayerAlive = true;
+		else
+			g_bBlockLastPlayerAlive = false;
 	}
 }
 
