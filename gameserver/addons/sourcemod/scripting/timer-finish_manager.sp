@@ -6,8 +6,11 @@
 #include <timer-mapzones>
 
 new Handle:cvarModePrimary = INVALID_HANDLE;
+new g_iModePrimary;
 new Handle:cvarModePrimaryBonus = INVALID_HANDLE;
+new g_iModePrimaryBonus;
 new Handle:cvarModeSecondary = INVALID_HANDLE;
+new g_iModeSecondary;
 
 public Plugin:myinfo = 
 {
@@ -21,9 +24,28 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	cvarModePrimary = CreateConVar("timer_finish_mode_primary", "0", "0:Disable 1:Slay player 2:slay all other players 3:Slay all players 4:Teleport to bonusstart zone");
+	g_iModePrimary       = GetConVarInt(cvarModePrimary);
+	HookConVarChange(cvarModePrimary, OnSettingChanged);
+	
 	cvarModePrimaryBonus = CreateConVar("timer_finish_mode_primary_bonus", "0", "0:Disable 1:Slay player 2:slay all other players 3:Slay all players");
+	g_iModePrimaryBonus       = GetConVarInt(cvarModePrimaryBonus);
+	HookConVarChange(cvarModePrimaryBonus, OnSettingChanged);
+	
 	cvarModeSecondary = CreateConVar("timer_finish_mode_secondary", "0", "If primary mode is impossible do this 0:Disable 1:Slay player");
+	g_iModeSecondary       = GetConVarInt(cvarModeSecondary);
+	HookConVarChange(cvarModeSecondary, OnSettingChanged);
+	
 	AutoExecConfig(true, "timer/finish_manager.cfg");
+}
+
+public OnSettingChanged(Handle:convar, const String:oldValue[], const String:newValue[])
+{
+	if(convar == cvarModePrimary)
+		g_iModePrimary = StringToInt(newValue);
+	if(convar == cvarModePrimaryBonus)
+		g_iModePrimaryBonus = StringToInt(newValue);
+	if(convar == cvarModeSecondary)
+		g_iModeSecondary = StringToInt(newValue);
 }
 
 public OnClientStartTouchZoneType(client, MapZoneType:type)
@@ -36,9 +58,7 @@ public OnClientStartTouchZoneType(client, MapZoneType:type)
 
 public Action:Timer_EndAction(Handle:timer, any:client)
 {
-	new modePrimary = GetConVarInt(cvarModePrimary);
-	
-	switch(modePrimary)
+	switch(g_iModePrimary)
 	{
 		case 1:
 		{
@@ -82,9 +102,7 @@ public Action:Timer_EndAction(Handle:timer, any:client)
 
 public Action:Timer_BonusEndAction(Handle:timer, any:client)
 {
-	new modePrimary = GetConVarInt(cvarModePrimaryBonus);
-	
-	switch(modePrimary)
+	switch(g_iModePrimaryBonus)
 	{
 		case 1:
 		{
@@ -119,9 +137,7 @@ public Action:Timer_BonusEndAction(Handle:timer, any:client)
 
 SecondaryAction(client)
 {
-	new modeSecondary = GetConVarInt(cvarModeSecondary);
-	
-	switch(modeSecondary)
+	switch(g_iModeSecondary)
 	{
 		case 1:
 		{
