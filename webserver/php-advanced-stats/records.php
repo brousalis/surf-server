@@ -194,7 +194,7 @@ if($is_map){
 		echo "<div class='maininfo'>";
 		echo "<center>";
 		echo "Map-Tier: <b>".$maptier." </b>";
-		if($maptier2 > 0) echo "track-Tier: <b>".$maptier2." </b>";
+		if($maptier2 > 0) echo "Bonus-Tier: <b>".$maptier2." </b>";
 		echo "<br>";
 		if($current_records > 0) echo "Records: <b>".$current_records."</b>";
 		if($current_records_short > 0) echo " Short: <b>".$current_records_short."</b>";
@@ -259,7 +259,7 @@ if($is_map){
 		echo "<th>Style</th>";
 	}
 	if($track == -1){
-		echo "<th>Area</th>";
+		echo "<th>Track</th>";
 	}
 	echo "<th>Date</th>";
 	//usw.
@@ -284,13 +284,19 @@ if($is_map){
 		else echo "<td align=\"middle\">&nbsp;".$array["rank"]."&nbsp;</td>";
 		echo "<td align=\"left\"><a href='player.php?searchkey=".$array["auth"]."'>&nbsp;".$array["name"]."&nbsp;</a></td>";
 		echo "<td align=\"middle\">".$vor_komma." m ".$runseconds_trim.".".$runmillisecs." s</td>";
-		if($style == -1){
-			$istyle = 0;
-			while($astyleid[$istyle] < $array["style"]){
-				$istyle ++;
+		
+		//Style
+		if($style == -1 && $multi_styles == 1)
+		{
+			if($style == -1){
+				$istyle = 0;
+				while($astyleid[$istyle] < $array["style"]){
+					$istyle ++;
+				}
+				echo "<td align=\"left\">&nbsp;".$astylename[$istyle]."&nbsp;</td>";
 			}
-			echo "<td align=\"left\">&nbsp;".$astylename[$istyle]."&nbsp;</td>";
 		}
+		//Track
 		if($track == -1){
 			$itrack = 0;
 			while($atrackid[$itrack] < $array["track"]){
