@@ -11,6 +11,9 @@ $path_stats = "http://www.test.com/stats"; //Path to this script
 $name_homepage = "Forum"; //Name for the homepage button
 $path_homepage = "http://www.test.com"; //Link to your homepage
 
+/* TICKER */
+$wrticker = true; //Enable world record ticker
+
 /* MY-SQL */
 
 $serverip	= "127.0.0.1";

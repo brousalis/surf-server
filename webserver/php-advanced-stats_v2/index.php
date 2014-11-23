@@ -89,8 +89,11 @@
 						<li>
 							<a href="index.php">Dashboard</a>
 						</li>
+						<li>
+							<a href="status.php">Players Online</a>
+						</li>
                         <li>
-                            <a href="#">Servers<span class="fa arrow"></span></a>
+                            <a href="#">Server Status<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
 							
 							<?php	//GET SERVERS					
@@ -104,12 +107,7 @@
 							?>
 							
                             </ul>
-                            <!-- /.nav-second-level -->
                         </li>
-						<li>
-							<a href="online.php">Players Online</a>
-						</li>
-						
                         <li>
                             <a href="#">Top Players<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
@@ -127,14 +125,19 @@
 								</li>
                             </ul>
                         </li>
+                        <li>
+                            <a href="#">Player Records<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+								<li>
+									<a href="latest.php">Latest Records</a>
+								</li>
+								<li>
+									<a href="maprecords.php">Map Top</a>
+								</li>
+                            </ul>
+                        </li>
 						<li>
-							<a href="latest.php">Latest Records</a>
-						</li>
-						<li>
-							<a href="maprecords.php">Map Top</a>
-						</li>
-						<li>
-							<a href="maps.php">Map List</a>
+							<a href="maps.php">Map Info</a>
 						</li>
 						<li>
 							<a href="ranks.php">Chatranks</a>
@@ -148,9 +151,27 @@
 
         <div id="page-wrapper">
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-3">
                     <h1 class="page-header">Dashboard</h1>
                 </div>
+                <div class="col-lg-9">
+					<?php if($wrticker){ ?>
+						<br>
+						<center><b>World Record Ticker</b></center>
+						<br>
+						<marquee>
+						<?php
+							$sql = "SELECT `rank`, `map`, `auth`, `name`, `time`, `date`, `style`, `track` FROM `round` WHERE `rank` = 1 ORDER BY `date` DESC LIMIT 10";
+							$rekorde = $link->query($sql);
+							$count = 1;
+							while($array = mysqli_fetch_array($rekorde))
+							{
+								echo " ▲▲▲ <a href='records.php?map=".$array[1]."&style=-1&track=-1'>".$array[3]." on ".$array[1]."</a> ";
+							}
+						?>
+						</marquee>
+					<?php } ?>
+				</div>
             </div>
 			
 			<div class="row">
@@ -308,7 +329,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="online.php">
+                        <a href="status.php">
                             <div class="panel-footer">
                                 <span class="pull-left">View Details</span>
                                 <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
