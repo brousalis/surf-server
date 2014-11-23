@@ -90,38 +90,22 @@
 							<a href="index.php">Dashboard</a>
 						</li>
 						<li>
-							<a href="status.php">Players Online</a>
+							<a href="status.php">Player/Server Status</a>
 						</li>
-                        <li>
-                            <a href="#">Server Status<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-							
-							<?php	//GET SERVERS					
-							$server_names = array_keys($server_list);
-							$server_ips = array_values($server_list);
-							
-							for ($i = 0; $i < count($server_ips); $i++) 
-							{
-								echo "<li><a href=\"steam://connect/".$server_ips[$i]."\">".$server_names[$i]."</a></li>"; //
-							}
-							?>
-							
-                            </ul>
-                        </li>
                         <li>
                             <a href="#">Top Players<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
 								<li>
-									<a href="points.php">Players by Points</a>
+									<a href="points.php">by Points</a>
 								</li>
 								<li>
-									<a href="records.php">Players by World Records</a>
+									<a href="records.php">by World Records</a>
 								</li>
 								<li>
-									<a href="complete.php">Players by Completion</a>
+									<a href="complete.php">by Completion</a>
 								</li>
 								<li>
-									<a href="complete.php">Players by Average Rank</a>
+									<a href="average.php">by Average Rank</a>
 								</li>
                             </ul>
                         </li>
@@ -312,6 +296,10 @@
 						?>
                         <div class="panel-heading">
                             <div class="row">
+								<?php	//GET SERVERS					
+									$server_names = array_keys($server_list);
+									$server_ips = array_values($server_list);
+								?>
                                 <div class="col-xs-12 text-center">
                                     <div class="huge">Status</div>
                                 </div>
