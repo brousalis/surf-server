@@ -1881,23 +1881,30 @@ public Action:CheckRemainingTime(Handle:timer)
 		new timeleft;
 		GetMapTimeLeft(timeleft);
 		
+		new tier;
+		if(g_timerMapTier)
+			tier = Timer_GetTier(TRACK_NORMAL);
+		
+		decl String:sTier[32];
+		Format(sTier, sizeof(sTier), " Map Tier: %d", tier);
+		
 		if(GetEngineVersion() == Engine_CSGO)
 		{
 			switch(timeleft)
 			{
-				case 1800: PrintToChatAll("[%cMAP%c] 30 minutes remaining",LIGHTRED,WHITE);
-				case 1200: PrintToChatAll("[%cMAP%c] 20 minutes remaining",LIGHTRED,WHITE);
-				case 600: PrintToChatAll("[%cMAP%c] 10 minutes remaining",LIGHTRED,WHITE);
-				case 300: PrintToChatAll("[%cMAP%c] 5 minutes remaining",LIGHTRED,WHITE);
-				case 120: PrintToChatAll("[%cMAP%c] 2 minutes remaining",LIGHTRED,WHITE);
-				case 60: PrintToChatAll("[%cMAP%c] 60 seconds remaining",LIGHTRED,WHITE); 
-				case 30: PrintToChatAll("[%cMAP%c] 30 seconds remaining",LIGHTRED,WHITE);
-				case 15: PrintToChatAll("[%cMAP%c] 15 seconds remaining",LIGHTRED,WHITE);			
-				case -1: PrintToChatAll("[%cMAP%c] 3..",LIGHTRED,WHITE);
-				case -2: PrintToChatAll("[%cMAP%c] 2..",LIGHTRED,WHITE);
+				case 1800: CPrintToChatAll("Current Map: %s%s Time Remaining: 30 minutes", g_currentMap, sTier);
+				case 1200: CPrintToChatAll("Current Map: %s%s Time Remaining: 20 minutes", g_currentMap, sTier);
+				case 600: CPrintToChatAll("Current Map: %s%s Time Remaining: 10 minutes", g_currentMap, sTier);
+				case 300: CPrintToChatAll("Current Map: %s%s Time Remaining: 5 minutes", g_currentMap, sTier);
+				case 120: CPrintToChatAll("Current Map: %s%s Time Remaining: 2 minutes", g_currentMap, sTier);
+				case 60: CPrintToChatAll("Current Map: %s%s Time Remaining: 60 seconds", g_currentMap, sTier);
+				case 30: CPrintToChatAll("Current Map: %s%s Time Remaining: 30 seconds", g_currentMap, sTier);
+				case 15: CPrintToChatAll("Current Map: %s%s Time Remaining: 15 seconds", g_currentMap, sTier);
+				case -1: CPrintToChatAll("3..");
+				case -2: CPrintToChatAll("2..");
 				case -3:
 				{
-					PrintToChatAll("[%cMAP%c] 1..",LIGHTRED,WHITE);
+					CPrintToChatAll("1..");
 					CreateTimer(1.0, TerminateRoundTimer, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);				
 				}
 			}
@@ -1906,19 +1913,19 @@ public Action:CheckRemainingTime(Handle:timer)
 		{
 			switch(timeleft)
 			{
-				case 1800: CPrintToChatAll("[MAP] 30 minutes remaining");
-				case 1200: CPrintToChatAll("[MAP] 20 minutes remaining");
-				case 600: CPrintToChatAll("[MAP] 10 minutes remaining");
-				case 300: CPrintToChatAll("[MAP] 5 minutes remaining");
-				case 120: CPrintToChatAll("[MAP] 2 minutes remaining");
-				case 60: CPrintToChatAll("[MAP] 60 seconds remaining");
-				case 30: CPrintToChatAll("[MAP] 30 seconds remaining");
-				case 15: CPrintToChatAll("[MAP] 15 seconds remaining");
-				case -1: CPrintToChatAll("[MAP] 3..");
-				case -2: CPrintToChatAll("[MAP] 2..");
+				case 1800: CPrintToChatAll("Current Map: %s%s Time Remaining: 30 minutes", g_currentMap, sTier);
+				case 1200: CPrintToChatAll("Current Map: %s%s Time Remaining: 20 minutes", g_currentMap, sTier);
+				case 600: CPrintToChatAll("Current Map: %s%s Time Remaining: 10 minutes", g_currentMap, sTier);
+				case 300: CPrintToChatAll("Current Map: %s%s Time Remaining: 5 minutes", g_currentMap, sTier);
+				case 120: CPrintToChatAll("Current Map: %s%s Time Remaining: 2 minutes", g_currentMap, sTier);
+				case 60: CPrintToChatAll("Current Map: %s%s Time Remaining: 60 seconds", g_currentMap, sTier);
+				case 30: CPrintToChatAll("Current Map: %s%s Time Remaining: 30 seconds", g_currentMap, sTier);
+				case 15: CPrintToChatAll("Current Map: %s%s Time Remaining: 15 seconds", g_currentMap, sTier);
+				case -1: CPrintToChatAll("3..");
+				case -2: CPrintToChatAll("2..");
 				case -3:
 				{
-					PrintToChatAll("[MAP] 1..");
+					CPrintToChatAll("1..");
 					CreateTimer(1.0, TerminateRoundTimer, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);				
 				}
 			}
