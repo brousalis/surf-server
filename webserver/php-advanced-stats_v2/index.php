@@ -1,5 +1,4 @@
 <?php
-
 	require_once("inc/functions.inc.php");
 	if($debug){include("inc/debug.php"); Debug::register();}
 ?>
