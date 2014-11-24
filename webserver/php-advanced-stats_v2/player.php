@@ -311,6 +311,13 @@
                                 </div>
                             </div>
                         </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View All Records</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -341,6 +348,13 @@
                                 </div>
                             </div>
                         </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Next Players</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -371,6 +385,13 @@
                                 </div>
                             </div>
                         </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Incomplete Maps</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -401,6 +422,13 @@
                                 </div>
                             </div>
                         </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Advanced PvP Stats</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
                     </div>
                 </div>
 			</div>
@@ -442,9 +470,41 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3">
-                </div>
-                <div class="col-lg-3">
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Top Records</div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Map</th>
+                                            <th>Time</th>
+                                            <th>Style</th>
+                                            <th>Track</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+									<?php
+									$sql = "SELECT `rank`, `map`, `time`, `style`, `track` FROM `round` WHERE (`auth` = ".$ex.$steamid.$ex." OR `auth` = ".$ex.$steamfix.$ex.") ORDER BY `rank`, `time`, `map` LIMIT 10;";
+									$players = $link->query($sql);
+									while($array = mysqli_fetch_array($players))
+									{
+                                       echo "<tr class=\"odd gradeX\">
+									   <td>".$array[0]."</td>
+									   <td>".$array[1]."</td>
+									   <td>".timeFormat($array[2])."</td>
+									   <td>".getStyle($array[3], $style_list)."</td>
+									   <td>".getTrack($array[4], $track_list)."</td>
+									   </tr>";
+									}
+									?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row">
