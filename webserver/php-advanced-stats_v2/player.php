@@ -311,13 +311,59 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View All Records</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
+						<div class="panel-footer">
+							<li class="list-unstyled">
+								<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+									<span class="pull-left">View All Records</span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</a>
+								<ul class="dropdown-menu">
+									<li>
+										<div class="col-md-12">
+											<div class="panel panel-default">
+												<div class="panel-heading">Player Records</div>
+												<div class="panel-body">
+													<div class="table-responsive">
+														<table class="table table-striped table-bordered table-hover" id="dataTables-example">
+															<thead>
+																<tr>
+																	<th>Rank</th>
+																	<th>Map</th>
+																	<th>Record-Time</th>
+																	<th>Style</th>
+																	<th>Track</th>
+																	<th>Date</th>
+																	<th>FC</th>
+																</tr>
+															</thead>
+															<tbody>
+															<?php
+																$sql = "SELECT `rank`, `map`, `time`, `style`, `track`, `date`, `finishcount` FROM `round` WHERE (`auth` = ".$ex.$steamid.$ex." OR `auth` = ".$ex.$steamfix.$ex.") ORDER BY `map`, `track`, `style`;";
+																$players = $link->query($sql);
+																while($array = mysqli_fetch_array($players))
+																{
+																   echo "<tr class=\"odd gradeX\">
+																   <td>".$array[0]."</td>
+																   <td>".$array[1]."</td>
+																   <td>".timeFormat($array[2])."</td>
+																   <td>".getStyle($array[3], $style_list)."</td>
+																   <td>".getTrack($array[4], $track_list)."</td>
+																   <td>".$array[5]."</td>
+																   <td>".$array[6]."</td>
+																   </tr>";
+																}
+															?>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</li>
+						</div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -348,13 +394,20 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Next Players</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
+						<div class="panel-footer">
+							<li class="list-unstyled">
+								<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+									<span class="pull-left">View Next Players</span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</a>
+								<ul class="dropdown-menu dropdown-messages">
+									<li>
+										stats here
+									</li>
+								</ul>
+							</li>
+						</div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -385,13 +438,96 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Incomplete Maps</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
+						<div class="panel-footer">
+							<li class="list-unstyled">
+								<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+									<span class="pull-left">View Incomplete Maps</span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</a>
+								<ul class="dropdown-menu">
+									<div class="col-md-6">
+										<div class="panel panel-default">
+											<div class="panel-heading">Incomplete Maps</div>
+											<div class="panel-body">
+												<div class="table-responsive">
+													<table class="table table-striped table-bordered table-hover" id="dataTables-example">
+														<tbody>
+														<?php
+															$amaps = array();
+															$abonus_maps = array();
+															
+															$sql = "SELECT `map`,`type` FROM `mapzone` WHERE `type` = 0 OR `type` = 7;";
+															$result = $link->query($sql);
+															
+															while($array = mysqli_fetch_array($result)){
+															
+																if($array["type"] == 0){
+																	array_push($amaps,$array["map"]);
+																}
+																else if($array["type"] == 7){
+																	array_push($abonus_maps,$array["map"]);
+																}
+															}
+															
+															$sql = "SELECT `map`,`track` FROM `round` WHERE (`auth` = ".$ex.$steamid.$ex." OR `auth` = ".$ex.$steamfix.$ex.") GROUP BY `map`, `track`;";
+															$result = $link->query($sql);
+															
+															$amaps_finished = array();
+															$abonus_maps_finished = array();
+															
+															while($array = mysqli_fetch_array($result)){
+																if($array["track"] == 0){
+																	array_push($amaps_finished,$array["map"]);
+																}
+																else if($array["track"] == 1){
+																	array_push($abonus_maps_finished,$array["map"]);
+																}
+															}
+														
+															for($i = 0; $i<count($amaps); $i++)
+															{
+																if(in_array($amaps[$i], $amaps_finished) == false){
+																	echo "<tr class=\"odd gradeX\"><td><a href='records.php?map=".$amaps[$i]."&style=-1&track=-1'>".$amaps[$i]."</a></td>";
+																}
+															}
+														?>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+									
+									
+									
+									
+									
+									<div class="col-md-6">
+										<div class="panel panel-default">
+											<div class="panel-heading">Incomplete Bonus Maps</div>
+											<div class="panel-body">
+												<div class="table-responsive">
+													<table class="table table-striped table-bordered table-hover" id="dataTables-example">
+														<tbody>
+														<?php
+															for($i = 0; $i<count($abonus_maps); $i++)
+															{
+																if(in_array($abonus_maps[$i], $abonus_maps_finished) == false){
+																	echo "<tr class=\"odd gradeX\"><td><a href='records.php?map=".$abonus_maps[$i]."&style=-1&track=-1'>".$abonus_maps[$i]."</a></td>";
+																}
+															}
+														?>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+								</ul>
+							</li>
+						</div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -422,13 +558,20 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Advanced PvP Stats</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
+						<div class="panel-footer">
+							<li class="list-unstyled">
+								<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+									<span class="pull-left">View Advanced PvP Stats</span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</a>
+								<ul class="dropdown-menu dropdown-messages">
+									<li>
+										stats here
+									</li>
+								</ul>
+							</li>
+						</div>
                     </div>
                 </div>
 			</div>
