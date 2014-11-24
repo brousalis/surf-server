@@ -13,7 +13,7 @@
 							$count = 1;
 							while($array = mysqli_fetch_array($rekorde))
 							{
-								echo "▲▲▲ <a href='index.php?site=records&map=".$array[1]."&style=-1&track=-1'>".$array[3]." «» ".$array[1]."</a> ";
+								echo "▲▲▲ <a href='index.php?site=records&map=".$array[1]."&style=".$array[6]."&track=".$array[7]."'>".$array[3]." «» ".$array[1]."</a> ";
 							}
 						?>
 						</div>
