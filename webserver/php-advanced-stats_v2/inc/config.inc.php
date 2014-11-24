@@ -61,10 +61,10 @@ array
 
 /* CHAT TAGS */
 
+$chattag_unranked = "Unranked";
 $chattag_list = 
 array
 (
-    "Unranked" => "-1",
     "The One" => "1",
     "Pr0" => "10",
     "Good" => "100",

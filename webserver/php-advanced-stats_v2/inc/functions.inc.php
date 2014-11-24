@@ -40,4 +40,47 @@
 		// Format output
 		return sprintf('%.' . $decimals . 'f'.$unit, $value);
 	}
+	
+	function timeFormat($time)
+	{
+		$runmillisecs = $time * 100 % 100;
+		$runseconds = $time / 1;
+		$runseconds_trim = $runseconds % 60;
+		$runminutes = $time / 60;
+		$zahl=$runminutes;
+		$vor_komma=substr($zahl, 0, (strpos($zahl, ".")));
+		
+		if($vor_komma > 0) $final = "".$vor_komma." m ".$runseconds_trim.".".$runmillisecs." s";
+		else  $final = "".$runseconds_trim.".".$runmillisecs." s";
+		
+		return $final;
+	}
+	
+	function getStyle($styleid, $style_list)
+	{
+		$style_names = array_keys($style_list);
+		$style_ids = array_values($style_list);
+		
+		$istyle = 0;
+		
+		while($style_ids[$istyle] < $styleid){
+			$istyle ++;
+		}
+		
+		return $style_names[$istyle];
+	}
+	
+	function getTrack($trackid, $track_list)
+	{
+		$track_names = array_keys($track_list);
+		$track_ids = array_values($track_list);
+		
+		$itrack = 0;
+		
+		while($track_ids[$itrack] < $trackid){
+			$itrack ++;
+		}
+		
+		return $track_names[$itrack];
+	}
 ?>

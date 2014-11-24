@@ -131,7 +131,7 @@
             </div>
         </nav>
 		
-		// MAIN
+		<!-- MAIN -->
 
         <div id="page-wrapper">
             <div class="row">
@@ -283,7 +283,6 @@
                                 <div class="clearfix"></div>
                             </div>
                         </a>
-                        </a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -328,24 +327,6 @@
                 </div>
 			</div>
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
             <div class="row">
                 <div class="col-lg-3">
                     <div class="panel panel-default">
@@ -365,7 +346,7 @@
 									$players = $link->query($sql);
 									while($array = mysqli_fetch_array($players))
 									{
-                                       echo "<tr class=\"odd gradeX\"><td><a href='player.php?searchkey=".$array[2]."'>".$array[1]."</a></td><td>".$array[0]."</td></tr>";
+                                       echo "<tr class=\"odd gradeX\"><td><a href='player.php?auth=".$array[2]."'>".$array[1]."</a></td><td>".$array[0]."</td></tr>";
 									}
 									?>
                                     </tbody>
@@ -392,7 +373,7 @@
 									$players = $link->query($sql);
 									while($array = mysqli_fetch_array($players))
 									{
-                                       echo "<tr class=\"odd gradeX\"><td><a href='player.php?searchkey=".$array[2]."'>".$array[1]."</a></td><td>".$array[0]."</td></tr>";
+                                       echo "<tr class=\"odd gradeX\"><td><a href='player.php?auth=".$array[2]."'>".$array[1]."</a></td><td>".$array[0]."</td></tr>";
 									}
 									?>
                                     </tbody>
