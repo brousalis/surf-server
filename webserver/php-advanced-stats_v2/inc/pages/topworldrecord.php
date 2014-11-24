@@ -1,5 +1,5 @@
 <div class="row">
-	<div class="col-lg-3">
+	<div class="col-lg-12">
 		<h1 class="page-header">Top World Records</h1>
 	</div>
 </div>
@@ -12,6 +12,7 @@
 					<table class="table table-striped table-bordered table-hover" id="dataTables-example">
 						<thead>
 							<tr>
+								<th>Rank</th>
 								<th>Player</th>
 								<th>WRs</th>
 							</tr>
@@ -20,9 +21,11 @@
 						<?php
 						$sql = "SELECT COUNT(*), `name`, `auth` FROM (SELECT * FROM `round` WHERE `rank` = 1) AS s GROUP BY `auth` ORDER BY 1 DESC LIMIT 25";
 						$players = $link->query($sql);
+						$rank = 0;
 						while($array = mysqli_fetch_array($players))
 						{
-						   echo "<tr class=\"odd gradeX\"><td><a href='index.php?site=player&auth=".$array[2]."'>".$array[1]."</a></td><td>".$array[0]."</td></tr>";
+						   $rank++;
+						   echo "<tr class=\"odd gradeX\"><td>".$rank."</td><td><a href='index.php?site=player&auth=".$array[2]."'>".$array[1]."</a></td><td>".$array[0]."</td></tr>";
 						}
 						?>
 						</tbody>
@@ -44,6 +47,7 @@
 								<th>Time</th>
 								<th>Style</th>
 								<th>Track</th>
+								<th>Date</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -58,6 +62,7 @@
 						   <td>".timeFormat($array[4])."</td>
 						   <td>".getKeyByArrayValue($array[6], $style_list)."</td>
 						   <td>".getKeyByArrayValue($array[7], $track_list)."</td>
+						   <td>".$array[5]."</td>
 						   </tr>";
 						}
 						?>

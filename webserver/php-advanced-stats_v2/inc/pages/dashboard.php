@@ -72,7 +72,7 @@
 			</div>
 			<a href="index.php?site=topworldrecord">
 				<div class="panel-footer">
-					<span class="pull-left">View Top Players by WRs</span>
+					<span class="pull-left">View details</span>
 					<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
 					<div class="clearfix"></div>
 				</div>
@@ -115,7 +115,7 @@
 			</div>
 			<a href="index.php?site=points">
 				<div class="panel-footer">
-					<span class="pull-left">View Top Players by Points</span>
+					<span class="pull-left">View details</span>
 					<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
 					<div class="clearfix"></div>
 				</div>
@@ -156,7 +156,7 @@
 			</div>
 			<a href="index.php?site=maptop">
 				<div class="panel-footer">
-					<span class="pull-left">View Map Top Lists</span>
+					<span class="pull-left">View details</span>
 					<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
 					<div class="clearfix"></div>
 				</div>
@@ -196,7 +196,7 @@
 			</div>
 			<a href="index.php?site=status">
 				<div class="panel-footer">
-					<span class="pull-left">View Online Player List</span>
+					<span class="pull-left">View details</span>
 					<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
 					<div class="clearfix"></div>
 				</div>
