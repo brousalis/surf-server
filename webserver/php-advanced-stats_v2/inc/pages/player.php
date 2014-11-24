@@ -1,137 +1,4 @@
-<?php
-	require_once("inc/functions.inc.php");
-	if($debug){include("inc/debug.php"); Debug::register();}
-?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-	
-    <title><?php echo $name ?> - Timer Stats</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- MetisMenu CSS -->
-    <link href="css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="css/sb-custom.css" rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-</head>
-
-<body>
-
-    <div id="wrapper">
-
-        <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="index.php"><?php echo $name ?> - Timer Stats v2</a>
-            </div>
-            <ul class="nav navbar-top-links navbar-right">
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        About <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-messages">
-                        <li>
-								<a href="http://github.com/Zipcore/Timer">Project Home</a>
-								<a href="http://github.com/Zipcore/Timer/releases">Changelog</a>
-								<a href="http://github.com/Zipcore/Timer/wiki">Wiki</a>
-								<a href="http://github.com/Zipcore/Timer/issues/new">Report Bugs</a>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-								<a><img src="img/zipcore.png"> Contact Zipcore:</a>
-								<a href="http://forums.alliedmods.net/member.php?u=74431"><img src="img/am.png"> AlliedMods</a>
-								<a href="http://github.com/Zipcore"><img src="img/github.png"> GitHub</a>
-								<a href="http://http://steamcommunity.com/profiles/76561198035410392"><img src="img/steam.png"> Steam</a>
-                        </li>
-                    </ul>
-                    <!-- /.dropdown-messages -->
-                </li>
-            </ul>
-            <!-- /.navbar-top-links -->
-
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-                        <li class="sidebar-search">
-                            <div class="input-group custom-search-form">
-                                <input type="text" class="form-control" placeholder="Player Search...">
-                                <span class="input-group-btn">
-                                <button class="btn btn-default" type="button">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                            </div>
-                        </li>
-						<li>
-							<a href="<?php echo $path_homepage?>"><?php echo $name_homepage?></a>
-						</li>
-						<li>
-							<a href="index.php">Dashboard</a>
-						</li>
-						<li>
-							<a href="status.php">Player/Server Status</a>
-						</li>
-                        <li>
-                            <a href="#">Top Players<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-								<li>
-									<a href="points.php">by Points</a>
-								</li>
-								<li>
-									<a href="records.php">by World Records</a>
-								</li>
-								<li>
-									<a href="complete.php">by Completion</a>
-								</li>
-								<li>
-									<a href="average.php">by Average Rank</a>
-								</li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#">Player Records<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-								<li>
-									<a href="latest.php">Latest Records</a>
-								</li>
-								<li>
-									<a href="maprecords.php">Map Top</a>
-								</li>
-                            </ul>
-                        </li>
-						<li>
-							<a href="maps.php">Map Info</a>
-						</li>
-						<li>
-							<a href="ranks.php">Chatranks</a>
-						</li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-		
-		<!-- GET PLAYER -->
+<!-- GET PLAYER -->
 		
 		<?php
 			if (isset($_GET['auth']))
@@ -269,17 +136,14 @@
 			if(!$valid || !isset($name) )
 				$name = ">>not found<<";
 		?>
-		
-		<!-- MAIN -->
-
-        <div id="page-wrapper">
-            <div class="row">
+		<div class="row">
                 <div class="col-lg-12">
 					<h1 class="page-header">Player Stats for <?php echo $name." [".$auth."]" ?></h1>
                 </div>
             </div>
 			
 			<div class="row">
+			
                 <div class="col-lg-3 col-md-6">
                     <div class="panel panel-red">
 						<div class="panel-footer">
@@ -656,22 +520,3 @@
                 </div>
             </div>
         </div>
-
-    </div>
-    <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="js/jquery.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="js/plugins/metisMenu/metisMenu.min.js"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="js/sb-custom.js"></script>
-
-</body>
-
-</html>

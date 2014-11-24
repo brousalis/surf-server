@@ -62,12 +62,7 @@
 		$style_ids = array_values($style_list);
 		
 		$istyle = 0;
-		
-		while($style_ids[$istyle] < $styleid){
-			$istyle ++;
-		}
-		
-		return $style_names[$istyle];
+		return $style_names[$styleid];
 	}
 	
 	function getTrack($trackid, $track_list)
@@ -77,10 +72,15 @@
 		
 		$itrack = 0;
 		
-		while($track_ids[$itrack] < $trackid){
-			$itrack ++;
-		}
 		
-		return $track_names[$itrack];
+		return $track_names[$trackid];
+	}
+	function getPartial($site){
+        $invalide = array('\\','/','/\/',':','.');
+        $site = str_replace($invalide,' ',$site);
+        if(file_exists("inc/partials/".$site.".php")){
+
+        	include("inc/partials/".$site.".php");
+        } 
 	}
 ?>
