@@ -33,6 +33,8 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+	
+	<script type="text/javascript" src="js/crawler.js"></script>
 
 </head>
 
@@ -141,19 +143,33 @@
                 <div class="col-lg-9">
 					<?php if($wrticker){ ?>
 						<br>
-						<center><b>World Record Ticker</b></center>
-						<br>
-						<marquee>
+						<b>World Record Ticker</b><br><br>
+						<div class="marquee" id="mycrawler">
 						<?php
-							$sql = "SELECT `rank`, `map`, `auth`, `name`, `time`, `date`, `style`, `track` FROM `round` WHERE `rank` = 1 ORDER BY `date` DESC LIMIT 10";
+							$sql = "SELECT `rank`, `map`, `auth`, `name`, `time`, `date`, `style`, `track` FROM `round` WHERE `rank` = 1 ORDER BY `date` DESC LIMIT 5";
 							$rekorde = $link->query($sql);
 							$count = 1;
 							while($array = mysqli_fetch_array($rekorde))
 							{
-								echo " ▲▲▲ <a href='records.php?map=".$array[1]."&style=-1&track=-1'>".$array[3]." on ".$array[1]."</a> ";
+								echo "▲▲▲ <a href='records.php?map=".$array[1]."&style=-1&track=-1'>".$array[3]." «» ".$array[1]."</a> ";
 							}
 						?>
-						</marquee>
+						</div>
+						<script type="text/javascript">
+						marqueeInit({
+							uniqueid: 'mycrawler',
+							style: {
+								'background': '#ffffff',
+								'border': '0px solid #CC3300'
+							},
+							inc: 5,
+							mouse: 'cursor driven',
+							moveatleast: 1,
+							neutral: 150,
+							persist: false,
+							savedirection: true
+						});
+						</script>
 					<?php } ?>
 				</div>
             </div>
