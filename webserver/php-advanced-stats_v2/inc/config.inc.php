@@ -50,13 +50,9 @@ array
 $track_list = 
 array
 (
-    "Auto" => "0",
-    "Normal" => "1",
-    "Sideways" => "2",
-    "W-Only" => "3",
-    "Backwards" => "4",
-    "OnlyA" => "5",
-    "OnlyD" => "6"
+    "Normal" => "0",
+    "Bonus" => "1",
+    "Short" => "2"
 );
 
 /* CHAT TAGS */
