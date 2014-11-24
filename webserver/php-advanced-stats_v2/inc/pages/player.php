@@ -45,15 +45,6 @@
 				$array2 = mysqli_fetch_array($query);
 				$name = $array2[0];
 
-				//GetFinishd Maps Count
-				$query = $link->query("SELECT COUNT(*) FROM `round` WHERE `track` = 0 AND (`auth` = ".$ex.$steamid.$ex." OR `auth` = ".$ex.$steamfix.$ex.")");
-				$array2 = mysqli_fetch_array($query);
-				$count_records = $array2[0];
-				
-				$query = $link->query("SELECT COUNT(*) FROM `round` WHERE `track` = 1 AND (`auth` = ".$ex.$steamid.$ex." OR `auth` = ".$ex.$steamfix.$ex.")");
-				$array2 = mysqli_fetch_array($query);
-				$count_bonusrecords = $array2[0];
-
 				$query = $link->query("SELECT COUNT(*) FROM `round`");
 				$array2 = mysqli_fetch_array($query);
 				$total_records = $array2[0];
@@ -102,6 +93,14 @@
 				$array2 = mysqli_fetch_array($query);
 				$count_bonus_records = $array2[0];
 				
+				$query = $link->query("SELECT COUNT(*) FROM (SELECT * FROM `round` WHERE (`auth` = ".$ex.$steamid.$ex." OR `auth` = ".$ex.$steamfix.$ex.") AND `track` = 0 GROUP BY `map`) AS s");
+				$array2 = mysqli_fetch_array($query);
+				$count_maps_finished = $array2[0];
+				
+				$query = $link->query("SELECT COUNT(*) FROM (SELECT * FROM `round` WHERE (`auth` = ".$ex.$steamid.$ex." OR `auth` = ".$ex.$steamfix.$ex.") AND `track` = 1 GROUP BY `map`) AS s");
+				$array2 = mysqli_fetch_array($query);
+				$count_bonusmaps_finished = $array2[0];
+				
 				// $query = $link->query("SELECT `rating` FROM `pvp_elo` WHERE (`auth` = ".$ex.$steamid.$ex." OR `auth` = ".$ex.$steamfix.$ex.")");
 				// $array2 = mysqli_fetch_array($query);
 				// $elo = $array2[0];
@@ -130,7 +129,7 @@
 				}
 				
 				//Complete
-				$complete = round(100*($count_records+$count_bonus_records)/($total_maps+$total_bonusmaps), 2);
+				$complete = round(100*($count_maps_finished+$count_bonusmaps_finished)/($total_maps+$total_bonusmaps), 2);
 			}
 			
 			if(!$valid || !isset($name) )
@@ -286,13 +285,13 @@
                                     <div class="huge"><?php echo $complete ?>%</div>
                                 </div>
                                 <div class="col-xs-4 text-left">
-                                    <div class="huge"><?php echo $records ?></div>
+                                    <div class="huge"><?php echo $count_maps_finished+$count_bonusmaps_finished ?></div>
                                 </div>
                                 <div class="col-xs-4 text-center">
                                     <div>Compelte</div>
                                 </div>
                                 <div class="col-xs-4 text-right">
-                                    <div class="huge"><?php echo $total_maps+$total_bonusmaps-$records ?></div>
+                                    <div class="huge"><?php echo $total_maps+$total_bonusmaps-$count_maps_finished-$count_bonusmaps_finished ?></div>
                                 </div>
                                 <div class="col-xs-6 text-left">
                                     <div>Finished</div>
@@ -310,6 +309,38 @@
 									<div class="clearfix"></div>
 								</a>
 								<ul class="dropdown-menu">
+									<?php
+										$amaps = array();
+										$abonus_maps = array();
+										
+										$sql = "SELECT `map`,`type` FROM `mapzone` WHERE `type` = 0 OR `type` = 7;";
+										$result = $link->query($sql);
+										
+										while($array = mysqli_fetch_array($result)){
+										
+											if($array["type"] == 0){
+												array_push($amaps,$array["map"]);
+											}
+											else if($array["type"] == 7){
+												array_push($abonus_maps,$array["map"]);
+											}
+										}
+										
+										$sql = "SELECT `map`,`track` FROM `round` WHERE (`auth` = ".$ex.$steamid.$ex." OR `auth` = ".$ex.$steamfix.$ex.") GROUP BY `map`, `track`;";
+										$result = $link->query($sql);
+										
+										$amaps_finished = array();
+										$abonus_maps_finished = array();
+										
+										while($array = mysqli_fetch_array($result)){
+											if($array[1] == 0){
+												array_push($amaps_finished,$array[0]);
+											}
+											else if($array[1] == 1){
+												array_push($abonus_maps_finished,$array[0]);
+											}
+										}
+									?>
 									<div class="col-md-6">
 										<div class="panel panel-default">
 											<div class="panel-heading">Incomplete Maps</div>
@@ -318,37 +349,6 @@
 													<table class="table table-striped table-bordered table-hover" id="dataTables-example">
 														<tbody>
 														<?php
-															$amaps = array();
-															$abonus_maps = array();
-															
-															$sql = "SELECT `map`,`type` FROM `mapzone` WHERE `type` = 0 OR `type` = 7;";
-															$result = $link->query($sql);
-															
-															while($array = mysqli_fetch_array($result)){
-															
-																if($array["type"] == 0){
-																	array_push($amaps,$array["map"]);
-																}
-																else if($array["type"] == 7){
-																	array_push($abonus_maps,$array["map"]);
-																}
-															}
-															
-															$sql = "SELECT `map`,`track` FROM `round` WHERE (`auth` = ".$ex.$steamid.$ex." OR `auth` = ".$ex.$steamfix.$ex.") GROUP BY `map`, `track`;";
-															$result = $link->query($sql);
-															
-															$amaps_finished = array();
-															$abonus_maps_finished = array();
-															
-															while($array = mysqli_fetch_array($result)){
-																if($array["track"] == 0){
-																	array_push($amaps_finished,$array["map"]);
-																}
-																else if($array["track"] == 1){
-																	array_push($abonus_maps_finished,$array["map"]);
-																}
-															}
-														
 															for($i = 0; $i<count($amaps); $i++)
 															{
 																if(in_array($amaps[$i], $amaps_finished) == false){
@@ -362,12 +362,6 @@
 											</div>
 										</div>
 									</div>
-									
-									
-									
-									
-									
-									
 									<div class="col-md-6">
 										<div class="panel panel-default">
 											<div class="panel-heading">Incomplete Bonus Maps</div>
