@@ -56,25 +56,23 @@
 		return $final;
 	}
 	
-	function getStyle($styleid, $style_list)
+	function getKeyByArrayValue($id, $array)
 	{
-		$style_names = array_keys($style_list);
-		$style_ids = array_values($style_list);
+		$keys = array_keys($array);
+		$values = array_values($array);
 		
-		$istyle = 0;
-		return $style_names[$styleid];
+		$key = "unknown";
+		
+		for ($i = 0; $i < count($keys); $i++) {
+			if($values[$i] == $id){
+				$key = $keys[$i];
+				break;
+			}
+		}
+		
+		return $key;
 	}
 	
-	function getTrack($trackid, $track_list)
-	{
-		$track_names = array_keys($track_list);
-		$track_ids = array_values($track_list);
-		
-		$itrack = 0;
-		
-		
-		return $track_names[$trackid];
-	}
 	function getPartial($site){
         $invalide = array('\\','/','/\/',':','.');
         $site = str_replace($invalide,' ',$site);

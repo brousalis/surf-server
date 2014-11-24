@@ -211,8 +211,8 @@
 																   <td>".$array[0]."</td>
 																   <td>".$array[1]."</td>
 																   <td>".timeFormat($array[2])."</td>
-																   <td>".getStyle($array[3], $style_list)."</td>
-																   <td>".getTrack($array[4], $track_list)."</td>
+																   <td>".getKeyByArrayValue($array[3], $style_list)."</td>
+																   <td>".getKeyByArrayValue($array[4], $track_list)."</td>
 																   <td>".$array[5]."</td>
 																   <td>".$array[6]."</td>
 																   </tr>";
@@ -466,8 +466,8 @@
 									   <td>".$array[0]."</td>
 									   <td>".$array[1]."</td>
 									   <td>".timeFormat($array[2])."</td>
-									   <td>".getStyle($array[3], $style_list)."</td>
-									   <td>".getTrack($array[4], $track_list)."</td>
+									   <td>".getKeyByArrayValue($array[3], $style_list)."</td>
+									   <td>".getKeyByArrayValue($array[4], $track_list)."</td>
 									   </tr>";
 									}
 									?>
@@ -502,8 +502,8 @@
 									   <td>".$array[0]."</td>
 									   <td>".$array[1]."</td>
 									   <td>".timeFormat($array[2])."</td>
-									   <td>".getStyle($array[3], $style_list)."</td>
-									   <td>".getTrack($array[4], $track_list)."</td>
+									   <td>".getKeyByArrayValue($array[3], $style_list)."</td>
+									   <td>".getKeyByArrayValue($array[4], $track_list)."</td>
 									   </tr>";
 									}
 									?>
