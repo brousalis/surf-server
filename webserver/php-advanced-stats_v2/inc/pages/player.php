@@ -337,7 +337,7 @@
 								}
 							}
 						?>
-						<div class="col-md-6">
+						<div class="col-md-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">Incomplete Maps</div>
 								<div class="panel-body">
@@ -358,7 +358,8 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-md-6">
+						<?php if(count($abonus_maps_finished) > 0) {?>
+						<div class="col-md-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">Incomplete Bonus Maps</div>
 								<div class="panel-body">
@@ -379,6 +380,7 @@
 								</div>
 							</div>
 						</div>
+						<?php } ?>
 					</ul>
 				</li>
 			</div>
