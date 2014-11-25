@@ -33,6 +33,7 @@ array
 
 /* STYLES */
 
+$style_any = "Any Style";
 $style_list = 
 array
 (
@@ -47,6 +48,7 @@ array
 
 /* TRACKS */
 
+$track_any = "Any Track";
 $track_list = 
 array
 (
