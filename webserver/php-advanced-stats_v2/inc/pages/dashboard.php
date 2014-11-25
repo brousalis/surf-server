@@ -3,6 +3,7 @@
 		<h1 class="page-header">Dashboard</h1>
 	</div>
 	<div class="col-lg-9">
+		<?php  getPartial("headLib"); ?>
 		<?php if($wrticker){ ?>
 			<br>
 			<b>World Record Ticker</b><br><br>
@@ -113,7 +114,7 @@
 					</div>
 				</div>
 			</div>
-			<a href="index.php?site=points">
+			<a href="index.php?site=toppoints">
 				<div class="panel-footer">
 					<span class="pull-left">View details</span>
 					<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
