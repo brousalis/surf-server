@@ -40,6 +40,14 @@ array
 	"2"
 );
 
+/* MODULES */
+// If you want to disable the Points
+$module = 
+array
+(
+	"points" => true // true = enabled   false = disabled
+);
+
 /* STYLES */
 
 $style_any = "Any Style";
