@@ -162,8 +162,6 @@ public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:d
 	}
 	
 	g_reconnectCounter = 1;
-	
-	RefreshTable();
 }
 
 public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
@@ -182,6 +180,8 @@ public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], a
 		Timer_LogError("SQL Error on CreateSQLTable: %s", error);
 		return;
 	}
+	
+	RefreshTable();
 }
 
 public InsertCallback(Handle:owner, Handle:hndl, const String:error[], any:param1)
