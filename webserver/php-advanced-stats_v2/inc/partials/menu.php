@@ -54,9 +54,11 @@
                 <li>
                     <a href="#">Top Players<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
+                    <?php if ($module["points"]==true) { ?>
 						<li>
 							<a href="index.php?site=toppoints">by Points</a>
 						</li>
+                    <?php } ?>
 						<li>
 							<a href="index.php?site=topworldrecord">by World Records</a>
 						</li>
