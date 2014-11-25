@@ -134,8 +134,11 @@
 	$complete = round(100*($count_maps_finished+$count_bonusmaps_finished)/($total_maps+$total_bonusmaps), 2);
 ?>
 <div class="row">
-	<div class="col-lg-12">
-		<h1 class="page-header">Player Stats for <?php echo $name." [".$auth."]" ?></h1>
+	<div class="col-lg-9">
+		<h1 class="page-header">Player Stats for <b><?php echo $name."</b>" ?></h1>
+	</div>
+	<div class="col-lg-3">
+		<h1 class="page-header"><?php echo $auth ?></h1>
 	</div>
 </div>
 <div class="row">
