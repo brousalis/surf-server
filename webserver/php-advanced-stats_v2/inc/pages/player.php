@@ -237,7 +237,7 @@
 						<div class="huge"><?php echo $chatrank ?></div>
 					</div>
 					<div class="col-xs-4 text-left">
-						<div class="huge"><?php echo $points ?></div>
+						<div class="huge"><?php echo unitFormat($points) ?></div>
 					</div>
 					<div class="col-xs-4 text-center">
 						<div>Chatrank</div>
