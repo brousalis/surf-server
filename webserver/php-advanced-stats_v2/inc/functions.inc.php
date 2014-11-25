@@ -68,6 +68,23 @@
 		return $key;
 	}
 	
+	function getChatRank($rank, $chatranks)
+	{
+		$keys = array_keys($chatranks);
+		$values = array_values($chatranks);
+		
+		$key = "unknown";
+		
+		for ($i = 0; $i < count($keys); $i++) {
+			if($values[$i] >= $rank){
+				$key = $keys[$i];
+				break;
+			}
+		}
+		
+		return $key;
+	}
+	
 	function getPartial($site){
         $invalide = array('\\','/','/\/',':','.');
         $site = str_replace($invalide,' ',$site);
