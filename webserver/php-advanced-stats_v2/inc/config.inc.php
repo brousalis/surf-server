@@ -31,6 +31,15 @@ array
 	"ServerName3" => "66.55.44.33:27017"
 );
 
+
+$server_ids = // You have to set different IDs for each server inside timer/timer-online_DB.cfg
+array
+(
+	"0",
+	"1",
+	"2"
+);
+
 /* STYLES */
 
 $style_any = "Any Style";
