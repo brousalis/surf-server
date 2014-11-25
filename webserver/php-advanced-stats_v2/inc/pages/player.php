@@ -287,7 +287,7 @@
 						<div class="huge"><?php echo $count_maps_finished+$count_bonusmaps_finished ?></div>
 					</div>
 					<div class="col-xs-4 text-center">
-						<div>Compelte</div>
+						<div>Completed</div>
 					</div>
 					<div class="col-xs-4 text-right">
 						<div class="huge"><?php echo $total_maps+$total_bonusmaps-$count_maps_finished-$count_bonusmaps_finished ?></div>
@@ -413,7 +413,7 @@
 						<div>Wins</div>
 					</div>
 					<div class="col-xs-6 text-right">
-						 <div>Lose</div>
+						 <div>Losses</div>
 					</div>
 				</div>
 			</div>
