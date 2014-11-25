@@ -9,7 +9,7 @@
 			<div class="panel-heading">Top Players by Points</div>
 			<div class="panel-body">
 				<div class="table-responsive">
-					<table class="table table-striped table-bordered table-hover" id="dataTables-example">
+					<table class="sortable table table-striped table-bordered table-hover"">
 						<thead>
 							<tr>
 								<th>Rank</th>
@@ -27,7 +27,6 @@
 						<?php
 						$sql = "SELECT `points`, `lastname`, `auth`, `lastplay` FROM `ranks` ORDER BY `points` DESC LIMIT 25";
 						$players = $link->query($sql);
-						
 						
 						$rank = 0;
 						while($array = mysqli_fetch_array($players))
