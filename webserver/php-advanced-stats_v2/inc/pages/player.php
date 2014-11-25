@@ -1,4 +1,9 @@
 <?php
+	 if ($module["points"]==false) {
+        $gridsize = "4";
+    }else{
+        $gridsize = "3";
+    }
 	if (isset($_GET['auth']))
 	{
 		$auth = $_GET['auth'];
@@ -134,15 +139,15 @@
 	$complete = round(100*($count_maps_finished+$count_bonusmaps_finished)/($total_maps+$total_bonusmaps), 2);
 ?>
 <div class="row">
-	<div class="col-lg-9">
+	<div class="col-lg-8">
 		<h1 class="page-header">Player Stats for <b><?php echo $name."</b>" ?></h1>
 	</div>
-	<div class="col-lg-3">
+	<div class="col-lg-4">
 		<h1 class="page-header"><?php echo $auth ?></h1>
 	</div>
 </div>
 <div class="row">
-	<div class="col-lg-3 col-md-6">
+	<div class="col-lg-<?php echo $gridsize; ?> col-md-6">
 		<div class="panel panel-red">
 			<div class="panel-footer">
 				</center>Account Details</center>
@@ -228,6 +233,7 @@
 			</div>
 		</div>
 	</div>
+	<?php if ($module["points"]==true) { ?>
 	<div class="col-lg-3 col-md-6">
 		<div class="panel panel-yellow">
 			<div class="panel-footer">
@@ -272,7 +278,8 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-lg-3 col-md-6">
+	<?php } ?>
+	<div class="col-lg-<?php echo $gridsize; ?> col-md-6">
 		<div class="panel panel-green">
 			<div class="panel-footer">
 				</center>Map Completion</center>
@@ -389,7 +396,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-lg-3 col-md-6">
+	<div class="col-lg-<?php echo $gridsize; ?> col-md-6">
 		<div class="panel panel-primary">
 			<div class="panel-footer">
 				</center>Challenge PvP Stats</center>
