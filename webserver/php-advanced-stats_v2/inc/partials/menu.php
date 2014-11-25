@@ -55,30 +55,19 @@
                     <a href="#">Top Players<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
 						<li>
-							<a href="index.php?site=points">by Points</a>
+							<a href="index.php?site=toppoints">by Points</a>
 						</li>
 						<li>
-							<a href="index.php?site=records">by World Records</a>
-						</li>
-						<li>
-							<a href="index.php?site=complete">by Completion</a>
-						</li>
-						<li>
-							<a href="index.php?site=average">by Average Rank</a>
+							<a href="index.php?site=topworldrecord">by World Records</a>
 						</li>
                     </ul>
                 </li>
-                <li>
-                    <a href="#">Player Records<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-						<li>
-							<a href="index.php?site=latest">Latest Records</a>
-						</li>
-						<li>
-							<a href="index.php?site=maprecords">Map Top</a>
-						</li>
-                    </ul>
-                </li>
+				<li>
+					<a href="index.php?site=maptop">Map Top</a>
+				</li>
+				<li>
+					<a href="index.php?site=latest">Latest Records</a>
+				</li>
 				<li>
 					<a href="index.php?site=maps">Map Info</a>
 				</li>
