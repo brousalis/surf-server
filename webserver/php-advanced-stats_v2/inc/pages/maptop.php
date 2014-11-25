@@ -193,7 +193,7 @@
 							}
 							else{
 								if($track == -1){
-									$sql = "SELECT `rank`, `name`, `auth`, `time`, ``style`, `track`, `date` FROM `round` WHERE `map` LIKE '".$map."' AND `style` = '".$style."' ORDER BY `time` ASC LIMIT 25";
+									$sql = "SELECT `rank`, `name`, `auth`, `time`, `style`, `track`, `date` FROM `round` WHERE `map` LIKE '".$map."' AND `style` = '".$style."' ORDER BY `time` ASC LIMIT 25";
 								}
 								else{
 									$sql = "SELECT `rank`, `name`, `auth`, `time`, `style`, `track`, `date` FROM `round` WHERE `map` LIKE '".$map."' AND `track` = '".$track."' AND `style` = '".$style."' ORDER BY `time` ASC LIMIT 25";
