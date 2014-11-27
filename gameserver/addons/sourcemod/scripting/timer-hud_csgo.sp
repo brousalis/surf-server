@@ -1345,9 +1345,6 @@ UpdateHUD_CSGO(client)
 	new String:sRankTotal[32];
 	Format(sRankTotal, sizeof(sRankTotal), "%d", RankTotal);
 	
-	if(RankTotal >= MAX_CACHE) 
-		Format(sRankTotal, sizeof(sRankTotal), "%s+", sRankTotal);
-	
 	if(client == iClientToShow)
 	{
 		if(g_Settings[HUDUseMVPStars] > 0 && points100 > 0)
