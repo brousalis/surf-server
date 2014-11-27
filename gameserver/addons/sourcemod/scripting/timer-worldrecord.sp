@@ -918,8 +918,6 @@ CollectBestCache(track, any:style)
 			FormatEx(g_cachestats[style][track][RecordStatsBestTimeString], 32, "%s", nCache[TimeString]);
 			FormatEx(g_cachestats[style][track][RecordStatsName], 32, "%s", nCache[Name]);
 		}
-		else if(g_cachestats[style][track][RecordStatsBestTime] < nCache[Time])
-			break;
 	}
 }
 
