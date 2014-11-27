@@ -219,7 +219,7 @@ UpdateRanks()
 	
 	for(new track = 0; track < TRACK_SHORT; track++) 
 	{
-		for(new style = 0; style < g_StyleCount-1; style++) 
+		for(new style = 0; style < g_StyleCount; style++) 
 		{
 			if(!g_Physics[style][StyleEnable])
 				continue;
