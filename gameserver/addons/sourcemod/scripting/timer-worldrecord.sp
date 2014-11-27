@@ -1567,6 +1567,9 @@ public Native_GetBestRound(Handle:plugin, numParams)
 	decl String:auth[32];
 	GetClientAuthString(client, auth, sizeof(auth));
 	
+	if(GetArraySize(g_hCache[style][track]) <= 0)
+		return false;
+	
 	for (new i = 0; i < GetArraySize(g_hCache[style][track]); i++)
 	{
 		new nCache[RecordCache];
@@ -1592,7 +1595,7 @@ public Native_GetNewPossibleRank(Handle:plugin, numParams)
 	if(time == 0.0)
 		return 0;
 	
-	if(GetArraySize(g_hCache[style][track]) == 0)
+	if(GetArraySize(g_hCache[style][track]) <= 0)
 		return 1;
 	
 	new i = 0;
@@ -1641,7 +1644,10 @@ public Native_GetRankID(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
@@ -1660,7 +1666,10 @@ public Native_GetRecordHolderName(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
@@ -1684,7 +1693,10 @@ public Native_GetRecordHolderAuth(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
@@ -1708,7 +1720,10 @@ public Native_GetRecordDate(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
@@ -1728,8 +1743,11 @@ public Native_GetFinishCount(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
-		return 0;
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
 	
 	new nCache[RecordCache];
 	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
@@ -1747,7 +1765,10 @@ public Native_GetRecordTimeInfo(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
@@ -1770,7 +1791,10 @@ public Native_GetRecordSpeedInfo(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
@@ -1789,7 +1813,10 @@ public Native_GetRecordStrafeJumpInfo(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
@@ -1813,7 +1840,10 @@ public Native_GetReplayFileName(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
@@ -1837,7 +1867,10 @@ public Native_GetReplayPath(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
@@ -1869,7 +1902,10 @@ public Native_GetCustom1(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
@@ -1893,7 +1929,10 @@ public Native_GetCustom2(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
@@ -1918,7 +1957,10 @@ public Native_GetCustom3(Handle:plugin, numParams)
 	if (nlen <= 0)
 		return false;
 	
-	if(1 > rank > GetArraySize(g_hCache[style][track]))
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
 		return false;
 	
 	new nCache[RecordCache];
