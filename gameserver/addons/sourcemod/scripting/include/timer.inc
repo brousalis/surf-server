@@ -10,7 +10,9 @@
 /*** SETTINGS ***/
 
 //MAX RECORDS TO CACHE
-#define MAX_CACHE 1000
+#define MAX_CACHE 1000 //Will be removed
+#define STYLE_MAX 16
+#define TRACK_MAX 10
 
 //Uncomment this to use colors.inc and disable morecolors.inc
 //#define LEGACY_COLORS "CS:GO Color Support"

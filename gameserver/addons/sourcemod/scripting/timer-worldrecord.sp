@@ -50,6 +50,27 @@ enum RecordStats
 }
 
 /**
+ * New World Record Cache
+ */
+ 
+new Handle:g_hCache[STYLE_MAX][TRACK_MAX];
+new nCacheTemplate[RecordCache];
+
+/**
+ * Old World Record Cache
+ */
+ 
+new g_cache[MAX_STYLES][3][MAX_CACHE][RecordCache];
+
+/**
+ * World Record Cache
+ */
+
+new g_cachestats[MAX_STYLES][3][RecordStats];
+new g_cacheCount[MAX_STYLES][3];
+new bool:g_cacheLoaded[MAX_STYLES][3];
+
+/**
  * Global Variables
  */
 
@@ -60,11 +81,6 @@ new g_reconnectCounter = 0;
 
 new Handle:hTopMenu = INVALID_HANDLE;
 new TopMenuObject:oMapZoneMenu;
-
-new g_cache[MAX_STYLES][3][MAX_CACHE][RecordCache];
-new g_cachestats[MAX_STYLES][3][RecordStats];
-new g_cacheCount[MAX_STYLES][3];
-new bool:g_cacheLoaded[MAX_STYLES][3];
 
 new g_deleteMenuSelection[MAXPLAYERS+1];
 new g_wrStyleMode[MAXPLAYERS+1];
