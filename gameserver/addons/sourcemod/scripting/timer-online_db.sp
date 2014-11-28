@@ -1,10 +1,9 @@
 #include <sourcemod>
 #include <smlib>
 #include <timer-logging>
-#include <autoexecconfig>	//https://github.com/Impact123/AutoExecConfig
+#include <timer-mysql>
 
 new Handle:g_hSQL = INVALID_HANDLE;
-new g_reconnectCounter = 0;
 new String:g_sAuth[MAXPLAYERS + 1][24];
 new bool:g_bAuthed[MAXPLAYERS + 1];
 
@@ -29,16 +28,18 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public OnPluginStart()
 {
-	AutoExecConfig_SetFile("timer/timer-online_DB");
-	g_hServerID = AutoExecConfig_CreateConVar("timer_online_db_server_id", "1", "Server ID, don't use the same ID for multiple server which are sharing all database tables.");
-	HookConVarChange(g_hServerID, OnCVarChange);
+	g_hServerID = CreateConVar("timer_online_db_server_id", "1", "Server ID, don't use the same ID for multiple server which are sharing all database tables.");
 	g_iServerID = GetConVarInt(g_hServerID);
+	HookConVarChange(g_hServerID, OnCVarChange);
 
-	AutoExecConfig_ExecuteFile();
-	AutoExecConfig_CleanFile();
+	AutoExecConfig(true, "timer/timer-online_DB");
 	
 	RegAdminCmd("sm_online_refresh", Command_RefreshTable, ADMFLAG_ROOT);
-	ConnectSQL();
+	
+	if (g_hSQL == INVALID_HANDLE)
+	{
+		ConnectSQL();
+	}
 }
 
 public OnPluginEnd()
@@ -46,6 +47,14 @@ public OnPluginEnd()
 	decl String:query[512];
 	Format(query, sizeof(query), "DELETE FROM `online` WHERE `server` = %d", g_iServerID);
 	SQL_TQuery(g_hSQL, DeleteCallback, query, _, DBPrio_High);
+}
+
+public OnMapStart()
+{
+	if (g_hSQL == INVALID_HANDLE)
+	{
+		ConnectSQL();
+	}
 }
 
 public OnCVarChange(Handle:cvar, const String:oldvalue[], const String:newvalue[])
@@ -58,7 +67,7 @@ public OnCVarChange(Handle:cvar, const String:oldvalue[], const String:newvalue[
 
 public Action:Command_RefreshTable(client, args)
 {
-	RefreshTable()
+	RefreshTable();
 	return Plugin_Handled;
 }
 
@@ -113,55 +122,15 @@ public OnClientDisconnect_Post(client)
 
 ConnectSQL()
 {
-    if (g_hSQL != INVALID_HANDLE)
-        CloseHandle(g_hSQL);
+	g_hSQL = Handle:Timer_SqlGetConnection();
 	
-    g_hSQL = INVALID_HANDLE;
-
-    if (SQL_CheckConfig("timer"))
+	if (g_hSQL == INVALID_HANDLE)
+		CreateTimer(0.1, Timer_SQLReconnect, _ , TIMER_FLAG_NO_MAPCHANGE);
+	else 
 	{
-		SQL_TConnect(ConnectSQLCallback, "timer");
-	}
-    else
-	{
-		SetFailState("PLUGIN STOPPED - Reason: no config entry found for 'timer' in databases.cfg - PLUGIN STOPPED");
-	}
-}
-
-public ConnectSQLCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
-{
-	if (g_reconnectCounter >= 5)
-	{
-		SetFailState("PLUGIN STOPPED - Reason: reconnect counter reached max - PLUGIN STOPPED");
-		return;
-	}
-
-	if (hndl == INVALID_HANDLE)
-	{
-		Timer_LogError("Connection to SQL database has failed, Reason: %s", error);
-		
-		g_reconnectCounter++;
-		ConnectSQL();
-		
-		return;
-	}
-
-	decl String:driver[16];
-	SQL_GetDriverIdent(owner, driver, sizeof(driver));
-
-	g_hSQL = CloneHandle(hndl);
-	
-	if (StrEqual(driver, "mysql", false))
-	{
-		SQL_SetCharset(g_hSQL, "utf8");
 		SQL_TQuery(g_hSQL, CreateSQLTableCallback, "CREATE TABLE IF NOT EXISTS `online` (`auth` varchar(24) NOT NULL, `server` int(11) NOT NULL, UNIQUE KEY `online_single` (`auth`));");
+		RefreshTable();
 	}
-	else if (StrEqual(driver, "sqlite", false))
-	{
-		SetFailState("Timer ERROR: SqLite is not supported, please check you databases.cfg and use MySQL driver");
-	}
-	
-	g_reconnectCounter = 1;
 }
 
 public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], any:data)
@@ -170,7 +139,6 @@ public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], a
 	{
 		Timer_LogError(error);
 		
-		g_reconnectCounter++;
 		ConnectSQL();
 		return;
 	}
@@ -182,6 +150,12 @@ public CreateSQLTableCallback(Handle:owner, Handle:hndl, const String:error[], a
 	}
 	
 	RefreshTable();
+}
+
+public Action:Timer_SQLReconnect(Handle:timer, any:data)
+{
+	ConnectSQL();
+	return Plugin_Stop;
 }
 
 public InsertCallback(Handle:owner, Handle:hndl, const String:error[], any:param1)
