@@ -5,7 +5,7 @@
 
 #pragma semicolon 1
 
-#define PL_VERSION		"2.2.1.3"
+#define PL_VERSION		"2.3.0.0"
 
 /*** SETTINGS ***/
 
