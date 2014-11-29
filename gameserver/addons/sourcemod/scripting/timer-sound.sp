@@ -87,10 +87,6 @@ public PrepareSound(String: sound[MAX_FILE_LEN])
 		AddFileToDownloadsTable(fileSound);
 		Timer_LogTrace("[Sound] File '%s' added to downloads table.", fileSound);
 	}
-	else
-	{
-		Timer_LogError("[Sound] File '%s' not found.", fileSound);
-	}
 }
 
 public OnTimerPaused(client)
