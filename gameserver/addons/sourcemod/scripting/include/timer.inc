@@ -9,14 +9,11 @@
 
 /*** SETTINGS ***/
 
-//MAX RECORDS TO CACHE
-#define MAX_CACHE 1000
-
 //Uncomment this to use colors.inc and disable morecolors.inc
 //#define LEGACY_COLORS "CS:GO Color Support"
 
-//Max number of styles (default 32 ID:0-31)
-#define MAX_STYLES	32
+#define MAX_STYLES	16 //Max number of styles (default 32 ID:0-31)
+#define MAX_TRACKS	10
 
 //Max. number of door/button based bhop blocks handled in a map
 #define MAX_BHOPBLOCKS	1024

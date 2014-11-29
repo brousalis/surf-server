@@ -50,6 +50,26 @@ enum RecordStats
 }
 
 /**
+ * New World Record Cache
+ */
+ 
+new Handle:g_hCache[MAX_STYLES][MAX_TRACKS];
+new nCacheTemplate[RecordCache];
+
+/**
+ * Old World Record Cache
+ */
+ 
+//new g_cache[MAX_STYLES][3][MAX_CACHE][RecordCache];
+
+/**
+ * World Record Cache
+ */
+
+new g_cachestats[MAX_STYLES][MAX_TRACKS][RecordStats];
+new bool:g_cacheLoaded[MAX_STYLES][MAX_TRACKS];
+
+/**
  * Global Variables
  */
 
@@ -60,11 +80,6 @@ new g_reconnectCounter = 0;
 
 new Handle:hTopMenu = INVALID_HANDLE;
 new TopMenuObject:oMapZoneMenu;
-
-new g_cache[MAX_STYLES][3][MAX_CACHE][RecordCache];
-new g_cachestats[MAX_STYLES][3][RecordStats];
-new g_cacheCount[MAX_STYLES][3];
-new bool:g_cacheLoaded[MAX_STYLES][3];
 
 new g_deleteMenuSelection[MAXPLAYERS+1];
 new g_wrStyleMode[MAXPLAYERS+1];
@@ -174,6 +189,8 @@ public OnPluginStart()
 			AddCommandListener(Hook_WrCommands, g_Physics[i][StyleQuickShortWrCommand]);
 		}
 	}
+	
+	CacheReset();
 }
 
 public OnLibraryAdded(const String:name[])
@@ -203,7 +220,7 @@ public OnMapStart()
 	LoadPhysics();
 	LoadTimerSettings();
 	
-	ClearCache();
+	CacheReset();
 	RefreshCache();
 }
 
@@ -360,13 +377,16 @@ public Action:Command_PersonalRecord(client, args)
 		
 		decl String:auth[32];
 		GetClientAuthString(target, auth, sizeof(auth));
-
-		for (new t = 0; t < g_cacheCount[style][track]; t++)
+		
+		for (new i = 0; i < GetArraySize(g_hCache[style][track]); i++)
 		{
-			if (StrEqual(g_cache[style][track][t][Auth], auth))
+			new nCache[RecordCache];
+			GetArrayArray(g_hCache[style][track], i, nCache[0]);
+			
+			if (StrEqual(nCache[Auth], auth))
 			{
 				g_wrStyleMode[client] = style;
-				CreatePlayerInfoMenu(client, g_cache[style][track][t][Id], track);
+				CreatePlayerInfoMenu(client, nCache[Id], track);
 				break;
 			}
 		}		
@@ -682,19 +702,23 @@ CreateAdminRecordSelection(client, style, track)
 	
 	new items = 0; 
 	
-	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
+	
+	for (new i = 0; i < GetArraySize(g_hCache[style][track]); i++)
 	{
-		if (g_cache[style][track][cache][Ignored])
+		new nCache[RecordCache];
+		GetArrayArray(g_hCache[style][track], i, nCache[0]);
+		
+		if (nCache[Ignored])
 			continue;
 		
 		decl String:text[92];
-		FormatEx(text, sizeof(text), "%s - %s", g_cache[style][track][cache][TimeString], g_cache[style][track][cache][Name]);
+		FormatEx(text, sizeof(text), "%s - %s", nCache[TimeString], nCache[Name]);
 		
 		if (g_Settings[JumpsEnable])
-			Format(text, sizeof(text), "%s (%d %T)", text, g_cache[style][track][cache][Jumps], "Jumps", client);
+			Format(text, sizeof(text), "%s (%d %T)", text, nCache[Jumps], "Jumps", client);
 
 		decl String:text2[32];
-		FormatEx(text2, sizeof(text2), "%d", g_cache[style][track][cache][Id]);
+		FormatEx(text2, sizeof(text2), "%d", nCache[Id]);
 		AddMenuItem(menu, text2, text);
 		items++;
 	}
@@ -768,20 +792,20 @@ RefreshCache()
 			g_cacheLoaded[style][2] = false;
 			
 			decl String:query[512];
-			FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, stage, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_NORMAL, MAX_CACHE);	
+			FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, stage, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC;", g_currentMap, style, TRACK_NORMAL);	
 			
 			SQL_TQuery(g_hSQL, RefreshCacheCallback, query, style, DBPrio_Low);
 			
 			if(g_Settings[BonusWrEnable])
 			{
-				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, stage, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_BONUS, MAX_CACHE);	
+				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, stage, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC;", g_currentMap, style, TRACK_BONUS);	
 				
 				SQL_TQuery(g_hSQL, RefreshBonusCacheCallback, query, style, DBPrio_Low);
 			}
 			
 			if(g_Settings[ShortWrEnable])
 			{
-				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, stage, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC LIMIT 0, %d", g_currentMap, style, TRACK_SHORT, MAX_CACHE);	
+				FormatEx(query, sizeof(query), "SELECT id, auth, time, jumps, style, name, date, finishcount, stage, rank, jumpacc, finishspeed, maxspeed, avgspeed, strafes, strafeacc, replaypath, custom1, custom2, custom3 FROM round WHERE map = '%s' AND style = %d AND track = %d ORDER BY time ASC;", g_currentMap, style, TRACK_SHORT);	
 				
 				SQL_TQuery(g_hSQL, RefreshShortCacheCallback, query, style, DBPrio_Low);
 			}
@@ -789,76 +813,40 @@ RefreshCache()
 	}
 }
 
-ClearCache()
+CollectCache(track, style, Handle:hndl)
 {
-	for (new track = 0; track < 3; track++)
-	{
-		new count = 0;
-		
-		for (new style = 0; style < MAX_STYLES; style++)
-		{
-			for (new cache = 0; cache < MAX_CACHE; cache++)
-			{
-				if(!g_cache[style][track][cache][Ignored])
-					count++;
-				
-				g_cache[style][track][cache][Ignored] = true;
-				
-				FormatEx(g_cache[style][track][cache][Name], 32, "");
-				FormatEx(g_cache[style][track][cache][TimeString], 16, "");
-				FormatEx(g_cache[style][track][cache][Date], 32, "");
-				FormatEx(g_cache[style][track][cache][Auth], 32, "");
-				
-				g_cache[style][track][cache][Time] = 0.0;
-				g_cache[style][track][cache][FinishCount] = 0;
-				g_cache[style][track][cache][Stage] = 0;
-				g_cache[style][track][cache][Style] = 0;
-				g_cache[style][track][cache][CurrentRank] = 0;
-				g_cache[style][track][cache][Jumps] = 0;
-				g_cache[style][track][cache][JumpAcc] = 0.0;
-				g_cache[style][track][cache][Strafes] = 0;
-				g_cache[style][track][cache][StrafeAcc] = 0.0;
-				g_cache[style][track][cache][AvgSpeed] = 0.0;
-				g_cache[style][track][cache][MaxSpeed] = 0.0;
-				g_cache[style][track][cache][FinishSpeed] = 0.0;
-				g_cache[style][track][cache][Flashbangcount] = 0;
-			}
-		}
-	}
-}
-
-CollectCache(track, any:style, Handle:hndl)
-{
-	g_cacheCount[style][track] = 0;
-		
+	CacheResetSingle(track, style);
+	
 	while (SQL_FetchRow(hndl))
 	{
-		g_cache[style][track][g_cacheCount[style][track]][Id] = SQL_FetchInt(hndl, 0);
-		SQL_FetchString(hndl, 1, g_cache[style][track][g_cacheCount[style][track]][Auth], 32);
-		g_cache[style][track][g_cacheCount[style][track]][Time] = SQL_FetchFloat(hndl, 2);
-		Timer_SecondsToTime(SQL_FetchFloat(hndl, 2), g_cache[style][track][g_cacheCount[style][track]][TimeString], 16, 2);
-		g_cache[style][track][g_cacheCount[style][track]][Jumps] = SQL_FetchInt(hndl, 3);
-		g_cache[style][track][g_cacheCount[style][track]][Style] = SQL_FetchInt(hndl, 4);
-		SQL_FetchString(hndl, 5, g_cache[style][track][g_cacheCount[style][track]][Name], 32);
-		SQL_FetchString(hndl, 6, g_cache[style][track][g_cacheCount[style][track]][Date], 32);
-		g_cache[style][track][g_cacheCount[style][track]][FinishCount] = SQL_FetchInt(hndl, 7);
-		g_cache[style][track][g_cacheCount[style][track]][Stage] = SQL_FetchInt(hndl, 8);
-		g_cache[style][track][g_cacheCount[style][track]][CurrentRank] = SQL_FetchInt(hndl, 9);
-		g_cache[style][track][g_cacheCount[style][track]][JumpAcc] = SQL_FetchFloat(hndl, 10);
+		new nNewCache[RecordCache];
 		
-		g_cache[style][track][g_cacheCount[style][track]][FinishSpeed] = SQL_FetchFloat(hndl, 11);
-		g_cache[style][track][g_cacheCount[style][track]][MaxSpeed] = SQL_FetchFloat(hndl, 12);
-		g_cache[style][track][g_cacheCount[style][track]][AvgSpeed] = SQL_FetchFloat(hndl, 13);
-		g_cache[style][track][g_cacheCount[style][track]][Strafes] = SQL_FetchInt(hndl, 14);
-		g_cache[style][track][g_cacheCount[style][track]][StrafeAcc] = SQL_FetchFloat(hndl, 15);
-		SQL_FetchString(hndl, 16, g_cache[style][track][g_cacheCount[style][track]][ReplayFile], 32);
-		SQL_FetchString(hndl, 17, g_cache[style][track][g_cacheCount[style][track]][Custom1], 32);
-		SQL_FetchString(hndl, 18, g_cache[style][track][g_cacheCount[style][track]][Custom2], 32);
-		SQL_FetchString(hndl, 19, g_cache[style][track][g_cacheCount[style][track]][Custom3], 32);
+		nNewCache[Id] = SQL_FetchInt(hndl, 0);
+		SQL_FetchString(hndl, 1, nNewCache[Auth], 32);
+		nNewCache[Time] = SQL_FetchFloat(hndl, 2);
+		Timer_SecondsToTime(SQL_FetchFloat(hndl, 2), nNewCache[TimeString], 16, 2);
+		nNewCache[Jumps] = SQL_FetchInt(hndl, 3);
+		nNewCache[Style] = SQL_FetchInt(hndl, 4);
+		SQL_FetchString(hndl, 5, nNewCache[Name], 32);
+		SQL_FetchString(hndl, 6, nNewCache[Date], 32);
+		nNewCache[FinishCount] = SQL_FetchInt(hndl, 7);
+		nNewCache[Stage] = SQL_FetchInt(hndl, 8);
+		nNewCache[CurrentRank] = SQL_FetchInt(hndl, 9);
+		nNewCache[JumpAcc] = SQL_FetchFloat(hndl, 10);
 		
-		g_cache[style][track][g_cacheCount[style][track]][Ignored] = false;
+		nNewCache[FinishSpeed] = SQL_FetchFloat(hndl, 11);
+		nNewCache[MaxSpeed] = SQL_FetchFloat(hndl, 12);
+		nNewCache[AvgSpeed] = SQL_FetchFloat(hndl, 13);
+		nNewCache[Strafes] = SQL_FetchInt(hndl, 14);
+		nNewCache[StrafeAcc] = SQL_FetchFloat(hndl, 15);
+		SQL_FetchString(hndl, 16, nNewCache[ReplayFile], 32);
+		SQL_FetchString(hndl, 17, nNewCache[Custom1], 32);
+		SQL_FetchString(hndl, 18, nNewCache[Custom2], 32);
+		SQL_FetchString(hndl, 19, nNewCache[Custom3], 32);
 		
-		g_cacheCount[style][track]++;
+		nNewCache[Ignored] = false;
+		
+		PushArrayArray(g_hCache[style][track], nNewCache[0]);
 	}
 		
 	g_cacheLoaded[style][track] = true;
@@ -913,19 +901,22 @@ CollectBestCache(track, any:style)
 	FormatEx(g_cachestats[style][track][RecordStatsName], 32, "");
 	FormatEx(g_cachestats[style][track][RecordStatsBestTimeString], 32, "");
 	
-	for (new i = 0; i < g_cacheCount[style][track]; i++)
+	for (new i = 0; i < GetArraySize(g_hCache[style][track]); i++)
 	{
-		if(g_cache[style][track][i][Time] <= 0.0)
+		new nCache[RecordCache];
+		GetArrayArray(g_hCache[style][track], i, nCache[0]);
+		
+		if(nCache[Time] <= 0.0)
 			continue;
 		
 		g_cachestats[style][track][RecordStatsCount]++;
 		
-		if(g_cachestats[style][track][RecordStatsBestTime] == 0.0 || g_cachestats[style][track][RecordStatsBestTime] > g_cache[style][track][i][Time])
+		if(g_cachestats[style][track][RecordStatsBestTime] == 0.0 || g_cachestats[style][track][RecordStatsBestTime] > nCache[Time])
 		{
-			g_cachestats[style][track][RecordStatsID] = g_cache[style][track][i][Id];
-			g_cachestats[style][track][RecordStatsBestTime] = g_cache[style][track][i][Time];
-			FormatEx(g_cachestats[style][track][RecordStatsBestTimeString], 32, "%s", g_cache[style][track][i][TimeString]);
-			FormatEx(g_cachestats[style][track][RecordStatsName], 32, "%s", g_cache[style][track][i][Name]);
+			g_cachestats[style][track][RecordStatsID] = nCache[Id];
+			g_cachestats[style][track][RecordStatsBestTime] = nCache[Time];
+			FormatEx(g_cachestats[style][track][RecordStatsBestTimeString], 32, "%s", nCache[TimeString]);
+			FormatEx(g_cachestats[style][track][RecordStatsName], 32, "%s", nCache[Name]);
 		}
 	}
 }
@@ -1200,7 +1191,7 @@ CreateWRMenu(client, style, track)
 {
 	new Handle:menu;
 
-	new total = g_cacheCount[style][track];
+	new total = GetArraySize(g_hCache[style][track]);
 	
 	if(track == TRACK_NORMAL)
 	{
@@ -1224,23 +1215,23 @@ CreateWRMenu(client, style, track)
 		SetMenuExitButton(menu, true);
 		
 	new items = 0;
-		
-	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
+	
+	for (new i = 0; i < GetArraySize(g_hCache[style][track]); i++)
 	{
-		if (style != -1)
-		{
-			decl String:id[64];
-			IntToString(g_cache[style][track][cache][Id], id, sizeof(id));
-			
-			decl String:text[92];
-			FormatEx(text, sizeof(text), "#%d | %s - %s", cache+1, g_cache[style][track][cache][Name], g_cache[style][track][cache][TimeString]);
-			
-			if (g_Settings[JumpsEnable])
-				Format(text, sizeof(text), "%s (%d jumps)", text, g_cache[style][track][cache][Jumps]);
-			
-			AddMenuItem(menu, id, text);
-			items++;
-		}
+		new nCache[RecordCache];
+		GetArrayArray(g_hCache[style][track], i, nCache[0]);
+		
+		decl String:id[64];
+		IntToString(nCache[Id], id, sizeof(id));
+		
+		decl String:text[92];
+		FormatEx(text, sizeof(text), "#%d | %s - %s", i+1, nCache[Name], nCache[TimeString]);
+		
+		if (g_Settings[JumpsEnable])
+			Format(text, sizeof(text), "%s (%d jumps)", text, nCache[Jumps]);
+		
+		AddMenuItem(menu, id, text);
+		items++;
 	}
 
 	if (items == 0)
@@ -1358,43 +1349,46 @@ CreatePlayerInfoMenu(client, id, track)
 
 	SetMenuExitButton(menu, true);
 
-	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
+	for (new i = 0; i < GetArraySize(g_hCache[style][track]); i++)
 	{
-		if (g_cache[style][track][cache][Id] == id)
+		new nCache[RecordCache];
+		GetArrayArray(g_hCache[style][track], i, nCache[0]);
+		
+		if (nCache[Id] == id)
 		{
 			decl String:sStyle[5];
 			IntToString(style, sStyle, sizeof(sStyle));
-					
+			
 			decl String:text[92];
-
+			
 			SetMenuTitle(menu, "Record Info [ID: %d]\n \n", id);
-
-			FormatEx(text, sizeof(text), "Date: %s", g_cache[style][track][cache][Date]);
+			
+			FormatEx(text, sizeof(text), "Date: %s", nCache[Date]);
 			AddMenuItem(menu, sStyle, text);
 			
-			FormatEx(text, sizeof(text), "Player: %s (%s)", g_cache[style][track][cache][Name], g_cache[style][track][cache][Auth]);
-			AddMenuItem(menu, sStyle, text);
-
-			FormatEx(text, sizeof(text), "Rank: #%d (#%d) [FC: %d]", cache + 1, g_cache[style][track][cache][CurrentRank], g_cache[style][track][cache][FinishCount]);
-			AddMenuItem(menu, sStyle, text);
-
-			FormatEx(text, sizeof(text), "Time: %s", g_cache[style][track][cache][TimeString]);
+			FormatEx(text, sizeof(text), "Player: %s (%s)", nCache[Name], nCache[Auth]);
 			AddMenuItem(menu, sStyle, text);
 			
-			FormatEx(text, sizeof(text), "Speed [Avg: %.2f | Max: %.2f | Fin: %.2f]", g_cache[style][track][cache][AvgSpeed], g_cache[style][track][cache][MaxSpeed], g_cache[style][track][cache][FinishSpeed]);
+			FormatEx(text, sizeof(text), "Rank: #%d (#%d) [FC: %d]", i+1, nCache[CurrentRank], nCache[FinishCount]);
+			AddMenuItem(menu, sStyle, text);
+			
+			FormatEx(text, sizeof(text), "Time: %s", nCache[TimeString]);
+			AddMenuItem(menu, sStyle, text);
+			
+			FormatEx(text, sizeof(text), "Speed [Avg: %.2f | Max: %.2f | Fin: %.2f]", nCache[AvgSpeed], nCache[MaxSpeed], nCache[FinishSpeed]);
 			AddMenuItem(menu, sStyle, text);
 			
 			if (g_Settings[JumpsEnable])
 			{
-				FormatEx(text, sizeof(text), "Jumps: %d", g_cache[style][track][cache][Jumps]);
-				Format(text, sizeof(text), "%s [%.2f ⁰⁄₀]", text, g_cache[style][track][cache][JumpAcc]);
+				FormatEx(text, sizeof(text), "Jumps: %d", nCache[Jumps]);
+				Format(text, sizeof(text), "%s [%.2f ⁰⁄₀]", text, nCache[JumpAcc]);
 				AddMenuItem(menu, sStyle, text);
 			}
 			
 			if (g_Settings[StrafesEnable])
 			{
-				FormatEx(text, sizeof(text), "Strafes: %d", g_cache[style][track][cache][Strafes]);
-				Format(text, sizeof(text), "%s [%.2f ⁰⁄₀]", text, g_cache[style][track][cache][StrafeAcc]);
+				FormatEx(text, sizeof(text), "Strafes: %d", nCache[Strafes]);
+				Format(text, sizeof(text), "%s [%.2f ⁰⁄₀]", text, nCache[StrafeAcc]);
 				AddMenuItem(menu, sStyle, text);
 			}
 			
@@ -1403,10 +1397,8 @@ CreatePlayerInfoMenu(client, id, track)
 				FormatEx(text, sizeof(text), "%Style: %s", g_Physics[style][StyleName]);
 				AddMenuItem(menu, sStyle, text);
 			}			
-
 			break;
 		}
-		
 	}
 
 	DisplayMenu(menu, client, MENU_TIME_FOREVER);	
@@ -1537,13 +1529,13 @@ public Native_GetStyleRank(Handle:plugin, numParams)
 	decl String:auth[32];
 	GetClientAuthString(client, auth, sizeof(auth));
 	
-	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
+	for (new i = 0; i < GetArraySize(g_hCache[style][track]); i++)
 	{
-		if (StrEqual(g_cache[style][track][cache][Auth], auth))
-		{
-			return cache+1;
-		}
+		new nCache[RecordCache];
+		GetArrayArray(g_hCache[style][track], i, nCache[0]);
 		
+		if (StrEqual(nCache[Auth], auth))
+			return i+1;
 	}
 	
 	return 0;
@@ -1551,7 +1543,7 @@ public Native_GetStyleRank(Handle:plugin, numParams)
 
 public Native_GetStyleTotalRank(Handle:plugin, numParams)
 {
-	return g_cacheCount[GetNativeCell(1)][GetNativeCell(2)]; 
+	return GetArraySize(g_hCache[GetNativeCell(1)][GetNativeCell(2)]);
 }
 
 public Native_GetStyleRecordWRStats(Handle:plugin, numParams)
@@ -1575,15 +1567,20 @@ public Native_GetBestRound(Handle:plugin, numParams)
 	decl String:auth[32];
 	GetClientAuthString(client, auth, sizeof(auth));
 	
-	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
+	if(GetArraySize(g_hCache[style][track]) <= 0)
+		return false;
+	
+	for (new i = 0; i < GetArraySize(g_hCache[style][track]); i++)
 	{
-		if (StrEqual(g_cache[style][track][cache][Auth], auth))
+		new nCache[RecordCache];
+		GetArrayArray(g_hCache[style][track], i, nCache[0]);
+		
+		if (StrEqual(nCache[Auth], auth))
 		{
-			SetNativeCellRef(4, g_cache[style][track][cache][Time]);
-			SetNativeCellRef(5, g_cache[style][track][cache][Jumps]);
+			SetNativeCellRef(4, nCache[Time]);
+			SetNativeCellRef(5, nCache[Jumps]);
 			return true;
 		}
-		
 	}
 	
 	return false;
@@ -1596,20 +1593,22 @@ public Native_GetNewPossibleRank(Handle:plugin, numParams)
 	new Float:time = GetNativeCell(3);
 	
 	if(time == 0.0)
-		return -1;
+		return 0;
 	
-	if(g_cache[style][track][0][Time] == 0.0)
+	if(GetArraySize(g_hCache[style][track]) <= 0)
 		return 1;
 	
-	for (new cache = 0; cache < g_cacheCount[style][track]; cache++)
+	new i = 0;
+	for (i = 0; i < GetArraySize(g_hCache[style][track]); i++)
 	{
-		if (g_cache[style][track][cache][Time] > time)
-		{
-			return cache+1;
-		}
+		new nCache[RecordCache];
+		GetArrayArray(g_hCache[style][track], i, nCache[0]);
+		
+		if (nCache[Time] > time)
+			return i+1;
 	}
 	
-	return g_cacheCount[style][track]+1;
+	return GetArraySize(g_hCache[style][track])+1;
 }
 
 public Native_GetCacheMapName(Handle:plugin, numParams)
@@ -1645,12 +1644,16 @@ public Native_GetRankID(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
-	if(rank > MAX_CACHE)
+	if(rank < 1)
 		return false;
 	
-	if(rank > 0)
-		return g_cache[style][track][rank-1][Id];
-	else return -1;
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	return nCache[Id];
 }
 
 public Native_GetRecordHolderName(Handle:plugin, numParams)
@@ -1658,21 +1661,24 @@ public Native_GetRecordHolderName(Handle:plugin, numParams)
 	new style = GetNativeCell(1);
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
-	new nlen = GetNativeCell(5); 
-	
-	if(rank > MAX_CACHE)
-		return false;
+	new nlen = GetNativeCell(5);
 	
 	if (nlen <= 0)
 		return false;
-
-	if(rank > 0 && track >= 0)
-	{
-		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Name]);
-		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
-			return true;
-	}
+	
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	decl String:buffer[nlen];
+	FormatEx(buffer, nlen, "%s", nCache[Name]);
+	if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+		return true;
 	
 	return false;
 }
@@ -1682,21 +1688,24 @@ public Native_GetRecordHolderAuth(Handle:plugin, numParams)
 	new style = GetNativeCell(1);
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
-	new nlen = GetNativeCell(5); 
-	
-	if(rank > MAX_CACHE)
-		return false;
+	new nlen = GetNativeCell(5);
 	
 	if (nlen <= 0)
 		return false;
-
-	if(rank > 0 && track >= 0)
-	{
-		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Auth]);
-		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
-			return true;
-	}
+	
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	decl String:buffer[nlen];
+	FormatEx(buffer, nlen, "%s", nCache[Auth]);
+	if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+		return true;
 	
 	return false;
 }
@@ -1706,21 +1715,24 @@ public Native_GetRecordDate(Handle:plugin, numParams)
 	new style = GetNativeCell(1);
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
-	new nlen = GetNativeCell(5); 
-	
-	if(rank > MAX_CACHE)
-		return false;
+	new nlen = GetNativeCell(5);
 	
 	if (nlen <= 0)
 		return false;
-
-	if(rank > 0 && track >= 0)
-	{
-		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Date]);
-		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
-			return true;
-	}
+	
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	decl String:buffer[nlen];
+	FormatEx(buffer, nlen, "%s", nCache[Date]);
+	if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+		return true;
 	
 	return false;
 }
@@ -1731,13 +1743,16 @@ public Native_GetFinishCount(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
-	if(rank > MAX_CACHE)
+	if(rank < 1)
 		return false;
 	
-	if(rank > 0)
-		return g_cache[style][track][rank-1][FinishCount];
-		
-	return 0;
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	return nCache[FinishCount];
 }
 
 public Native_GetRecordTimeInfo(Handle:plugin, numParams)
@@ -1745,27 +1760,29 @@ public Native_GetRecordTimeInfo(Handle:plugin, numParams)
 	new style = GetNativeCell(1);
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
-	
 	new nlen = GetNativeCell(6);
-	
-	if(rank > MAX_CACHE)
-		return false;
 	
 	if (nlen <= 0)
 		return false;
 	
-	if(rank > 0)
-	{
-		SetNativeCellRef(4, g_cache[style][track][rank-1][Time]);
-		
-		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][TimeString]);
-		
-		if (SetNativeString(5, buffer, nlen, true) == SP_ERROR_NONE)
-			return true;
-	}	
-
-	return true;
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	SetNativeCellRef(4, nCache[Time]);
+	
+	decl String:buffer[nlen];
+	FormatEx(buffer, nlen, "%s", nCache[TimeString]);
+	
+	if (SetNativeString(5, buffer, nlen, true) == SP_ERROR_NONE)
+		return true;
+	
+	return false;
 }
 
 public Native_GetRecordSpeedInfo(Handle:plugin, numParams)
@@ -1774,15 +1791,18 @@ public Native_GetRecordSpeedInfo(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
-	if(rank > MAX_CACHE)
+	if(rank < 1)
 		return false;
 	
-	if(rank > 0)
-	{
-		SetNativeCellRef(4, g_cache[style][track][rank-1][AvgSpeed]);
-		SetNativeCellRef(5, g_cache[style][track][rank-1][MaxSpeed]);
-		SetNativeCellRef(6, g_cache[style][track][rank-1][FinishSpeed]);
-	}	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	SetNativeCellRef(4, nCache[AvgSpeed]);
+	SetNativeCellRef(5, nCache[MaxSpeed]);
+	SetNativeCellRef(6, nCache[FinishSpeed]);
 
 	return true;
 }
@@ -1793,16 +1813,19 @@ public Native_GetRecordStrafeJumpInfo(Handle:plugin, numParams)
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
 	
-	if(rank > MAX_CACHE)
+	if(rank < 1)
 		return false;
 	
-	if(rank > 0)
-	{
-		SetNativeCellRef(4, g_cache[style][track][rank-1][Strafes]);
-		SetNativeCellRef(5, g_cache[style][track][rank-1][StrafeAcc]);
-		SetNativeCellRef(6, g_cache[style][track][rank-1][Jumps]);
-		SetNativeCellRef(7, g_cache[style][track][rank-1][JumpAcc]);
-	}	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	SetNativeCellRef(4, nCache[Strafes]);
+	SetNativeCellRef(5, nCache[StrafeAcc]);
+	SetNativeCellRef(6, nCache[Jumps]);
+	SetNativeCellRef(7, nCache[JumpAcc]);
 
 	return true;
 }
@@ -1814,19 +1837,22 @@ public Native_GetReplayFileName(Handle:plugin, numParams)
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
 	
-	if(rank > MAX_CACHE)
-		return false;
-	
 	if (nlen <= 0)
 		return false;
-
-	if(rank > 0 && track >= 0)
-	{
-		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][ReplayFile]);
-		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
-			return true;
-	}
+	
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	decl String:buffer[nlen];
+	FormatEx(buffer, nlen, "%s", nCache[ReplayFile]);
+	if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+		return true;
 	
 	return false;
 }
@@ -1838,26 +1864,29 @@ public Native_GetReplayPath(Handle:plugin, numParams)
 	new rank = GetNativeCell(3);
 	new nlen = GetNativeCell(5); 
 	
-	if(rank > MAX_CACHE)
-		return false;
-	
 	if (nlen <= 0)
 		return false;
-
-	if(rank > 0 && track >= 0)
-	{
-		if(g_cache[style][track][rank-1][Time] == 0.0)
-			return false;
-		
-		decl String:path[256];
-		Format(path, sizeof(path), "addons/sourcemod/data/botmimic/%d_%d/%s/%s/%s.rec", style, track, g_currentMap, g_cache[style][track][rank-1][Auth], g_cache[style][track][rank-1][ReplayFile]);
-		ReplaceString(path, sizeof(path), ":", "_", true);
-		
-		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", path);
-		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
-			return true;
-	}
+	
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	if(nCache[Time] <= 0.0)
+		return false;
+	
+	decl String:path[256];
+	Format(path, sizeof(path), "addons/sourcemod/data/botmimic/%d_%d/%s/%s/%s.rec", style, track, g_currentMap, nCache[Auth], nCache[ReplayFile]);
+	ReplaceString(path, sizeof(path), ":", "_", true);
+	
+	decl String:buffer[nlen];
+	FormatEx(buffer, nlen, "%s", path);
+	if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+		return true;
 	
 	return false;
 }
@@ -1868,21 +1897,24 @@ public Native_GetCustom1(Handle:plugin, numParams)
 	new style = GetNativeCell(1);
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
-	new nlen = GetNativeCell(5); 
-	
-	if(rank > MAX_CACHE)
-		return false;
+	new nlen = GetNativeCell(5);
 	
 	if (nlen <= 0)
 		return false;
-
-	if(rank > 0 && track >= 0)
-	{
-		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Custom1]);
-		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
-			return true;
-	}
+	
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	decl String:buffer[nlen];
+	FormatEx(buffer, nlen, "%s", nCache[Custom1]);
+	if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+		return true;
 	
 	return false;
 }
@@ -1892,21 +1924,24 @@ public Native_GetCustom2(Handle:plugin, numParams)
 	new style = GetNativeCell(1);
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
-	new nlen = GetNativeCell(5); 
-	
-	if(rank > MAX_CACHE)
-		return false;
+	new nlen = GetNativeCell(5);
 	
 	if (nlen <= 0)
 		return false;
-
-	if(rank > 0 && track >= 0)
-	{
-		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Custom2]);
-		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
-			return true;
-	}
+	
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	decl String:buffer[nlen];
+	FormatEx(buffer, nlen, "%s", nCache[Custom2]);
+	if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+		return true;
 	
 	return false;
 }
@@ -1917,21 +1952,51 @@ public Native_GetCustom3(Handle:plugin, numParams)
 	new style = GetNativeCell(1);
 	new track = GetNativeCell(2);
 	new rank = GetNativeCell(3);
-	new nlen = GetNativeCell(5); 
-	
-	if(rank > MAX_CACHE)
-		return false;
+	new nlen = GetNativeCell(5);
 	
 	if (nlen <= 0)
 		return false;
-
-	if(rank > 0 && track >= 0)
-	{
-		decl String:buffer[nlen];
-		FormatEx(buffer, nlen, "%s", g_cache[style][track][rank-1][Custom3]);
-		if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
-			return true;
-	}
+	
+	if(rank < 1)
+		return false;
+	
+	if(GetArraySize(g_hCache[style][track]) < rank)
+		return false;
+	
+	new nCache[RecordCache];
+	GetArrayArray(g_hCache[style][track], rank-1, nCache[0]);
+	
+	decl String:buffer[nlen];
+	FormatEx(buffer, nlen, "%s", nCache[Custom3]);
+	if (SetNativeString(4, buffer, nlen, true) == SP_ERROR_NONE)
+		return true;
 	
 	return false;
+}
+
+CacheReset()
+{
+	nCacheTemplate[Ignored] = false; //Just to get rid of a warning, it's just a template
+	
+	// Init world record cache
+	for (new style = 0; style < MAX_STYLES; style++)
+	{
+		for (new track = 0; track < MAX_TRACKS; track++)
+		{
+			if(g_hCache[style][track] != INVALID_HANDLE)
+				ClearArray(g_hCache[style][track]);
+			else g_hCache[style][track] = CreateArray(sizeof(nCacheTemplate));
+			
+			g_cacheLoaded[style][track] = false;
+		}
+	}
+}
+
+CacheResetSingle(track, style)
+{
+	if(g_hCache[style][track] != INVALID_HANDLE)
+		ClearArray(g_hCache[style][track]);
+	else g_hCache[style][track] = CreateArray(sizeof(nCacheTemplate));
+	
+	g_cacheLoaded[style][track] = false;
 }
