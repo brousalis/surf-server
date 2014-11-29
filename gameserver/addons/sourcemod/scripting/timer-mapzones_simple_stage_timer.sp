@@ -54,23 +54,35 @@ stock PrintTimeDiff(client, level, lastlevel)
 			if(g_MapLevelBestTime[level][client] == 0.0)
 			{
 				Timer_SecondsToTime(time, buffer, sizeof(buffer), 2);
-				CPrintToChat(client,"{lightred}[{green}Timer{lightred}]{green} Checkpoint {lightred}[{green}-00:00.00{lightred}]");
+				#if defined LEGACY_COLORS
+				CPrintToChat(client,"{red}[{green}Timer{red}]{green} Checkpoint {red}[{green}-00:00.00{red}]");
+				#else
+				#endif
 				g_MapLevelBestTime[level][client] = time;
 			}
 			else if(g_MapLevelBestTime[level][client] > time)
 			{
 				Timer_SecondsToTime(g_MapLevelBestTime[level][client]-time, buffer, sizeof(buffer), 2);
-				CPrintToChat(client, "{lightred}[{green}Timer{lightred}]{green} Checkpoint {lightred}[{green}-%s{lightred}]", buffer);
+				#if defined LEGACY_COLORS
+				CPrintToChat(client, "{red}[{green}Timer{red}]{green} Checkpoint {red}[{green}-%s{red}]", buffer);
+				#else
+				#endif
 				g_MapLevelBestTime[level][client] = time;
 			}
 			else if(g_MapLevelBestTime[level][client] == time)
 			{
-				CPrintToChat(client, "{lightred}[{green}Timer{lightred}]{green} Checkpoint {lightred}[+00:00.00]");
+				#if defined LEGACY_COLORS
+				CPrintToChat(client, "{red}[{green}Timer{red}]{green} Checkpoint {red}[+00:00.00]");
+				#else
+				#endif
 			}
 			else if(g_MapLevelBestTime[level][client] < time)
 			{
 				Timer_SecondsToTime(time-g_MapLevelBestTime[level][client], buffer, sizeof(buffer), 2);
-				CPrintToChat(client, "{lightred}[{green}Timer{lightred}]{green} Checkpoint {lightred}[+%s]", buffer);
+				#if defined LEGACY_COLORS
+				CPrintToChat(client, "{red}[{green}Timer{red}]{green} Checkpoint {red}[+%s]", buffer);
+				#else
+				#endif
 			}
 		}
 	}
