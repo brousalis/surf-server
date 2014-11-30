@@ -26,6 +26,7 @@
 
 **Problems?**
 * If you have trouble goto our [WIKI] (https://github.com/Zipcore/Timer/wiki) / [FAQ] (https://github.com/Zipcore/Timer/wiki/FAQ) page first.
+* You can also use our install serive provided by Rop if you want to be sure the timer is installed correctly.
 * If you have still no clue you can ask for help [here] (https://github.com/Zipcore/Timer/issues/new).
 
 **Links:**
