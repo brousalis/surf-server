@@ -21,7 +21,7 @@
 						<a><img src="img/zipcore.png"> Contact Zipcore:</a>
 						<a href="http://forums.alliedmods.net/member.php?u=74431"><img src="img/am.png"> AlliedMods</a>
 						<a href="http://github.com/Zipcore"><img src="img/github.png"> GitHub</a>
-						<a href="http://http://steamcommunity.com/profiles/76561198035410392"><img src="img/steam.png"> Steam</a>
+						<a href="http://steamcommunity.com/profiles/76561198035410392"><img src="img/steam.png"> Steam</a>
                 </li>
             </ul>
             <!-- /.dropdown-messages -->
