@@ -420,6 +420,11 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	
 	if(0 < client <= MaxClients)
 	{
+		g_userJumps[client][LastJumpTimes][3] = 0.0;
+		g_userJumps[client][LastJumpTimes][2] = 0.0;
+		g_userJumps[client][LastJumpTimes][1] = 0.0;
+		g_userJumps[client][LastJumpTimes][0] = 0.0;
+		
 		if(IsFakeClient(client))
 			return;
 		
@@ -480,7 +485,7 @@ public Action:Event_PlayerJump(Handle:event, const String:name[], bool:dontBroad
 		g_userJumps[client][LastJumpTimes][1] = g_userJumps[client][LastJumpTimes][0];
 		g_userJumps[client][LastJumpTimes][0] = time;
 		
-		if (timediff <= 4.0 && g_userJumps[client][LastJumpTimes][3] != 0.0)
+		if (timediff <= 4.0 && g_userJumps[client][LastJumpTimes][3] != 0.0 && g_userJumps[client][LastJumpTimes][2] != 0.0)
 		{
 			// If set to 1 prevent bhop everywhere, if set to 2 use it only inside start zones
 			if(g_Physics[style][StyleAntiBhop] == 1 || Timer_IsPlayerTouchingZoneType(client, ZtStart) || Timer_IsPlayerTouchingZoneType(client, ZtBonusStart))
