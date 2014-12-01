@@ -150,7 +150,6 @@ public OnPluginStart()
 	
 	LoadTranslations("timer.phrases");
 	
-	//RegConsoleCmd("sm_stop", Command_Stop);
 	if(g_Settings[PauseEnable])
 	{ 
 		RegConsoleCmd("sm_pause", Command_Pause);
