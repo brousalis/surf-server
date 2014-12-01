@@ -165,8 +165,6 @@ public OnPluginStart()
 	HookEvent("player_spawn", Event_StopTimer);
 	HookEvent("player_disconnect", Event_StopTimer);
 	
-	AutoExecConfig(true, "timer/timer-core");
-	
 
 	g_timerLogging = LibraryExists("timer-logging");
 	g_timerPhysics = LibraryExists("timer-physics");
