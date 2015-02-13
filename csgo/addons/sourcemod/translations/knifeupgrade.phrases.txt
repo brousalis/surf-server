@@ -1,0 +1,186 @@
+﻿//**********************************************  Valid Colors	***********************************************
+// {NORMAL}, {DARKRED}, {PINK}, {YELLOW}, {GREEN}, {LIGHTGREEN}, {RED}, {GRAY}, {BLUE}, {DARKBLUE}, {PURPLE}  *
+//*************************************************************************************************************
+
+"Phrases"
+{
+	"Command Access Denied Message"
+	{		
+		"en"		"{RED}You do not have access to this command."
+	}
+
+	"Knife Menu Disabled Message"
+	{		
+		"en"		"{RED}The Knife Menu has been disabled. Try using the {RED}!knifesname {NORMAL}chat triggers."
+	}
+
+	"Knife Access Denied Message"
+	{		
+		"en"		"{RED}You do not have access to this knife."
+	}
+	
+	"No Longer Has Access to Current Knife"
+	{
+		"en"		"{RED}You no longer have access to your previously selected knife." 
+	}
+	
+	"Spawn and Welcome Message"
+	{		
+		"en"		"Type {GREEN}!knife {NORMAL}or {RED}chat triggers {NORMAL}to select a new knife skin."
+	}
+
+	"Chat Triggers Message"
+	{		
+		"en"		"Triggers: {DARKRED}!bayonet {PINK}!gut {GREEN}!flip {RED}!m9 {GRAY}!karambit {DARKBLUE}!huntsman {PURPLE}!butterfly {YELLOW}!golden {BLUE}!default"
+	}
+
+	"Bayonet Given Message"
+	{		
+		"en"		"{DARKRED}You have chosen the Bayonet!"
+	}
+
+	"Gut Given Message"
+	{		
+		"en"		"{PINK}You have chosen the Gut knife!"
+	}
+
+	"Flip Given Message"
+	{		
+		"en"		"{GREEN}You have chosen the Flip knife!"
+	}
+
+	"M9 Given Message"
+	{		
+		"en"		"{RED}You have chosen the M9-Bayonet!"
+	}
+
+	"Karambit Given Message"
+	{		
+		"en"		"{GRAY}You have chosen the Karambit!"
+	}
+
+	"Huntsman Given Message"
+	{		
+		"en"		"{DARKBLUE}You have chosen the Huntsman knife!"
+	}
+
+	"Butterfly Given Message"
+	{		
+		"en"		"{PURPLE}You have chosen the Butterfly knife!"
+	}
+
+	"Default Given Message"
+	{		
+		"en"		"{BLUE}You have chosen the Default knife!"
+	}
+
+	"Golden Given Message"
+	{		
+		"en"		"{YELLOW}You have chosen the Golden knife!"
+	}
+
+//****************************************************   WARNING   *******************************************************
+//********************************************   NO COLORS  BELOW THIS LINE   ********************************************
+	
+	"Knife Menu Command"
+	{		
+		"en"		"sm_knife"
+	}
+	
+	"Knife Menu Title"
+	{		
+		"en"		"Choose your knife."
+	}
+
+	"Menu Knife Bayonet"
+	{		
+		"en"		"!Bayonet"
+	}
+	
+	"Menu Knife Gut"
+	{		
+		"en"		"!Gut"
+	}
+	
+	"Menu Knife Flip"
+	{		
+		"en"		"!Flip"
+	}
+	
+	"Menu Knife M9"
+	{		
+		"en"		"!M9"
+	}
+	
+	"Menu Knife Karambit"
+	{		
+		"en"		"!Karambit"
+	}
+	
+	"Menu Knife Huntsman"
+	{		
+		"en"		"!Huntsman"
+	}
+	
+	"Menu Knife Butterfly"
+	{		
+		"en"		"!Butterfly"
+	}
+	
+	"Menu Knife Default"
+	{		
+		"en"		"!Default"
+	}
+	
+	"Menu Knife Golden"
+	{		
+		"en"		"!Golden"
+	}
+	
+//****************************  CHAT TRIGGER COMMANDS. (Not Case Sensitive)   *********************
+
+	"Knife Trigger Bayonet"
+	{		
+		"en"		"!Bayonet"
+	}
+	
+	"Knife Trigger Gut"
+	{		
+		"en"		"!Gut"
+	}
+	
+	"Knife Trigger Flip"
+	{		
+		"en"		"!Flip"
+	}
+	
+	"Knife Trigger M9"
+	{		
+		"en"		"!M9"
+	}
+	
+	"Knife Trigger Karambit"
+	{		
+		"en"		"!Karambit"
+	}
+	
+	"Knife Trigger Huntsman"
+	{		
+		"en"		"!Huntsman"
+	}
+	
+	"Knife Trigger Butterfly"
+	{		
+		"en"		"!Butterfly"
+	}
+	
+	"Knife Trigger Default"
+	{		
+		"en"		"!Default"
+	}
+	
+	"Knife Trigger Golden"
+	{		
+		"en"		"!Golden"
+	}
+}

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# where to install the server
+dir="$HOME/csgo_ds"
+
+# install some packages we'll need
+sudo apt-get install lib32gcc1 libc6-i386 lamp-server
+
+# download steamcmd
+wget http://media.steampowered.com/installer/steamcmd_linux.tar.gz
+mkdir steamcmd
+tar -xvzf steamcmd_linux.tar.gz -C steamcmd
+rm steamcmd_linux.tar.gz*
+cd steamcmd
+
+# download srcds for csgo (740)
+./steamcmd.sh +login anonymous +force_install_dir $server_dir +app_update 740 +quit
+
+# back to main
+cd ../ 
+
+# copy directories to server
+. ./setup
+
+# recompile plugins
+. ./compile
+
+# setup database
+. ./sql

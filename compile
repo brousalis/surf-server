@@ -1,18 +1,18 @@
 #!/bin/bash
 
-dir="$HOME/csgo_ds/csgo/addons/sourcemod"
+sm_server="$HOME/csgo_ds/csgo/addons/sourcemod"
+sm_local="csgo/addons/sourcemod"
 
-if [[ ! -d "$dir/scripting/include/timer.inc" ]]; then
- cp -rf addons/sourcemod/scripting/include/* $dir/scripting/include/
-fi
-
-test -e compiled || mkdir compiled
-
-for sourcefile in addons/sourcemod/scripting/*.sp
+for sourcefile in $sm_local/scripting/timer-*.sp
 do
   smxfile="`echo $sourcefile | sed -e 's/\.sp$/\.smx/'`"
-  echo -e "Compiling $sourcefile ..."
-  $dir/scripting/spcomp $sourcefile -o$dir/plugins/${smxfile/addons\/sourcemod\/scripting\//}
+
+  echo -e "Compiling $sourcefile into srcds plugin folder..."
+  $sm_local/scripting/spcomp $sourcefile -o$sm_server/plugins/${smxfile/csgo\/addons\/sourcemod\/scripting\//}
+
+  echo -e "Compiling $sourcefile into local plugin folder..."
+  $sm_local/scripting/spcomp $sourcefile -o$sm_local/plugins/${smxfile/csgo\/addons\/sourcemod\/scripting\//}
+
   RETVAL=$?
   if [ $RETVAL -ne 0 ]; then
     exit 1;
