@@ -1,6 +1,7 @@
 #!/bin/bash
 
-dir="$HOME/csgods/csgo"
+dir="$HOME/csgo_ds/csgo"
+
 sm="$dir/addons/sourcemod"
 
 # sourcemod configs

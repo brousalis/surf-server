@@ -1,0 +1,31 @@
+"GameModes_Server.txt"
+{
+    "gameTypes"
+    {
+        "classic"
+        {
+            "gameModes"
+            {
+                "casual"
+                {
+                    "mapgroupsMP"
+                    {
+                        "mg_deathmatch" ""
+                    }
+                }
+            }    
+        }
+    }
+
+    "mapgroups"
+    {
+        "mg_custom"
+        {
+            "name" "mg_custom"
+            "maps"
+            {
+                "surf_kitsune"    "" 
+            }
+        }
+    }
+}

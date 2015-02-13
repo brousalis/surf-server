@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dir="$HOME/csgods/csgo/addons/sourcemod"
+dir="$HOME/csgo_ds/csgo/addons/sourcemod"
 
 if [[ ! -d "$dir/scripting/include/timer.inc" ]]; then
  cp -rf addons/sourcemod/scripting/include/* $dir/scripting/include/
