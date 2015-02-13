@@ -29,17 +29,68 @@
 * You can also use our install serive provided by Rop if you want to be sure the timer is installed correctly.
 * If you have still no clue you can ask for help [here] (https://github.com/Zipcore/Timer/issues/new).
 
-**Links:**
-* [INSTALL INSTRUCTIONS] (https://github.com/Zipcore/Timer/wiki/INSTALL-INSTRUCTIONS)
-* [FAQ] (https://github.com/Zipcore/Timer/wiki/FAQ)
-* [InCompability-Info] (https://github.com/Zipcore/Timer/wiki/InCompability-Info)
-* [Update 2.0 to 2.1 or above] (https://github.com/Zipcore/Timer/wiki/HowTo-Update-2.0-to-2.1)
-* [Update 2.1 to 2.2 or above] (https://github.com/Zipcore/Timer/wiki/HowTo-Update-2.1-to-2.2)
-* [List of Main Modules] (https://github.com/Zipcore/Timer/wiki/List-of-Main-Modules)
-* [List of Recommend Modules] (https://github.com/Zipcore/Timer/wiki/List-of-Recommend-Modules)
-* [List of Recommend Bhop Modules] (https://github.com/Zipcore/Timer/wiki/List-of-Recommend-Bhop-Modules)
-* [List of Recommend Surf Modules] (https://github.com/Zipcore/Timer/wiki/List-of-Recommend-Surf-Modules)
-* [List of Recommend Climb/KZ Modules] (https://github.com/Zipcore/Timer/wiki/List-of-Recommend-Climb-KZ-Modules)
-* [List of Recommend Minigames/Course Modules] (https://github.com/Zipcore/Timer/wiki/List-of-Recommend-Minigames-Course-Modules)
-* [List of Other Modules] (https://github.com/Zipcore/Timer/wiki/List-of-Other-Modules)
-* [Usefull CVAR list] (https://github.com/Zipcore/Timer/wiki/Usefull-CVAR-list)
+//////////////////////////////
+/////INSTALL INSTRUCTIONS/////
+//////////////////////////////
+
+1.) Download the plugin at https://github.com/Zipcore/Timer
+
+2.) CS:GO color support: 
+    Continue with 3.) and skip this part if you are running a CS:S server. 
+    For CS:GO you have to follow step 2 first!
+
+    2.1) Open scripting/include/timer.inc with a text editor (like Notepad++)
+    2.2) Find the following line - //#define LEGACY_COLORS "CS:GO Color Support"
+    2.3) Remove // in front of #define and close it
+
+3.) Compiling
+    3.1) Download at least Sourcemod v1.5 and extract it into your desktop.
+    3.2) Goto addons/sourcemod/scripting/include and fill it with all files this timer provides from same folder.
+    3.3) Drag and drop needed SP files onto spcomp.exe inside addons/sourcemod/scripting to compile them it should create all needed SMX files.
+
+4.) Upload all SMX files, configs, sounds and materials onto your server.
+
+5.) Insert "timer" keyvalue into configs/databases.cfg (no sqlite support).
+
+6.) Change configs/timer/settings.cfg to your needs
+
+7.) Change configs/timer/physics.cfg to your needs (the folder contains some example files for bhop, surf, etc.)
+
+7.) Skip this part if you don't like to run Chatranks/Points ranking/Skillrank
+    Depending on if you run a CS:GO or CS:S server, rename csgo-rankings.cfg/css-rankings.cfg to rankings.cfg (addons/sourcemod/configs/timer) to enable the ranking module.
+    6.1) Compile simple-chatprocessor.sp  and upload it to your server to enable chatranks.
+
+8.) Restart your server.
+
+9.) Start creating zones or use included mappacks inside addons/sourcemod/gamedata/MySQL
+
+//////////////////////////////
+/////Update instructions//////
+//////////////////////////////
+
+Update 2.0.x to 2.1.x:
+1.) Make a backup of your mapzone, round and maptier table.
+2.) Delete mapzone, round and maptier table.
+3.) Delete "create table" lines of you backup files (Notepad++).
+4.) Import modified backups.
+
+//////////////////////////////
+//////Compability Info////////
+//////////////////////////////
+
+- Noblock (Included into Mapzone module)
+- MultiPlayer Bunny Hops (Included into Physics module)
+- Autobhop (Included into Physics module)
+- Godmode (Build-in godmode into Physics module, with PvP Arena zone)
+- SMAC autotrigger (Included into Scripter-SMAC module)
+- Macrodox - Bhop cheat detection (Included into Scripter-Macrodox module)
+
+//////////////////////////////
+//////Usefull CVAR list///////
+
+- sv_accelerate "10" (Ground control)
+- sv_wateraccelerate "150" (Water control)
+- sv_airaccelerate "150" (Air control)
+- sv_enablebunnyhopping "1" (Disable speed limit)
+- sv_maxvelocity "9999" (Increase max. possible speed)
+- mp_fal
