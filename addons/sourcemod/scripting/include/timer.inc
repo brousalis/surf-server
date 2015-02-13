@@ -10,7 +10,7 @@
 /*** SETTINGS ***/
 
 //Uncomment this to use colors.inc and disable morecolors.inc
-//#define LEGACY_COLORS "CS:GO Color Support"
+#define LEGACY_COLORS "CS:GO Color Support"
 
 #define MAX_STYLES	16 //Max number of styles (default 32 ID:0-31)
 #define MAX_TRACKS	10

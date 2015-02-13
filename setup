@@ -1,0 +1,19 @@
+#!/bin/bash
+
+dir="$HOME/csgods/csgo"
+sm="$dir/addons/sourcemod"
+
+# sourcemod configs
+cp -rf addons/sourcemod/configs/timer $sm/configs/timer/
+
+# sourcemod gamedata (mapzones)
+cp -rf addons/sourcemod/gamedata/* $sm/gamedata
+
+# sourcemod translations
+cp -rf addons/sourcemod/translations/* $sm/translations
+
+# server config
+cp -rf cfg/sourcemod/timer $dir/cfg/sourcemod/timer
+
+# sound files
+cp -rf sound/timer_sounds $dir/sound/timer_sounds
