@@ -1,9 +1,0 @@
-Timer-Srcipter_DB
-
-This plugin provides a database to ban players for non-auto bhop styles.
-
-Admin Commands:
-sm_scripter <name> - Bans a player from all ranked modes except auto-bop styles
-sm_scripter <steamid> - Bans a player from all ranked modes except auto-bop styles
-sm_scripter_unban <player> - Unbans a player
-sm_scripter_reload <player(s)> - Reload scripter-DB

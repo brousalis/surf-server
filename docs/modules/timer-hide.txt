@@ -1,6 +1,0 @@
-Timer-Hide
-
-This plugins allows to hide other players.
-
-Commands:
-sm_hide

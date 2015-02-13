@@ -1,9 +1,0 @@
-Timer-Worldrecord_Latest
-
-This plugin can list latest record with 3 filter options:
--any
--top10
--world-record
-
-Commands:
-sm_latest

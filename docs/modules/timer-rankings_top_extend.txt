@@ -1,6 +1,0 @@
-Timer-Rankings_Top_Extend
-
-This plugin allows top-ranked players to extend current map.
-
-Commands:
-sm_extend

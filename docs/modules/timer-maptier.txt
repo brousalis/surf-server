@@ -1,7 +1,0 @@
-Timer-MapTier
-
-This plugins simply manages maptier database
-
-Admin Commands:
-sm_stagecount <bonus> - Update stagecount
-sm_maptier <bonus> <tier> - Set maptier

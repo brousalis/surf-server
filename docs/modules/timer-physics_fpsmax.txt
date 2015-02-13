@@ -1,3 +1,0 @@
-Timer-Physics_FPSMax
-
-This plugin allows to attach fpx limits t a style and switch players to another style if they violate them.

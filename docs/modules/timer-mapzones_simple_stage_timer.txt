@@ -1,3 +1,0 @@
-Timer-Simple_Stage_Timer
-
-This plugins displays timer difference for stages (no perm. storage).

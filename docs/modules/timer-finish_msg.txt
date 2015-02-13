@@ -1,3 +1,0 @@
-Timer-Finish_MSG
-
-This plugins displays a message on map finish

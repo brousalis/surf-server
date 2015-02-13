@@ -1,3 +1,0 @@
-Timer-Physics-Quakebhop
-
-This plugin allow you to create a quakebhop style, with massive speedboost.

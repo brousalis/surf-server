@@ -1,6 +1,0 @@
-Timer-HUD
-
-This plugins provides a customizeable HUD with cookie support.
-
-Commands:
-sm_hud - HUD settings

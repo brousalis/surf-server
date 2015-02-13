@@ -1,6 +1,0 @@
-Simple Chatprocessor
-
-This plugin is not a part of this timer but is required to use timer-rankings chats-ranks.
-It has increased buffers to support more colors.
-
-Source: https://bitbucket.org/minimoney1/simple-chat-processor

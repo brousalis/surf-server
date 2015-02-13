@@ -1,3 +1,0 @@
-Timer-Strafes
-
-This plugin counts strafes nothing more.

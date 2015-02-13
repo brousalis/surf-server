@@ -1,8 +1,0 @@
-Timer-Core
-
-This plugin manages a timer for each player and saves finished timers to a database.
-It also provides natives to start, stop, reset timers and much more.
-
-Commands:
-sm_pause - Stops timer but saves time & position to resume it later
-sm_resume - Resume a paused timer

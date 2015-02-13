@@ -1,3 +1,0 @@
-Timer-Quickcmds
-
-This plugin registers a command for each style to allow fast-switch between styles.

@@ -1,1 +1,0 @@
-this is a small example how to get stats to your homepage
