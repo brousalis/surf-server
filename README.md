@@ -1,8 +1,8 @@
 ## csgo surf server setup
 
-using ZipCore's [Timer](http://github.com/zipcore/timer). project is intended for personal use, my personal settings are included. 
+this project is intended for personal use, so my personal server settings are included. also, I have never setup a srcds server before, so it's likely i've done things incorrectly. 
 
-> if you run into problems, I took some notes on setting up a local surf server manually on Ubuntu 14.10 [here](https://github.com/brousalis/surf-timer/blob/master/SERVER.md)
+> if you run into problems, I took some notes on setting up a local surf server manually on Ubuntu 14.10 [here](https://github.com/brousalis/surf-timer/blob/master/SERVER.md).
 
 includes:
 
@@ -19,25 +19,28 @@ requirements:
   - `lib32gcc1 libc6-i386 lamp-server` dependencies for the server
   - mysql (configured with lamp-server)
 
-in order for people to connect to your server, setup port forwarding on your router for:
-
-    27015 TCP/UDP
-    27020 UDP
-    27005 UDP
-    51840 UDP
     
-## getting started
+### getting started
 
 - [download](http://www.ubuntu.com/download/desktop) Ubuntu 14.10 or 14.04.01
 - install on a desktop or virtual machine
 - open up Terminal and run `sudo apt-get install lib32gcc1 libc6-i386 lamp-server git`
-- when asked for passwords for mysql, leave it blank
-- clone the repo `git clone https://github.com/brousalis/surf-server/ ~/surf-server`
-- `cd ~/surf-server`
+- when asked for root password for mysql, leave it blank
+  - if you want to set it because you're setting up a public server, make sure to update `addons/sourcemod/configs/databases.cfg`
+- `git clone https://github.com/brousalis/surf-server/ ~/surf-server` clone the repo 
+- `cd ~/surf-server` 
 - `script/install`
 
+if all goes well, you should be able to go into the server directory and start the server:
 
-## scripts
+    cd ~/csgo_ds
+    ./start
+    
+and your server should be running. try connecting it through LAN. 
+
+**IMPORTANT** you will want to configure the server settings, since this is my personal setup (add yourself as admin, rename the server, etc...)
+
+### scripts
 
 #### `script/install`
 - downloads [steamCMD](https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_SteamCMD)
@@ -57,3 +60,12 @@ this script sets up the mysql database, named `surf_server`. then it runs the im
 
 #### `script/update`
 use this when the dedicated server files get updated and your server is out of date. or, when your server will not start up.
+
+### making it public
+in order for people to connect to your server, setup port forwarding on your router for:
+
+    27015 TCP/UDP
+    27020 UDP
+    27005 UDP
+    51840 UDP
+    
