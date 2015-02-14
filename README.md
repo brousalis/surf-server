@@ -1,10 +1,8 @@
-# CSGO surf server
+### csgo surf server setup
 
-using ZipCore's [Timer](http://github.com/zipcore/timer). projet is intended for personal use, my personal settings are included. 
+using ZipCore's [Timer](http://github.com/zipcore/timer). project is intended for personal use, my personal settings are included. 
 
-use the scripts below to setup a surf server on a linux machine (tested on Ubuntu 14.10). 
-
-if you run into problems, I took some notes on setting up a local surf server manually on Ubuntu 14.10 [here](https://github.com/brousalis/surf-timer/blob/master/SERVER.md)
+> if you run into problems, I took some notes on setting up a local surf server manually on Ubuntu 14.10 [here](https://github.com/brousalis/surf-timer/blob/master/SERVER.md)
 
 includes:
 
@@ -15,15 +13,15 @@ includes:
   - [sm_knifeupgrade](https://forums.alliedmods.net/showthread.php?p=2160622) by klexen (!knife)
   - [disableradar](https://forums.alliedmods.net/showthread.php?p=2138783) by Internet Bully
 
-> **NOTE** scripts work assuming your CSGO Dedicated Server lives in `~/csgo_ds`, which by default is what `script/install` does
+---
 
 #### `script/install`
 
-    - downloads `steamCMD`
-    - installs CSGO Dedicated Server in `~/csgo_ds`
-    - runs `script/setup`, copies the surf timer assets to the dedicated server folder
-    - runs `script/compile`, recompiles the plugins and copies them to the server
-    - runs `script/sql`, sets up the database for the server
+  - downloads [steamCMD](https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_SteamCMD)
+  - installs CSGO Dedicated Server (740) into `~/csgo_ds`
+  - runs `script/setup`, copies the surf timer assets to the dedicated server folder
+  - runs `script/compile`, recompiles the plugins and copies them to the server
+  - runs `script/sql`, sets up the database for the server
 
 #### `script/compile`
 
