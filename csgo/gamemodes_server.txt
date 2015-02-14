@@ -24,10 +24,8 @@
             "name" "mg_custom"
             "maps"
             {
-                "surf_beginner"    "" 
-                "surf_rookie"    ""
                 "surf_kitsune"    ""
-                "surf_mesa"    ""
+                "surf_3"    ""
             }
         }
     }
