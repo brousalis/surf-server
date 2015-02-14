@@ -12,7 +12,7 @@ includes:
   - [surf_kitsune](http://css.gamebanana.com/maps/179653) by Arblarg (stage test map)
   - [surf_3](http://csgo.gamebanana.com/maps/181256) by Umg_ (linear test map)
   - [sm_knifeupgrade](https://forums.alliedmods.net/showthread.php?p=2160622) by klexen (!knife)
-  - [disableradar](https://forums.alliedmods.net/showthread.php?p=2138783) by Internet Bully
+  - [disableradar](https://forums.alliedmods.net/showthread.php?p=2138783) by Internet Bully (hides radar)
 
 requirements:
 
