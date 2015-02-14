@@ -13,38 +13,11 @@ includes:
   - [sm_knifeupgrade](https://forums.alliedmods.net/showthread.php?p=2160622) by klexen (!knife)
   - [disableradar](https://forums.alliedmods.net/showthread.php?p=2138783) by Internet Bully
 
----
+requirements:
 
-#### `script/install`
-
-  - downloads [steamCMD](https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_SteamCMD)
-  - installs CSGO Dedicated Server (740) into `~/csgo_ds`
-  - runs `script/setup`, copies the surf timer assets to the dedicated server folder
-  - runs `script/compile`, recompiles the plugins and copies them to the server
-  - runs `script/sql`, sets up the database for the server
-
-#### `script/compile`
-
-compiles all of the timer's `.sp` files to `.smx` files and places them in your server's `sourcemod/plugins` folder, and the local plugins folder. the core timer plugins are located in `sourcemod/scripting/timer` if you want to modify them
-
-#### `script/setup`
-
-copies sourcemod, metamod, and the rest of the surf timer assets to your server in `~/csgo`
-
-#### `script/sql`
-
-you can `sudo apt-get install lamp-server` to get everything you need for the database, as well as phpmyadmin.
-
-this script sets up the mysql database, named `surf_server`. then it runs the import scripts for the mapzones, maptiers, and sourcemod tables on the database.
-
-
-#### `script/update`
-
-use this when the dedicated server files get updated and your server is out of date.
-
----
-
-#### making it public
+  - linux-based server (tested on Ubuntu 14.10). works in a virtual machine as well.
+  - `sudo apt-get install lib32gcc1 libc6-i386 lamp-server` dependencies for the server
+  - mysql (configured with lamp-server)
 
 in order for people to connect to your server, setup port forwarding on your router for:
 
@@ -52,3 +25,32 @@ in order for people to connect to your server, setup port forwarding on your rou
     27020 UDP
     27005 UDP
     51840 UDP
+    
+---
+#### `script/install`
+  - downloads [steamCMD](https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_SteamCMD)
+  - installs CSGO Dedicated Server (740) into `~/csgo_ds`
+  - runs `script/setup`, copies the surf timer assets to the dedicated server folder
+  - runs `script/compile`, recompiles the plugins and copies them to the server
+  - runs `script/sql`, sets up the database for the server
+
+---
+#### `script/compile`
+
+compiles all of the timer's `.sp` files to `.smx` files and places them in your server's `sourcemod/plugins` folder, and the local plugins folder. the core timer plugins are located in `sourcemod/scripting/timer` if you want to modify them
+
+---
+#### `script/setup`
+copies sourcemod, metamod, and the rest of the surf timer assets to your server in `~/csgo`
+
+---
+#### `script/sql`
+
+you can `sudo apt-get install lamp-server` to get everything you need for the database, as well as phpmyadmin.
+
+this script sets up the mysql database, named `surf_server`. then it runs the import scripts for the mapzones, maptiers, and sourcemod tables on the database.
+
+---
+#### `script/update`
+
+use this when the dedicated server files get updated and your server is out of date.
