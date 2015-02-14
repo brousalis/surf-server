@@ -37,9 +37,9 @@ read below to see what the install script does. if all goes well, you should be 
     cd ~/csgo_ds
     ./start
     
-and your server should be running. try connecting to it through LAN. 
+and your server should be running. try connecting to it through LAN
 
-**IMPORTANT** you will want to configure the server settings, since this is my personal setup (add yourself as admin, rename the server, etc...)
+> **IMPORTANT** you will want to configure the server settings, since this is my personal setup (add yourself as admin, rename the server, etc...)
 
 ---
 ### scripts
