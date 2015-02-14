@@ -1,0 +1,1 @@
+./srcds_run -game csgo -console -usercon +mapgroup mg_custom +map surf_kitsune +game_type 0 +game_mode 0

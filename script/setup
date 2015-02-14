@@ -1,0 +1,30 @@
+#!/bin/bash
+
+server_dir="$HOME/csgo_ds/csgo"
+
+# make addons folder
+test -e $server_dir/addons || mkdir $server_dir/addons 
+
+# sourcemod 
+rm -rf $server_dir/sourcemod
+cp -rf csgo/addons/sourcemod $server_dir/addons/sourcemod
+
+# metamod 
+rm -rf $server_dir/metamod
+cp -rf csgo/addons/metamod $server_dir/addons/metamod
+
+# metamod vdf file
+cp -f csgo/addons/metamod.vdf $server_dir/addons/
+
+# cfg files 
+cp -f csgo/cfg/* $server_dir/cfg
+cp -rf csgo/cfg/sourcemod $server_dir/cfg/sourcemod
+
+# sound files
+cp -rf csgo/sound/timer_sounds $server_dir/sound/timer_sounds
+
+# map files
+cp -rf csgo/maps/* $server_dir/maps
+
+# server confguration files
+cp -f csgo/* $server_dir

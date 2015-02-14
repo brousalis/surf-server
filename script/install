@@ -1,0 +1,28 @@
+#!/bin/bash
+
+server_dir="$HOME/csgo_ds"
+
+# download steamcmd
+wget http://media.steampowered.com/installer/steamcmd_linux.tar.gz
+mkdir steamcmd
+tar -xvzf steamcmd_linux.tar.gz -C steamcmd
+rm steamcmd_linux.tar.gz*
+cd steamcmd
+
+# download srcds for csgo (740)
+./steamcmd.sh +login anonymous +force_install_dir $server_dir +app_update 740 +quit
+
+# back to main
+cd ../ 
+
+# copy directories to server
+. script/setup
+
+# recompile plugins
+. script/compile
+
+# setup database
+. script/sql
+
+# add start script
+mv script/start $server_dir
