@@ -20,6 +20,7 @@ requirements:
   - `lib32gcc1 libc6-i386 lamp-server` dependencies for the server
   - mysql (configured with lamp-server)
     
+---
 ### getting started
 
 - [download](http://www.ubuntu.com/download/desktop) Ubuntu 14.10 or 14.04.01
@@ -40,7 +41,9 @@ and your server should be running. try connecting to it through LAN.
 
 **IMPORTANT** you will want to configure the server settings, since this is my personal setup (add yourself as admin, rename the server, etc...)
 
+---
 ### scripts
+these are horribly written, but have been working for me. deal with it
 
 #### `script/install`
 - downloads [steamCMD](https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_SteamCMD)
@@ -61,6 +64,7 @@ this script sets up the mysql database, named `surf_server`. then it runs the im
 #### `script/update`
 use this when the dedicated server files get updated and your server is out of date. or, when your server will not start up.
 
+---
 ### making it public
 in order for people to connect to your server, setup port forwarding on your router for:
 
