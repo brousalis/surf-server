@@ -9,7 +9,8 @@ includes:
   - ZipCore's [Timer](http://github.com/zipcore/timer)
   - [metamod 1.104](https://www.sourcemm.net/) and vdf
   - [sourcemod 1.6.4-git4624](http://www.sourcemod.net/snapshots.php) (1.7+ is not compatible with timer)
-  - [surf_kitsune](http://css.gamebanana.com/maps/179653) by Arblarg (test map)
+  - [surf_kitsune](http://css.gamebanana.com/maps/179653) by Arblarg (stage test map)
+  - [surf_3](http://csgo.gamebanana.com/maps/181256) by Umg_ (linear test map)
   - [sm_knifeupgrade](https://forums.alliedmods.net/showthread.php?p=2160622) by klexen (!knife)
   - [disableradar](https://forums.alliedmods.net/showthread.php?p=2138783) by Internet Bully
 
@@ -18,7 +19,6 @@ requirements:
   - linux-based server (tested on Ubuntu 14.10). works in a virtual machine as well.
   - `lib32gcc1 libc6-i386 lamp-server` dependencies for the server
   - mysql (configured with lamp-server)
-
     
 ### getting started
 
@@ -27,16 +27,16 @@ requirements:
 - open up Terminal and run `sudo apt-get install lib32gcc1 libc6-i386 lamp-server git`
 - when asked for root password for mysql, leave it blank
   - if you want to set it because you're setting up a public server, make sure to update `addons/sourcemod/configs/databases.cfg`
-- `git clone https://github.com/brousalis/surf-server/ ~/surf-server` clone the repo 
+- clone this repo `git clone https://github.com/brousalis/surf-server/ ~/surf-server`
 - `cd ~/surf-server` 
 - `script/install`
 
-if all goes well, you should be able to go into the server directory and start the server:
+read below to see what the install script does. if all goes well, you should be able to go into the server directory and start the server:
 
     cd ~/csgo_ds
     ./start
     
-and your server should be running. try connecting it through LAN. 
+and your server should be running. try connecting to it through LAN. 
 
 **IMPORTANT** you will want to configure the server settings, since this is my personal setup (add yourself as admin, rename the server, etc...)
 
