@@ -1,0 +1,34 @@
+"GameModes_Server.txt"
+{
+    "gameTypes"
+    {
+        "classic"
+        {
+            "gameModes"
+            {
+                "casual"
+                {
+                    "mapgroupsMP"
+                    {
+                        "mg_custom" ""
+                    }
+                }
+            }    
+        }
+    }
+
+    "mapgroups"
+    {
+        "mg_custom"
+        {
+            "name" "mg_custom"
+            "maps"
+            {
+                "surf_beginner"    "" 
+                "surf_rookie"    ""
+                "surf_kitsune"    ""
+                "surf_mesa"    ""
+            }
+        }
+    }
+}

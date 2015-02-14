@@ -2,5 +2,5 @@
 
 server_dir="$HOME/csgo_ds"
 
-steamcmd/steamcmd.sh +login anonymous +force_install_dir $server_dir +app_update 740 +quit
+steamcmd/steamcmd.sh +login anonymous +force_install_dir $server_dir +app_update 740 validate +quit
 

@@ -25,4 +25,7 @@ cd ../
 . script/sql
 
 # add start script
-mv script/start $server_dir
+cp -f script/start $server_dir
+
+# fixes some annoying spam
+sed -i 's/Rank/\/\/Rank/g' $server_dir/botprofile.db 

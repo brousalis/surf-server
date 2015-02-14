@@ -1,0 +1,4 @@
+surf_rookie
+surf_beginner
+surf_kitsune
+surf_mesa

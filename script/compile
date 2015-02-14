@@ -8,10 +8,10 @@ do
   smxfile="`echo $sourcefile | sed -e 's/\.sp$/\.smx/'`"
 
   echo -e "Compiling $sourcefile into server plugin folder..."
-  $sm_local/scripting/spcomp $sourcefile -o$sm_server/plugins/${smxfile/csgo\/addons\/sourcemod\/scripting\//}
+  $sm_local/scripting/spcomp $sourcefile -o$sm_server/plugins/${smxfile/csgo\/addons\/sourcemod\/scripting\/timer\//}
 
   echo -e "Compiling $sourcefile into local plugin folder..."
-  $sm_local/scripting/spcomp $sourcefile -o$sm_local/plugins/${smxfile/csgo\/addons\/sourcemod\/scripting\//}
+  $sm_local/scripting/spcomp $sourcefile -o$sm_local/plugins/${smxfile/csgo\/addons\/sourcemod\/scripting\/timer\//}
 
   RETVAL=$?
   if [ $RETVAL -ne 0 ]; then
